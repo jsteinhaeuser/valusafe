@@ -1,0 +1,269 @@
+/*
+ * ValuSafe — tokens.css
+ * Zentrales Token-System. Wird VOR jedem Theme-CSS geladen.
+ * Ladereihenfolge in allen headers: tokens.css → next.css → {theme}.css → wcag_global.css
+ *
+ * Alle --vs-* Variablen sind HIER definiert (Defaults = cloud-Theme).
+ * Theme-CSS-Dateien überschreiben nur den :root-Block am Ende jeder Datei.
+ * Legacy-Variablen (--bg-color, --text-color, …) werden auf --vs-* gemappt –
+ * kein bestehender Code bricht.
+ */
+
+/* ═══════════════════════════════════════════════
+   1. FARB-TOKENS (Default = cloud)
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Akzent / Primär */
+  --vs-accent:          #185fa5;
+  --vs-accent-hover:    #0e4a82;
+  --vs-accent-light:    #e6f1fb;
+  --vs-accent-text:     #ffffff;
+
+  /* Oberflächen */
+  --vs-bg:              #f4f7fb;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #edf2f9;
+
+  /* Text */
+  --vs-text:            #14181d;
+  --vs-text-muted:      #5a6474;
+  --vs-text-subtle:     #8c96a3;
+
+  /* Rahmen */
+  --vs-border:          #d1dae8;
+  --vs-border-strong:   #a8b6c8;
+
+  /* Semantisch */
+  --vs-danger:          #c0392b;
+  --vs-danger-light:    #fceae8;
+  --vs-danger-text:     #7a1e15;
+
+  --vs-success:         #1e7e34;
+  --vs-success-light:   #e8f5eb;
+  --vs-success-text:    #124d1f;
+
+  --vs-warning:         #b35c00;
+  --vs-warning-light:   #fff3e0;
+  --vs-warning-text:    #7a3f00;
+
+  /* Rail / Navigation */
+  --vs-rail-bg:         #1a2a40;
+  --vs-rail-text:       #a8bdd4;
+  --vs-rail-active:     #ffffff;
+  --vs-rail-active-bg:  rgba(255,255,255,0.12);
+  --vs-rail-hover-bg:   rgba(255,255,255,0.07);
+
+  /* Detail Pane */
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #d1dae8;
+}
+
+/* ═══════════════════════════════════════════════
+   2. TYPOGRAFIE-TOKENS
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Schriftfamilie – eine einzige Linie, kein Serif-Mix */
+  --vs-font:            'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  /* Type-Scale (7 Stufen) */
+  --vs-text-xs:         11px;
+  --vs-text-sm:         13px;
+  --vs-text-base:       15px;
+  --vs-text-md:         17px;
+  --vs-text-lg:         20px;
+  --vs-text-xl:         24px;
+  --vs-text-2xl:        30px;
+
+  /* Zeilenhöhe */
+  --vs-leading-tight:   1.25;
+  --vs-leading-base:    1.5;
+  --vs-leading-loose:   1.75;
+
+  /* Gewichte (nur zwei: normal + medium) */
+  --vs-weight-normal:   400;
+  --vs-weight-medium:   500;
+}
+
+/* ═══════════════════════════════════════════════
+   3. SPACING-SCALE
+   ═══════════════════════════════════════════════ */
+:root {
+  --vs-sp-1:   4px;
+  --vs-sp-2:   8px;
+  --vs-sp-3:  12px;
+  --vs-sp-4:  16px;
+  --vs-sp-5:  20px;
+  --vs-sp-6:  24px;
+  --vs-sp-8:  32px;
+  --vs-sp-10: 40px;
+  --vs-sp-12: 48px;
+}
+
+/* ═══════════════════════════════════════════════
+   4. RADIUS & SCHATTEN (max. 2 Stufen)
+   ═══════════════════════════════════════════════ */
+:root {
+  --vs-r-sm:    4px;
+  --vs-r:       8px;    /* Standard – Buttons, Inputs, Chips */
+  --vs-r-lg:   12px;    /* Karten */
+  --vs-r-xl:   16px;    /* Modals, Panels */
+  --vs-r-pill: 999px;
+
+  /* Schatten: resting + hovered – keine dritte Stufe */
+  --vs-shadow-resting: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --vs-shadow-hovered: 0 4px 12px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+}
+
+/* ═══════════════════════════════════════════════
+   5. TRANSITIONS
+   ═══════════════════════════════════════════════ */
+:root {
+  --vs-transition:        all 0.18s ease;
+  --vs-transition-fast:   all 0.10s ease;
+  --vs-transition-slow:   all 0.30s ease;
+}
+
+/* ═══════════════════════════════════════════════
+   6. LAYOUT-KONSTANTEN
+   ═══════════════════════════════════════════════ */
+:root {
+  --vs-rail-width:        52px;
+  --vs-topstrip-height:   56px;
+  --vs-detail-width:     360px;
+  --vs-detail-width-lg:  420px;
+}
+
+/* ═══════════════════════════════════════════════
+   7. LEGACY-MAPPING (Rückwärtskompatibilität)
+   Bestehender Code bricht nicht – diese Vars
+   leiten einfach an --vs-* weiter.
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Aus backend/layout/header_next_page.php */
+  --bg-color:       var(--vs-bg);
+  --card-bg:        var(--vs-surface);
+  --text-color:     var(--vs-text);
+  --text-muted:     var(--vs-text-muted);
+  --border-color:   var(--vs-border);
+  --primary-color:  var(--vs-accent);
+
+  /* Schatten-Aliasse */
+  --shadow-sm:      var(--vs-shadow-resting);
+  --shadow-md:      var(--vs-shadow-hovered);
+  --shadow-lg:      0 8px 24px rgba(0,0,0,0.12);
+
+  /* Transition-Alias */
+  --transition:     var(--vs-transition);
+
+  /* Für next.css: --vs-r ist bereits definiert */
+}
+
+/* ═══════════════════════════════════════════════
+   8. BODY-DEFAULTS
+   Einmalig gesetzt – kein Theme muss das wiederholen.
+   ═══════════════════════════════════════════════ */
+body {
+  font-family: var(--vs-font);
+  font-size:   var(--vs-text-base);
+  font-weight: var(--vs-weight-normal);
+  line-height: var(--vs-leading-base);
+  color:       var(--vs-text);
+  background:  var(--vs-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Alle h1–h4 auf Type-Scale bringen */
+h1 { font-size: var(--vs-text-2xl); font-weight: var(--vs-weight-medium); line-height: var(--vs-leading-tight); }
+h2 { font-size: var(--vs-text-xl);  font-weight: var(--vs-weight-medium); line-height: var(--vs-leading-tight); }
+h3 { font-size: var(--vs-text-lg);  font-weight: var(--vs-weight-medium); }
+h4 { font-size: var(--vs-text-md);  font-weight: var(--vs-weight-medium); }
+
+/* ═══════════════════════════════════════════════
+   9. BUTTON-SYSTEM (4 Rollen × 2 Größen)
+   Ersetzt schrittweise: .btn-primary, .vs-add-btn,
+   .vs-dp-btn-primary, .vs-rail-btn, .vs-vbtn
+   ═══════════════════════════════════════════════ */
+
+/* Basis – alle Buttons erben diese Defaults */
+.vs-btn {
+  display:         inline-flex;
+  align-items:     center;
+  gap:             var(--vs-sp-2);
+  padding:         0 var(--vs-sp-4);
+  height:          36px;
+  font-family:     var(--vs-font);
+  font-size:       var(--vs-text-sm);
+  font-weight:     var(--vs-weight-medium);
+  line-height:     1;
+  border-radius:   var(--vs-r);
+  border:          1px solid transparent;
+  cursor:          pointer;
+  text-decoration: none;
+  transition:      var(--vs-transition);
+  white-space:     nowrap;
+}
+.vs-btn:focus-visible {
+  outline:        2px solid var(--vs-accent);
+  outline-offset: 2px;
+}
+.vs-btn:disabled,
+.vs-btn[aria-disabled="true"] {
+  opacity:        0.45;
+  cursor:         not-allowed;
+}
+
+/* Größen */
+.vs-btn-sm { height: 28px; padding: 0 var(--vs-sp-3); font-size: var(--vs-text-xs); }
+.vs-btn-lg { height: 44px; padding: 0 var(--vs-sp-6); font-size: var(--vs-text-base); }
+
+/* Rollen */
+.vs-btn-primary {
+  background: var(--vs-accent);
+  color:      var(--vs-accent-text);
+  border-color: var(--vs-accent);
+}
+.vs-btn-primary:hover:not(:disabled) {
+  background:   var(--vs-accent-hover);
+  border-color: var(--vs-accent-hover);
+}
+
+.vs-btn-secondary {
+  background:   var(--vs-surface);
+  color:        var(--vs-text);
+  border-color: var(--vs-border);
+}
+.vs-btn-secondary:hover:not(:disabled) {
+  background:   var(--vs-surface-2);
+  border-color: var(--vs-border-strong);
+}
+
+.vs-btn-ghost {
+  background:   transparent;
+  color:        var(--vs-text-muted);
+  border-color: transparent;
+}
+.vs-btn-ghost:hover:not(:disabled) {
+  background: var(--vs-surface-2);
+  color:      var(--vs-text);
+}
+
+.vs-btn-danger {
+  background:   var(--vs-danger);
+  color:        #ffffff;
+  border-color: var(--vs-danger);
+}
+.vs-btn-danger:hover:not(:disabled) {
+  filter: brightness(0.9);
+}
+
+/*
+ * MIGRATION GUIDE (kurz):
+ * .btn-primary          → .vs-btn .vs-btn-primary
+ * .btn-secondary        → .vs-btn .vs-btn-secondary
+ * .btn-danger           → .vs-btn .vs-btn-danger
+ * .vs-add-btn           → .vs-btn .vs-btn-primary .vs-btn-lg
+ * .vs-dp-btn-primary    → .vs-btn .vs-btn-primary .vs-btn-sm
+ * .vs-dp-btn            → .vs-btn .vs-btn-secondary .vs-btn-sm
+ * .vs-vbtn              → .vs-btn .vs-btn-ghost .vs-btn-sm
+ * Legacy-Klassen in einer neuen Klasse-Datei aliassen (Phase 2).
+ */

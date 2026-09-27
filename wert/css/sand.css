@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — sand.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → sand.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #a67c52;
+  --vs-accent-hover:    #8b6340;
+  --vs-accent-light:    #f4e8d0;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #f4e8d0;
+  --vs-surface:         #fffbf0;
+  --vs-surface-2:       #ede0c8;
+
+  --vs-text:            #4a3f35;
+  --vs-text-muted:      #8b7355;
+  --vs-text-subtle:     #b09070;
+
+  --vs-border:          #e6d5b8;
+  --vs-border-strong:   #c9a770;
+
+  --vs-rail-bg:         #3a2e22;
+  --vs-rail-text:       #8b6340;
+  --vs-rail-active:     #4a3f35;
+  --vs-rail-active-bg:  rgba(74,63,53,0.15);
+  --vs-rail-hover-bg:   rgba(74,63,53,0.08);
+
+  --vs-dp-bg:           #fffbf0;
+  --vs-dp-border:       #e6d5b8;
+}

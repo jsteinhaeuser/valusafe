@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — sunset.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → sunset.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #ff7043;
+  --vs-accent-hover:    #e64a19;
+  --vs-accent-light:    #fff3e0;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #fff3e0;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #fce4b8;
+
+  --vs-text:            #4e342e;
+  --vs-text-muted:      #8d6e63;
+  --vs-text-subtle:     #b09080;
+
+  --vs-border:          #ffe0b2;
+  --vs-border-strong:   #ffcc80;
+
+  --vs-rail-bg:         #2e1a10;
+  --vs-rail-text:       #e64a19;
+  --vs-rail-active:     #4e342e;
+  --vs-rail-active-bg:  rgba(78,52,46,0.15);
+  --vs-rail-hover-bg:   rgba(78,52,46,0.08);
+
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #ffe0b2;
+}

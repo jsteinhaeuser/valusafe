@@ -1,0 +1,1030 @@
+ValuSafe — Changelog
+====================
+
+Alle Änderungen, die Anwenderinnen und Anwender betreffen.
+Erzeugt am 27.09.2026 aus der Projektchronik.
+
+Version 4.3.27   27.09.2026
+---------------------------
+  [Fix] WICHTIG fuer alle, die ValuSafe aus dem Installationspaket
+        eingerichtet haben: Impressum und Datenschutzerklaerung enthielten bis
+        Version 4.3.26 die Angaben des Entwicklers - Name, Anschrift, Telefon,
+        E-Mail und Hoster - statt Platzhaltern. Wer diese beiden Seiten nach
+        der Installation nicht selbst angepasst hat, nennt dort den Entwickler
+        als Verantwortlichen. Bitte oeffnen Sie impressum.php und
+        datenschutz.php und tragen Sie Ihre eigenen Angaben ein; neue Pakete
+        enthalten ab jetzt Platzhalter in eckigen Klammern. Wer ValuSafe nur
+        fuer sich selbst betreibt und die Seiten nicht oeffentlich zeigt, kann
+        sie auch einfach leeren.
+  [Fix] Die E-Mail nach einer automatischen Sicherung kommt jetzt von der
+        eigenen Domain. Bisher stand als Absender fest die Adresse des
+        Entwicklers darin, auch auf fremden Installationen - solche Mails
+        landen meist im Spam oder werden abgewiesen. Jetzt wird der Absender
+        aus der Adresse der eigenen Installation gebildet; wer einen
+        bestimmten Absender braucht, setzt MAIL_FROM in der config.php. Sonst
+        ist nichts zu tun.
+
+Version 4.3.26   27.09.2026
+---------------------------
+  [Fix] Wer ValuSafe als App auf dem Handy oder Rechner installiert hat,
+        bekommt nach dem Update wieder die aktuellen Darstellungs- und
+        Programmdateien. Die App haelt diese Dateien in einem Zwischenspeicher
+        vor und erneuert ihn nur, wenn sich dessen Versionsname aendert - und
+        der war seit Version 4.3.23 nicht mehr mitgezaehlt worden. Wer seitdem
+        Merkwuerdigkeiten in der Darstellung sah, sollte sie jetzt los sein.
+        Zu tun ist nichts; im Zweifel die App einmal schliessen und neu
+        oeffnen.
+  [Fix] Zwei Fehlermeldungen erscheinen jetzt als lesbarer Satz. Scheiterte
+        das Speichern einer neuen Reihenfolge in der Liste oder eine Aktion in
+        der Bildverwaltung, stand statt eines Hinweises der interne Bezeichner
+        "error_generic" auf dem Bildschirm - der Text dazu fehlte in allen
+        neun Sprachen. Zu tun ist nichts.
+  [Fix] Eine alte Hilfsdatei ist entfernt, die Fotos an einen fremden Dienst
+        geschickt haette. Sie las Barcodes aus Bildern, indem sie das Bild an
+        zxing.org uebertrug. Keine Seite von ValuSafe hat sie seit langem
+        benutzt - das Scannen geschieht im Browser, ohne dass ein Bild den
+        Server verlaesst -, aber sie lag noch bei und war fuer angemeldete
+        Benutzer aufrufbar. Aufgefallen ist sie, weil die Beschreibung
+        versprach, ausser der Barcode-Suche gehe nichts nach aussen. Zu tun
+        ist nichts.
+  [Fix] Der Filter "Orte" im Aktivitaetsprotokoll findet jetzt etwas. Das
+        Protokoll fuehrt Aenderungen an Raeumen unter einem anderen Namen, als
+        der Filter suchte - er blieb deshalb immer leer. Zu tun ist nichts.
+  [Fix] Die Installationsanleitung in der README war falsch. Sie sagte,
+        setup.php aus dem Unterordner install/ heraus aufzurufen. Der
+        Assistent schreibt die Konfiguration aber in seinen eigenen Ordner und
+        muss deshalb neben index.php liegen; aus install/ heraus entstand eine
+        Installation, die nicht lief. Das fertige Installationspaket war nie
+        betroffen, es ist richtig aufgebaut. Wer ValuSafe aus dem Quellcode
+        installiert, folgt jetzt der korrigierten Anleitung.
+
+Version 4.3.25   26.09.2026
+---------------------------
+  [Fix] Der Standort eines Gegenstandes wird jetzt gespeichert. Bisher diente
+        das Auswahlfeld "Standort" beim Anlegen und Bearbeiten nur dazu, die
+        Liste der Positionen einzugrenzen. Wer einen Standort waehlte, aber
+        keine Position, verlor die Wahl beim Speichern ohne jede Meldung.
+        Jetzt bleibt der Standort auch ohne Position erhalten und erscheint in
+        der Liste. Ausserdem laesst sich ein Standort nicht mehr loeschen,
+        solange noch Gegenstaende daran haengen. Zu tun ist nichts.
+  [Fix] Nach einer Neuinstallation war das Auswahlfeld "Raum" leer. Die vier
+        Startraeume, die der Installationsassistent anlegt, landeten in einer
+        alten Tabelle, die ValuSafe laengst nicht mehr liest. Wer ValuSafe
+        frisch installiert hat, musste seine Raeume also erst selbst anlegen,
+        bevor er einen Gegenstand einordnen konnte. Die Startraeume kommen
+        jetzt dort an, wo ValuSafe sie sucht. Bestehende Installationen sind
+        nicht betroffen; wer vor diesem Release neu installiert hat, legt die
+        fehlenden Raeume einfach in der Verwaltung an.
+  [Fix] Docker: Eine frische Installation fuehrt beim ersten Aufruf der
+        Datenbank-Aktualisierung keine Migrationen mehr nach, die ihr Schema
+        laengst enthaelt. Der Installationsassistent fuer Webhosting trug
+        schon bisher alle mitgelieferten Migrationen als erledigt ein, der
+        Docker-Start tat das nicht. Die ueberfluessigen Laeufe waren bisher
+        harmlos, mit diesem Release waeren sie es nicht mehr gewesen: Eine der
+        neuen Migrationen leert eine Spalte, in der ab jetzt echte Standorte
+        stehen. Zu tun ist nichts.
+  [Fix] Drei alte Tabellen fuer Raeume und Standorte sind entfernt: orte,
+        standort_raeume und standort_positionen, dazu die Spalte
+        wertsachen.ort_id. Sie stammten aus frueheren Ausbaustufen, der
+        Programmcode las sie nicht mehr, und eine Neuinstallation legte sie
+        trotzdem an. Bestehende Datenbanken raeumt die Migration 011 auf, und
+        sie loescht die alten Tabellen samt Inhalt. Wer ValuSafe selbst
+        betreibt, legt nach dem Aktualisieren zuerst eine Sicherung der
+        Datenbank an und ruft dann einmal migrate.php auf.
+
+Version 4.3.24   19.09.2026
+---------------------------
+  [Neu] ValuSafe hat jetzt eine Anlaufstelle fuer Sicherheitsmeldungen. Wer
+        einen Fehler findet, der die Sicherheit betrifft, weiss ab sofort,
+        wohin damit: Die Datei SECURITY.md liegt dem Download bei und nennt
+        Anschrift, Sprachen und was in eine Meldung gehoert. Sie sagt auch
+        ehrlich, was Sie NICHT erwarten duerfen — hier steht keine Firma mit
+        Rufbereitschaft, sondern eine einzelne Person. Fuer Sie als Anwender
+        aendert sich nichts; Sie muessen nichts tun.
+  [Fix] Von allen Instanzen wurde eine alte Hilfsdatei entfernt, die dort
+        nicht mehr hingehoerte: Sie stammte aus einer frueheren Ausbaustufe,
+        war ohne Anmeldung erreichbar und wurde von keiner Seite mehr
+        verlinkt. Wer ValuSafe als Paket heruntergeladen hat, war nie
+        betroffen — die Datei war nie Teil der Auslieferung. Auf den
+        gepflegten Instanzen ist sie weg; zu tun ist nichts.
+  [Fix] Der Systemcheck im Verwaltungsbereich behauptet nicht mehr das
+        Gegenteil, wenn er keine Antwort bekommt. Bisher las er nur den
+        Antwortcode — und bei gar keiner Antwort war der 0. Eine Pruefung
+        wie "diese Datei darf nicht mehr erreichbar sein" meldete dann eine
+        Warnung, obwohl in Wahrheit ueberhaupt nichts gemessen worden war.
+        Jetzt steht dort "Unbeantwortet" samt Grund. Unbeantwortet ist weder
+        gruen noch rot, und das ist die ehrlichere Auskunft.
+  [Fix] Alte Sicherungen werden nicht mehr zu eifrig aufgeraeumt. Bisher
+        loeschte ValuSafe jede Sicherung, die aelter als sieben Tage war —
+        auch dann, wenn es die letzte ihrer Art war. Wer zum Beispiel nur die
+        Bilder sicherte, verlor dabei unbemerkt die letzte Sicherung der
+        Datenbank. Jetzt bleiben von jeder Art (Datenbank, Bilder,
+        Programmdateien) die drei neuesten immer erhalten, egal wie alt.
+        Ausserdem sagt eine Sicherung, bei der keine Art ausgewaehlt war, das
+        jetzt deutlich, statt "abgeschlossen" zu melden. Zu tun ist nichts.
+  [Fix] SICHERHEIT: Das Kontaktformular der oeffentlichen Sammlungsansicht
+        laesst sich nicht mehr ohne gueltigen Link benutzen. Die oeffentliche
+        Ansicht ist ueber einen geheimen Link erreichbar, und nur wer diesen
+        Link hat, soll den Besitzer ueber das Formular anschreiben koennen.
+        Tatsaechlich wurde die Anfrage bisher schon verarbeitet, BEVOR der
+        Link geprueft wurde: Wer die Adresse der Seite kannte, konnte damit
+        beliebig viele E-Mails an den Betreiber ausloesen, auch ohne den Link
+        zu kennen. Jetzt wird zuerst der Link geprueft, und die Zahl der
+        Anfragen je Absender ist begrenzt - mit derselben Sperre, die auch die
+        Anmeldung schuetzt. Wer die oeffentliche Ansicht nicht benutzt, war
+        nie betroffen. Zu tun ist nichts ausser der Aktualisierung.
+  [Fix] Raumangaben stimmen jetzt ueberall ueberein. Bisher holte ValuSafe den
+        Raum eines Gegenstandes an manchen Stellen aus einer anderen Tabelle
+        als an anderen: die Liste und die Eingabemasken aus der einen, die
+        PDF- und CSV-Exporte, die Auswertungen und das Schnellerfassen aus der
+        anderen. Solange beide Tabellen denselben Inhalt hatten, fiel das
+        nicht auf; wo sie auseinanderliefen, konnte im Export ein anderer Raum
+        stehen als am Bildschirm — oder gar keiner. Vor der Umstellung wurde
+        auf allen elf gepflegten Installationen nachgezaehlt: betroffen war
+        bisher kein einzelner Gegenstand, auf einer Installation fehlte in den
+        Exporten ein Raumname. Ab jetzt lesen alle Stellen dieselbe Tabelle.
+        Sichtbar wird das dort, wo Raeume bisher nur in der Liste auftauchten:
+        sie stehen nun auch in den Exporten und Auswertungen.
+  [Fix] Eine alte Hilfsdatei im Verwaltungsbereich ist entfernt, und zwar
+        diesmal wirklich ueberall. Sie stammte aus der Anfangszeit und war von
+        keiner Seite eingebunden, konnte aber direkt aufgerufen werden — und
+        dann trug sie dem Besucher die Rechte des Administrators zu, der sich
+        zuletzt angemeldet hatte. Wer die Adresse nicht kannte, konnte sie
+        nicht aufrufen; wer sie kannte, brauchte kein Passwort. Ein Eintrag
+        von Ende August meldete diese Datei schon einmal als entfernt — sie
+        war es aber nur auf den Servern, nicht in der Vorlage, aus der neue
+        Auslieferungen entstehen. Jetzt ist sie an beiden Stellen weg. Wer
+        ValuSafe als Paket heruntergeladen hat, sollte die Datei
+        wert/backend/backend_session.php loeschen, falls sie dort noch liegt.
+  [Fix] Der Verlauf auf der Bearbeiten-Seite zeigt jetzt tatsaechlich etwas
+        an. Unter jedem Gegenstand sollte stehen, wer ihn wann angelegt oder
+        geaendert hat — dieser Abschnitt blieb aber immer leer, auf allen
+        Instanzen, seit es ihn gibt. Die Abfrage suchte Spalten unter Namen,
+        die es in der Datenbank nie gab. Aufgefallen ist es erst, als ValuSafe
+        anfing, Fehlermeldungen an einer Stelle festzuhalten, in die man
+        hineinsehen kann: dort stand die Meldung schwarz auf weiss. Wer bisher
+        wissen wollte, wer etwas geaendert hat, musste in die Verwaltung unter
+        Aktivitaeten gehen; das geht weiter, aber jetzt steht es auch direkt
+        am Gegenstand.
+
+Version 4.3.23   09.09.2026
+---------------------------
+  [Neu] ValuSafe lässt sich wieder mit einem Assistenten auf einem
+        gewöhnlichen Webhosting-Paket einrichten: Sprache wählen,
+        Systemvoraussetzungen prüfen, Datenbankverbindung testen, Tabellen
+        anlegen, Administratorkonto — sechs Schritte, auf Deutsch oder
+        Englisch. Der Assistent legt die Zugangsdatei selbst an, erzeugt darin
+        zufällige Sicherheitsschlüssel und entfernt sich zum Schluss samt
+        Schemadatei vom Server; gelingt ihm das nicht, sagt er, welche Dateien
+        von Hand zu löschen sind. Vorausgesetzt wird PHP 8.2 oder neuer.
+
+Version 4.3.21   08.09.2026
+---------------------------
+  [Fix] BERICHTIGUNG zum Eintrag von 4.3.19: dort steht, die Datensicherung
+        habe nur einen Teil der Datenbank gesichert. Das war zu breit
+        formuliert. Betroffen war ausschliesslich die MANUELLE Sicherung ueber
+        den Knopf im Backend; die naechtliche automatische Sicherung um 02:00
+        holt sich die Tabellen seit jeher mit SHOW TABLES und war immer
+        vollstaendig. Aufgefallen ist der Irrtum daran, dass eine aufbewahrte
+        Sicherung vom 31.08.2026 alle 22 Tabellen enthaelt, obwohl
+        backend/backup.php damals nur neun konnte. Wer eine naechtliche
+        Sicherung von vor dem 06.09.2026 zurueckspielt, bekommt alles zurueck.
+
+Version 4.3.19   07.09.2026
+---------------------------
+  [Fix] Der Service Worker lieferte veraltete CSS- und JS-Dateien aus, und
+        kein Release konnte daran etwas aendern. Beim Installieren holt er die
+        Dateien mit cache.addAll() - einem gewoehnlichen fetch, der aus dem
+        HTTP-Cache des Browsers bedient werden darf. Die .htaccess gibt CSS
+        und JS ein "access plus 1 month" mit; der Service Worker kopierte also
+        eine bis zu einen Monat alte Fassung in seinen frischen Cache und
+        meldete Erfolg. Das Hochzaehlen von CACHE_VERSION wirkte dadurch auf
+        der falschen Ebene: es legte einen neuen Cache an und fuellte ihn mit
+        dem alten Inhalt. Jetzt wird mit cache: "reload" geholt, was den
+        HTTP-Cache umgeht
+  [Fix] Sichtbar wurde es an den Rueckfrage-Fenstern: die Loeschbestaetigung
+        erschien unformatiert neben der Seite statt mittig darueber, weil die
+        Formatierung der Dialoge aus css/next.css fehlte. Der Browser bekam
+        23.642 Bytes aus dem Service Worker, der Server lieferte 26.875 —
+        die Datei war seit 4.3.11 unveraendert und trotzdem vier Wochen und
+        sechs Releases lang nicht angekommen. Mit dem neuen Cache-Namen
+        valusafe-v4.3.19 wird der gesamte alte Bestand verworfen und frisch
+        geholt; das betrifft auch die Dateien ausserhalb der Vorlade-Liste wie
+        Chart.js oder den Barcode-Leser, die cacheFirst bei Bedarf ablegt
+
+Version 4.3.18   07.09.2026
+---------------------------
+  [Fix] Ein fehlgeschlagener Schreibvorgang sagt es jetzt. Bis 4.3.17 fing die
+        Datenbankklasse jeden Fehler selbst ab, schrieb ihn ins PHP-Fehlerlog
+        und lieferte false zurueck — und weil keiner der 81 schreibenden
+        Aufrufe diesen Rueckgabewert prueft, meldeten die Seiten Erfolg, auch
+        wenn nichts gespeichert wurde. insert() und execute() reichen die
+        Ausnahme jetzt weiter. Damit werden 62 vorhandene catch-Zweige
+        wirksam, die seit Jahren nie ausgefuehrt wurden: sie setzen
+        Fehlermeldungen, machen in delete.php eine Transaktion rueckgaengig
+        und raeumen in manage_documents.php die hochgeladene Datei wieder weg,
+        wenn der Datenbankeintrag scheitert. Bisher blieb sie als Waise liegen
+        und der Nutzer las "gespeichert"
+  [Fix] Ein Passwortwechsel wird nicht mehr gemeldet, bevor er feststeht. In
+        profil.php und settings.php lief die Aenderung bedingungslos durch:
+        erst schreiben, dann "Passwort erfolgreich geaendert" anzeigen und
+        password_changed ins Sicherheitsprotokoll schreiben — auch dann,
+        wenn die Datenbank das UPDATE abgelehnt hatte und das alte Passwort
+        weiter galt. Beide Stellen melden jetzt einen Fehlschlag als
+        Fehlschlag, samt Hinweis, dass das bisherige Passwort gilt
+
+Version 4.3.17   06.09.2026
+---------------------------
+  [Neu] Die Versicherungsuebersicht sagt jetzt, ob die Versicherungssumme
+        reicht. Sie kannte beide Zahlen schon immer — den erfassten
+        Gesamtwert der zugeordneten Gegenstaende und die Versicherungssumme
+        des Vertrags, in derselben Kopfzeile nebeneinander —, hat sie aber
+        nie verglichen. Neu steht unter jedem Vertrag der Deckungsgrad: gruen
+        ab 100 Prozent, gelb darunter, rot unter 90 Prozent, dazu der fehlende
+        Betrag in Euro. Verglichen wird auf dem gerundeten Prozentwert, damit
+        neben der Anzeige "90,0 %" nie eine rote Warnung steht. Der Hinweis
+        erscheint auch in der Druck- und PDF-Ansicht, denn das ist das Blatt,
+        das man im Schadensfall in der Hand hat
+  [Neu] Der Deckungsgrad sagt dazu, worauf er sich stuetzt. Gegenstaende ohne
+        Preis und ohne Zeitwert gehen mit null in den Gesamtwert ein; der
+        erfasste Wert ist also eine Untergrenze, und ein gruener Deckungsgrad
+        koennte eine Sicherheit vortaeuschen, die die Daten nicht hergeben.
+        Sind solche Gegenstaende dabei, steht ihre Anzahl unter dem Hinweis.
+        Vertraege ohne hinterlegte Versicherungssumme werden nicht gewarnt,
+        sondern grau darauf hingewiesen, dass keine Aussage moeglich ist —
+        Schweigen haette wie Unbedenklichkeit ausgesehen
+  [Fix] Die Datensicherung sicherte nur einen Teil der Datenbank. In
+        backend/backup.php stand eine feste Liste von sechs Tabellen plus drei
+        bedingten — die Datenbank hat 22. Nicht gesichert waren unter
+        anderem versicherungen mit saemtlichen Vertraegen, app_settings,
+        schema_migrations und die gesamte Standort-Hierarchie aus standorte,
+        standort_raeume, standort_positionen, raeume und positionen; dazu
+        permissions, user_activity, wert_historie, login_attempts und
+        password_resets. Jede Tabelle, die seit dem Schreiben dieser Liste
+        hinzukam, fiel automatisch heraus. Gesichert werden jetzt alle
+        Tabellen der Datenbank, ermittelt ueber SHOW FULL TABLES; das
+        Protokoll nennt ihre Anzahl. Wer eine Sicherung von vor dem 06.09.2026
+        zurueckspielt, bekommt die fehlenden Tabellen nicht zurueck — sie
+        stehen dort nicht drin
+  [Fix] Versicherungen liessen sich auf manchen Instanzen nicht bearbeiten,
+        ohne dass es jemand merkte: die Seite meldete gruen "Versicherung
+        aktualisiert.", gespeichert wurde nichts. Ursache ist die Tabelle
+        versicherungen, die von keiner Migration je angefasst wurde und
+        deshalb auf jeder Instanz so aussieht, wie sie beim Aufsetzen
+        entstand. Fehlt dort eine der 23 Spalten, die der UPDATE nennt, lehnt
+        MySQL die ganze Anweisung ab. Migration 007 zieht die 17 Spalten der
+        Vertrags- und Objektdaten nach; wo sie schon da sind, meldet
+        migrate.php "skip" und aendert nichts
+
+Version 4.3.16   05.09.2026
+---------------------------
+  [Fix] Die Lizenzmechanik ist entfallen. Jede Instanz fragte bisher einmal
+        taeglich bei einem Lizenzserver nach, ob sie laufen darf, und
+        uebertrug dabei ihre Domain; das Ergebnis lag in app_settings und
+        konnte im Backend ein rotes oder gelbes Banner erzeugen. Eine
+        Software, die andere selbst betreiben, hat bei ihrem Urheber nicht
+        anzufragen — und die MIT-Lizenz, unter der ValuSafe steht, erlaubt
+        Nutzung, Aenderung und Weitergabe ausdruecklich, da ist nichts zu
+        pruefen. Entfernt sind getLicenceStatus() und resetLicenceCache() aus
+        backend/config.php, das Banner aus backend/layout/header.php und die
+        Lizenz-Karte samt Knopf "Jetzt neu pruefen" aus
+        backend/superadmin.php. Migration 006 raeumt die fuenf
+        licence_*-Zeilen aus app_settings; Migration 004 bleibt unveraendert,
+        weil eine bereits angewendete Migration nicht nachtraeglich
+        umgeschrieben wird. Eine Konstante LICENCE_KEY in der config.php einer
+        Instanz wird nicht mehr gelesen und kann dort entfallen
+  [Fix] Der Nutzungslizenzvertrag in der Hilfe ist durch eine Lizenzseite
+        ersetzt. Das alte nutzungslizenz.pdf stammte von Februar 2026,
+        unterschied Privat- und Kommerzlizenz und sagte "Alle Rechte,
+        insbesondere das Recht zur Vervielfaeltigung, Verbreitung, Bearbeitung
+        und oeffentlichen Zugaenglichmachung, verbleiben beim Lizenzgeber" —
+        das genaue Gegenteil der MIT-Lizenz. An seine Stelle tritt
+        service/lizenz.md: was die Lizenz erlaubt, der vollstaendige
+        Lizenztext, und die vier mitgelieferten Fremdbibliotheken mit ihren
+        Urheberrechtsvermerken. Als Markdown, damit die Hilfe sie wie about.md
+        ausliefert und keine PDF-Werkzeuge noetig sind
+
+Version 4.3.15   04.09.2026
+---------------------------
+  [Fix] Die Seite "Ueber diese Anwendung" in der Hilfe war veraltet und in
+        einem Punkt inzwischen falsch. Sie nannte Version 3.26 und den Stand
+        April 2026, gab die Adresse des Masters als URL an — auf zehn von
+        elf Instanzen also die falsche — und sagte, das Projekt sei
+        "nicht-kommerziell und nur fuer den privaten Gebrauch bestimmt". Das
+        widerspricht der MIT-Lizenz, unter der ValuSafe seit dem 04.09.2026
+        steht. Der Lizenzabschnitt nennt jetzt die MIT-Lizenz und was sie
+        erlaubt, verweist auf die Datei LICENSE und weist die vier
+        mitgelieferten Fremdbestandteile aus. Die feste Versionsnummer ist
+        entfallen: die Datei wird auf alle Instanzen verteilt und waere nach
+        jedem Release wieder falsch — sie verweist stattdessen auf
+        Anmeldebildschirm und Aenderungsprotokoll
+
+Version 4.3.14   04.09.2026
+---------------------------
+  [Fix] Die Protokoll-Seiten sprechen jetzt die eingestellte Sprache. Bisher
+        standen dort rund 40 verschiedene deutsche Texte fest im Quelltext —
+        Spaltenkoepfe, Filterbeschriftungen, Aktionsnamen, die Blaetterleiste.
+        Betroffen sind die Aktivitaeten-Seite (alle neun Sprachen, sie steht
+        jedem angemeldeten Nutzer offen) sowie die drei Backend-Seiten in
+        Deutsch und Englisch. 28 der 40 Texte hatten bereits einen Schluessel
+        und wurden wiederverwendet; sechs Schluessel sind in wert/lang/ neu
+        (jetzt 931 je Sprache), 67 in wert/backend/lang/ (jetzt 631). Weil
+        Backend-Seiten die Vereinigung beider Bereiche sehen, erscheinen die
+        Spaltenkoepfe dort sogar in allen neun Sprachen
+
+Version 4.3.13   02.09.2026
+---------------------------
+  [Fix] Nach dem Erzeugen oder Abschalten des oeffentlichen Links und nach dem
+        Speichern der Einstellungen stand in der Bestaetigung woertlich "<i
+        class='ti ti-lock'></i>" vor dem Text. Die Meldung trug das Symbol als
+        Markup in sich, wurde bei der Ausgabe aber als Text behandelt —
+        richtig fuer Text, falsch fuer Markup. Symbol und Text sind jetzt
+        getrennt: das Symbol steht fest in der Seite, der Text bleibt
+        weiterhin maskiert, damit eine kuenftige Meldung mit Dateinamen oder
+        Benutzereingabe nichts ausfuehren kann. Betroffen waren fuenf
+        Meldungen in backend/public_settings.php und backend/superadmin.php;
+        backend/restore.php hat dieselben Meldungen, gibt sie aber ungefiltert
+        aus und war nie betroffen
+  [Fix] Auf der Seite System-Logs mischte der Reiter Security Logs zwei
+        Zeitraeume in einer Reihe: die Kachel "Gesamt" zaehlte alle Eintraege
+        seit Beginn, die drei daneben nur die letzten 24 Stunden.
+        Nebeneinander las sich das wie 901 Anmeldungen, davon eine
+        erfolgreiche. Die Kacheln heissen jetzt "Gesamt (seit Beginn)" und
+        "Erfolgsquote (24h)"
+  [Fix] Die beiden Anzeigeseiten System-Logs und System-Logs (Erweitert)
+        zeigen Protokolleintraege nur an; geloescht und aufgeraeumt wird in
+        activity_log.php. Von den Anzeigeseiten fuehrte dorthin kein Weg,
+        weshalb der Eindruck entstand, es gebe keine Loeschmoeglichkeit. Beide
+        Seiten sagen jetzt, dass sie nur anzeigen, und verlinken die Stelle
+
+Version 4.3.12   02.09.2026
+---------------------------
+  [Fix] Auch die Rueckfragen erscheinen jetzt im Fenster der Anwendung statt
+        im eingebauten Dialog des Browsers — damit ist die vom Browser
+        vorangestellte Zeile, die die Adresse der Seite nennt, ueberall
+        verschwunden. Betroffen sind alle 23 verbliebenen Stellen: Loeschen
+        aus der Uebersicht und aus den Karten am Telefon, Loeschen per
+        Wischgeste, Massenloeschen, Abbrechen beim Anlegen, Bild loeschen,
+        Dokument loeschen, Profilbild entfernen, Benutzer loeschen,
+        Versicherung loeschen und Zuordnung loesen, Sicherungen einzeln und im
+        Bund loeschen, oeffentlichen Link neu erzeugen und abschalten,
+        Protokoll bereinigen, Spaltenauswahl zuruecksetzen sowie die Eingabe
+        eines Strichcodes von Hand
+  [Fix] Das Fenster passt jetzt auf schmale Bildschirme. Es war 420 Pixel
+        breit statt der vorgesehenen 380, weil der Innenabstand auf die Breite
+        aufgeschlagen wurde; auf einem iPhone ragte es an beiden Seiten ueber
+        den Rand. Ausserdem sind die Knoepfe jetzt 44 Pixel hoch — das Mass,
+        das die Anwendung an anderer Stelle bereits fuer Bedienelemente
+        vorschreibt — und Zeilenumbrueche in den Meldungstexten werden
+        wieder als Umbruch dargestellt statt zu einem Leerzeichen
+        zusammengefaltet
+
+Version 4.3.11   02.09.2026
+---------------------------
+  [Fix] Hinweise und Fehlermeldungen erscheinen jetzt in einem eigenen Fenster
+        der Anwendung statt im eingebauten Dialog des Browsers. Der Browser
+        stellte solchen Meldungen eine Zeile voran, die er selbst schreibt und
+        in der die Adresse der Seite steht — und zwar in der Sprache des
+        Browsers, nicht in der im Programm eingestellten. Wer die Anwendung
+        auf Tuerkisch bediente und einen deutschen Browser hatte, las also
+        erst Deutsch und dann Tuerkisch. An diese Zeile kommt kein Programm
+        heran; der einzige Ausweg ist, die eingebauten Dialoge nicht mehr zu
+        benutzen. Betroffen sind in diesem Schritt die 13 reinen Meldungen:
+        Kamera nicht verfuegbar, Titelbild nicht ladbar, Speichern
+        fehlgeschlagen, Raum oder Position noch in Verwendung, keine Sicherung
+        ausgewaehlt, QR-Code noch nicht bereit, keine Aktion gewaehlt,
+        ungueltige Tagesangabe
+
+Version 4.3.10   02.09.2026
+---------------------------
+  [Fix] Die Kacheln "Kategorien" und "Orte" auf dem Dashboard fuehrten ins
+        Leere. Sie verwiesen auf manage_kategorien.php und manage_orte.php —
+        zwei Dateien, die es weder auf dem Server noch im Quellcode noch gibt;
+        die Verwaltung liegt laengst im Backend. Beide zeigen jetzt auf
+        backend/categories.php und backend/locations.php, dieselben Ziele, die
+        auch das Backend-Dashboard verlinkt
+
+Version 4.3.9   31.08.2026
+--------------------------
+  [Fix] Die Dokumentverwaltung war seit dem 31.08. nicht mehr erreichbar.
+        manage_documents.php stand in der Loeschliste von cleanup.php mit der
+        Begruendung "Ersetzt durch Backend-Verwaltung" und wurde danach von
+        allen Instanzen entfernt — die Begruendung stimmte aber nicht: vier
+        Stellen in der Anwendung verweisen weiterhin darauf, das
+        Dokumentsymbol auf der Kachel, der Knopf in der Detailansicht, die
+        Schaltflaeche im Bearbeiten-Dialog und die Listenansicht. Alle vier
+        fuehrten ins Leere. Datei wieder ausgerollt und der Eintrag aus der
+        Loeschliste entfernt
+  [Fix] CACHE_VERSION im Service Worker stand auf valusafe-v4.3.6, waehrend
+        4.3.7 eine Korrektur an css/next.css ausgeliefert hat. Da CSS und JS
+        ueber Cache First laufen und die Cache-Version unveraendert blieb, hat
+        der Service Worker die alte Datei weiter ausgeliefert — die
+        Reparatur am Profilbild erreichte bestehende Nutzer gar nicht, nur wer
+        von Hand neu geladen hat. Jetzt auf valusafe-v4.3.9. Regel ab sofort:
+        bei jedem Release mit hochzaehlen, auch wenn nur eine Datei betroffen
+        ist
+
+Version 4.3.8   31.08.2026
+--------------------------
+  [Fix] Dreizehn Bedienelemente erschienen unabhaengig von der
+        Spracheinstellung auf Deutsch: die Sammelaktionen in der Uebersicht
+        (Aktion, Anwenden, Verbergen, Wieder anzeigen), Galerie und
+        Versicherungen in der Navigation, Hilfe und Informationen, Profil,
+        Sprache in den Einstellungen, Namen aendern und Trotzdem speichern im
+        Formular sowie der Eintrag Unbekannt im Export. Alle dreizehn sind
+        jetzt in allen neun Sprachen hinterlegt
+
+Version 4.3.7   30.08.2026
+--------------------------
+  [Fix] Das Profilbild im Seitenkopf erschien seit 4.3.6 in Originalgroesse
+        und legte sich ueber die halbe Seite. Ursache war das Ausrollen von
+        css/next.css aus einem Arbeitsbaum, der an dieser Stelle hinter dem
+        Master lag: die Regel fuer .vs-topstrip-avatar gab es nur auf dem
+        Server und wurde dabei ueberschrieben. Das Markup in header_next.php
+        blieb unangetastet, deshalb blieb das Bild sichtbar, nur ohne
+        Groessenangabe. Regel wiederhergestellt, fuer beide Faelle —
+        hinterlegtes Profilbild und Initiale
+
+Version 4.3.6   30.08.2026
+--------------------------
+  [Fix] Hilfe und Informationen im Backend zeigte statt der Dokumente nur
+        Zeichensalat. Das Fenster gibt es dreimal fast gleich im Code; der
+        Kopie im Backend fehlten die Zweige fuer PDF- und PHP-Dokumente, sie
+        schickte deshalb auch die Rohbytes einer PDF durch den
+        Markdown-Parser. Beide Zweige und der vollstaendige Parser sind
+        nachgezogen — im Backend erscheinen jetzt dieselben Knoepfe wie in
+        der Anwendung, und Markdown wird mit Ueberschriften, Trennlinien,
+        nummerierten Listen und Absaetzen dargestellt statt als eine lange
+        Zeile
+  [Neu] Auf Bildschirmen unter 600 Pixeln stehen die Kategorien jetzt in einem
+        Auswahlfeld statt in Chips, gleich neben der Raumauswahl. Elf
+        Kategorien belegten als Chips vier Zeilen und schoben die Gegenstaende
+        auf dem iPhone weit nach unten. Auf groesseren Schirmen bleiben die
+        Chips. An der Filterung aendert sich nichts: die Eintraege des
+        Auswahlfeldes fuehren auf dieselben Adressen wie die Chips
+
+Version 4.3.5   30.08.2026
+--------------------------
+  [Neu] Die Rueckfragen und Hinweise, die als Dialogfenster erscheinen,
+        sprechen jetzt die eingestellte Sprache. Betroffen waren unter anderem
+        das Loeschen per Wischgeste, die Sammelaktionen, das Zuruecksetzen der
+        Spaltenauswahl, das Entfernen des Profilbildes und das Loeschen eines
+        Bildes im Bearbeiten-Dialog. Sie standen bisher fest auf Deutsch,
+        unabhaengig von der Spracheinstellung
+  [Fix] Zweiter Service Worker entfernt. Neben dem echten /sw.js gab es einen
+        299 Byte grossen Stub /service-worker.js, der laut eigenem Kommentar
+        zur Fehlersuche abgeschaltet war und alle Anfragen ungefiltert
+        durchreichte. Beide beanspruchten denselben Geltungsbereich; welcher
+        gewann, hing von der Ausfuehrungsreihenfolge ab. Registriert wurde er
+        von js/main.js — einer Datei, die seit dem Next Interface von keiner
+        Seite mehr eingebunden wird. Beide Dateien sind entfallen
+
+Version 4.3.3   29.08.2026
+--------------------------
+  [Fix] Anmeldung auf reinen HTTP-Installationen war unmoeglich.
+        SecurityHeaders.php setzte in der Content-Security-Policy
+        bedingungslos die Direktive upgrade-insecure-requests. Sie hebt jede
+        http-Adresse, die aus dem Dokument heraus aufgerufen wird, auf https
+        — auch das Abschicken von Formularen. Die Anmeldeseite lud noch,
+        weil die Direktive die Navigation, die das Dokument geladen hat, nicht
+        betrifft; beim Klick auf Anmelden ging der POST dann an einen Port,
+        der kein TLS spricht. Der Browser meldete einen Verbindungsfehler, der
+        Server sah die Anfrage nie und protokollierte nichts. Die Direktive
+        wird jetzt nur noch bei bereits gesicherter Verbindung gesetzt. Auf
+        allen bestehenden Instanzen fiel das nie auf, weil sie hinter HTTPS
+        laufen
+
+Version 4.3.2   27.08.2026
+--------------------------
+  [Fix] Manuelle Barcode-Eingabe war fest auf Deutsch. Auf iPhone und iPad
+        steht die Kamera-Schnittstelle BarcodeDetector nicht zur Verfuegung;
+        dort weicht die Anwendung auf einen Eingabedialog aus, und dessen Text
+        stand als deutsche Zeichenkette im JavaScript von add.php und
+        edit.php. Die Uebersetzung lag in Franzoesisch und Tuerkisch bereits
+        vor, wurde aber nie aufgerufen. Der Schluessel barcode_manual_prompt
+        ist jetzt in allen neun Sprachen hinterlegt und beide Aufrufstellen
+        holen ihn ueber t()
+
+Version 4.3.1   27.08.2026
+--------------------------
+  [Fix] Backend-Sprache fuer nicht-deutsche Administratoren korrigiert:
+        backend/lang/ gibt es bewusst nur in Deutsch und Englisch, weil bei
+        Administratoren Englisch vorausgesetzt wird. Der Rueckfall in
+        backend/config.php zeigte jedoch auf de.php statt auf en.php — ein
+        spanischer, franzoesischer, italienischer, niederlaendischer,
+        polnischer, portugiesischer oder tuerkischer Admin bediente damit eine
+        uebersetzte Anwendung und ein deutsches Backend. Fix: Rueckfall auf
+        en.php
+  [Fix] Zwoelf Textbausteine erschienen als Schluesselname statt als Text.
+        Betroffen waren der Dezimalhinweis unter dem Preisfeld in add.php und
+        edit.php (in sechs Sprachen), der Hinweis beim Barcode-Scannen (in
+        sieben Sprachen), vier Beschriftungen im HTML-Export, die Meldung nach
+        dem Verbergen und Wiedersichtbarmachen von Eintraegen, der Titel des
+        Dokumente-Symbols in der Liste, das Kaufdatum in der
+        Aktivitaetsanzeige und der Platzhalter im Notizfeld der
+        Schnellerfassung
+  [Fix] Aktivitaetsprotokoll war fest auf Deutsch: getActionText() und
+        timeAgo() in backend/config.php lieferten "hat erstellt", "hat
+        bearbeitet", "gerade eben", "3 Std" und "5 Tagen" unabhaengig von der
+        Spracheinstellung des Nutzers. Der Master war laengst auf t()
+        umgestellt, die Instanzen nicht — die Datei war vom Datei-Sync
+        ausgeschlossen und wurde seit Mai nicht mehr verteilt
+
+Version 4.3.0   27.08.2026
+--------------------------
+  [Neu] Dokument-Berechtigungen wirken jetzt tatsaechlich: Die Rechte
+        "Dokumente ansehen", "Dokumente hochladen" und "Dokumente loeschen"
+        liessen sich im Backend seit Monaten setzen, wurden aber von keiner
+        Stelle im Code abgefragt — ein Viewer, dem das Ansehen entzogen war,
+        konnte Dokumente weiterhin herunterladen und sogar loeschen. Alle drei
+        Rechte werden nun in download_document.php und manage_documents.php
+        durchgesetzt
+  [Fix] Unerwartete Abmeldungen mitten in der Sitzung behoben: Der
+        Session-Fingerprint sollte die IP auf das /24-Netz kuerzen, um
+        Adresswechsel innerhalb desselben Providernetzes zu tolerieren. Durch
+        einen Fehler in der Berechnung (angehaengter Punkt vor strrpos) wurde
+        stattdessen die vollstaendige IP gebunden — jede DSL-Zwangstrennung,
+        jeder Mobilfunk- und jeder IPv6-Praefixwechsel meldete den Nutzer ab.
+        Fix: eigene networkPrefix()-Methode, IPv4 auf /24, IPv6 auf /64
+
+Version 4.2.4   10.08.2026
+--------------------------
+  [Neu] Foto-Anzahl-Badge in der Masonry-Ansicht: Gegenstände mit mehr als
+        einem Foto zeigen jetzt unten rechts auf der Karte einen dezenten
+        Zähler, analog zum bestehenden Dokumenten-Badge
+  [Neu] Profil-Kachel in den Einstellungen ergänzt: Avatar
+        hochladen/entfernen und Passwort ändern sind jetzt direkt im
+        aktuellen Interface erreichbar (zuvor nur über eine im Handbuch
+        dokumentierte, aber aus der Navigation entfernte Alt-Seite)
+
+Version 4.2.3   07.08.2026
+--------------------------
+  [Fix] Dokumentenverwaltung (manage_documents.php) lieferte auf allen
+        Flotten-Instanzen einen 404-Fehler und war damit unbenutzbar — die
+        Datei war im automatisierten Datei-Sync-System nie erfasst und dadurch
+        nie live ausgerollt worden, obwohl der zugehörige Download-Handler
+        und das Datenbankschema bereits vorhanden waren. Fix: Datei über
+        Datei-Sync auf Master geschrieben und an alle Instanzen verteilt,
+        MD5-verifiziert
+
+Version 4.2.2   01.08.2026
+--------------------------
+  [Neu] Self-Service-Passwort-Reset per E-Mail eingeführt (ValuSafe):
+        forgot_password.php/reset_password.php mit zeitlich begrenztem (60
+        Min.), einmal verwendbarem Token, Rate-Limiting und generischer
+        Erfolgsmeldung ohne Benutzer-Enumeration. Voraussetzung ist eine
+        hinterlegte E-Mail-Adresse (neue email-Spalte in der users-Tabelle)
+  [Neu] Self-Service-Passwort-Reset auch für Valu-Basic (SQLite-Version) nach
+        demselben Verfahren ergänzt
+
+Version 4.2.1   22.07.2026
+--------------------------
+  [Fix] edit.php: Der "Ungespeicherter Entwurf"-Hinweis (Autosave-Banner)
+        erschien fälschlich schon nach bloßem Klick in ein Feld, auch ohne
+        echte Änderung — Anzeige-Bedingung geprüft nun tatsächlich gegen
+        den Ausgangszustand des Formulars
+
+Version 4.2   21.07.2026
+------------------------
+  [Neu] Zwei-Faktor-Authentifizierung (2FA/TOTP) vollständig in den
+        Login-Flow integriert: Nach korrektem Passwort wird bei aktiviertem
+        2FA automatisch zur Code-Eingabe (login_2fa.php) weitergeleitet, statt
+        direkt einzuloggen. TOTP.php als eigenständige Klasse ergänzt
+  [Neu] Valu-Basic v2.0: Komplett neu aufgesetzte Single-User-Variante auf
+        SQLite-Basis mit aktuellem Next-Interface-Stand —
+        Standort-Hierarchie, Versicherungsmodul, PWA/Service Worker und alle 9
+        Sprachen enthalten. Multi-User, SuperAdmin und Datei-Sync bewusst
+        entfernt. Barcode-Lookup zeigt Hinweis "Nur in ValuSafe verfügbar"
+        statt der Vollfunktion
+  [Fix] Login schlug auf MySQL-Instanzen beim ersten Versuch fehl: login.php
+        nutzte SQLite-Syntax datetime('now') statt NOW() beim Aktualisieren
+        von letzter_login — führte zu stillem PDOException-Fehler, der wie
+        ein falsches Passwort aussah (inkl. laufendem Versuchszähler)
+  [Fix] Verschieben von Gegenständen in der Tabellenansicht
+        (index.php?view=table) funktionierte nicht mehr —
+        Drag&Drop-Event-Listener (dragstart/dragover/drop/dragend) fehlten
+        komplett im JavaScript, obwohl der PHP-Handler für save_order bereits
+        vorhanden war
+  [Fix] Bulk-Aktionen (Löschen, Sichtbarkeit ändern) schlugen mit
+        "Ungültiges Sicherheits-Token" fehl, wenn direkt nach dem Login zu
+        index.php navigiert wurde, ohne vorher eine andere Seite zu besuchen
+        — CSRF-Token wurde nur aus der Session gelesen statt bei Bedarf
+        erzeugt. Fix: Security::generateCSRFToken() erzeugt den Token jetzt
+        bei Bedarf automatisch
+  [Fix] Positionen-Übersicht (backend/locations.php) zeigte trotz vorhandener
+        Daten "Keine Positionen vorhanden" bzw. einen Zähler von 0 —
+        Ursache: SQL-Query mit COUNT() und gejointer Spalte verletzte
+        ONLY_FULL_GROUP_BY (MariaDB/MySQL 8), der dadurch ausgelöste Fehler
+        wurde im catch-Block lautlos verschluckt. Fix: GROUP BY um die
+        gejointe Spalte ergänzt, Fehler werden jetzt sichtbar statt
+        verschluckt
+  [Fix] Leser-Rolle konnte trotz entzogener Berechtigung ("Gegenstand
+        bearbeiten" deaktiviert) weiterhin über den direkten Link das volle
+        Bearbeitungsformular öffnen und speichern — edit.php, add.php und
+        delete.php hatten keine serverseitige Berechtigungsprüfung. Fix:
+        requireEditPermission() in allen drei Dateien ergänzt
+  [Fix] Erfolgsmeldung beim Generieren eines neuen öffentlichen Links
+        (backend/public_settings.php) zeigte rohes HTML-Icon als Text an statt
+        eines Häkchen-Symbols — HTML wurde escaped statt gerendert
+
+Version 4.1   15.06.2026
+------------------------
+  [Neu] PWA Service Worker (sw.js): Statische Assets werden gecacht (Cache
+        First), PHP-Seiten laufen immer direkt — kein 503-Fehler mehr auf
+        index.php. Cache-Name valusafe-v4.1
+  [Neu] Manifest.json aktualisiert: id-Feld, Screenshots (Wide + Mobile),
+        theme-color — PWA kann jetzt korrekt installiert werden
+  [Fix] backend/locations.php: Löschen von Räumen, Standorten und Positionen
+        schlug fehl — t()-PHP-Funktion wurde direkt in JavaScript
+        aufgerufen. Fix: PHP-seitig mit json_encode() gerendert
+
+Version 4.0   02.06.2026
+------------------------
+  [Neu] Next Interface ist jetzt die einzige Oberfläche — Classic-Interface
+        vollständig entfernt. Keine Umschaltung mehr nötig, keine zwei
+        Codepfade
+  [Neu] Bild-Lightbox: Klick auf ein Bild in Masonry- oder Tabellenansicht
+        öffnet es im Vollbild. ESC oder Klick außen schließt die Lightbox
+  [Neu] Tabellenansicht: Zeilen sind klickbar und öffnen den Detail-Pane —
+        wie in der Masonry-Ansicht. Checkbox- und Aktionszellen stoppen das
+        Event-Bubbling
+  [Neu] Masonry-Kacheln: Einheitliche Foto-Höhe (160px) auf allen Kacheln —
+        Gegenstände ohne Bild erhalten einen gleichgroßen Platzhalter mit
+        Icon
+  [Neu] Admin-Dashboard (backend/index.php): Neue Kacheln für Standorte,
+        Rechtevergabe und Öffentlicher Link. System-Sektion mit direkten
+        Links zu Backup, Restore, Logs, Login-Security, System-Info
+  [Neu] Admin-Dashboard: Letzte Aktivitäten als kompakte Tabelle mit
+        Cleanup-Funktion (Zeitraum wählbar: 7/30/90/365 Tage oder alles). Nur
+        für SuperAdmins sichtbar
+  [Fix] Raumansicht: export_location_unknown wurde als Rohtext angezeigt statt
+        "Unbekannt" — Schlüssel fehlte in Sprachdateien. Fix: tn() mit
+        Fallback, de.php ergänzt
+
+Version 3.29   27.05.2026
+-------------------------
+  [Neu] Next Interface: Komplett neues App-Shell-Layout mit Icon-Rail (52px,
+        immer sichtbar), Top-Strip (Suche, Statistiken, Export,
+        Hinzufügen-Button), Masonry-Kachelansicht, Detail-Pane (öffnet bei
+        Klick auf Kachel), FAB (mobil) und Bottom-Nav (mobil ≤600px).
+        Umschaltbar zwischen Classic und Next in den Einstellungen
+  [Neu] Export-Dropdown im Next Interface: 7 Export-Optionen (PDF, CSV, HTML,
+        Versicherung, QR-Codes, Excel, JSON) in einem Portal-Dropdown mit
+        Icon-Rail-Zugang
+  [Neu] Service-Modal im Next Interface: [ℹ️]-Icon in der Icon-Rail
+        öffnet ein Modal mit allen Dokumenten aus dem /service/-Verzeichnis
+        (Handbuch, Changelog, First Steps). Unterstützt Markdown-Rendering
+        und PDF-Direktlink
+  [Neu] Theme-Wechsel ohne Seitenneuladen: Klick auf ein Theme in den
+        Einstellungen speichert sofort per AJAX und aktualisiert das CSS live
+        — kein Speichern-Button mehr nötig
+  [Neu] Interface-Version AJAX-Toggle: Umschalten zwischen Classic und Next
+        Interface direkt per Radio-Button in den Einstellungen — ohne
+        Speichern-Button, mit sofortiger Bestätigung
+  [Neu] Galerie-Seite im Next Interface: backend/gallery.php mit
+        Next-Interface-Header/Footer, stärkerem Schatten (--shadow-sm/md/lg)
+        und korrekten Grid/Liste-Toggle-Buttons
+  [Neu] Statistik-Seite im Next Interface: backend/stats.php mit
+        Next-Interface-Layout
+
+Version 3.28   18.05.2026
+-------------------------
+  [Neu] Wohnungsübergabe-Protokoll (export_pdf_handover.php): Neuer
+        PDF-Export speziell für Wohnungsübergaben. Eingabeformular mit
+        Adresse, Parteien (Mieter/Vermieter), Schlüsselübergabe,
+        Zählerstände (Strom, Wasser, Gas) und Bemerkungen. Druckansicht mit
+        Deckblatt, Inventar gruppiert nach Räumen, Zustand-Checkboxen
+        (Neuwertig/Gut/Gebrauchsspuren/Beschädigt), Bemerkungszeilen und
+        Unterschriftenblöcken für beide Parteien sowie optionalem Zeugen
+  [Neu] PDF-Export Deckblatt: export_pdf.php erhält automatisch eine
+        professionelle Titelseite vor dem Inventar — zeigt App-Name, Titel
+        "Inventarverzeichnis", Anzahl Gegenstände, Gesamtwert und
+        Erstellungsdatum als Statistik-Kacheln
+  [Neu] Raumansicht (index.php): Neue Ansichtsoption neben der Tabelle —
+        Gegenstände werden als Kacheln gruppiert nach Räumen dargestellt.
+        Toggle-Button in der Toolbar, Ansicht wird in der Session gespeichert.
+        Jede Raum-Kachel zeigt Foto, Name, Kategorie und Preis pro Gegenstand
+  [Neu] Schnellerfassung (quick_add.php): Neues mobiloptimiertes Formular für
+        schnelle Inventaraufnahme vor Ort. Nur die wichtigsten Felder (Name,
+        Foto, Raum, Kategorie, Preis, optionale Notiz). Kamera-optimierter
+        Upload, letzter Raum/Kategorie bleibt nach dem Speichern
+        vorausgewählt. Direktlink in der Navigation (⚡ Schnell)
+  [Neu] Schadenfall-Bereitschaft Widget im Dashboard: Zeigt in Prozent wie gut
+        das Inventar für den Versicherungsfall dokumentiert ist — basierend
+        auf drei Kriterien: Foto vorhanden, Preis eingetragen, Kaufdatum
+        gesetzt. Farbcodierung (grün/gelb/rot), Fortschrittsbalken und
+        Einzelwerte pro Kriterium. Motivationstext mit Link zur
+        Vervollständigung
+  [Neu] Pagination in Stats-Zeile integriert: Seitennavigation (1-2-3, Weiter,
+        Pro Seite) wurde aus der separaten Toolbar-Zeile in die
+        Statistik-Zeile (Einträge/Gesamtwert/Zeitwert) verschoben —
+        rechtsbündig. Spart eine Zeile und verbessert die Übersichtlichkeit
+
+Version 3.27   27.04.2026
+-------------------------
+  [Neu] Setup-Wizard (setup.php): Neue Installationsroutine in 5 Schritten —
+        Sprachwahl (DE/EN), Systemcheck, Datenbankverbindung mit Live-Test,
+        automatische Tabellenerstellung, Admin-Konto anlegen. config.php wird
+        automatisch geschrieben oder als Copy-Paste angeboten (Hybrid-Ansatz).
+        Sicherheitsverriegelung nach erfolgreicher Installation
+  [Neu] INSTALL.md + INSTALL.txt: Installationsanleitung in zwei Formaten —
+        Markdown für Mac/Linux, Plaintext für Windows-Nutzer ohne
+        Markdown-Viewer
+  [Neu] Onboarding: Neue Seite "Erste Schritte" (🚀) im [i]-Modal — führt
+        neue Nutzer in 5 Schritten durch die Ersteinrichtung (Orte,
+        Kategorien, erster Gegenstand, Backup, Tipps)
+  [Neu] Versicherungsmodul erweitert: Formular um 17 neue optionale Felder
+        ergänzt — Bereich Vertragsdaten (Versicherungssumme,
+        Selbstbeteiligung, Vertragsbeginn, Kündigungsfrist, Zahlungsweise),
+        Bereich Objekt (Adresse, PLZ, Ort, Wohnfläche m², Zimmer,
+        Gebäudeart, Etage, Keller), Zusatzbausteine (Fahrraddiebstahl,
+        Glasbruch, Elementarschäden, Überspannung). PDF-Export zeigt alle
+        neuen Felder
+  [Fix] Mobile Filter-Labels: Preis- und Kaufdatum-Labels waren größer als
+        Kategorie/Ort — font-size in .filter-group-range explizit gesetzt,
+        Media Queries mit !important für iOS-Kompatibilität
+  [Fix] Theme-Auswahl: profil.php zeigte 13 veraltete Themes — jetzt
+        synchron mit settings.php (7 aktuelle Themes: Cloud, Ocean, Midnight,
+        Mint, Glass, Navy, Emerald)
+
+Version 3.26   15.04.2026
+-------------------------
+  [Neu] Käufer-Anfrage auf der öffentlichen Ansicht (public.php): Besucher
+        können per Formular ihr Interesse an einem Gegenstand bekunden (Name,
+        E-Mail, Nachricht bis 200 Zeichen) — der Administrator erhält eine
+        E-Mail-Benachrichtigung
+  [Neu] Namensregelung eingeführt: "Meine Wertsachen" ist der Produktname
+        für Endnutzer und Tester — persönlich, alltagsnah, auf Deutsch.
+        "ValuSafe" ist der Name für Vertrieb, Marketing und B2B-Ansprache —
+        international, professionell. Beide Namen bezeichnen dasselbe Produkt;
+        Instanzen können individuell benannt werden
+  [Fix] index.php: Kategorie-Dropdown öffnete sich nicht wenn zuvor das
+        Spalten-Panel geöffnet war — Ursache: konkurrierender
+        document-click-Handler und gemischte
+        style.display/classList-Mechanismen. Behoben durch e.stopPropagation()
+        auf dem Kategorie-Button und einheitliche classList-Steuerung;
+        doppelter close-Handler entfernt
+  [Neu] login.php: Komplett neu gestaltet (Design C — Split Layout). Linke
+        Seite: Dunkelblauer Verlauf mit Logo, App-Beschreibung und
+        Versionsanzeige unten links als Pill-Badge. Rechte Seite: Weiße Card
+        mit Formular. Version wird automatisch aus wert-update/version.json
+        geladen — kein manuelles Eintragen mehr nötig. Passwort-Toggle
+        (Auge-Icon), Rate-Limiting und Session-Timeout-Hinweis bleiben
+        erhalten. Mobil: linke Seite blendet sich aus
+  [Neu] Benutzerhandbuch fertiggestellt: ValuSafe_Benutzerhandbuch_v325.docx
+        (3 Teile: Benutzerhandbuch, Admin-Handbuch, Schnellreferenz; 18
+        Kapitel, FAQ, DSGVO, Tastaturkürzel). Parallel: Version "Meine
+        Wertsachen" für Tester-Deployments
+
+Version 3.24   10.04.2026
+-------------------------
+  [Neu] Filter-Erhalt nach Bearbeiten: Kategorie-, Suche-, Ort- und alle
+        anderen aktiven Filter bleiben nach dem Speichern eines Gegenstands
+        erhalten — kein manuelles Neusetzen mehr nötig
+  [Neu] Header: Avatar-Bild ersetzt das 👤-Icon wenn ein Profilbild
+        hochgeladen wurde — auf Desktop und Mobile, mit Fallback auf 👤
+        wenn kein Avatar vorhanden
+  [Fix] WCAG 2.5.5 Touch Targets: Icon-Buttons (32→44px), Backup-Buttons
+        (34→44px), Paginierung (44px), Checkboxen mit 44px Klickbereich via
+        ::before — alle interaktiven Elemente erfüllen jetzt das 44×44px
+        Mindestmaß
+  [Fix] Lightbox Bildnavigation in edit.php: Klick auf ‹/›-Buttons löste
+        versehentlich einen Form-Submit aus — Pfeilnavigation funktioniert
+        jetzt korrekt ohne die Seite zu verlassen
+
+Version 3.23   08.04.2026
+-------------------------
+  [Neu] Duplikat-Erkennung in add.php: Weiche Warnung (gelbes Banner) wenn ein
+        Gegenstand mit gleichem Namen bereits existiert — "Trotzdem
+        speichern" bleibt möglich
+
+Version 3.22   07.04.2026
+-------------------------
+  [Neu] Nur eigene Gegenstände: Instanz-weite Einstellung (Backend →
+        Öffentlicher Link → Einstellungen) und pro-Benutzer-Option (Backend
+        → Benutzer → Bearbeiten). Benutzer sehen dann nur Gegenstände die
+        sie selbst angelegt haben. Admins und Benutzer mit „Alle
+        sehen"-Berechtigung sind ausgenommen.
+  [Neu] Statistik-Leiste: Durchschnittswert durch Zeitwert ersetzt — zeigt
+        die Summe der aktuellen Marktwerte (Kaufpreis als Fallback wenn kein
+        Zeitwert hinterlegt)
+  [Fix] Standort-Tooltip: 📍-Icon neben Gegenstandsname zeigt Raum und
+        Position bei Hover/Tap — Tabelle bleibt kompakt
+
+Version 3.20   03.04.2026
+-------------------------
+  [Neu] Profilseite (profil.php): Avatar-Upload mit Center-Crop 300×300px,
+        Theme-Auswahl per Farbpunkte, Sprache und Passwort ändern — für
+        alle Rollen
+  [Neu] Header: 👤-Icon neben Benutzername (Desktop klickbar, Mobile als
+        Icon) führt zur neuen Profilseite
+  [Neu] Kategorie-Mehrfachwahl: Schnellfilter auf index.php erlaubt
+        gleichzeitige Auswahl mehrerer Kategorien per Checkbox-Dropdown
+  [Fix] WCAG 2.1 AA edit.php: #888 → #595959 für Differenz-Farbe und
+        Hinweistexte — AIM Score 9.7, 0 Errors, 0 Contrast Errors
+  [Fix] WCAG 2.1 AA add.php: Upload-Zone-Icon #3498db auf #f9f9f9 (2.99:1) →
+        #1a6fa8 (4.56:1) via wcag_global.css — AIM Score 9.8
+
+Version 3.19 (a)   02.04.2026
+-----------------------------
+  [Neu] Docker-Deployment: vollständige Docker-Readyness mit Dockerfile,
+        docker-compose.yml, entrypoint.sh und init.sql mit Demo-Daten
+  [Fix] WCAG 2.1 AA index.php: AIM Score 4.5 → 9.7 — 0 Errors, 0 Contrast
+        Errors, 0 Missing labels
+  [Fix] WCAG 2.1 AA dashboard.php: alle Kontrast-Fehler behoben in Midnight,
+        Mint, Glass — inkl. stat-trend rgba, chart-label, stat-icon
+  [Fix] WCAG: Item-Checkboxen (Desktop + Mobil) mit id + sr-only Label
+        versehen — 21 Missing form labels behoben
+  [Fix] WCAG: Lightbox img alt-Text wird beim Öffnen vom Thumbnail
+        übernommen
+  [Fix] WCAG: FAB-Suchfeld und Account-Löschen-Feld mit Label versehen
+  [Fix] WCAG: Mobile Kartenbild aria-hidden=true — kein doppelter Alt-Text
+        mehr
+
+Version 3.19   30.03.2026
+-------------------------
+  [Neu] DSGVO: Datenschutzerklärung (datenschutz.php) und Impressum
+        (impressum.php) als eigene Seiten, verlinkt im Footer
+  [Neu] DSGVO: Nutzerbezogener Datenexport in settings.php – alle eigenen
+        Daten als JSON herunterladen (Art. 20 DSGVO)
+  [Neu] DSGVO: Account-Löschung in settings.php – Konto unwiderruflich
+        löschen mit Bestätigungsdialog (Art. 17 DSGVO)
+  [Neu] add.php: Formular in vier Sektionen gegliedert – Basisdaten, Wert &
+        Kauf, Notizen, Bild – mit farbigem Header
+  [Fix] Pagination Mobile: obere Pagination auf iPhone ausgeblendet, untere
+        Pagination nach den Cards – korrekte Position
+  [Fix] Pro-Seite-Selector: auch bei einer Seite sichtbar – war bei 50
+        Einträgen verschwunden
+  [Fix] Hamburger-Button auf Cloud- und Glass-Theme auf Mobile jetzt sichtbar
+        (war unsichtbar auf hellem Header)
+  [Fix] Buttons auf Mobile: einheitliche Höhe 44px –
+        Spalten/Kategorie/Sortierung jetzt gleich hoch
+
+Version 3.18   24.03.2026
+-------------------------
+  [Neu] Kategorie-Schnellfilter: aktive Kategorie wird farblich hervorgehoben
+  [Neu] Dashboard: Wertvollste Kategorie berechnet sich jetzt nach Zeitwert
+        statt Kaufpreis
+  [Neu] Mobile: zweite Pagination am Ende der Liste – kein Scrollen mehr
+        nach oben nötig
+  [Fix] Barrierefreiheit WCAG 2.1 AA: alle Kontrast-Fehler behoben – Texte,
+        Buttons und Überschriften in allen 9 Themes auf min. 4.5:1 angehoben
+  [Fix] Screenreader-Unterstützung: Tabellenheader mit scope,
+        Bearbeiten/Löschen-Buttons mit aria-label, Lightbox mit Alt-Text,
+        Sprache dynamisch
+
+Version 3.15   21.03.2026
+-------------------------
+  [Neu] Öffentlicher Ansichts-Link: Ausgewählte Gegenstände per
+        Token-gesichertem Link ohne Login teilen – mit Lightbox,
+        Kategorie-Gruppierung und optionaler Preisanzeige
+  [Neu] QR-Code für öffentlichen Link: automatisch generiert, als PNG
+        herunterladbar (inkl. Seitentitel)
+  [Neu] Mobile Navigation: Hamburger-Menü links, Logout-Icon rechts,
+        Session-Timer außerhalb Header – JS-basierte Mobile-Erkennung via
+        body.is-mobile
+  [Neu] Mobile Header: kompakter Titel „Meine Wertsachen" (sprachabhängig),
+        Grid-Overflow-Fix für Dashboard und Schnellzugriff
+  [Neu] Empty State: Leere Übersicht zeigt Illustration mit Hinweistext und
+        Direktlink zum Anlegen – unterscheidet zwischen leerem Inventar und
+        leerer Suchergebnismenge
+  [Neu] Bestätigungs-Modal: Löschen-Dialog ersetzt Browser-confirm() durch
+        eigenes animiertes Modal mit Gegenstandsname
+  [Neu] Dashboard: Zähler-Animation beim Laden (EaseOutQuart),
+        Trend-Indikator am Gesamtwert (↑/↓ % vs. Vormonat aus
+        Werthistorie)
+  [Neu] Skeleton-Loading: Animierte Platzhalter-Blöcke während die
+        Übersicht lädt
+  [Neu] Dark Mode Auto-Detection: Midnight-Theme wird automatisch aktiviert
+        wenn System auf Dark Mode – nur bei Cloud-Default-Theme
+  [Neu] Seitenwechsel-Animation: Seiten blenden sanft ein (0.22s) und aus
+        (0.15s) beim Navigieren
+  [Neu] Tabellen-Hover: ruhiger grüner Balken links statt scale()-Animation
+  [Neu] Upload-Fortschrittsanzeige: schlanker Fortschrittsbalken beim
+        Bildupload mit Statustext
+  [Neu] Formulare gruppiert: add.php in Sektionen „Basisdaten", „Wert &
+        Kauf", „Notizen" mit farbigem Header
+  [Neu] Navigation: + Neuer Gegenstand grün hervorgehoben als visueller Anker
+  [Neu] Theme-Auswahl: auf 5 Favoriten reduziert (Cloud, Ocean, Midnight,
+        Mint, Glass) – alle Themes bleiben gültig
+  [Neu] PWA: Offline-Seite mit zuletzt gesehenen Gegenständen, Auto-Reload
+        bei Verbindungswiederherstellung
+  [Neu] PWA: Native Share API – 🔗 Teilen-Button in Mobilkarten öffnet
+        System-Share-Sheet (iOS/Android), Fallback: URL kopieren
+  [Neu] 9 Sprachen vollständig: DE, EN, FR, TR, ES, IT, NL, PL, PT – alle
+        neuen Keys ergänzt
+  [Fix] Bild-Löschen Firefox/Safari: Buttons in Bildgalerie fehlte
+        type="button" → Form-Submit unterbrach fetch-Request
+        (NS_BINDING_ABORTED)
+  [Neu] PWA Install-Banner: erscheint nach 3 Sekunden auf Android/Chrome mit
+        nativem Install-Dialog; iOS/Safari zeigt Anleitung für „Zum
+        Home-Bildschirm"
+  [Neu] Float Labels in add.php: Labels schweben bei Fokus/Eingabe nach oben
+        — Name, Kategorie, Ort, Preis, Notizen
+  [Fix] Mobile Header: ℹ️-Button wieder in Titelzeile eingefügt
+
+Version 3.14   16.03.2026
+-------------------------
+  [Neu] Versicherungsmodul: Verträge anlegen und verwalten, Gegenstände per
+        Checkbox zuordnen, Laufzeit-Warnungen (rot/orange)
+  [Neu] Versicherungs-PDF-Export: Druckbare Übersicht aller versicherten
+        Gegenstände mit Gesamtwert je Vertrag
+  [Neu] Wertentwicklungs-Chart: Gesamtvermögen über Zeit als Linienchart in
+        den Statistiken
+  [Neu] Kategorie-Donut: Vermögensverteilung nach Kategorien als interaktiver
+        Donut-Chart in den Statistiken
+  [Neu] Neue Sprachen: Spanisch, Italienisch, Niederländisch, Polnisch,
+        Portugiesisch (529 Schlüssel je Sprache)
+  [Neu] Barcode/EAN-Lookup: Automatischer Abruf von Metadaten und Cover über
+        Google Books, Open Library, Open Food Facts und UPCitemdb
+  [Neu] Bildkomprimierung: Automatische Komprimierung vor dem Upload (max.
+        1920px, max. 1.5 MB, WebP/JPEG)
+  [Fix] Sprachselektor: Weißer Text in
+        Forest/Ocean/Sunset/Cherry/Lavender/Mint-Theme behoben
+
+Version 3.13   12.03.2026
+-------------------------
+  [Neu] Datei-Sync Tool in Admin-Dashboard integriert — PHP-Dateien von
+        all-inkl auf alle Instanzen übertragen
+  [Fix] DB & Bilder Sync repariert — vollständiger Datenbank- und
+        Bildabgleich zwischen all-inkl und NAS funktioniert
+
+Version 3.12   10.03.2026
+-------------------------
+  [Neu] Neue Sprachen: Französisch (fr.php) und Türkisch (tr.php) –
+        Sprachauswahl jetzt mit 4 Sprachen (DE/EN/FR/TR)
+  [Neu] Sprach-Dropdown im Header: Kompaktes Menü mit Flaggen und aktiver
+        Markierung – ersetzt die bisherigen Text-Links
+  [Neu] Info-Menü: PHP-Dateien werden jetzt unterstützt – Changelog Public
+        direkt aus dem Menü aufrufbar
+  [Neu] ISBN-Lookup beim Anlegen und Bearbeiten von Gegenständen –
+        Metadaten (Titel, Autor etc.) und Cover werden automatisch per ISBN
+        abgerufen und gespeichert
+
+Version 3.11   08.03.2026
+-------------------------
+  [Neu] Theme-Auswahl: Sofortiger Wechsel per Klick – kein Speichern-Button
+        mehr nötig
+  [Neu] Übersetzungen vervollständigt: ~60 neue Keys in de.php/en.php
+        (Fehlermeldungen, Bestätigungsdialoge, Filter, Bulk-Aktionen)
+  [Fix] Viewer: Action-Button (✏️) wurde fälschlich angezeigt – jetzt
+        korrekt ausgeblendet
+  [Fix] Editor-Rolle: „Neuer Gegenstand" war nicht erreichbar –
+        Rollenbezeichnung korrigiert
+  [Fix] Changelog im Info-Menü: öffnet jetzt korrekt in neuem Tab statt JSON
+        anzuzeigen
+
+Version 3.9   02.03.2026
+------------------------
+  [Neu] Swipe-Gesten in der mobilen Listenansicht – Links-Swipe zum
+        Bearbeiten, Rechts-Swipe zum Löschen
+  [Neu] Kamera-Button in edit.php – direkte Aufnahme oder Auswahl aus der
+        Fotomediathek auf Mobilgeräten
+  [Neu] Versicherungsexport: aktueller Wert, Bewertungsdatum und Custom-Felder
+        in Export integriert
+
+Version 3.8   26.02.2026
+------------------------
+  [Neu] Aktueller Wert: Neues Feld neben Kaufpreis mit automatischer
+        Differenzanzeige (€ und %) in Grün/Rot
+  [Neu] Werthistorie: Automatische Verlaufseinträge bei jeder Wertänderung
+        – letzte 10 Bewertungen in edit.php
+  [Neu] Freie Felder: Zwei frei benennbare Felder (Text oder Zahl/€) in
+        add.php und edit.php
+  [Neu] Neue Übersichtsspalten: Akt. Wert, Differenz, ± %, Bewertet am,
+        Eigenes Feld 1/2 im Spalten-Manager
+  [Neu] Autosave in add.php und edit.php – Formularfelder werden
+        gespeichert, gelber Banner zum Wiederherstellen
+  [Neu] Banner nach Speichern: Schnellzugriff auf „Weiteren hinzufügen" und
+        „Zur Übersicht"
+  [Fix] Spalten-Manager: Neu registrierte Spalten erscheinen sofort – kein
+        Logout/Login mehr nötig
+  [Fix] Admin Benutzer: Erstellungsdatum zeigte fälschlich aktuellen
+        Zeitstempel
+  [Fix] Kategorien löschen (Mobile): Bestätigungsdialog iOS
+        Safari-kompatibel
+
+Version 3.7   24.02.2026
+------------------------
+  [Fix] Bulk-Delete: Fatal Error behoben – Gegenstände konnten nicht
+        gelöscht werden
+  [Fix] Bulk-Delete: Nach erfolgreichem Löschen wurden Items nicht aus der
+        Liste entfernt
+  [Fix] Spalten-Dialog: Doppelter Column Manager verursachte graues Overlay
+
+Version 3.6   23.02.2026
+------------------------
+  [Neu] QR-Codes: Serverseitig generiert, Download als SVG, Größenauswahl
+        Klein/Mittel/Groß
+  [Neu] QR-Scan öffnet direkt die Bearbeitungsseite des Gegenstands
+  [Neu] Bulk-Delete: Mehrere Backup-Dateien gleichzeitig löschbar
+
+Version 3.5   22.02.2026
+------------------------
+  [Neu] PWA: App installierbar auf Mobilgeräten (Icons, Manifest, Service
+        Worker)
+  [Neu] Versicherungs-Export: Professionelle Inventarliste gegliedert nach
+        Versicherungskategorien
+  [Neu] Service-Button mit Modal (Handbuch, Facts & Features, About)
+  [Neu] Upload-Limit auf 20 MB erhöht
+

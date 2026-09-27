@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — ocean.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → ocean.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #00acc1;
+  --vs-accent-hover:    #00838f;
+  --vs-accent-light:    #e0f7fa;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #e0f7fa;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #e8f5f7;
+
+  --vs-text:            #263238;
+  --vs-text-muted:      #546e7a;
+  --vs-text-subtle:     #80a0a8;
+
+  --vs-border:          #b2ebf2;
+  --vs-border-strong:   #7ecfd8;
+
+  --vs-rail-bg:         #1a3a40;
+  --vs-rail-text:       #00838f;
+  --vs-rail-active:     #ffffff;
+  --vs-rail-active-bg:  rgba(255,255,255,0.15);
+  --vs-rail-hover-bg:   rgba(255,255,255,0.08);
+
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #b2ebf2;
+}

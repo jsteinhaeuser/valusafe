@@ -1,0 +1,16 @@
+# Kein direkter Zugriff auf Dokumente
+# Nur über download_document.php erlaubt
+
+<Files "*">
+    Order Deny,Allow
+    Deny from all
+</Files>
+
+# PHP-Execution verhindern
+<FilesMatch "\.php$">
+    Order Deny,Allow
+    Deny from all
+</FilesMatch>
+
+# Keine Directory-Listings
+Options -Indexes

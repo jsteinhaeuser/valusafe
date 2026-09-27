@@ -1,0 +1,9 @@
+# Alle hochgeladenen Dateien ignorieren
+*
+
+# Aber diese Datei selbst behalten
+!.gitignore
+
+# Und die Schutzdatei: sie verhindert u. a., dass eine hochgeladene
+# PHP-Datei ausgefuehrt wird. Sie gehoert zur Anwendung.
+!.htaccess

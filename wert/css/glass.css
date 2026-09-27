@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — glass.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → glass.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #7c3aed;
+  --vs-accent-hover:    #6d28d9;
+  --vs-accent-light:    #ede9fe;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #f0f2f8;
+  --vs-surface:         rgba(255,255,255,0.85);
+  --vs-surface-2:       #ede9fe;
+
+  --vs-text:            #1e1b2e;
+  --vs-text-muted:      #6d28d9;
+  --vs-text-subtle:     #9070b0;
+
+  --vs-border:          #ddd6fe;
+  --vs-border-strong:   #c4b5fd;
+
+  --vs-rail-bg:         #ede9fe;
+  --vs-rail-text:       #6d28d9;
+  --vs-rail-active:     #1e1b2e;
+  --vs-rail-active-bg:  rgba(30,27,46,0.12);
+  --vs-rail-hover-bg:   rgba(30,27,46,0.06);
+
+  --vs-dp-bg:           rgba(255,255,255,0.85);
+  --vs-dp-border:       #ddd6fe;
+}

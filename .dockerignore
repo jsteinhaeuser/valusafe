@@ -1,0 +1,44 @@
+# =============================================================================
+# .dockerignore — gilt fuer den Build-Kontext (Projektwurzelverzeichnis)
+#
+# Alles hier Aufgefuehrte wird NICHT in das Image kopiert. Das haelt das Image
+# klein und verhindert vor allem, dass Zugangsdaten oder Nutzerdaten mitwandern.
+# =============================================================================
+
+# ── Zugangsdaten ─────────────────────────────────────────────────────────────
+# config.php wird beim Containerstart aus der .env erzeugt, backend/config.php
+# ist reiner Anwendungscode und wird gebraucht.
+wert/config.php
+.env
+*.env
+
+# ── Nutzerdaten (im Betrieb als Docker-Volumes eingebunden) ──────────────────
+wert/upload/
+wert/documents/
+wert/backups/
+wert/logs/
+
+# ── Entwicklungs- und Werkzeugdateien ────────────────────────────────────────
+.git/
+.gitignore
+bin/
+wert/vendor/
+wert/.phpunit.cache/
+ARCHITECTURE.md
+ARCHITECTURE.de.md
+
+# ── SQL- und Migrationsdateien gehoeren nicht ins Image ──────────────────────
+*.sql
+wert/migration_*.sql
+
+# ── Docker-eigene Dateien ────────────────────────────────────────────────────
+docker/Dockerfile
+docker/docker-compose.yml
+docker/docker-compose.*.yml
+docker/.env.example
+docker/.dockerignore
+
+# ── Betriebssystem-Metadateien ───────────────────────────────────────────────
+**/.DS_Store
+Thumbs.db
+*.log

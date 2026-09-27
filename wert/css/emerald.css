@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — emerald.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → emerald.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #047857;
+  --vs-accent-hover:    #065f46;
+  --vs-accent-light:    #ecfdf5;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #ecfdf5;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #d1fae5;
+
+  --vs-text:            #022c22;
+  --vs-text-muted:      #064e3b;
+  --vs-text-subtle:     #3a7a60;
+
+  --vs-border:          #a7f3d0;
+  --vs-border-strong:   #6ee7b7;
+
+  --vs-rail-bg:         #011a14;
+  --vs-rail-text:       #047857;
+  --vs-rail-active:     #022c22;
+  --vs-rail-active-bg:  rgba(2,44,34,0.15);
+  --vs-rail-hover-bg:   rgba(2,44,34,0.08);
+
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #a7f3d0;
+}

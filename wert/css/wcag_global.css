@@ -1,0 +1,1029 @@
+/**
+ * wcag_global.css
+ * Zentrale WCAG 2.1 AA Kontrast-Fixes — gilt für Frontend und Backend.
+ * Einbinden in: header.php + backend/layout/header.php
+ *
+ * Alle Werte geprüft gegen WCAG 2.1 AA (min. 4.5:1 für Normaltext).
+ * Letzte Prüfung: 2026-03-25
+ *
+ * KONVENTION FÜR NEUE FORMULARE:
+ * Jede Checkbox/Radio braucht entweder:
+ *   a) <label for="input-id">Text</label> + <input id="input-id">
+ *   b) <input aria-label="Beschreibung">
+ * Jede <th> in einer Datentabelle braucht scope="col" oder scope="row".
+ */
+
+/* ── 1. GRAU-TEXTE ────────────────────────────────────────────────────────
+   Problem: #999, #aaa, #888 = 2.3–3.5:1 auf Weiß → zu wenig
+   Fix:     #767676 = 4.54:1 ✅
+   ──────────────────────────────────────────────────────────────────────── */
+.stat-sublabel,
+.stat-label,
+.item-meta,
+.version-date,
+.entry-public,
+small,
+.form-group small,
+.form-group .hint,
+[style*="color: #999"],
+[style*="color:#999"],
+[style*="color: #aaa"],
+[style*="color:#aaa"],
+[style*="color: #888"],
+[style*="color:#888"] {
+    color: #595959 !important; /* 7.00:1 ✅ — sicherer Puffer */
+}
+
+/* Muted-Texte (Tailwind gray-400, slate-400) */
+.text-muted,
+.muted,
+[style*="color: #9ca3af"],
+[style*="color:#9ca3af"],
+[style*="color: #94a3b8"],
+[style*="color:#94a3b8"] {
+    color: #6b7280 !important; /* 4.83:1 ✅ */
+}
+
+/* ── 2. BADGE / STATUS-TEXTE ──────────────────────────────────────────────
+   Problem: helle Farben (z.B. #10b981) auf sehr hellem Hintergrund
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Erfolg — grüner Text auf grünem Hintergrund */
+.badge-success,
+.activity-action-created,
+[style*="color: #155724"],
+[style*="color:#155724"] {
+    color: #065f46 !important; /* 7.00:1 auf #dcfce7 ✅ */
+}
+
+/* Warnung — gelber Text auf gelbem Hintergrund */
+.badge-warning,
+[style*="color: #856404"],
+[style*="color:#856404"],
+[style*="color: #b45309"],
+[style*="color:#b45309"] {
+    color: #78350f !important; /* 8.15:1 auf #fef3c7 ✅ */
+}
+
+/* Fehler/Gefahr — roter Text auf rotem Hintergrund */
+.badge-danger,
+.activity-action-deleted,
+[style*="color: #721c24"],
+[style*="color:#721c24"],
+[style*="color: #991b1b"],
+[style*="color:#991b1b"] {
+    color: #7f1d1d !important; /* 8.20:1 auf #fee2e2 ✅ */
+}
+
+/* Info — blauer Text auf blauem Hintergrund */
+.badge-info,
+.activity-action-updated,
+[style*="color: #0c5460"],
+[style*="color:#0c5460"] {
+    color: #1e3a8a !important; /* 8.49:1 auf #dbeafe ✅ */
+}
+
+/* ── 3. BACKEND-SPEZIFISCH ────────────────────────────────────────────────
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Breadcrumb-Links: --primary-color #667eea = 3.41:1 → #4f46e5 = 5.86:1 */
+.backend-breadcrumb a,
+.bc-item {
+    color: #4f46e5; /* 5.86:1 auf #f5f7fa ✅ */
+}
+.bc-item.bc-current,
+.bc-group {
+    color: #374151; /* 9.37:1 ✅ */
+}
+
+/* Admin-Badges im Header */
+.badge-admin { background: rgba(239,68,68,0.12); color: #7f1d1d; } /* 8.20:1 ✅ */
+.badge-edit  { background: rgba(245,158,11,0.12); color: #78350f; } /* 8.15:1 ✅ */
+.badge-view  { background: rgba(59,130,246,0.12); color: #1e3a8a; } /* 8.49:1 ✅ */
+
+/* Stat-Labels im Backend */
+.stat-box-label,
+.stat-footer,
+.backend-table th {
+    color: #595959; /* 7.00:1 ✅ */
+}
+
+/* ── 4. CHECKLISTE FÜR NEUE FEATURES ─────────────────────────────────────
+   Diese Datei löst Kontrast-Probleme global.
+   Struktur-Probleme (fehlende Labels, scope) müssen im PHP-Code gelöst werden:
+
+   FORMULARE:
+   ✓ <label for="id">Text</label><input id="id">   ← sichtbares Label
+   ✓ <input aria-label="Beschreibung">              ← verstecktes Label
+   ✗ <input> ohne Label                             ← WCAG-Fehler
+
+   TABELLEN:
+   ✓ <th scope="col">Spaltenheader</th>
+   ✓ <th scope="row">Zeilenheader</th>
+   ✗ <th> ohne scope                                ← WCAG-Warnung
+
+   BILDER:
+   ✓ <img alt="Beschreibung">   ← informatives Bild
+   ✓ <img alt="">               ← dekoratives Bild
+   ✗ <img> ohne alt             ← WCAG-Fehler
+
+   BUTTONS/LINKS MIT NUR ICON:
+   ✓ <button aria-label="Löschen">🗑️</button>
+   ✗ <button>🗑️</button>        ← WCAG-Fehler
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* ── 5. INDEX.PHP SPEZIFISCH ──────────────────────────────────────────────
+   stats-label: #6c7581 = 4.43:1 auf #f8f9fa → #595959 = 6.65:1 ✅
+   sortable headers: #667eea = 3.66:1 auf weiß → #4f46e5 = 6.29:1 ✅
+   ──────────────────────────────────────────────────────────────────────── */
+.stats-label,
+[style*="color: rgb(108, 117, 125)"],
+[style*="color:rgb(108,117,125)"],
+[style*="color: #6c757d"],
+[style*="color:#6c757d"],
+[style*="color: #6c7581"],
+[style*="color:#6c7581"] {
+    color: #595959 !important; /* 6.65:1 ✅ */
+}
+
+/* Sortierbare Spaltenheader und aktive Sortiericons */
+.sortable,
+.sortable::after,
+[style*="color: #667eea"],
+[style*="color:#667eea"] {
+    color: #4f46e5 !important; /* 6.29:1 auf weiß ✅ */
+}
+
+/* Quick-stats Bar in index.php (Einträge/Gesamtwert/Durchschnitt Labels) */
+.stats-divider,
+.quick-stat-label {
+    color: #595959 !important;
+}
+
+/* ── 6. RGB-INLINE-STYLES (häufige Problemfarben) ─────────────────────────
+   CSS [style*="color: rgb(...)"] fängt inline-Styles ab die wcag_global
+   bisher nicht kannte. Ergänzt nach WAVE-Analyse 2026-03-25.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* #888888 = rgb(136,136,136) = 3.54:1 → #595959 ✅ */
+[style*="color: rgb(136, 136, 136)"],
+[style*="color:rgb(136,136,136)"],
+[style*="color: #888888"],
+[style*="color:#888888"] {
+    color: #595959 !important;
+}
+
+/* #999999 = rgb(153,153,153) = 2.85:1 → #767676 ✅ */
+[style*="color: rgb(153, 153, 153)"],
+[style*="color:rgb(153,153,153)"] {
+    color: #767676 !important;
+}
+
+/* #3498db = rgb(52,152,219) = 3.15:1 auf weiß → #1a6fb5 = 5.27:1 ✅
+   Betrifft item-price in dashboard.php Top-5-Liste */
+.item-price,
+[style*="color: rgb(52, 152, 219)"],
+[style*="color:rgb(52,152,219)"],
+[style*="color: #3498db"],
+[style*="color:#3498db"] {
+    color: #1a6fb5 !important;
+}
+
+/* #3498db Varianten (Ocean, andere Themes) */
+[style*="color: rgb(0, 172, 193)"],
+[style*="color:rgb(0,172,193)"] {
+    color: #006d7a !important; /* Ocean primary dunkel, 5.2:1 ✅ */
+}
+
+/* dashboard.php stat-Werte in blau */
+.stat-value[style*="color"],
+.stat-value {
+    color: #1a6fb5 !important;
+}
+
+/* EK-Preis klein (font-size:11px, color:#999) in dashboard Top-5 */
+.item-price div,
+.item-price small {
+    color: #595959 !important;
+}
+
+/* ── 7. DASHBOARD SPEZIFISCH ──────────────────────────────────────────────
+   stat-sublabel: color rgb(153,153,153) als inline-style → !important nötig
+   ──────────────────────────────────────────────────────────────────────── */
+.stat-sublabel {
+    color: #767676 !important; /* 4.54:1 ✅ */
+}
+
+/* stat-card Labels (GESAMTWERT, GEGENSTÄNDE etc.) */
+.stat-label {
+    color: #595959 !important; /* 7.00:1 ✅ */
+}
+
+/* item-meta (Kategoriezeile unter Gegenstandsname) */
+.item-meta {
+    color: #595959 !important;
+}
+
+/* Zuletzt hinzugefügt — Datumszeile */
+.recent-date,
+.item-date {
+    color: #595959 !important;
+}
+
+/* ── 8. INDEX.PHP ZÄHLER UND SPALTENHEADER ───────────────────────────────
+   rgb(102,126,234) = #667eea auf #f8f9fa = 3.47:1 → #4f46e5 = 5.96:1 ✅
+   Betrifft: stats-bar Zähler (<strong>), Tabellenheader (th)
+   ──────────────────────────────────────────────────────────────────────── */
+[style*="color: rgb(102, 126, 234)"],
+[style*="color:rgb(102,126,234)"],
+[style*="color: #667eea"],
+[style*="color:#667eea"],
+.data-table th,
+.data-table th.sortable {
+    color: #4f46e5 !important; /* 5.96:1 auf #f8f9fa ✅ */
+}
+
+/* stats-bar strong (Zähler "38") */
+.stats-bar strong,
+.filter-stats strong {
+    color: #4f46e5 !important;
+}
+
+/* ── 9. BUTTON HINTERGRUNDFARBEN ─────────────────────────────────────────
+   Scannen-Button: background #3498db + weiß = 3.15:1 → #1a6fb5 = 5.27:1 ✅
+   Betrifft alle Buttons mit inline background-color: #3498db
+   ──────────────────────────────────────────────────────────────────────── */
+[style*="background-color: rgb(52, 152, 219)"],
+[style*="background-color:rgb(52,152,219)"],
+[style*="background: rgb(52, 152, 219)"],
+[style*="background:#3498db"],
+[style*="background: #3498db"],
+[style*="background-color:#3498db"],
+[style*="background-color: #3498db"] {
+    background-color: #1a6fb5 !important; /* 5.27:1 mit weiß ✅ */
+}
+
+/* Ocean-Theme primary (#00acc1) als Button-Hintergrund */
+[style*="background-color: rgb(0, 172, 193)"],
+[style*="background-color:rgb(0,172,193)"],
+[style*="background-color: #00acc1"],
+[style*="background-color:#00acc1"] {
+    background-color: #006d7a !important; /* 6.05:1 mit weiß ✅ */
+}
+
+/* ── 10. EDIT.PHP SMALL-TEXTE ────────────────────────────────────────────
+   <small style="color: rgb(136,136,136)"> — Feldtyp-Hinweise in edit/add
+   Unser [style*] Selektor greift nicht zuverlässig bei gemischten Properties
+   → direkter small-Selektor mit höherer Spezifität
+   ──────────────────────────────────────────────────────────────────────── */
+.form-group small,
+.form-group small[style],
+form small,
+form small[style],
+input + small,
+textarea + small,
+select + small {
+    color: #595959 !important; /* 7.00:1 ✅ */
+}
+
+/* Radio-Button Labels "Feldtyp" */
+.form-group label[style],
+.form-group small label {
+    color: #595959 !important;
+}
+
+/* ── 11. BILD-UPLOAD PRIMARY-BADGE ───────────────────────────────────────
+   .primary-badge: background #27ae60 + weiß = 2.87:1 → #166534 = 7.13:1 ✅
+   ──────────────────────────────────────────────────────────────────────── */
+.primary-badge,
+[style*="background-color: rgb(39, 174, 96)"],
+[style*="background-color:rgb(39,174,96)"],
+[style*="background-color: #27ae60"],
+[style*="background-color:#27ae60"],
+[style*="background: #27ae60"],
+[style*="background:#27ae60"] {
+    background-color: #166534 !important; /* 7.13:1 mit weiß ✅ */
+}
+
+/* ── 12. BUTTON HOVER-FARBEN ─────────────────────────────────────────────
+   #2980b9 = rgb(41,128,185) = 4.30:1 — hover von #3498db, knapp drunter
+   ──────────────────────────────────────────────────────────────────────── */
+[style*="background: rgb(41, 128, 185)"],
+[style*="background:rgb(41,128,185)"],
+[style*="background-color: rgb(41, 128, 185)"],
+[style*="background-color:rgb(41,128,185)"],
+[style*="background: #2980b9"],
+[style*="background:#2980b9"],
+[style*="background-color: #2980b9"],
+[style*="background-color:#2980b9"] {
+    background-color: #1a6fb5 !important; /* 5.27:1 ✅ */
+}
+
+/* ── 13. MULTI-IMAGE-UPLOAD HINT ─────────────────────────────────────────
+   .multi-upload-zone-hint: 4.35:1 → #595959 = 7.00:1 ✅
+   ──────────────────────────────────────────────────────────────────────── */
+.multi-upload-zone-hint,
+.upload-zone-hint,
+.upload-hint {
+    color: #595959 !important;
+}
+
+/* ── 14. MULTI-UPLOAD-ZONE-HINT INLINE STYLE OVERRIDE ────────────────────
+   rgb(118,118,118) auf rgb(250,250,250) = 4.35:1 — inline style überschreibt
+   .multi-upload-zone-hint Selektor. Spezifischerer Selektor nötig.
+   ──────────────────────────────────────────────────────────────────────── */
+div.multi-upload-zone-hint,
+div.multi-upload-zone-hint[style],
+.multi-upload-zone div.multi-upload-zone-hint,
+[style*="color: rgb(118, 118, 118)"],
+[style*="color:rgb(118,118,118)"],
+[style*="color: rgb(119, 119, 119)"],
+[style*="color:rgb(119,119,119)"] {
+    color: #595959 !important;
+}
+
+/* ── 15. DRAG-HANDLE + TABELLEN-SPEZIFISCH ───────────────────────────────
+   .drag-handle: rgb(156,163,175) = #9ca3af auf #f8f6f2 = 2.35:1 → #595959 ✅
+   item-checkbox: keine aria-label → in index.php bereits mit aria-label versehen
+   ──────────────────────────────────────────────────────────────────────── */
+.drag-handle {
+    color: #595959 !important; /* 7.00:1 ✅ */
+}
+
+/* Thumbnail-Placeholder in Tabelle */
+.item-thumb-placeholder,
+[style*="color: rgb(156, 163, 175)"],
+[style*="color:rgb(156,163,175)"],
+[style*="color: #9ca3af"],
+[style*="color:#9ca3af"] {
+    color: #595959 !important;
+}
+
+/* ── 16. NAV BTN-PRIMARY ACTIVE STATE ────────────────────────────────────
+   .btn.btn-primary inline style background rgb(102,126,234) = #667eea = 3.66:1
+   → #4f46e5 = 6.29:1 ✅
+   ──────────────────────────────────────────────────────────────────────── */
+nav .btn-primary,
+nav a.btn-primary,
+nav .btn.btn-primary {
+    background-color: #4f46e5 !important;
+    color: #ffffff !important;
+}
+
+[style*="background-color: rgb(102, 126, 234)"],
+[style*="background-color:rgb(102,126,234)"] {
+    background-color: #4f46e5 !important;
+}
+
+/* ── 17. BTN-SECONDARY GRAU-TEXT ─────────────────────────────────────────
+   Spalten-Button: rgb(102,102,102) auf rgb(224,224,224) = 4.34:1 → #595959 ✅
+   ──────────────────────────────────────────────────────────────────────── */
+[style*="color: rgb(102, 102, 102)"],
+[style*="color:rgb(102,102,102)"],
+[style*="color: #666666"],
+[style*="color:#666666"],
+[style*="color: #666"],
+[style*="color:#666"] {
+    color: #595959 !important; /* 5.31:1 auf #e0e0e0 ✅ */
+}
+
+/* ── 18. PAGINATION ACTIVE STATE ─────────────────────────────────────────
+   Alle Themes: .pagination-link.pagination-active braucht ≥ 4.5:1 auf weiß.
+   Failing: cloud #8B8378 (3.74:1), sunset #ff7043 (2.74:1),
+            default/light/sand/ocean/forest/lavender #667eea (3.66:1),
+            mint #059669 (3.77:1)
+   Fix: einheitliche Überschreibung via wcag_global.css — unabhängig vom Theme.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Default/Light/Sand/Ocean/Forest/Lavender: #667eea → #3b4fc7 (6.71:1 ✅) */
+.pagination-link.pagination-active {
+    background-color: #3b4fc7 !important;
+    border-color:     #3b4fc7 !important;
+    color:            #ffffff !important;
+}
+.pagination-link.pagination-active:hover {
+    background-color: #2d3da3 !important;
+    border-color:     #2d3da3 !important;
+}
+
+/* Cloud-Theme: #8B8378 → #5C5550 (7.32:1 ✅) */
+body.cloud-theme .pagination-link.pagination-active,
+.cloud-theme .pagination-link.pagination-active {
+    background-color: #5C5550 !important;
+    border-color:     #5C5550 !important;
+}
+body.cloud-theme .pagination-link.pagination-active:hover,
+.cloud-theme .pagination-link.pagination-active:hover {
+    background-color: #47403D !important;
+    border-color:     #47403D !important;
+}
+
+/* Sunset-Theme: #ff7043 → #c1370a (5.50:1 ✅) */
+body.sunset-theme .pagination-link.pagination-active,
+.sunset-theme .pagination-link.pagination-active {
+    background-color: #c1370a !important;
+    border-color:     #c1370a !important;
+}
+body.sunset-theme .pagination-link.pagination-active:hover,
+.sunset-theme .pagination-link.pagination-active:hover {
+    background-color: #9a2c08 !important;
+    border-color:     #9a2c08 !important;
+}
+
+/* Mint-Theme: #059669 → #036b4a (6.55:1 ✅) */
+body.mint-theme .pagination-link.pagination-active,
+.mint-theme .pagination-link.pagination-active {
+    background-color: #036b4a !important;
+    border-color:     #036b4a !important;
+}
+body.mint-theme .pagination-link.pagination-active:hover,
+.mint-theme .pagination-link.pagination-active:hover {
+    background-color: #025538 !important;
+    border-color:     #025538 !important;
+}
+
+/* Cherry/Glass/Midnight: bereits konform — keine Überschreibung nötig */
+
+/* ── 19. PER-PAGE SELECT — FEHLENDES LABEL ───────────────────────────────
+   #per_page_top und #per_page haben kein sichtbares Label.
+   Fix: aria-label wird per CSS nicht gesetzt — das läuft über index.php.
+   Hier: visuellen Kontext sicherstellen (Label-Text bereits im HTML via
+   <label for="per_page_top"> — sicherstellen dass er nicht versteckt wird)
+   ──────────────────────────────────────────────────────────────────────── */
+label[for="per_page_top"],
+label[for="per_page"] {
+    clip: auto !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* ── 20. SCREEN-READER-ONLY HILFSKLASSE ──────────────────────────────────
+   Für Labels die nur für Screenreader sichtbar sein sollen (sr-only).
+   Visuell versteckt, aber für Assistive Technology zugänglich.
+   ──────────────────────────────────────────────────────────────────────── */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ── 21. BTN-SECONDARY UNIVERSELL ───────────────────────────────────────
+   Problem: Alle .btn-secondary erhalten per CSS-Animation opacity:1 als
+   finalen Inline-Style. Der Browser schreibt dabei auch color und
+   background-color als berechnete Inline-Werte (rgb(102,102,102) auf
+   rgb(224,224,224) = 4.34:1). Der CSS-Override via [style*=...] kommt
+   zu spät — die Animation überschreibt ihn.
+   Fix: .btn-secondary global mit WCAG-konformem Dunkelgrau (#4a5568)
+   überschreiben. Weiße Schrift auf #4a5568 = 7.53:1 ✅.
+   Theme-spezifische Farben werden weiter unten pro Theme überschrieben.
+   ──────────────────────────────────────────────────────────────────────── */
+.btn-secondary,
+button.btn-secondary,
+a.btn-secondary {
+    background-color: #4a5568 !important;
+    color: #ffffff !important;
+    border-color: #4a5568 !important;
+}
+.btn-secondary:hover,
+button.btn-secondary:hover,
+a.btn-secondary:hover {
+    background-color: #374151 !important;
+    border-color: #374151 !important;
+    color: #ffffff !important;
+}
+
+/* Theme-spezifische Anpassungen: Buttons bleiben im Theme-Kontext erkennbar */
+/* Cloud: braun-grau statt neutral grau */
+body.cloud-theme .btn-secondary {
+    background-color: #5C5550 !important;
+    border-color: #5C5550 !important;
+}
+body.cloud-theme .btn-secondary:hover {
+    background-color: #47403D !important;
+    border-color: #47403D !important;
+}
+/* Cherry */
+body.cherry-theme .btn-secondary {
+    background-color: #be123c !important;
+    border-color: #be123c !important;
+}
+/* Mint */
+body.mint-theme .btn-secondary {
+    background-color: #036b4a !important;
+    border-color: #036b4a !important;
+}
+/* Midnight */
+body.midnight-theme .btn-secondary {
+    background-color: #1e40af !important;
+    border-color: #1e40af !important;
+}
+/* Ocean */
+body.ocean-theme .btn-secondary {
+    background-color: #006064 !important;
+    border-color: #006064 !important;
+}
+/* Sunset */
+body.sunset-theme .btn-secondary {
+    background-color: #c1370a !important;
+    border-color: #c1370a !important;
+}
+/* Forest */
+body.forest-theme .btn-secondary {
+    background-color: #2e7d32 !important;
+    border-color: #2e7d32 !important;
+}
+/* Lavender */
+body.lavender-theme .btn-secondary {
+    background-color: #6a1b9a !important;
+    border-color: #6a1b9a !important;
+}
+
+/* ── 22. BTN-PRIMARY UNIVERSELL ─────────────────────────────────────────
+   Problem: .btn-primary außerhalb von <nav> bekommt per Animation
+   inline style background-color: rgb(102,126,234) (#667eea) = 3.66:1.
+   Section 16 greift nur in <nav>. Fix: globale Überschreibung auf
+   #3b4fc7 (6.71:1 weiß auf dunkelblau ✅).
+   ──────────────────────────────────────────────────────────────────────── */
+.btn-primary,
+button.btn-primary,
+a.btn-primary {
+    background-color: #3b4fc7 !important;
+    color: #ffffff !important;
+    border-color: #3b4fc7 !important;
+}
+.btn-primary:hover,
+button.btn-primary:hover,
+a.btn-primary:hover {
+    background-color: #2d3da3 !important;
+    border-color: #2d3da3 !important;
+    color: #ffffff !important;
+}
+
+/* Theme-spezifische Überschreibungen für btn-primary */
+body.cloud-theme .btn-primary     { background-color: #5C5550 !important; border-color: #5C5550 !important; }
+body.cherry-theme .btn-primary    { background-color: #be123c !important; border-color: #be123c !important; }
+body.mint-theme .btn-primary      { background-color: #036b4a !important; border-color: #036b4a !important; }
+body.midnight-theme .btn-primary  { background-color: #1e40af !important; border-color: #1e40af !important; }
+body.ocean-theme .btn-primary     { background-color: #006064 !important; border-color: #006064 !important; }
+body.sunset-theme .btn-primary    { background-color: #c1370a !important; border-color: #c1370a !important; }
+body.forest-theme .btn-primary    { background-color: #2e7d32 !important; border-color: #2e7d32 !important; }
+body.lavender-theme .btn-primary  { background-color: #6a1b9a !important; border-color: #6a1b9a !important; }
+body.glass-theme .btn-primary     { background-color: #7c3aed !important; border-color: #7c3aed !important; }
+
+/* ── 23. GLASS-THEME FOOTER-TEXT ─────────────────────────────────────────
+   glass.css footer: color #8b85a0 auf weißem Hintergrund = 3.52:1 ❌
+   Fix: #6b6490 = 5.45:1 ✅
+   ──────────────────────────────────────────────────────────────────────── */
+body.glass-theme footer,
+.glass-theme footer {
+    color: #6b6490 !important;
+}
+
+/* ── 24. MIDNIGHT-THEME PAGINATION-DOTS ──────────────────────────────────
+   midnight.css .pagination-dots: color #6060a0 auf #16213e = 2.78:1 ❌
+   Fix: #a0a0d0 = 6.38:1 auf dunklem Hintergrund ✅
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme .pagination-dots,
+.midnight-theme .pagination-dots {
+    color: #a0a0d0 !important;
+}
+
+/* ── 25. MIDNIGHT-THEME DUNKLE HINTERGRÜNDE ──────────────────────────────
+   Im Midnight-Theme sind alle Hintergründe dunkel (#1a1a2e, #16213e).
+   Dunkelgraue Elemente (z.B. drag-handle #595959 = rgb(89,89,89)) 
+   haben auf diesen Hintergründen nur 2.43:1 — weit unter 4.5:1.
+   Fix: Alle Elemente die per Animation rgb(89,89,89) als Inline-Farbe
+   bekommen, erhalten in Midnight eine helle Farbe (#c0c0e0 = 9.63:1 ✅).
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Drag-Handle */
+body.midnight-theme .drag-handle,
+.midnight-theme .drag-handle {
+    color: #c0c0e0 !important;
+}
+
+/* Alle Elemente mit animiertem rgb(89,89,89) im Midnight-Theme */
+body.midnight-theme [style*="color: rgb(89, 89, 89)"],
+body.midnight-theme [style*="color:rgb(89,89,89)"],
+.midnight-theme [style*="color: rgb(89, 89, 89)"],
+.midnight-theme [style*="color:rgb(89,89,89)"] {
+    color: #c0c0e0 !important;
+}
+
+/* Elemente mit animiertem rgb(102,102,102) im Midnight-Theme */
+body.midnight-theme [style*="color: rgb(102, 102, 102)"],
+body.midnight-theme [style*="color:rgb(102,102,102)"],
+.midnight-theme [style*="color: rgb(102, 102, 102)"],
+.midnight-theme [style*="color:rgb(102,102,102)"] {
+    color: #c0c0e0 !important;
+}
+
+/* Tabellenspalten-Header-Text im Midnight-Theme */
+body.midnight-theme .data-table th,
+.midnight-theme .data-table th {
+    color: #c4b5fd !important; /* bereits in midnight.css, zur Sicherheit */
+}
+
+/* Allgemeiner Text-Fallback für dunkle Backgrounds im Midnight-Theme */
+body.midnight-theme .filter-bar label,
+body.midnight-theme .filter-bar span,
+.midnight-theme .filter-bar label,
+.midnight-theme .filter-bar span {
+    color: #e0e0f0 !important;
+}
+
+/* ── 26. MIDNIGHT-THEME: HELLE HINTERGRUNDFARBEN ÜBERSCHREIBEN ───────────
+   In Midnight sind alle Textfarben hell (#e0e0f0). Elemente mit inline
+   style background: #f0f0f0 haben dadurch nur 1.14:1 Kontrast.
+   Fix: Helle Hintergründe im Midnight-Theme auf dunkelblau umstellen.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Elemente mit background #f0f0f0 als Inline-Style */
+body.midnight-theme [style*="background: #f0f0f0"],
+body.midnight-theme [style*="background:#f0f0f0"],
+body.midnight-theme [style*="background-color: #f0f0f0"],
+body.midnight-theme [style*="background-color:#f0f0f0"],
+body.midnight-theme [style*="background-color: rgb(240, 240, 240)"],
+.midnight-theme [style*="background: #f0f0f0"],
+.midnight-theme [style*="background:#f0f0f0"],
+.midnight-theme [style*="background-color: rgb(240, 240, 240)"] {
+    background: #2a2a4a !important;
+    background-color: #2a2a4a !important;
+    color: #e0e0f0 !important;
+}
+
+/* Kategorie-Badge #999 Farbe auf #f0f0f0 Badge → in midnight: hellen Text */
+body.midnight-theme [style*="color:#999"],
+body.midnight-theme [style*="color: #999"],
+body.midnight-theme [style*="color: rgb(153, 153, 153)"],
+.midnight-theme [style*="color:#999"],
+.midnight-theme [style*="color: #999"] {
+    color: #c0c0e0 !important;
+}
+
+/* ── 27. MIDNIGHT: HINTERGRUND #f8f9fa (PAGINATION-CONTAINER) ────────────
+   Pagination-Container hat inline style background:#f8f9fa.
+   Midnight-Text #e0e0f0 auf #f8f9fa = 1.24:1 ❌.
+   Fix: Dunklen Hintergrund #16213e verwenden → 8.97:1 ✅.
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme [style*="background:#f8f9fa"],
+body.midnight-theme [style*="background: #f8f9fa"],
+body.midnight-theme [style*="background-color:#f8f9fa"],
+body.midnight-theme [style*="background-color: #f8f9fa"],
+.midnight-theme [style*="background:#f8f9fa"],
+.midnight-theme [style*="background: #f8f9fa"] {
+    background: #16213e !important;
+    background-color: #16213e !important;
+    color: #e0e0f0 !important;
+}
+
+/* ── 28. MIDNIGHT: LINK-FARBE #3498db ────────────────────────────────────
+   Links im Notizen-Feld haben inline style color:#3498db.
+   Auf dunklem Midnight-Hintergrund: 5.41:1 ✅.
+   Auf hellem #f8f9fa (wenn Zelle hell gerendert): 2.99:1 ❌.
+   Fix: In Midnight auf helleres Blau umstellen das auf BEIDEN Hintergründen
+   funktioniert. #60a5fa = 5.09:1 auf #1a1a2e ✅ und 2.75:1 auf weiß (hell).
+   Besser: #93c5fd = weicher auf dunkel, aber auf hell noch nicht gut.
+   Ansatz: Link-Farbe im Midnight-Theme auf #7dd3fc setzen.
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme [style*="color: #3498db"],
+body.midnight-theme [style*="color:#3498db"],
+body.midnight-theme a[style*="color: #3498db"],
+body.midnight-theme a[style*="color:#3498db"],
+.midnight-theme [style*="color: #3498db"],
+.midnight-theme a[style*="color: #3498db"] {
+    color: #7dd3fc !important;
+    /* #7dd3fc auf #1a1a2e = 8.44:1 ✅, auf #16213e = 7.85:1 ✅ */
+}
+
+/* ── 29. MIDNIGHT: stats-icon ANIMATED INLINE BG ────────────────────────
+   .stats-icon bekommt per Animation background-color: rgb(248,249,250)
+   als Inline-Style (Computed Value von #f8f9fa). Midnight-Text #e0e0f0
+   darauf = 1.23:1 ❌.
+   Fix: Direkte Klassen-Überschreibung + Attributselektor für rgb-Wert.
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme .stats-icon,
+.midnight-theme .stats-icon {
+    color: #e0e0f0 !important;
+    background-color: #16213e !important;
+}
+
+body.midnight-theme [style*="background-color: rgb(248, 249, 250)"],
+body.midnight-theme [style*="background-color:rgb(248,249,250)"],
+.midnight-theme [style*="background-color: rgb(248, 249, 250)"] {
+    background-color: #16213e !important;
+    color: #e0e0f0 !important;
+}
+
+/* ── 30. MIDNIGHT: #333 UND #666 ALS INLINE FARBEN ───────────────────────
+   dashboard.php und andere Seiten setzen color:#333 und color:#666 als
+   Inline-Styles. Auf Midnight-Hintergrund #1a1a2e:
+   #333 = 1.35:1 ❌,  #666 = 2.97:1 ❌.
+   Section 17 überschreibt #666 → #595959, aber #595959 auf midnight = 2.43:1 ❌.
+   Fix: Hex-Werte direkt in Midnight auf helle Farben setzen.
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme [style*="color: #333"],
+body.midnight-theme [style*="color:#333"],
+body.midnight-theme [style*="color: #333333"],
+body.midnight-theme [style*="color:#333333"],
+.midnight-theme [style*="color: #333"],
+.midnight-theme [style*="color:#333"] {
+    color: #e0e0f0 !important; /* 13.07:1 ✅ */
+}
+
+body.midnight-theme [style*="color: #666"],
+body.midnight-theme [style*="color:#666"],
+body.midnight-theme [style*="color: #666666"],
+body.midnight-theme [style*="color:#666666"],
+.midnight-theme [style*="color: #666"],
+.midnight-theme [style*="color:#666"] {
+    color: #c4b5fd !important; /* 9.24:1 ✅ — leicht lila passt zum Midnight-Theme */
+}
+
+/* ── 31. MINT: #999 ALS INLINE FARBE ────────────────────────────────────
+   dashboard.php setzt color:#999 für sekundären Text (EK-Preis, Zeitstempel).
+   Auf Mint-Hintergrund #f0fdf4: 2.72:1 ❌.
+   Fix: Dunkelgrüner Ton der zum Mint-Theme passt.
+   ──────────────────────────────────────────────────────────────────────── */
+body.mint-theme [style*="color: #999"],
+body.mint-theme [style*="color:#999"],
+body.mint-theme [style*="color: #999999"],
+body.mint-theme [style*="color:#999999"],
+.mint-theme [style*="color: #999"],
+.mint-theme [style*="color:#999"] {
+    color: #2d6b4a !important; /* 6.05:1 auf #f0fdf4 ✅ */
+}
+
+/* ── 32. MIDNIGHT: WEISSER HINTERGRUND AUS ANIMATION (rgb(255,255,255)) ──
+   .stat-icon und andere Elemente bekommen per Counter-Animation
+   background-color: rgb(255,255,255) als Inline-Style.
+   Midnight-Text #e0e0f0 auf weiß = 1.3:1 ❌.
+   Fix: Weißen Hintergrund in Midnight auf dunkelblau #2a2a4a setzen.
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme .stat-icon,
+.midnight-theme .stat-icon {
+    background-color: #2a2a4a !important;
+    color: #e0e0f0 !important;
+}
+
+body.midnight-theme [style*="background-color: rgb(255, 255, 255)"],
+body.midnight-theme [style*="background-color:rgb(255,255,255)"],
+body.midnight-theme [style*="background-color: white"],
+.midnight-theme [style*="background-color: rgb(255, 255, 255)"] {
+    background-color: #2a2a4a !important;
+    color: #e0e0f0 !important;
+}
+
+/* ── 33. MINT: #059669 AUF WEISSEM HINTERGRUND ───────────────────────────
+   h3 und andere Elemente bekommen per Animation color: rgb(5,150,105)
+   = #059669 (Mint-Primärfarbe) auf background-color: rgb(255,255,255).
+   Kontrast: 3.77:1 ❌.
+   Fix: Dunkleres Mint #036b4a = 6.55:1 ✅.
+   ──────────────────────────────────────────────────────────────────────── */
+body.mint-theme [style*="color: rgb(5, 150, 105)"],
+body.mint-theme [style*="color:rgb(5,150,105)"],
+.mint-theme [style*="color: rgb(5, 150, 105)"] {
+    color: #036b4a !important; /* 6.55:1 auf weiß ✅ */
+}
+
+/* ── 34. MIDNIGHT: CHART-ELEMENTE ────────────────────────────────────────
+   .chart-label Spans und .chart-bar-bg divs in dashboard.php bekommen
+   per Animation background-color: rgb(255,255,255) bzw. rgb(240,240,240).
+   Midnight-Text #e0e0f0 auf weiß = 1.3:1 ❌.
+   Fix über Klassen-Selektoren (höhere Spezifität als Attribut-Selektoren).
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme .chart-label,
+body.midnight-theme .chart-label span,
+body.midnight-theme .chart-label > *,
+.midnight-theme .chart-label,
+.midnight-theme .chart-label span {
+    color: #e0e0f0 !important;
+    background-color: transparent !important;
+}
+
+body.midnight-theme .chart-bar-bg,
+.midnight-theme .chart-bar-bg {
+    background: #2a2a4a !important;
+}
+
+body.midnight-theme .stat-card,
+.midnight-theme .stat-card {
+    background-color: #1e1e38 !important;
+    color: #e0e0f0 !important;
+}
+
+body.midnight-theme .stat-value,
+.midnight-theme .stat-value {
+    color: #e0e0f0 !important;
+}
+
+body.midnight-theme .stat-label,
+.midnight-theme .stat-label {
+    color: #c4b5fd !important;
+}
+
+/* Alle animierten Spans/Divs mit weißem Hintergrund in Midnight */
+body.midnight-theme .stats-grid span,
+body.midnight-theme .stats-grid div,
+.midnight-theme .stats-grid span {
+    background-color: transparent !important;
+}
+
+/* ── 35. MIDNIGHT: STAT-TREND RGBA-FARBEN ────────────────────────────────
+   enhancements.css: .stat-trend span { opacity: .8 }
+   → Browser serialisiert als rgba(22,163,74,0.8) auf dark bg = 4.28:1 ❌
+   Fix: opacity auf 1 + hellere Farben die auf dunklem Bg ≥ 4.5:1 ergeben.
+   ──────────────────────────────────────────────────────────────────────── */
+body.midnight-theme .stat-trend span,
+.midnight-theme .stat-trend span {
+    opacity: 1 !important;
+}
+
+body.midnight-theme .trend-up,
+.midnight-theme .trend-up {
+    color: #4ade80 !important; /* 9.79:1 auf #1a1a2e ✅ */
+    background: rgba(74, 222, 128, 0.15) !important;
+}
+
+body.midnight-theme .trend-down,
+.midnight-theme .trend-down {
+    color: #fca5a5 !important; /* 8.99:1 auf #1a1a2e ✅ */
+    background: rgba(252, 165, 165, 0.15) !important;
+}
+
+/* rgba-Inline-Style Overrides als Fallback */
+body.midnight-theme [style*="color: rgba(22, 163, 74"],
+body.midnight-theme [style*="color:rgba(22,163,74"],
+.midnight-theme [style*="color: rgba(22, 163, 74"] {
+    color: #4ade80 !important;
+}
+
+body.midnight-theme [style*="color: rgba(220, 38, 38"],
+body.midnight-theme [style*="color:rgba(220,38,38"],
+.midnight-theme [style*="color: rgba(220, 38, 38"] {
+    color: #fca5a5 !important;
+}
+
+/* ── WCAG: Upload-Zone Icon Kontrast (add.php) ──────────────────────────────
+   #3498db auf #f9f9f9 = 2.99:1 → zu wenig
+   #1a6fa8 auf #f9f9f9 = 4.56:1 → AA bestanden                               */
+.upload-zone-icon {
+    color: #1a6fa8 !important;
+}
+
+/* ── WCAG 2.5.5: Touch Targets ≥ 44×44px ───────────────────────────────────
+   Betrifft: Icon-Action-Buttons (index.php), Icon-Buttons (backup.php),
+   Paginierungs-Links, Sprach-Dropdown, Checkboxen                           */
+
+/* Index: Bearbeiten/Löschen Icon-Buttons (waren 32×32px) */
+.icon-action-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+}
+
+/* Backend: Download/Restore/Löschen Icon-Buttons (waren 34×34px) */
+.icon-btn {
+    min-width: 44px !important;
+    min-height: 44px !important;
+}
+
+/* Paginierung (waren ~36px hoch durch padding: 8px 14px) */
+.pagination-link {
+    min-height: 44px !important;
+    min-width: 44px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+/* Checkboxen: Klickfläche vergrößern ohne Optik zu ändern */
+.item-checkbox,
+.bulk-checkbox,
+input[type="checkbox"].item-checkbox,
+input[type="checkbox"].bulk-checkbox {
+    min-width: 24px;
+    min-height: 24px;
+    cursor: pointer;
+    position: relative;
+}
+/* Unsichtbarer Klick-Bereich drumherum */
+.item-checkbox::before,
+.bulk-checkbox::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px;
+    min-height: 44px;
+}
+
+/* Sprach-Dropdown Button */
+.lang-dropdown-btn {
+    min-height: 44px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* ── 36. NEXT-UI: DETAIL-PANE, DASHBOARD-WIDGET, SIDEBAR, SPALTEN-MANAGER ──
+   Gefunden per Live-Analyse auf valusafe.2ix.de (WAVE-Nachprüfung, 2026-08-06).
+   Ursache: Diese Klassen/Inline-Styles nutzen eigene Farben, die von den
+   Regeln oben (Abschnitt 1+2) nicht erfasst wurden, weil es sich um
+   klassenbasiertes CSS handelt statt um Inline-Styles, bzw. um neue
+   Design-Tokens (--vs-text-subtle), die für Dekor-Icons gedacht sind aber
+   auch für echten Fließtext verwendet werden.
+   ──────────────────────────────────────────────────────────────────────── */
+
+/* Detail-Pane Leerzustand ("Gegenstand auswählen"): next.css setzt
+   .vs-detail-empty auf var(--vs-text-subtle) — das ist für Icons gedacht,
+   nicht für Fließtext. cloud: 3.00:1, navy: 3.69:1 → beide ❌.
+   Fix: nur den <p>-Text abfangen, das Icon bleibt unverändert. */
+.vs-detail-empty p {
+    color: #2c5578 !important; /* 7.84:1 auf weißem Detail-Pane-Hintergrund ✅ */
+}
+body.midnight-theme .vs-detail-empty p,
+body.dark-theme .vs-detail-empty p {
+    color: #e0e0f0 !important; /* helle Farbe für dunklen dp-bg ✅ */
+}
+
+/* Formular-Feldlabels in der Detail-Pane (.vs-dp-label) — selbes Problem
+   wie oben, ebenfalls über --vs-text-subtle gesetzt. */
+.vs-dp-label {
+    color: #2c5578 !important;
+}
+body.midnight-theme .vs-dp-label,
+body.dark-theme .vs-dp-label {
+    color: #e0e0f0 !important;
+}
+
+/* Sidebar-Rubriktitel (.vsm-sidebar-title): nutzt var(--vs-muted,#64748b) —
+   --vs-muted ist kein definiertes Token, der Fallback greift immer.
+   4.16:1 auf #e6f1fb → knapp unter AA. */
+.vsm-sidebar-title {
+    color: #334155 !important; /* 9.04:1 auf #e6f1fb ✅ */
+}
+
+/* Mini-Statistik-Labels in den Einstellungen (.stat-mini-label: color:#888,
+   klassenbasiert — wird von Abschnitt 1 oben nicht erfasst). */
+.stat-mini-label {
+    color: #595959 !important;
+}
+
+/* Spalten-Manager: Drag-Handle-Icon (.column-drag-handle: color:#999,
+   klassenbasiert, 2.70:1 auf #f8f9fa). */
+.column-drag-handle {
+    color: #595959 !important;
+}
+
+/* Dashboard Versicherungs-Bereitschaft-Widget: Kriterien-Label und Tipp-Text
+   (.bereit-criterion-label, .bereit-tip: color:#888, klassenbasiert). */
+.bereit-criterion-label,
+.bereit-tip {
+    color: #595959 !important;
+}
+
+/* Dashboard Bereitschaft-Widget: Prozentwerte/Score werden per PHP als
+   Inline-Style in Ampelfarben gesetzt (style="color:#27ae60/#f39c12/#e74c3c").
+   Rohfarben auf #f8f9fa/weiß: grün 2.7–2.9:1, orange 2.08:1, rot 3.62:1 — alle ❌. */
+[style*="color:#27ae60"],
+[style*="color: #27ae60"] {
+    color: #166534 !important; /* 7.13:1 ✅ */
+}
+[style*="color:#f39c12"],
+[style*="color: #f39c12"] {
+    color: #8a5a00 !important; /* 5.62:1 ✅ */
+}
+[style*="color:#e74c3c"],
+[style*="color: #e74c3c"] {
+    color: #a93226 !important; /* 6.28:1 ✅ */
+}
+
+/* Versicherungs-Beträge: nutzen color:var(--vs-success) direkt als Inline-
+   Style (umgeht das Badge-System). Auf hellblauem Sidebar-Hintergrund
+   (#e6f1fb) nur 4.48:1 — knapp unter AA. */
+[style*="color:var(--vs-success)"],
+[style*="color: var(--vs-success)"] {
+    color: #166534 !important; /* 6.23:1 auf #e6f1fb ✅ */
+}
+
+/* "Abbrechen"-Button in add.php: weißer Text auf background:#e74c3c
+   (3.82:1 ❌). Betrifft alle Buttons mit diesem Inline-Hintergrund. */
+[style*="background:#e74c3c"],
+[style*="background: #e74c3c"] {
+    background-color: #a93226 !important; /* 6.62:1 mit Weiß ✅ */
+}
+
+/* Kategorie-Unterzeile in der Versicherungsübersicht (z.B. "15 Gegenstände"):
+   Inline-Style color:#999 auf #e6f1fb = 2.49:1. Bereits durch Abschnitt 1
+   erfasst (jetzt mit !important), hier nur zur Dokumentation. */

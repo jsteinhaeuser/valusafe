@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — lavender.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → lavender.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #ab47bc;
+  --vs-accent-hover:    #8e24aa;
+  --vs-accent-light:    #f3e5f5;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #f3e5f5;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #ede0f5;
+
+  --vs-text:            #4a148c;
+  --vs-text-muted:      #7b1fa2;
+  --vs-text-subtle:     #9c4ab0;
+
+  --vs-border:          #e1bee7;
+  --vs-border-strong:   #ce93d8;
+
+  --vs-rail-bg:         #2a0a40;
+  --vs-rail-text:       #7b1fa2;
+  --vs-rail-active:     #4a148c;
+  --vs-rail-active-bg:  rgba(74,20,140,0.15);
+  --vs-rail-hover-bg:   rgba(74,20,140,0.08);
+
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #e1bee7;
+}

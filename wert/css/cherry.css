@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — cherry.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → cherry.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #be123c;
+  --vs-accent-hover:    #9f1239;
+  --vs-accent-light:    #fff0f3;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #fff0f3;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #ffe4e8;
+
+  --vs-text:            #3b0a1a;
+  --vs-text-muted:      #9f4060;
+  --vs-text-subtle:     #c08090;
+
+  --vs-border:          #fecdd3;
+  --vs-border-strong:   #fda4af;
+
+  --vs-rail-bg:         #280612;
+  --vs-rail-text:       #be123c;
+  --vs-rail-active:     #3b0a1a;
+  --vs-rail-active-bg:  rgba(59,10,26,0.15);
+  --vs-rail-hover-bg:   rgba(59,10,26,0.08);
+
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #fecdd3;
+}

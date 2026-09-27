@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — mint.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → mint.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #059669;
+  --vs-accent-hover:    #047857;
+  --vs-accent-light:    #f0fdf4;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #f0fdf4;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #dcfce7;
+
+  --vs-text:            #14342a;
+  --vs-text-muted:      #065f46;
+  --vs-text-subtle:     #3a8a6a;
+
+  --vs-border:          #a7f3d0;
+  --vs-border-strong:   #6ee7b7;
+
+  --vs-rail-bg:         #0a2820;
+  --vs-rail-text:       #059669;
+  --vs-rail-active:     #14342a;
+  --vs-rail-active-bg:  rgba(20,52,42,0.15);
+  --vs-rail-hover-bg:   rgba(20,52,42,0.08);
+
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #a7f3d0;
+}

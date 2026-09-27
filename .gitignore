@@ -1,0 +1,63 @@
+# ValuSafe — was nicht ins Repository gehoert
+#
+# Diese Datei gilt fuer das oeffentliche Repository. Sie ist kuerzer als die
+# des Arbeits-Repositories, weil hier weder der Hub noch die Flottenwerkzeuge
+# liegen. Was sie ausschliesst, sind Dateien, die auf JEDER Installation
+# entstehen — Zugangsdaten, Daten der Anwender, Protokolle.
+
+# ── Zugangsdaten ─────────────────────────────────────────────────────────────
+# Greift auf jeder Ebene. config.php wird bei der Installation erzeugt und
+# enthaelt Datenbankpasswort und Token. Sie gehoert nirgendwohin ausser auf
+# den eigenen Server.
+config.php
+# Ausnahme: backend/config.php traegt keine Zugangsdaten, sondern
+# Anwendungscode (u. a. isSuperAdmin()). Ohne sie brechen alle Seiten unter
+# backend/ mit HTTP 500 ab - gefunden beim Docker-Test von 4.3.25.
+!wert/backend/config.php
+.env
+.env.*
+!.env.example
+
+# ── Daten der Anwender ───────────────────────────────────────────────────────
+wert/upload/*
+!wert/upload/.gitkeep
+# Die Schutzdateien gehoeren zur Anwendung, nicht zu den Anwenderdaten:
+# upload/.htaccess verhindert u. a., dass eine hochgeladene PHP-Datei
+# ausgefuehrt wird. Bis 4.3.27 schloss die Regel darueber sie mit aus.
+!wert/upload/.htaccess
+!wert/upload/.gitignore
+wert/documents/*
+!wert/documents/.gitkeep
+!wert/documents/.htaccess
+# service/ enthaelt die mitgelieferten Hilfetexte, keine Anwenderdaten.
+# Ausgeschlossen sind nur die Handbuch-PDFs, wie im Arbeits-Repository;
+# das Installationspaket nimmt sie aus dem Arbeitsstand mit.
+wert/service/*.pdf
+wert/service/Rueckmeldung.md
+
+# ── Sicherungen und Protokolle ───────────────────────────────────────────────
+wert/backups/*
+!wert/backups/.gitkeep
+wert/logs/*
+!wert/logs/.gitkeep
+*.log
+*.sql
+!install/schema.sql
+*.bak
+*.backup
+
+# ── Abhaengigkeiten ──────────────────────────────────────────────────────────
+wert/vendor/
+node_modules/
+
+# ── Werkzeuge, die waehrend der Entwicklung entstehen ────────────────────────
+wert/check_*.php
+wert/test_*.php
+wert/fix_*.php
+wert/RESET_CACHE.php
+wert/generate_password.php
+wert/password_tool.php
+
+# ── Betriebssystem ───────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

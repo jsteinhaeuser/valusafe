@@ -1,0 +1,42 @@
+# ── Sensible Konfiguration ────────────────────────────────────────────────────
+app/config.php
+.env
+*.env
+
+# ── Nutzerdaten (werden als Docker-Volumes eingebunden) ───────────────────────
+app/upload/
+app/documents/
+app/backups/
+app/logs/
+
+# ── Mac-Metadateien ───────────────────────────────────────────────────────────
+**/.DS_Store
+.DS_Store
+
+# ── Entwicklungs-Hilfstools ───────────────────────────────────────────────────
+app/debug_*.log
+app/debug_*.php
+*.log
+app/file_list_generator.html
+app/cleanup_rolle_column.php
+app/check_css.php
+app/check_columns.php
+app/check_database.php
+app/generate_password.php
+app/sw-reset.php
+app/add_formatPrice.php
+
+# ── SQL-Migrations- und Setup-Dateien (nicht für Produktion) ──────────────────
+app/migration_*.sql
+app/*.sql
+
+# ── Git ───────────────────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Docker-eigene Dateien (nicht in Container kopieren) ───────────────────────
+Dockerfile
+docker-compose.yml
+docker-compose.*.yml
+.env.example
+README_DOCKER.md

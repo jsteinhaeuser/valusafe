@@ -1,0 +1,211 @@
+# KONTEXTSENSITIVE HILFE
+## Datum: 28. Dezember 2025
+
+---
+
+## ✅ NEUE FUNKTION: HILFE-SYSTEM
+
+### Was ist neu:
+- **Floating Hilfe-Button** unten rechts auf jeder Seite
+- **Kontextsensitive Tipps** je nach Seite unterschiedlich
+- **Einfach zugänglich** - Ein Klick auf das ❓ Icon
+- **Modern & Benutzerfreundlich** mit schönem Modal-Dialog
+
+---
+
+## 🎨 DESIGN:
+
+### Hilfe-Button:
+```
+┌─────┐
+│  ❓  │  ← Blauer runder Button
+└─────┘     Unten rechts, schwebend
+```
+
+- **Position:** Unten rechts, fixed
+- **Größe:** 60x60px (auf Mobile 50x50px)
+- **Farbe:** #3498db (Blau)
+- **Hover-Effekt:** Wird größer beim Überfahren
+- **Immer sichtbar:** Auch beim Scrollen
+
+### Modal-Dialog:
+```
+┌──────────────────────────┐
+│ ⚙️ Seiten-Titel       ✕  │ ← Header (Blau)
+├──────────────────────────┤
+│                          │
+│ Hilfetext mit:           │
+│ • Überschriften          │
+│ • Listen                 │
+│ • Tastenkombinationen    │
+│ • Tipps                  │
+│                          │
+├──────────────────────────┤
+│            [Schließen]   │ ← Footer
+└──────────────────────────┘
+```
+
+---
+
+## 📋 HILFE FÜR JEDE SEITE:
+
+### 1. **index.php** - Übersicht
+- Suchen & Filtern
+- Schnellzugriff (Bearbeiten, Löschen, Sortieren)
+- Export-Funktionen
+
+### 2. **add.php** - Neuer Gegenstand
+- Pflichtfelder
+- Datumsfelder erklärt
+- Bild-Upload Tipps
+- Ersteller-Feld
+- Tastenkombinationen
+
+### 3. **edit.php** - Bearbeiten
+- Änderungen durchführen
+- Neues Bild hochladen
+- Speichern-Tipps
+
+### 4. **manage_orte.php** - Orte
+- Hinzufügen, Bearbeiten, Löschen
+- Verwendungen-Hinweis
+- Tipps für Orte
+
+### 5. **manage_kategorien.php** - Kategorien
+- Hinzufügen, Bearbeiten, Löschen
+- Verwendungen-Hinweis
+- Tipps für Kategorien
+
+### 6. **settings.php** - Einstellungen
+- Theme-Auswahl erklärt
+- Standard-Ersteller
+- Passwort ändern
+
+### 7. **export_csv.php** - CSV Export
+- Was ist CSV
+- Öffnen mit Excel/LibreOffice
+- Was wird exportiert
+
+### 8. **export_pdf.php** - PDF Export
+- Mit Bildern!
+- Anleitung "Drucken als PDF"
+- Verwendungszwecke
+
+---
+
+## ✨ FEATURES:
+
+### Benutzerfreundlich:
+- ✅ **Ein Klick** - Hilfe ist sofort da
+- ✅ **Kontextsensitiv** - Passende Tipps zur aktuellen Seite
+- ✅ **Übersichtlich** - Gut strukturiert mit Icons
+- ✅ **Schließbar** - ESC-Taste oder Klick außerhalb
+- ✅ **Responsive** - Funktioniert auf Desktop und Mobile
+
+### Design:
+- ✅ **Modern** - Schönes Modal mit Animationen
+- ✅ **Icons** - Visuelle Hinweise (📝, 📸, ⌨️, etc.)
+- ✅ **Farbcodierung** - Blauer Header, weiß Body
+- ✅ **Scrollbar** - Bei langen Texten
+- ✅ **Tastenkombinationen** - Mit `<kbd>` Tag dargestellt
+
+### Technisch:
+- ✅ **Vanilla JavaScript** - Keine Abhängigkeiten
+- ✅ **Leichtgewichtig** - Schnell ladend
+- ✅ **Nicht beim Drucken** - Ausgeblendet im Print-Modus
+- ✅ **Zugänglich** - Keyboard-Navigation (ESC)
+
+---
+
+## 📤 DATEIEN ZUM HOCHLADEN:
+
+1. ✅ **js/context_help.js** - NEU: Hilfe-System
+2. ✅ **footer.php** - GEÄNDERT: Script eingebunden
+
+---
+
+## 🧪 TESTEN:
+
+1. Lade die Dateien hoch
+2. Gehe zu beliebiger Seite (z.B. index.php)
+3. ✅ Unten rechts sollte blauer ❓ Button erscheinen
+4. Klicke auf den Button
+5. ✅ Modal-Dialog mit Hilfe sollte erscheinen
+6. ✅ Hilfe-Text sollte zur aktuellen Seite passen
+7. Teste "Schließen" Button, ESC-Taste, Klick außerhalb
+8. ✅ Alles sollte den Dialog schließen
+
+### Verschiedene Seiten testen:
+- index.php → Übersicht-Hilfe
+- add.php → Neue-Gegenstand-Hilfe
+- settings.php → Einstellungen-Hilfe
+- export_pdf.php → PDF-Export-Hilfe
+
+---
+
+## 💡 VERWENDUNG FÜR BENUTZER:
+
+### Wann nutzen:
+- ❓ "Wie funktioniert diese Seite?"
+- ❓ "Was bedeuten diese Felder?"
+- ❓ "Wie exportiere ich als PDF?"
+- ❓ "Welche Tastenkombinationen gibt es?"
+
+### So nutzen:
+1. Klick auf ❓ unten rechts
+2. Hilfe lesen
+3. Dialog schließen (ESC oder Klick außerhalb)
+
+---
+
+## 🎯 VORTEILE:
+
+### Für neue Benutzer:
+- ✅ Schnelle Einarbeitung
+- ✅ Keine externe Dokumentation nötig
+- ✅ Immer verfügbar
+
+### Für erfahrene Benutzer:
+- ✅ Erinnerung an Funktionen
+- ✅ Tastenkombinationen-Referenz
+- ✅ Schnelle Tipps
+
+### Für Admin:
+- ✅ Weniger Support-Anfragen
+- ✅ Selbsterklärende Oberfläche
+- ✅ Einfach zu pflegen
+
+---
+
+## 🔧 ANPASSUNGEN (OPTIONAL):
+
+Wenn du eigene Hilfe-Texte hinzufügen willst:
+
+1. Öffne `js/context_help.js`
+2. Finde das `helpTexts` Objekt
+3. Füge neue Seite hinzu:
+
+```javascript
+'meine_seite.php': {
+    title: '🎯 Meine Seite',
+    content: `
+        <h4>Überschrift</h4>
+        <p>Text hier...</p>
+        <ul>
+            <li>Punkt 1</li>
+            <li>Punkt 2</li>
+        </ul>
+    `
+}
+```
+
+---
+
+## ✅ ERGEBNIS:
+
+- Blauer Hilfe-Button auf jeder Seite
+- Kontextsensitive Tipps
+- Modern & Benutzerfreundlich
+- Selbsterklärende Anwendung
+
+Lade die Dateien hoch und teste! 🚀

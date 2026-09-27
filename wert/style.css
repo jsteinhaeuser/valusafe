@@ -1,0 +1,9 @@
+/* Main Stylesheet - Wertsachen Inventar */
+
+/* Basis wird von Theme-CSS übernommen */
+/* Diese Datei ist nur ein Fallback */
+
+body {
+    margin: 0;
+    padding: 0;
+}

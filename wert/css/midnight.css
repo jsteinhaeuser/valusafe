@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — midnight.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → midnight.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #7c3aed;
+  --vs-accent-hover:    #6d28d9;
+  --vs-accent-light:    #2d1b69;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #0f0f1a;
+  --vs-surface:         #1a1a2e;
+  --vs-surface-2:       #1e1e38;
+
+  --vs-text:            #e0e0f0;
+  --vs-text-muted:      #9090b0;
+  --vs-text-subtle:     #6060a0;
+
+  --vs-border:          #2a2a4a;
+  --vs-border-strong:   #3a3a6a;
+
+  --vs-rail-bg:         #16213e;
+  --vs-rail-text:       #9090b0;
+  --vs-rail-active:     #ffffff;
+  --vs-rail-active-bg:  #2d1b69;
+  --vs-rail-hover-bg:   #1e2a4a;
+
+  --vs-dp-bg:           #1a1a2e;
+  --vs-dp-border:       #2a2a4a;
+}

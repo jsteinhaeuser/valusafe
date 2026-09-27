@@ -1,0 +1,310 @@
+/**
+ * multi_image_upload.css
+ * Styles für Multi-Image Upload & Galerie
+ */
+
+/* =============================================
+   IMAGE GALLERY (Bestehende Bilder)
+   ============================================= */
+.image-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.image-gallery-item {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f5f5f5;
+    aspect-ratio: 1;
+    cursor: grab;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, transform 0.2s;
+}
+
+.image-gallery-item:hover {
+    transform: scale(1.02);
+    border-color: #667eea;
+}
+
+.image-gallery-item.is-primary {
+    border-color: #27ae60;
+}
+
+.image-gallery-item.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.image-gallery-item.drag-over {
+    border-color: #667eea;
+    border-style: dashed;
+}
+
+.image-gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Primary Badge */
+.primary-badge {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: #166534;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Action Buttons auf Bild */
+.image-actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+    display: flex;
+    gap: 4px;
+    padding: 8px 4px 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.image-gallery-item:hover .image-actions {
+    opacity: 1;
+}
+
+.image-action-btn {
+    flex: 1;
+    border: none;
+    border-radius: 4px;
+    padding: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.2);
+    color: white;
+    transition: background 0.2s;
+}
+
+.image-action-btn:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+.image-action-btn.delete-btn:hover {
+    background: rgba(231,76,60,0.8);
+}
+
+.image-action-btn.primary-btn:hover {
+    background: rgba(39,174,96,0.8);
+}
+
+/* Image Count Badge */
+.image-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f0f0f0;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #595959;
+    margin-bottom: 12px;
+}
+
+/* Empty State */
+.image-gallery-empty {
+    text-align: center;
+    padding: 20px;
+    color: #595959;
+    font-size: 14px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+/* =============================================
+   UPLOAD ZONE (Multi)
+   ============================================= */
+.multi-upload-zone {
+    border: 2px dashed #ddd;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #ffffff;
+    position: relative;
+}
+
+.multi-upload-zone:hover,
+.multi-upload-zone.drag-over {
+    border-color: #667eea;
+    background: #f0f2ff;
+}
+
+.multi-upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+
+.multi-upload-zone-icon {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+.multi-upload-zone-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.multi-upload-zone-hint {
+    font-size: 12px;
+    color: #595959;
+}
+
+/* Upload Progress */
+.upload-progress-container {
+    margin-top: 12px;
+    display: none;
+}
+
+.upload-progress-bar {
+    height: 4px;
+    background: #eee;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.upload-progress-fill {
+    height: 100%;
+    background: #667eea;
+    border-radius: 2px;
+    transition: width 0.3s;
+    width: 0%;
+}
+
+.upload-progress-text {
+    font-size: 12px;
+    color: #595959;
+    margin-top: 4px;
+}
+
+/* Upload Errors */
+.upload-errors {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #fdf0f0;
+    border: 1px solid #f5c0c0;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #e74c3c;
+    display: none;
+}
+
+/* =============================================
+   LIGHTBOX
+   ============================================= */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 10000;
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox-overlay.active {
+    display: flex;
+}
+
+.lightbox-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.lightbox-content img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    font-size: 24px;
+    padding: 12px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.lightbox-nav:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+.lightbox-prev { left: -60px; }
+.lightbox-next { right: -60px; }
+
+.lightbox-counter {
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+}
+
+/* =============================================
+   MOBILE OPTIMIERUNGEN
+   ============================================= */
+@media (max-width: 768px) {
+    .image-gallery {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    
+    .image-actions {
+        opacity: 1; /* Immer sichtbar auf Mobile */
+    }
+    
+    .lightbox-prev { left: -44px; }
+    .lightbox-next { right: -44px; }
+    
+    .multi-upload-zone {
+        padding: 16px;
+    }
+}

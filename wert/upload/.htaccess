@@ -1,0 +1,30 @@
+# upload/.htaccess - Schutz des Upload-Verzeichnisses
+
+# Verhindere PHP-Ausführung
+<FilesMatch "\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Verhindere Verzeichnis-Listing
+Options -Indexes
+
+# Entferne Script-Handler
+RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps .cgi .pl .py .jsp .asp .sh
+RemoveType .php .phtml .php3 .php4 .php5 .php7 .phps
+
+# Setze Content-Type für Bilder
+<IfModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg)$">
+        Header set Content-Type "image/jpeg"
+    </FilesMatch>
+    <FilesMatch "\.png$">
+        Header set Content-Type "image/png"
+    </FilesMatch>
+    <FilesMatch "\.gif$">
+        Header set Content-Type "image/gif"
+    </FilesMatch>
+    <FilesMatch "\.webp$">
+        Header set Content-Type "image/webp"
+    </FilesMatch>
+</IfModule>

@@ -1,0 +1,31 @@
+/*
+ * ValuSafe — forest.css (v2 — Token-Override)
+ * Nur :root-Farb-Overrides. Alles andere kommt aus tokens.css.
+ * Ladereihenfolge: tokens.css → next.css → forest.css → wcag_global.css
+ */
+:root {
+  --vs-accent:          #2e7d32;
+  --vs-accent-hover:    #1b5e20;
+  --vs-accent-light:    #e8f5e9;
+  --vs-accent-text:     #ffffff;
+
+  --vs-bg:              #e8f5e9;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #dcedc8;
+
+  --vs-text:            #1b5e20;
+  --vs-text-muted:      #4caf50;
+  --vs-text-subtle:     #81c784;
+
+  --vs-border:          #c8e6c9;
+  --vs-border-strong:   #a5d6a7;
+
+  --vs-rail-bg:         #1a3d1f;
+  --vs-rail-text:       #2e7d32;
+  --vs-rail-active:     #1b5e20;
+  --vs-rail-active-bg:  rgba(27,94,32,0.15);
+  --vs-rail-hover-bg:   rgba(27,94,32,0.08);
+
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #c8e6c9;
+}

@@ -1,0 +1,90 @@
+/*
+ * ValuSafe — cloud.css (v2 — Token-Override-Muster)
+ * Dieses File ist das REFERENZ-THEME für alle anderen 13 Themes.
+ *
+ * Aufbau jedes Theme-CSS:
+ *   1. :root-Block  → überschreibt --vs-* Farben (die Einzigen!)
+ *   2. Optionale theme-spezifische Micro-Overrides
+ *
+ * Was NICHT in Theme-CSS gehört:
+ *   - font-family (tokens.css)
+ *   - button-Styles (tokens.css)
+ *   - Layout-Konstanten (tokens.css)
+ *   - h1–h4 Sizes (tokens.css)
+ *
+ * Ladereihenfolge: tokens.css → next.css → cloud.css → wcag_global.css
+ */
+
+/* ═══════════════════════════════════════════════
+   CLOUD – Farb-Overrides
+   Alle anderen --vs-* Werte kommen aus tokens.css
+   ═══════════════════════════════════════════════ */
+:root {
+  /* Primär/Akzent */
+  --vs-accent:          #185fa5;
+  --vs-accent-hover:    #0e4a82;
+  --vs-accent-light:    #e6f1fb;
+  --vs-accent-text:     #ffffff;
+
+  /* Oberflächen */
+  --vs-bg:              #f4f7fb;
+  --vs-surface:         #ffffff;
+  --vs-surface-2:       #edf2f9;
+
+  /* Text */
+  --vs-text:            #14181d;
+  --vs-text-muted:      #5a6474;
+  --vs-text-subtle:     #8c96a3;
+
+  /* Rahmen */
+  --vs-border:          #d1dae8;
+  --vs-border-strong:   #a8b6c8;
+
+  /* Rail */
+  --vs-rail-bg:         #1a2a40;
+  --vs-rail-text:       #a8bdd4;
+  --vs-rail-active:     #ffffff;
+  --vs-rail-active-bg:  rgba(255,255,255,0.12);
+  --vs-rail-hover-bg:   rgba(255,255,255,0.07);
+
+  /* Detail Pane */
+  --vs-dp-bg:           #ffffff;
+  --vs-dp-border:       #d1dae8;
+}
+
+/*
+ * TEMPLATE FÜR WEITERE THEMES
+ * Einfach die Hex-Werte ersetzen, Rest bleibt identisch.
+ *
+ * Beispiele (Umrechnungshilfe):
+ *
+ * navy:
+ *   --vs-accent:       #1a3a5c
+ *   --vs-bg:           #eef2f7
+ *   --vs-rail-bg:      #0d1f33
+ *
+ * forest:
+ *   --vs-accent:       #2d6a35
+ *   --vs-bg:           #f0f5f1
+ *   --vs-rail-bg:      #1a3d1f
+ *
+ * midnight:
+ *   --vs-accent:       #5c7cfa
+ *   --vs-bg:           #0f1117
+ *   --vs-surface:      #1a1d27
+ *   --vs-surface-2:    #23273a
+ *   --vs-text:         #e2e6f0
+ *   --vs-text-muted:   #8892a4
+ *   --vs-border:       #2e3345
+ *   --vs-rail-bg:      #0a0c14
+ *
+ * dark (wie midnight, aber weniger Sättigung):
+ *   --vs-accent:       #4e8ef7
+ *   --vs-bg:           #111318
+ *   --vs-surface:      #1c1f28
+ *   --vs-surface-2:    #252830
+ *   --vs-text:         #dde2ec
+ *   --vs-text-muted:   #7a8494
+ *   --vs-border:       #2a2e3c
+ *   --vs-rail-bg:      #0c0e14
+ */

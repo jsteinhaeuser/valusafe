@@ -1,0 +1,112 @@
+# Projektname. Bestimmt das Namenspraefix der Container (valusafe-app-1,
+# valusafe-db-1 ...). Wer ValuSafe mehrfach auf demselben Rechner betreibt,
+# ueberschreibt ihn beim Aufruf:  docker compose -p valusafe-test up -d
+name: valusafe
+
+services:
+
+  # ── Anwendung ──────────────────────────────────────────────────────────────
+  app:
+    # Kontext ist das Projektwurzelverzeichnis, damit der Dockerfile die
+    # Anwendung direkt aus wert/ kopieren kann — ohne vorherigen Kopierschritt.
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8080}:80"
+    environment:
+      DB_HOST: db
+      DB_NAME: ${DB_NAME:-wertsachen}
+      DB_USER: ${DB_USER:-wertsachen}
+      DB_PASS: ${DB_PASS:?DB_PASS ist leer. Bitte in der .env ein Datenbank-Passwort setzen.}
+      # APP_NAME stand bisher in der .env.example, wurde aber nie
+      # durchgereicht — die Einstellung war wirkungslos.
+      APP_NAME: ${APP_NAME:-ValuSafe}
+      # Administratorkonto. Wird nur beim ersten Start angelegt, wenn die
+      # users-Tabelle leer ist. Bleibt ADMIN_PASS leer, erzeugt der Entrypoint
+      # ein Zufallspasswort und schreibt es einmalig ins Container-Log.
+      ADMIN_USER: ${ADMIN_USER:-admin}
+      ADMIN_PASS: ${ADMIN_PASS:-}
+      # Optional. Leer lassen: dann erzeugt der Entrypoint beim ersten Start
+      # einen zufaelligen Token und legt ihn im backups-Volume ab.
+      BACKUP_TOKEN: ${BACKUP_TOKEN:-}
+    volumes:
+      # Persistente Nutzerdaten außerhalb des Containers
+      - uploads:/var/www/html/upload
+      - documents:/var/www/html/documents
+      - backups:/var/www/html/backups
+      - applogs:/var/www/html/logs
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - wertsachen_net
+
+  # ── Datenbank ──────────────────────────────────────────────────────────────
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASS:?DB_ROOT_PASS ist leer. Bitte in der .env ein Root-Passwort setzen.}
+      MYSQL_DATABASE: ${DB_NAME:-wertsachen}
+      MYSQL_USER: ${DB_USER:-wertsachen}
+      MYSQL_PASSWORD: ${DB_PASS:?DB_PASS ist leer. Bitte in der .env ein Datenbank-Passwort setzen.}
+    volumes:
+      - db_data:/var/lib/mysql
+      # Das Schema liegt seit 4.3.22 in install/schema.sql, weil es nicht mehr
+      # nur Docker gehoert: der Setup-Assistent legt die Datenbank aus
+      # derselben Datei an, und der Schema-Vergleich auf dem Hub haelt sie
+      # gegen den Master. Ein Bauplan, drei Abnehmer.
+      - ../install/schema.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      # start_period ist entscheidend: Beim ALLERERSTEN Start legt MariaDB das
+      # Datenverzeichnis an und spielt init.sql ein. Auf langsamer Hardware —
+      # NAS, Raspberry Pi, kleiner V-Server — dauert das mehrere Minuten. Ohne
+      # diese Angabe zaehlen die Fehlversuche waehrend der Initialisierung mit,
+      # Compose erklaert die Datenbank nach gut 100 Sekunden fuer ungesund und
+      # startet den Anwendungscontainer nie. Gemessen auf einer Synology mit
+      # btrfs: 125 Sekunden. 300 Sekunden lassen genug Luft.
+      start_period: 300s
+    networks:
+      - wertsachen_net
+
+  # ── phpMyAdmin (nur Entwicklung) ───────────────────────────────────────────
+  # Starten mit: docker compose --profile dev up
+  phpmyadmin:
+    image: phpmyadmin:latest
+    restart: unless-stopped
+    profiles:
+      - dev
+    ports:
+      - "${PMA_PORT:-8081}:80"
+    environment:
+      PMA_HOST: db
+      PMA_USER: ${DB_USER:-wertsachen}
+      PMA_PASSWORD: ${DB_PASS:?DB_PASS ist leer. Bitte in der .env ein Datenbank-Passwort setzen.}
+    depends_on:
+      - db
+    networks:
+      - wertsachen_net
+
+# ── Volumes ───────────────────────────────────────────────────────────────────
+volumes:
+  db_data:
+    driver: local
+  uploads:
+    driver: local
+  documents:
+    driver: local
+  backups:
+    driver: local
+  applogs:
+    driver: local
+
+# ── Netzwerk ──────────────────────────────────────────────────────────────────
+networks:
+  wertsachen_net:
+    driver: bridge

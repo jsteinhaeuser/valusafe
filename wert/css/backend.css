@@ -1,0 +1,164 @@
+/*
+ * ValuSafe — backend.css
+ * Komponenten-Styles für Backend-Seiten (stats.php, gallery.php etc.)
+ * Einbinden in backend/layout/header_next_page.php:
+ *   <link rel="stylesheet" href="../css/backend.css">
+ * Ladereihenfolge: tokens.css → next.css → {theme}.css → wcag_global.css → backend.css
+ *
+ * Kein :root-Block hier — alle Tokens kommen aus tokens.css.
+ * Fallback-Werte (var(--vs-x, #hex)) wurden entfernt, da tokens.css
+ * immer geladen wird und die Defaults setzt.
+ */
+
+/* ── Page Content ─────────────────────────────────────────────── */
+.vs-page-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--vs-sp-6) 28px;
+    min-width: 0;
+}
+.vs-page-content h2 {
+    font-size: var(--vs-text-lg);
+    font-weight: var(--vs-weight-medium);
+    color: var(--vs-text);
+    margin-bottom: var(--vs-sp-5);
+    padding-bottom: var(--vs-sp-3);
+    border-bottom: 2px solid var(--vs-border);
+}
+
+/* ── Backend main wrapper ─────────────────────────────────────── */
+.backend-main {
+    width: 100%;
+}
+
+/* ── View-Toggle-Buttons (Grid / Liste) ───────────────────────── */
+.btn-view {
+    padding: var(--vs-sp-2) var(--vs-sp-4);
+    border: 2px solid var(--vs-border);
+    border-radius: var(--vs-r);
+    background: var(--vs-surface);
+    cursor: pointer;
+    font-size: var(--vs-text-sm);
+    font-weight: var(--vs-weight-medium);
+    color: var(--vs-text);
+    transition: var(--vs-transition-fast);
+}
+.btn-view:hover {
+    border-color: var(--vs-accent);
+    color: var(--vs-accent);
+    background: var(--vs-accent-light);
+}
+.btn-view.active {
+    border-color: var(--vs-accent);
+    background: var(--vs-accent);
+    color: var(--vs-accent-text);
+}
+
+/* ── Widget Grid ──────────────────────────────────────────────── */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--vs-sp-5);
+}
+
+/* ── Widget Card ──────────────────────────────────────────────── */
+.widget-card {
+    background: var(--vs-surface);
+    border-radius: var(--vs-r-lg);
+    padding: var(--vs-sp-5);
+    box-shadow: var(--vs-shadow-resting);
+    position: relative;
+    overflow: hidden;
+}
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.widget-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--vs-text);
+    line-height: 1.1;
+}
+.widget-label {
+    font-size: var(--vs-text-sm);
+    color: var(--vs-text-muted);
+    margin-top: var(--vs-sp-1);
+}
+.widget-icon {
+    font-size: 36px;
+    opacity: 0.12;
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    line-height: 1;
+    pointer-events: none;
+}
+.widget-footer {
+    margin-top: var(--vs-sp-4);
+    padding-top: var(--vs-sp-2);
+    border-top: 1px solid var(--vs-border);
+}
+
+/* ── Activity Timeline ────────────────────────────────────────── */
+.activity-timeline {
+    background: var(--vs-surface);
+    border-radius: var(--vs-r-lg);
+    padding: var(--vs-sp-6);
+    box-shadow: var(--vs-shadow-resting);
+}
+.activity-timeline h2 {
+    border-bottom: none;
+    margin-bottom: var(--vs-sp-4);
+}
+
+/* ── Backend Table ────────────────────────────────────────────── */
+.backend-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: var(--vs-sp-3);
+}
+.backend-table thead tr {
+    background: var(--vs-surface-2);
+    border-bottom: 2px solid var(--vs-border);
+}
+.backend-table th,
+.backend-table td {
+    padding: var(--vs-sp-3);
+    text-align: left;
+    font-size: var(--vs-text-sm);
+}
+.backend-table tbody tr {
+    border-bottom: 1px solid var(--vs-border);
+    transition: var(--vs-transition-fast);
+}
+.backend-table tbody tr:hover {
+    background: var(--vs-surface-2);
+}
+
+/* ── Badges ───────────────────────────────────────────────────── */
+.badge {
+    padding: 3px 10px;
+    border-radius: var(--vs-r-pill);
+    font-size: var(--vs-text-xs);
+    font-weight: var(--vs-weight-medium);
+    display: inline-block;
+}
+.badge-info      { background: var(--vs-accent-light);   color: var(--vs-accent); }
+.badge-secondary { background: var(--vs-surface-2);      color: var(--vs-text-muted); }
+.badge-success   { background: var(--vs-success-light);  color: var(--vs-success-text); }
+
+/* ── Small Buttons ────────────────────────────────────────────── */
+.btn-small {
+    padding: 5px 12px;
+    border: none;
+    border-radius: var(--vs-r-sm);
+    cursor: pointer;
+    font-size: var(--vs-text-xs);
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity var(--vs-transition-fast);
+}
+.btn-small:hover  { opacity: 0.82; }
+.btn-delete       { background: var(--vs-danger); color: #ffffff; }
