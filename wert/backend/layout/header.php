@@ -115,7 +115,7 @@ if (file_exists($_updateCheckFile)) {
         
         <!-- Breadcrumb -->
         <nav class="backend-breadcrumb" aria-label="Breadcrumb">
-            <a href="/backend/index.php" class="bc-item">🏠 Dashboard</a>
+            <a href="<?php echo $cssPrefix ?? ''; ?>index.php" class="bc-item">🏠 Dashboard</a>
             <?php if ($breadcrumb[2]): ?>
                 <span class="bc-sep">›</span>
                 <span class="bc-item bc-group"><?php echo $breadcrumb[2]; ?></span>

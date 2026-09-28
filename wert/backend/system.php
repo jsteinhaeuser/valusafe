@@ -209,20 +209,19 @@ include 'layout/header_next_page.php';
                     <td style="width: 38%;">PHP-Betriebsart</td>
                     <td>
                         <code style="background: var(--vs-surface-2); padding: 4px 8px; border-radius: 4px;"><?php echo htmlspecialchars($fp['sapi']); ?></code>
-                        <?php if (!$fp['userini_wirkt']): ?>
-                            <span class="badge badge-warning" style="margin-left:8px;">.user.ini wird hier NICHT gelesen</span>
-                        <?php endif; ?>
                     </td>
                 </tr>
                 <tr>
                     <td>.user.ini im Anwendungsverzeichnis</td>
                     <td>
-                        <?php if ($fp['userini_da'] && $fp['userini_wirkt']): ?>
-                            <span class="badge badge-success"><i class="ti ti-circle-check" style="color:var(--vs-success);"></i> vorhanden und wirksam</span>
-                        <?php elseif ($fp['userini_da']): ?>
-                            <span class="badge badge-warning"><i class="ti ti-alert-triangle" style="color:var(--vs-warning);"></i> vorhanden, aber wirkungslos</span>
+                        <?php // Seit 4.3.29 wird keine .user.ini mehr ausgeliefert: fehlerziel.php
+                              // setzt Anzeige und Ziel zur Laufzeit, in jeder Betriebsart. Eine
+                              // noch vorhandene Datei ist ein Rest - die bis 4.3.28 mitgelieferte
+                              // schaltete display_errors EIN. ?>
+                        <?php if ($fp['userini_da']): ?>
+                            <span class="badge badge-warning"><i class="ti ti-alert-triangle" style="color:var(--vs-warning);"></i> liegt noch da — seit 4.3.29 überflüssig, bitte entfernen</span>
                         <?php else: ?>
-                            <span class="badge badge-danger"><i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> FEHLT</span>
+                            <span class="badge badge-success"><i class="ti ti-circle-check" style="color:var(--vs-success);"></i> keine — nicht nötig, fehlerziel.php regelt das</span>
                         <?php endif; ?>
                     </td>
                 </tr>

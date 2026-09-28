@@ -223,15 +223,12 @@ try {
     if ($filter_raum)     $paginationParams['filter_raum']     = $filter_raum;
     if ($filter_position) $paginationParams['filter_position'] = $filter_position;
 
-    // Standort-Räume für Filter-Dropdown laden
-    $standorte_filter    = $db->select("SELECT id, name FROM raeume ORDER BY name");
-    $positionen_filter = [];
-    if ($filter_raum) {
-        $positionen_filter = $db->select(
-            "SELECT id, name FROM positionen WHERE raum_id = ? ORDER BY name",
-            [$filter_raum]
-        );
-    }
+    // Räume für das Filter-Dropdown. Hier stand bis 4.3.28 zusätzlich eine
+    // Positionsliste "WHERE raum_id = $filter_raum" - falsch, weil
+    // positionen.raum_id die STANDORT-Nummer traegt (backend/locations.php),
+    // und ohnehin tot: keine Auswahl zeigte sie an. filter_position aus der
+    // Adresse wirkt weiter, direkt auf w.position_id.
+    $raeume_filter = $db->select("SELECT id, name FROM raeume ORDER BY name");
 
     // JETZT: Daten mit LIMIT laden
     $sql .= " LIMIT {$pagination['limit']} OFFSET {$pagination['offset']}";
@@ -554,7 +551,7 @@ unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
         </select>
         <?php endif; ?>
 
-        <?php if (!empty($standorte_filter)): ?>
+        <?php if (!empty($raeume_filter)): ?>
         <form method="get" action="index.php" style="display:contents;">
             <?php foreach ($paginationParams as $k => $v):
                 if ($k === 'filter_raum' || $k === 'filter_position') continue;
@@ -568,7 +565,7 @@ unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
             <select name="filter_raum" onchange="this.form.submit()"
                     style="padding:6px 10px; border-radius:6px; border:1px solid var(--vs-border,#e2e8f0); font-size:13px; background:white;">
                 <option value=""><?php echo t('alle_raeume') ?: 'Alle Räume'; ?></option>
-                <?php foreach ($standorte_filter as $r): ?>
+                <?php foreach ($raeume_filter as $r): ?>
                 <option value="<?php echo $r['id']; ?>" <?php echo $filter_raum == $r['id'] ? 'selected' : ''; ?>>
                     📍 <?php echo htmlspecialchars($r['name']); ?>
                 </option>

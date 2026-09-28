@@ -87,7 +87,7 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
 <html lang="<?php echo defined('APP_LANG') ? APP_LANG : 'de'; ?>">
 <head>
     <meta charset="UTF-8">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#185fa5">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($_pageTitle); ?></title>

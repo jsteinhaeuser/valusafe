@@ -30,8 +30,8 @@ Options -Indexes
     Deny from all
 </FilesMatch>
 
-# Schutz von Backup- und Log-Dateien
-<FilesMatch "\.(sql|log|bak|backup)$">
+# Schutz von Backup-, Log- und ini-Dateien (.user.ini u. a. - seit 4.3.29 nicht mehr ausgeliefert, aber ein Rest waere sonst lesbar)
+<FilesMatch "\.(sql|log|bak|backup|ini)$">
     Order allow,deny
     Deny from all
 </FilesMatch>

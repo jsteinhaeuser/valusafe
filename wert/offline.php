@@ -121,7 +121,7 @@
         <p>Die App kann gerade nicht auf den Server zugreifen. Zuletzt gespeicherte Daten werden unten angezeigt.</p>
 
         <button class="btn" onclick="window.location.reload()">🔄 Erneut versuchen</button>
-        <a class="btn btn-secondary" href="/index.php">📋 Zur Übersicht</a>
+        <a class="btn btn-secondary" href="index.php">📋 Zur Übersicht</a>
 
         <!-- Gecachte Daten aus IndexedDB / localStorage -->
         <div id="cached-items">

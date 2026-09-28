@@ -12,31 +12,34 @@
 // laufen ueber Cache First, bestehende Nutzer bekamen deshalb seit Monaten die
 // Dateien von v4.1 — auch das neue js/multi_image_upload.js haette sie nie
 // erreicht.
-const CACHE_VERSION = 'valusafe-v4.3.28';
+const CACHE_VERSION = 'valusafe-v4.3.29';
 
+// RELATIVE Pfade: sie gelten ab dem Ort dieser Datei. Bis 4.3.28 standen hier
+// "/css/..." usw. - das setzte eine Installation im Wurzelverzeichnis der
+// Domain voraus. Im Wurzelverzeichnis ergibt beides dieselbe Adresse.
 const STATIC_ASSETS = [
-    '/css/cloud.css',
-    '/css/dark.css',
-    '/css/sand.css',
-    '/css/navy.css',
-    '/css/forest.css',
-    '/css/emerald.css',
-    '/css/lavender.css',
-    '/css/midnight.css',
-    '/css/mint.css',
-    '/css/ocean.css',
-    '/css/cherry.css',
-    '/css/sunset.css',
-    '/css/glass.css',
-    '/css/next.css',
-    '/css/tokens.css',
-    '/css/backend.css',
-    '/css/tabler-icons.min.css',
-    '/js/context_help.js',
-    '/icon-192.png',
-    '/icon-512.png',
-    '/apple-touch-icon.png',
-    '/manifest.json',
+    'css/cloud.css',
+    'css/dark.css',
+    'css/sand.css',
+    'css/navy.css',
+    'css/forest.css',
+    'css/emerald.css',
+    'css/lavender.css',
+    'css/midnight.css',
+    'css/mint.css',
+    'css/ocean.css',
+    'css/cherry.css',
+    'css/sunset.css',
+    'css/glass.css',
+    'css/next.css',
+    'css/tokens.css',
+    'css/backend.css',
+    'css/tabler-icons.min.css',
+    'js/context_help.js',
+    'icon-192.png',
+    'icon-512.png',
+    'apple-touch-icon.png',
+    'manifest.json',
 ];
 
 // ── Install ──────────────────────────────────────────────────
@@ -111,7 +114,15 @@ self.addEventListener('fetch', event => {
     // Nur GET behandeln
     if (event.request.method !== 'GET') return;
 
-    const path = url.pathname;
+    // Pfad RELATIV zum Ort dieses Service Workers, mit fuehrendem '/'.
+    // Die Pruefungen unten ('/upload/', '/backend/' ...) gingen bis 4.3.28
+    // gegen den vollen Pfad. In einem Unterordner (/valusafe/upload/foto.jpg)
+    // griff dadurch keine Ausnahme, und Fotos und Belege der Nutzer waeren
+    // als "statische Datei" im Cache gelandet. Ausserhalb des eigenen
+    // Verzeichnisses fasst der Service Worker nichts an.
+    const basis = new URL('./', self.location).pathname;
+    if (!url.pathname.startsWith(basis)) return;
+    const path = '/' + url.pathname.slice(basis.length);
 
     // PHP-Dateien und dynamische Routen: SW komplett umgehen
     // (kein event.respondWith → Browser handhabt den Request normal)

@@ -1,4 +1,14 @@
 <?php
+// Fehler ins Protokoll der Instanz (logs/php_errors.log), nie in die Antwort.
+// Bis 4.3.28 band dieser Agent fehlerziel.php nicht ein; seine Fehler gingen
+// ins Protokoll des Webservers, das bei lima-city nicht erreichbar ist.
+// Anzeige danach ausdruecklich aus, auch wenn die config.php FEHLER_ANZEIGEN
+// setzt: die Antwort ist JSON. is_file: fehlt fehlerziel.php, darf der
+// Versions-Vergleich nicht ausfallen - er ist es, der das Fehlen zeigt.
+if (is_file(__DIR__ . '/fehlerziel.php')) {
+    require_once __DIR__ . '/fehlerziel.php';
+}
+ini_set('display_errors', '0');
 /**
  * version_agent.php - Versions-Agent
  * Läuft auf jeder Instanz (NAS, Lima-city etc.)

@@ -2,7 +2,10 @@
 ini_set("display_errors", 0);
 error_reporting(0);
 // ajax/get_positionen.php
-// Gibt JSON-Array der Positionen für einen gegebenen Raum zurück.
+// Gibt JSON-Array der Positionen für einen gegebenen STANDORT zurück.
+// Der Parameter heisst raum_id, weil positionen.raum_id so heisst - die Spalte
+// traegt aber die Standort-Nummer (backend/locations.php). add.php/edit.php
+// uebergeben den Wert aus der Standort-Auswahl (id="standort_raum").
 require_once '../db.php';
 require_once '../helpers.php';
 

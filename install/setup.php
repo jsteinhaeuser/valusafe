@@ -84,6 +84,18 @@ $t = [
         's1_zip'        => 'ZIP-Erweiterung',
         's1_zip_ok'     => 'Verfügbar',
         's1_zip_fail'   => 'Nicht verfügbar — Backup-Funktion eingeschränkt',
+        's1_mb'         => 'mbstring (Zeichenketten)',
+        's1_mb_ok'      => 'Verfügbar',
+        's1_mb_fail'    => 'Nicht verfügbar — ValuSafe startet ohne diese Erweiterung nicht. Bitte beim Hoster aktivieren.',
+        's1_finfo'      => 'fileinfo (Dateityp-Prüfung)',
+        's1_finfo_ok'   => 'Verfügbar',
+        's1_finfo_fail' => 'Nicht verfügbar — hochgeladene Bilder und Belege können nicht geprüft werden, Uploads schlagen fehl. Bitte beim Hoster aktivieren.',
+        's1_curl'       => 'cURL',
+        's1_curl_ok'    => 'Verfügbar',
+        's1_curl_fail'  => 'Nicht verfügbar — die Barcode-Suche weicht aus, der Health-Check im Verwaltungsbereich funktioniert nicht',
+        's1_exif'       => 'EXIF',
+        's1_exif_ok'    => 'Verfügbar',
+        's1_exif_fail'  => 'Nicht verfügbar — Handyfotos werden nicht automatisch gerade gedreht',
         's1_write'      => 'Schreibrechte Hauptordner',
         's1_write_ok'   => 'Schreibzugriff vorhanden',
         's1_write_fail' => 'Kein Schreibzugriff — config.php manuell erstellen',
@@ -178,6 +190,18 @@ $t = [
         's1_zip'        => 'ZIP Extension',
         's1_zip_ok'     => 'Available',
         's1_zip_fail'   => 'Not available — backup function limited',
+        's1_mb'         => 'mbstring (strings)',
+        's1_mb_ok'      => 'Available',
+        's1_mb_fail'    => 'Not available — ValuSafe does not start without this extension. Please ask your host to enable it.',
+        's1_finfo'      => 'fileinfo (file type check)',
+        's1_finfo_ok'   => 'Available',
+        's1_finfo_fail' => 'Not available — uploaded images and receipts cannot be checked, uploads will fail. Please ask your host to enable it.',
+        's1_curl'       => 'cURL',
+        's1_curl_ok'    => 'Available',
+        's1_curl_fail'  => 'Not available — barcode lookup falls back, the health check in the admin area does not work',
+        's1_exif'       => 'EXIF',
+        's1_exif_ok'    => 'Available',
+        's1_exif_fail'  => 'Not available — phone photos are not rotated upright automatically',
         's1_write'      => 'Write permissions (root folder)',
         's1_write_ok'   => 'Write access available',
         's1_write_fail' => 'No write access — create config.php manually',
@@ -637,6 +661,32 @@ function runChecks($T) {
     $zipOk = extension_loaded('zip');
     $checks[] = ['label' => $T['s1_zip'], 'ok' => $zipOk, 'fatal' => false,
         'msg' => $zipOk ? $T['s1_zip_ok'] : $T['s1_zip_fail']];
+
+    // Bis 4.3.28 prueften wir nur die drei oben. mbstring steht ungeschuetzt
+    // in index.php und neun weiteren Dateien - ohne die Erweiterung bricht die
+    // Liste mit einem Fatal Error ab, nach einer Installation, die der
+    // Assistent gruen gemeldet hatte. fileinfo prueft jeden Upload
+    // (security.php, helpers.php). Beide deshalb zwingend.
+    $mbOk = extension_loaded('mbstring');
+    $checks[] = ['label' => $T['s1_mb'], 'ok' => $mbOk, 'fatal' => !$mbOk,
+        'msg' => $mbOk ? $T['s1_mb_ok'] : $T['s1_mb_fail']];
+    if (!$mbOk) $fatal = true;
+
+    $finfoOk = extension_loaded('fileinfo');
+    $checks[] = ['label' => $T['s1_finfo'], 'ok' => $finfoOk, 'fatal' => !$finfoOk,
+        'msg' => $finfoOk ? $T['s1_finfo_ok'] : $T['s1_finfo_fail']];
+    if (!$finfoOk) $fatal = true;
+
+    // Empfohlen: curl (isbn_lookup.php hat einen Rueckfall, der Health-Check
+    // in backend/health_checks_lib.php nicht), exif (helpers.php prueft selbst).
+    // mysqli und intl baut das Dockerfile ein, der Code benutzt beide nicht.
+    $curlOk = extension_loaded('curl');
+    $checks[] = ['label' => $T['s1_curl'], 'ok' => $curlOk, 'fatal' => false,
+        'msg' => $curlOk ? $T['s1_curl_ok'] : $T['s1_curl_fail']];
+
+    $exifOk = extension_loaded('exif');
+    $checks[] = ['label' => $T['s1_exif'], 'ok' => $exifOk, 'fatal' => false,
+        'msg' => $exifOk ? $T['s1_exif_ok'] : $T['s1_exif_fail']];
 
     // Schreibrechte
     $writeOk = is_writable(__DIR__);

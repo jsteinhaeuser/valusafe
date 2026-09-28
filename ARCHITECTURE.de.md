@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 28. September 2026 · Version 4.3.28 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 28. September 2026 · Version 4.3.29 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -216,6 +216,8 @@ Serverseitig gerendertes HTML, ergänzt um punktuelles JavaScript. Kein Build-Sc
 
 Bis 4.3.5 gab es hier *zwei* Service Worker: `footer_next.php` und `footer_next_page.php` registrieren `/sw.js` — den echten; `js/main.js` registrierte zusätzlich `/service-worker.js`, einen 299 Byte großen Stub, der alle Requests durchreichte. Beide beanspruchten denselben Scope `/`. Da `js/main.js` seit dem Next Interface von keiner Seite mehr eingebunden wurde, sind beide Dateien in 4.3.5 entfallen; es bleibt `/sw.js`.
 
+Seit 4.3.29 steht die Registrierung an einer Stelle, `components/sw_registrierung.php`. Bis dahin schloss `footer_next.php` seine Kopie in `if (!headers_sent())` ein — am Seitenende immer falsch, sie registrierte also nie; das taten nur Seiten mit `footer_next_page.php`. Service Worker, Manifest und eine Handvoll Links nutzten absolute Pfade (`/sw.js`, `/css/…`, `/index.php`) und setzten eine Installation im Wurzelverzeichnis der Domain voraus; sie sind jetzt relativ, und `sw.js` prüft Pfade relativ zum eigenen Ort — eine Installation im Unterordner funktioniert, und Uploads der Nutzer bleiben dort aus dem Cache.
+
 ## 11. Tests, Build, Deployment
 
 **Tests:** PHPUnit 10, drei Dateien, 38 Testmethoden, im Entwicklungs-Repository. Sie decken reine Logikfunktionen ab — Pfad-Normalisierung im Sync, Rate-Limiter, Migrationshelfer. **Kein Test berührt Authentifizierung, Datenbank oder einen Controller.** Die Abdeckung des Geschäftskerns liegt bei null. Das wird gerade angegangen.
@@ -236,8 +238,6 @@ lang bewiesen. Am 27. September 2026 wurde die Liste erneut geprüft.
 
 1. **Keine Testabdeckung des Geschäftskerns.** Drei Testdateien decken Migrationshelfer, die Versuchssperre und die Sync-Helfer ab. Gegenstände, Berechtigungen und Exporte sind ungeprüft. Die Tests gehören nicht zum veröffentlichten Repository.
 2. **Keine `.htaccess`-Entsprechung auf der NAS-Instanz** (Nginx). Der Verzeichnisschutz hängt dort an der Serverkonfiguration, nicht an mitgelieferten Dateien.
-3. **Kein CSRF-Schutz auf dem Hub.** Abgemildert durch `SameSite=Strict`, aber nicht im Code abgesichert. Der Hub gehört nicht zum veröffentlichten Paket.
-4. **Zwei Registrierungsstellen für einen Service Worker** — `footer_next.php` und `footer_next_page.php` registrieren beide `/sw.js`. Nicht zwei Worker, wie diese Liste bis zum 25. September 2026 behauptete, aber eine Doppelung, die früher oder später auseinanderläuft.
 
 **Seit der ersten Fassung dieses Dokuments behoben**
 
@@ -250,6 +250,8 @@ lang bewiesen. Am 27. September 2026 wurde die Liste erneut geprüft.
 10. ~~TLS-Zertifikatsprüfung projektweit deaktiviert.~~ Behoben am 15.09.2026 an sechzehn Stellen. Die Begründung für das Abschalten — ein selbstsigniertes Zertifikat auf dem NAS — erwies sich beim Messen als falsch.
 11. ~~Ungenutzte zweite Datenbankverbindung.~~ In 4.3.3 entfernt.
 12. ~~`public.php` versendet E-Mails ohne Rate-Limit, der POST-Zweig läuft vor der Token-Prüfung.~~ Behoben am 25.09.2026 — vier Wochen nachdem es hier aufgeschrieben wurde, und nur, weil dieses Dokument für die Veröffentlichung durchgesehen wurde. `bin/public_reihenfolge_pruefen.php` wacht jetzt über die Reihenfolge.
+13. ~~Kein CSRF-Schutz auf dem Hub, „abgemildert durch `SameSite=Strict`“.~~ Die Abmilderung gab es nicht: Der Hub setzte die Cookie-Merkmale per `php_value` in der `.htaccess`, und sein Server befolgt das nicht — gemessen am 28. September 2026 kam das Cookie ohne `Secure`, `HttpOnly` und `SameSite`. Seit 4.3.29 setzt der Hub sie im Code, bevor eine Sitzung beginnt, und weist verändernde Anfragen ab, die der Browser als `Sec-Fetch-Site: cross-site` kennzeichnet. Der Hub gehört nicht zum veröffentlichten Paket.
+14. ~~Zwei Registrierungsstellen für einen Service Worker.~~ Seit 4.3.29 eine, siehe Abschnitt 10.
 
 ## 13. Wo man mit dem Lesen anfängt
 
@@ -265,4 +267,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 28. September 2026, Version 4.3.28. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 28. September 2026, Version 4.3.29. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

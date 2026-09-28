@@ -280,7 +280,7 @@ include 'layout/header_next_page.php';
 
 </div>
 
-<script src="/js/qrcode.min.js"></script>
+<script src="../js/qrcode.min.js"></script>
 <script>
 <?php if ($token): ?>
 const qrUrl   = <?php echo json_encode($public_url); ?>;

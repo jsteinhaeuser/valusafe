@@ -109,13 +109,36 @@ document.addEventListener('click',function(e){
 /* ── Service Modal Funktionen (kein PHP) ── */
 var _vsmFiles=[], _vsmLoaded=false, _vsmBase='';
 
+// Solange die Hilfe offen ist, traegt das (i) in der Leiste die Markierung,
+// nicht das Symbol der Seite darunter (aufgefallen beim Docker-Test 26.09.:
+// Hilfe auf settings.php geoeffnet, das Zahnrad blieb markiert).
+var _vsmRailVorher=[];
+function _vsmRail(an){
+    var hilfe=document.querySelector('.vs-rail-btn[onclick^="openServiceModal"]');
+    if(!hilfe)return;
+    if(an){
+        if(hilfe.classList.contains('vs-rail-on'))return;
+        _vsmRailVorher=[].slice.call(document.querySelectorAll('.vs-rail-btn.vs-rail-on'));
+        _vsmRailVorher.forEach(function(b){b.classList.remove('vs-rail-on');});
+        hilfe.classList.add('vs-rail-on');
+        hilfe.setAttribute('aria-expanded','true');
+    }else{
+        hilfe.classList.remove('vs-rail-on');
+        hilfe.setAttribute('aria-expanded','false');
+        _vsmRailVorher.forEach(function(b){b.classList.add('vs-rail-on');});
+        _vsmRailVorher=[];
+    }
+}
+
 function openServiceModal(){
     document.getElementById('vsServiceModal').classList.add('active');
+    _vsmRail(true);
     document.body.style.overflow='hidden';
     if(!_vsmLoaded)_renderVsm();
 }
 function closeServiceModal(){
     document.getElementById('vsServiceModal').classList.remove('active');
+    _vsmRail(false);
     document.body.style.overflow='';
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeServiceModal();});
@@ -228,27 +251,7 @@ try {
 <?php endif; ?>
 
 
-<script>
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' })
-            .then(function(reg) {
-                // Auf Update prüfen
-                reg.addEventListener('updatefound', function() {
-                    const worker = reg.installing;
-                    worker.addEventListener('statechange', function() {
-                        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('[SW] Update verfügbar — beim nächsten Laden aktiv');
-                        }
-                    });
-                });
-            })
-            .catch(function(err) {
-                console.warn('[SW] Registrierung fehlgeschlagen:', err);
-            });
-    });
-}
-</script>
+<?php include __DIR__ . '/components/sw_registrierung.php'; ?>
 
 <?php include __DIR__ . '/components/vs_dialog.php'; ?>
 </body>

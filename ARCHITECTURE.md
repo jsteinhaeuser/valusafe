@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 28 September 2026 · Version 4.3.28 (all sections checked against the source before publication)
+**As of:** 28 September 2026 · Version 4.3.29 (all sections checked against the source before publication)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -216,6 +216,8 @@ Server-rendered HTML with JavaScript sprinkled in where needed. No build step, n
 
 Until 4.3.5 there were *two* service workers here: `footer_next.php` and `footer_next_page.php` register `/sw.js` — the real one; `js/main.js` additionally registered `/service-worker.js`, a 299-byte stub that passed every request straight through. Both claimed the same scope `/`. Since `js/main.js` had not been included by any page since the Next Interface, both files were removed in 4.3.5, leaving `/sw.js`.
 
+Since 4.3.29 the registration lives in one place, `components/sw_registrierung.php`. Until then `footer_next.php` wrapped its copy in `if (!headers_sent())` — always false at the end of a page, so it never registered; only pages with `footer_next_page.php` did. Service worker, manifest and a handful of links used absolute paths (`/sw.js`, `/css/…`, `/index.php`) and assumed an installation at the domain root; they are relative now, and `sw.js` checks paths relative to its own location, so an installation in a subfolder works and user uploads there stay out of the cache.
+
 ## 11. Tests, build, deployment
 
 **Tests:** PHPUnit 10, three files, 38 test methods, kept in the development repository. They cover pure-logic helpers — path normalisation in the sync, the rate limiter, migration helpers. **No test touches authentication, the database or a controller.** Coverage of the business core is zero. This is being addressed.
@@ -239,8 +241,6 @@ that, four weeks after it was written down. The list was checked again on
 
 1. **No test coverage of the business core.** Three test files cover migration helpers, the rate limiter and the sync helpers. Nothing covers items, permissions or exports. The tests are not part of the published repository.
 2. **No `.htaccess` equivalent on the NAS instance** (Nginx). Directory protection there rests on the server configuration, not on files shipped with the application.
-3. **No CSRF protection on the control hub.** Mitigated by `SameSite=Strict`, but not enforced in code. The hub is not part of the published package.
-4. **Two registration sites for one service worker** — `footer_next.php` and `footer_next_page.php` both register `/sw.js`. Not two workers, as this list claimed until 25 September 2026, but a duplication that will diverge sooner or later.
 
 **Fixed since this document was first written**
 
@@ -253,6 +253,8 @@ that, four weeks after it was written down. The list was checked again on
 10. ~~TLS certificate verification disabled project-wide.~~ Fixed 15 September 2026 across sixteen call sites. The justification for switching it off — a self-signed certificate on the NAS — turned out to be wrong when measured.
 11. ~~An unused second database connection.~~ Removed in 4.3.3.
 12. ~~`public.php` sends email without rate limiting, and its POST branch runs before the token check.~~ Fixed 25 September 2026 — four weeks after it was written down here, and only because this document was being prepared for publication. `bin/public_reihenfolge_pruefen.php` now guards the order.
+13. ~~No CSRF protection on the control hub, "mitigated by `SameSite=Strict`".~~ The mitigation did not exist: the hub set the cookie attributes via `php_value` in `.htaccess`, which its server ignores — measured on 28 September 2026, the cookie came without `Secure`, `HttpOnly` or `SameSite`. Since 4.3.29 the hub sets them in code before any session starts and rejects state-changing requests that the browser marks as `Sec-Fetch-Site: cross-site`. The hub is not part of the published package.
+14. ~~Two registration sites for one service worker.~~ One since 4.3.29, see section 10.
 
 ## 13. Where to start reading
 
@@ -268,4 +270,4 @@ For a critical eye, the most rewarding read is `helpers.php` (1,516 lines, grown
 
 ---
 
-*This document describes the state as of 28 September 2026, version 4.3.28. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 28 September 2026, version 4.3.29. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 28.09.2026 08:30 von bin/changelog_export.php.
+ * Erzeugt am 28.09.2026 17:36 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,32 @@
  */
 
 return [
+    [
+        'version' => '4.3.29',
+        'date' => '2026-09-28',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Das Installationspaket enthielt eine Datei .user.ini, die PHP-Fehlermeldungen im Browser anzeigen liess - mit Dateipfaden und Ausschnitten aus Datenbankabfragen. Sie war fuer die Entwicklung gedacht und haette nie ausgeliefert werden duerfen. Seit Version 4.3.25 schaltet ValuSafe diese Anzeige auf fast allen Seiten selbst ab und schreibt Fehler stattdessen in logs/php_errors.log; die Datei ist jetzt entfernt. Wer ValuSafe aus dem Paket installiert hat: bitte die Datei .user.ini im Installationsordner loeschen (sie ist im FTP-Programm oft erst sichtbar, wenn versteckte Dateien eingeblendet werden). Die Systemuebersicht im Verwaltungsbereich zeigt an, ob sie noch da ist.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Der Einrichtungsassistent prueft jetzt alle PHP-Erweiterungen, die ValuSafe braucht. Bisher fragte er nur nach drei; fehlte mbstring oder fileinfo beim Hoster, meldete er trotzdem alles gruen - danach brach die Liste mit einem Fehler ab oder jeder Bild-Upload schlug fehl. Beide sind jetzt Voraussetzung, cURL und EXIF werden als Empfehlung angezeigt. Bestehende Installationen betrifft das nicht: wo ValuSafe laeuft, sind beide vorhanden.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Solange das Fenster "Hilfe & Informationen" offen ist, ist in der Seitenleiste jetzt das (i) hervorgehoben. Bisher blieb das Symbol der Seite darunter markiert, etwa das Zahnrad der Einstellungen - es sah aus, als haette der Klick nicht gewirkt. Beim Schliessen kehrt die Markierung zurueck.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'ValuSafe laesst sich jetzt auch in einem Unterordner betreiben, etwa unter beispiel.de/valusafe/, ohne dass die App-Funktion leidet. Bisher gingen Service Worker, App-Manifest, der QR-Code auf der Seite "Oeffentlicher Link" und zwei Links davon aus, dass ValuSafe direkt im Wurzelverzeichnis der Domain liegt; in einem Unterordner liess sich ValuSafe nicht als App installieren, und der Zwischenspeicher haette Fotos und Belege mit erfasst. Wer im Wurzelverzeichnis installiert hat, merkt keinen Unterschied.'
+            ]
+        ]
+    ],
     [
         'version' => '4.3.28',
         'date' => '2026-09-28',
@@ -98,52 +124,6 @@ return [
                 'type' => 'fix',
                 'public' => true,
                 'text' => 'Drei alte Tabellen fuer Raeume und Standorte sind entfernt: orte, standort_raeume und standort_positionen, dazu die Spalte wertsachen.ort_id. Sie stammten aus frueheren Ausbaustufen, der Programmcode las sie nicht mehr, und eine Neuinstallation legte sie trotzdem an. Bestehende Datenbanken raeumt die Migration 011 auf, und sie loescht die alten Tabellen samt Inhalt. Wer ValuSafe selbst betreibt, legt nach dem Aktualisieren zuerst eine Sicherung der Datenbank an und ruft dann einmal migrate.php auf.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.24',
-        'date' => '2026-09-19',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'ValuSafe hat jetzt eine Anlaufstelle fuer Sicherheitsmeldungen. Wer einen Fehler findet, der die Sicherheit betrifft, weiss ab sofort, wohin damit: Die Datei SECURITY.md liegt dem Download bei und nennt Anschrift, Sprachen und was in eine Meldung gehoert. Sie sagt auch ehrlich, was Sie NICHT erwarten duerfen — hier steht keine Firma mit Rufbereitschaft, sondern eine einzelne Person. Fuer Sie als Anwender aendert sich nichts; Sie muessen nichts tun.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Von allen Instanzen wurde eine alte Hilfsdatei entfernt, die dort nicht mehr hingehoerte: Sie stammte aus einer frueheren Ausbaustufe, war ohne Anmeldung erreichbar und wurde von keiner Seite mehr verlinkt. Wer ValuSafe als Paket heruntergeladen hat, war nie betroffen — die Datei war nie Teil der Auslieferung. Auf den gepflegten Instanzen ist sie weg; zu tun ist nichts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Der Systemcheck im Verwaltungsbereich behauptet nicht mehr das Gegenteil, wenn er keine Antwort bekommt. Bisher las er nur den Antwortcode — und bei gar keiner Antwort war der 0. Eine Pruefung wie "diese Datei darf nicht mehr erreichbar sein" meldete dann eine Warnung, obwohl in Wahrheit ueberhaupt nichts gemessen worden war. Jetzt steht dort "Unbeantwortet" samt Grund. Unbeantwortet ist weder gruen noch rot, und das ist die ehrlichere Auskunft.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Alte Sicherungen werden nicht mehr zu eifrig aufgeraeumt. Bisher loeschte ValuSafe jede Sicherung, die aelter als sieben Tage war — auch dann, wenn es die letzte ihrer Art war. Wer zum Beispiel nur die Bilder sicherte, verlor dabei unbemerkt die letzte Sicherung der Datenbank. Jetzt bleiben von jeder Art (Datenbank, Bilder, Programmdateien) die drei neuesten immer erhalten, egal wie alt. Ausserdem sagt eine Sicherung, bei der keine Art ausgewaehlt war, das jetzt deutlich, statt "abgeschlossen" zu melden. Zu tun ist nichts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'SICHERHEIT: Das Kontaktformular der oeffentlichen Sammlungsansicht laesst sich nicht mehr ohne gueltigen Link benutzen. Die oeffentliche Ansicht ist ueber einen geheimen Link erreichbar, und nur wer diesen Link hat, soll den Besitzer ueber das Formular anschreiben koennen. Tatsaechlich wurde die Anfrage bisher schon verarbeitet, BEVOR der Link geprueft wurde: Wer die Adresse der Seite kannte, konnte damit beliebig viele E-Mails an den Betreiber ausloesen, auch ohne den Link zu kennen. Jetzt wird zuerst der Link geprueft, und die Zahl der Anfragen je Absender ist begrenzt - mit derselben Sperre, die auch die Anmeldung schuetzt. Wer die oeffentliche Ansicht nicht benutzt, war nie betroffen. Zu tun ist nichts ausser der Aktualisierung.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Raumangaben stimmen jetzt ueberall ueberein. Bisher holte ValuSafe den Raum eines Gegenstandes an manchen Stellen aus einer anderen Tabelle als an anderen: die Liste und die Eingabemasken aus der einen, die PDF- und CSV-Exporte, die Auswertungen und das Schnellerfassen aus der anderen. Solange beide Tabellen denselben Inhalt hatten, fiel das nicht auf; wo sie auseinanderliefen, konnte im Export ein anderer Raum stehen als am Bildschirm — oder gar keiner. Vor der Umstellung wurde auf allen elf gepflegten Installationen nachgezaehlt: betroffen war bisher kein einzelner Gegenstand, auf einer Installation fehlte in den Exporten ein Raumname. Ab jetzt lesen alle Stellen dieselbe Tabelle. Sichtbar wird das dort, wo Raeume bisher nur in der Liste auftauchten: sie stehen nun auch in den Exporten und Auswertungen.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Eine alte Hilfsdatei im Verwaltungsbereich ist entfernt, und zwar diesmal wirklich ueberall. Sie stammte aus der Anfangszeit und war von keiner Seite eingebunden, konnte aber direkt aufgerufen werden — und dann trug sie dem Besucher die Rechte des Administrators zu, der sich zuletzt angemeldet hatte. Wer die Adresse nicht kannte, konnte sie nicht aufrufen; wer sie kannte, brauchte kein Passwort. Ein Eintrag von Ende August meldete diese Datei schon einmal als entfernt — sie war es aber nur auf den Servern, nicht in der Vorlage, aus der neue Auslieferungen entstehen. Jetzt ist sie an beiden Stellen weg. Wer ValuSafe als Paket heruntergeladen hat, sollte die Datei wert/backend/backend_session.php loeschen, falls sie dort noch liegt.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Der Verlauf auf der Bearbeiten-Seite zeigt jetzt tatsaechlich etwas an. Unter jedem Gegenstand sollte stehen, wer ihn wann angelegt oder geaendert hat — dieser Abschnitt blieb aber immer leer, auf allen Instanzen, seit es ihn gibt. Die Abfrage suchte Spalten unter Namen, die es in der Datenbank nie gab. Aufgefallen ist es erst, als ValuSafe anfing, Fehlermeldungen an einer Stelle festzuhalten, in die man hineinsehen kann: dort stand die Meldung schwarz auf weiss. Wer bisher wissen wollte, wer etwas geaendert hat, musste in die Verwaltung unter Aktivitaeten gehen; das geht weiter, aber jetzt steht es auch direkt am Gegenstand.'
             ],
             [
                 'type' => 'feature',

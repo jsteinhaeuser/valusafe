@@ -26,7 +26,7 @@
     <h2>🔄 Service Worker Reset</h2>
     <p>Alle Service Worker werden deregistriert und Caches geleert.</p>
     <div id="status">⏳ Läuft…</div>
-    <a href="/index.php" class="btn" id="homeBtn" style="display:none">🏠 Zur App</a>
+    <a href="index.php" class="btn" id="homeBtn" style="display:none">🏠 Zur App</a>
 </div>
 <script>
 async function reset() {
