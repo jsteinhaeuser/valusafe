@@ -76,7 +76,7 @@ return [
     'placeholder_search' => 'Pesquisar...',
     'placeholder_notes'  => 'Notas...',
     'placeholder_select' => '-- Por favor selecione --',
-    'placeholder_all_locations' => 'Todas as localizações',
+    'placeholder_all_locations' => 'Todas as divisões',
     'placeholder_all_categories' => 'Todas as categorias',
 
     // CABEÇALHOS DE TABELA

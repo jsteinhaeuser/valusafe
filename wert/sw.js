@@ -12,7 +12,7 @@
 // laufen ueber Cache First, bestehende Nutzer bekamen deshalb seit Monaten die
 // Dateien von v4.1 — auch das neue js/multi_image_upload.js haette sie nie
 // erreicht.
-const CACHE_VERSION = 'valusafe-v4.3.27';
+const CACHE_VERSION = 'valusafe-v4.3.28';
 
 const STATIC_ASSETS = [
     '/css/cloud.css',

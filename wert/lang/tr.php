@@ -81,7 +81,7 @@ return [
     'placeholder_search' => 'Ara...',
     'placeholder_notes'  => 'Notlar...',
     'placeholder_select' => '-- Lütfen seçin --',
-    'placeholder_all_locations' => 'Tüm Konumlar',
+    'placeholder_all_locations' => 'Tüm odalar',
     'placeholder_all_categories' => 'Tüm Kategoriler',
 
     // ============================================================================

@@ -76,7 +76,7 @@ return [
     'placeholder_search' => 'Zoeken...',
     'placeholder_notes'  => 'Notities...',
     'placeholder_select' => '-- Selecteer --',
-    'placeholder_all_locations' => 'Alle locaties',
+    'placeholder_all_locations' => 'Alle kamers',
     'placeholder_all_categories' => 'Alle categorieën',
 
     // TABELKOPPEN

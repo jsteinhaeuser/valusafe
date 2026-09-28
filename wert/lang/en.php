@@ -81,7 +81,7 @@ return [
     'placeholder_search' => 'Search...',
     'placeholder_notes'  => 'Notes...',
     'placeholder_select' => '-- Please select --',
-    'placeholder_all_locations' => 'All Locations',
+    'placeholder_all_locations' => 'All Rooms',
     'placeholder_all_categories' => 'All Categories',
     
     // ============================================================================

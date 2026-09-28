@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 27 September 2026 · Version 4.3.27 (all sections checked against the source before publication)
+**As of:** 28 September 2026 · Version 4.3.28 (all sections checked against the source before publication)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -268,4 +268,4 @@ For a critical eye, the most rewarding read is `helpers.php` (1,516 lines, grown
 
 ---
 
-*This document describes the state as of 27 September 2026, version 4.3.27. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 28 September 2026, version 4.3.28. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

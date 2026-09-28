@@ -76,7 +76,7 @@ return [
     'placeholder_search' => 'Szukaj...',
     'placeholder_notes'  => 'Notatki...',
     'placeholder_select' => '-- Wybierz --',
-    'placeholder_all_locations' => 'Wszystkie lokalizacje',
+    'placeholder_all_locations' => 'Wszystkie pomieszczenia',
     'placeholder_all_categories' => 'Wszystkie kategorie',
 
     // NAGŁÓWKI TABELI

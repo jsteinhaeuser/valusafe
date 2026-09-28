@@ -2,7 +2,20 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 27.09.2026 aus der Projektchronik.
+Erzeugt am 28.09.2026 aus der Projektchronik.
+
+Version 4.3.28   28.09.2026
+---------------------------
+  [Fix] Die Systemuebersicht im Verwaltungsbereich zeigt kein
+        "Sicherheitszertifikat" mehr. Die Karte mit fuenf Sternen, "10/10
+        OWASP" und "Production Ready" und das verlinkte Dokument vom Juni 2026
+        beruhten auf keiner unabhaengigen Pruefung - sie waren selbst
+        erstellt, und spaetere Funde haben mehrere der Aussagen widerlegt.
+        Beides ist entfernt. Zu tun ist nichts.
+  [Fix] Im Suchfilter der Liste heisst die erste Auswahl im Feld "Raum" jetzt
+        "Alle Raeume" statt "Alle Orte" - passend zu dem, was das Feld seit
+        der Umstellung auf Raeume auflistet. In allen neun Sprachen. Zu tun
+        ist nichts.
 
 Version 4.3.27   27.09.2026
 ---------------------------

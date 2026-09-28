@@ -76,7 +76,7 @@ return [
     'placeholder_search' => 'Cerca...',
     'placeholder_notes'  => 'Note...',
     'placeholder_select' => '-- Seleziona --',
-    'placeholder_all_locations' => 'Tutte le posizioni',
+    'placeholder_all_locations' => 'Tutte le stanze',
     'placeholder_all_categories' => 'Tutte le categorie',
 
     // INTESTAZIONI TABELLA

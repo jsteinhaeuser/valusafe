@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 27.09.2026 14:54 von bin/changelog_export.php.
+ * Erzeugt am 28.09.2026 08:30 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,22 @@
  */
 
 return [
+    [
+        'version' => '4.3.28',
+        'date' => '2026-09-28',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Die Systemuebersicht im Verwaltungsbereich zeigt kein "Sicherheitszertifikat" mehr. Die Karte mit fuenf Sternen, "10/10 OWASP" und "Production Ready" und das verlinkte Dokument vom Juni 2026 beruhten auf keiner unabhaengigen Pruefung - sie waren selbst erstellt, und spaetere Funde haben mehrere der Aussagen widerlegt. Beides ist entfernt. Zu tun ist nichts.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Im Suchfilter der Liste heisst die erste Auswahl im Feld "Raum" jetzt "Alle Raeume" statt "Alle Orte" - passend zu dem, was das Feld seit der Umstellung auf Raeume auflistet. In allen neun Sprachen. Zu tun ist nichts.'
+            ]
+        ]
+    ],
     [
         'version' => '4.3.27',
         'date' => '2026-09-27',
@@ -128,17 +144,6 @@ return [
                 'type' => 'fix',
                 'public' => true,
                 'text' => 'Der Verlauf auf der Bearbeiten-Seite zeigt jetzt tatsaechlich etwas an. Unter jedem Gegenstand sollte stehen, wer ihn wann angelegt oder geaendert hat — dieser Abschnitt blieb aber immer leer, auf allen Instanzen, seit es ihn gibt. Die Abfrage suchte Spalten unter Namen, die es in der Datenbank nie gab. Aufgefallen ist es erst, als ValuSafe anfing, Fehlermeldungen an einer Stelle festzuhalten, in die man hineinsehen kann: dort stand die Meldung schwarz auf weiss. Wer bisher wissen wollte, wer etwas geaendert hat, musste in die Verwaltung unter Aktivitaeten gehen; das geht weiter, aber jetzt steht es auch direkt am Gegenstand.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.23',
-        'date' => '2026-09-09',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'ValuSafe lässt sich wieder mit einem Assistenten auf einem gewöhnlichen Webhosting-Paket einrichten: Sprache wählen, Systemvoraussetzungen prüfen, Datenbankverbindung testen, Tabellen anlegen, Administratorkonto — sechs Schritte, auf Deutsch oder Englisch. Der Assistent legt die Zugangsdatei selbst an, erzeugt darin zufällige Sicherheitsschlüssel und entfernt sich zum Schluss samt Schemadatei vom Server; gelingt ihm das nicht, sagt er, welche Dateien von Hand zu löschen sind. Vorausgesetzt wird PHP 8.2 oder neuer.'
             ],
             [
                 'type' => 'feature',

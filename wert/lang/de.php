@@ -80,7 +80,7 @@ return [
     'placeholder_search' => 'Suchen...',
     'placeholder_notes'  => 'Notizen...',
     'placeholder_select' => '-- Bitte wählen --',
-    'placeholder_all_locations' => 'Alle Orte',
+    'placeholder_all_locations' => 'Alle Räume',
     'placeholder_all_categories' => 'Alle Kategorien',
     
     // ============================================================================

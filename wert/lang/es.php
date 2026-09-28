@@ -76,7 +76,7 @@ return [
     'placeholder_search' => 'Buscar...',
     'placeholder_notes'  => 'Notas...',
     'placeholder_select' => '-- Por favor seleccione --',
-    'placeholder_all_locations' => 'Todas las ubicaciones',
+    'placeholder_all_locations' => 'Todas las habitaciones',
     'placeholder_all_categories' => 'Todas las categorías',
 
     // ENCABEZADOS DE TABLA
