@@ -761,7 +761,7 @@ return [
     'settings_export_desc' => 'Lädt alle deine gespeicherten Daten als JSON-Datei herunter (Benutzerdaten, Gegenstände, Aktivitätsprotokoll).',
     'settings_export_btn' => 'Daten herunterladen',
     'settings_delete_account_title' => 'Account löschen',
-    'settings_delete_account_desc' => 'Löscht dein Konto unwiderruflich. Deine Gegenstände bleiben erhalten und werden keinem Benutzer mehr zugeordnet.',
+    'settings_delete_account_desc' => 'Löscht dein Konto unwiderruflich. Deine Gegenstände bleiben erhalten.',
     'settings_delete_account_btn' => 'Account löschen',
     'settings_delete_confirm_title' => 'Account wirklich löschen?',
     'settings_delete_confirm_desc' => 'Diese Aktion ist unwiderruflich. Zur Bestätigung gib deinen Benutzernamen ein:',

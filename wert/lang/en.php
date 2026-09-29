@@ -762,7 +762,7 @@ return [
     'settings_export_desc' => 'Downloads all your stored data as a JSON file (user data, items, activity log).',
     'settings_export_btn' => 'Download data',
     'settings_delete_account_title' => 'Delete account',
-    'settings_delete_account_desc' => 'Deletes your account permanently. Your items will remain but will no longer be linked to any user.',
+    'settings_delete_account_desc' => 'Deletes your account permanently. Your items will remain.',
     'settings_delete_account_btn' => 'Delete account',
     'settings_delete_confirm_title' => 'Really delete account?',
     'settings_delete_confirm_desc' => 'This action is irreversible. To confirm, enter your username:',

@@ -654,7 +654,7 @@ return [
     'settings_export_desc' => 'Descarga todos tus datos como archivo JSON (datos de usuario, objetos, registro de actividad).',
     'settings_export_btn' => 'Descargar datos',
     'settings_delete_account_title' => 'Eliminar cuenta',
-    'settings_delete_account_desc' => 'Elimina tu cuenta de forma permanente. Tus objetos permanecen pero ya no estarán vinculados a ningún usuario.',
+    'settings_delete_account_desc' => 'Elimina tu cuenta de forma permanente. Tus objetos permanecen.',
     'settings_delete_account_btn' => 'Eliminar cuenta',
     'settings_delete_confirm_title' => '¿Realmente eliminar la cuenta?',
     'settings_delete_confirm_desc' => 'Esta acción es irreversible. Para confirmar, introduce tu nombre de usuario:',

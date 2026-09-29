@@ -654,7 +654,7 @@ return [
     'settings_export_desc' => 'Downloadt al je opgeslagen gegevens als JSON-bestand (gebruikersgegevens, objecten, activiteitenlogboek).',
     'settings_export_btn' => 'Gegevens downloaden',
     'settings_delete_account_title' => 'Account verwijderen',
-    'settings_delete_account_desc' => 'Verwijdert je account permanent. Je objecten blijven maar zijn niet meer aan een gebruiker gekoppeld.',
+    'settings_delete_account_desc' => 'Verwijdert je account permanent. Je objecten blijven behouden.',
     'settings_delete_account_btn' => 'Account verwijderen',
     'settings_delete_confirm_title' => 'Account echt verwijderen?',
     'settings_delete_confirm_desc' => 'Deze actie is onomkeerbaar. Voer je gebruikersnaam in om te bevestigen:',

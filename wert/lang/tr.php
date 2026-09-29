@@ -762,7 +762,7 @@ return [
     'settings_export_desc' => 'Tüm verilerinizi JSON dosyası olarak indirir (kullanıcı verileri, objeler, etkinlik günlüğü).',
     'settings_export_btn' => 'Verileri indir',
     'settings_delete_account_title' => 'Hesabı sil',
-    'settings_delete_account_desc' => 'Hesabınızı kalıcı olarak siler. Objeleriniz kalır ancak artık bir kullanıcıya bağlı olmaz.',
+    'settings_delete_account_desc' => 'Hesabınızı kalıcı olarak siler. Objeleriniz kalır.',
     'settings_delete_account_btn' => 'Hesabı sil',
     'settings_delete_confirm_title' => 'Hesap gerçekten silinsin mi?',
     'settings_delete_confirm_desc' => 'Bu işlem geri alınamaz. Onaylamak için kullanıcı adınızı girin:',

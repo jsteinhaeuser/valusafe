@@ -762,7 +762,7 @@ return [
     'settings_export_desc' => 'Télécharge toutes vos données sous forme de fichier JSON (données utilisateur, objets, journal d\'activité).',
     'settings_export_btn' => 'Télécharger les données',
     'settings_delete_account_title' => 'Supprimer le compte',
-    'settings_delete_account_desc' => 'Supprime votre compte définitivement. Vos objets restent mais ne seront plus liés à un utilisateur.',
+    'settings_delete_account_desc' => 'Supprime votre compte définitivement. Vos objets restent.',
     'settings_delete_account_btn' => 'Supprimer le compte',
     'settings_delete_confirm_title' => 'Vraiment supprimer le compte ?',
     'settings_delete_confirm_desc' => 'Cette action est irréversible. Pour confirmer, entrez votre nom d\'utilisateur :',

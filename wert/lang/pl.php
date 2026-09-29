@@ -654,7 +654,7 @@ return [
     'settings_export_desc' => 'Pobiera wszystkie Twoje dane jako plik JSON (dane użytkownika, przedmioty, dziennik aktywności).',
     'settings_export_btn' => 'Pobierz dane',
     'settings_delete_account_title' => 'Usuń konto',
-    'settings_delete_account_desc' => 'Trwale usuwa Twoje konto. Twoje przedmioty pozostają, ale nie będą już powiązane z żadnym użytkownikiem.',
+    'settings_delete_account_desc' => 'Trwale usuwa Twoje konto. Twoje przedmioty pozostają.',
     'settings_delete_account_btn' => 'Usuń konto',
     'settings_delete_confirm_title' => 'Naprawdę usunąć konto?',
     'settings_delete_confirm_desc' => 'Ta operacja jest nieodwracalna. Wprowadź swoją nazwę użytkownika, aby potwierdzić:',

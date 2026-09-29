@@ -704,71 +704,11 @@ include 'header_next_page.php';
     </div>
 </div>
 
-<!-- ===== ACTIVITY LOG WIDGET ===== -->
-<?php
-try {
-    $recentActivity = $db->select(
-        "SELECT * FROM activity_log ORDER BY timestamp DESC LIMIT 5"
-    );
-    
-    if (!empty($recentActivity)):
-?>
-<div class="dashboard-section">
-    <h2><i class="ti ti-list" aria-hidden="true"></i> <?php echo t('dashboard_recent_activity'); ?></h2>
-    <div class="stats-grid">
-        <div class="stat-card" style="grid-column: 1 / -1;">
-            <ul style="list-style: none; padding: 0; margin: 0;">
-                <?php foreach ($recentActivity as $activity): ?>
-                    <li style="display: flex; align-items: center; gap: 15px; padding: 12px; border-bottom: 1px solid #eee;">
-                        <span style="font-size: 24px; flex-shrink: 0;"><?php echo getActionIcon($activity['action']); ?></span>
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; margin-bottom: 4px;">
-                                <span style="color: #333;"><?php echo htmlspecialchars($activity['username']); ?></span>
-                                <span style="color: #999; margin: 0 8px;">·</span>
-                                <span style="display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; 
-                                       <?php 
-                                       if ($activity['action'] === 'created') echo 'background: #d4edda; color: #155724;';
-                                       elseif ($activity['action'] === 'updated') echo 'background: #d1ecf1; color: #0c5460;';
-                                       elseif ($activity['action'] === 'deleted') echo 'background: #f8d7da; color: #721c24;';
-                                       else echo 'background: #fff3cd; color: #856404;';
-                                       ?>">
-                                    <?php echo getActionText($activity['action']); ?>
-                                </span>
-                            </div>
-                            <div style="font-size: 14px; color: #666;">
-                                <?php if ($activity['record_name']): ?>
-                                    <strong><?php echo htmlspecialchars($activity['record_name']); ?></strong>
-                                    <span style="color: #999; margin: 0 4px;">·</span>
-                                <?php endif; ?>
-                                <span style="color: #999;">
-                                    <?php 
-                                    $diff = time() - strtotime($activity['timestamp']);
-                                    if ($diff < 3600) {
-                                        echo sprintf(t('dashboard_time_minutes'), round($diff / 60));
-                                    } elseif ($diff < 86400) {
-                                        echo sprintf(t('dashboard_time_hours'), round($diff / 3600));
-                                    } else {
-                                        echo sprintf(t('dashboard_time_days'), round($diff / 86400));
-                                    }
-                                    ?>
-                                </span>
-                            </div>
-                        </div>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-            <a href="activity_log.php" style="display: block; text-align: center; margin-top: 20px; padding: 12px; background: #f8f9fa; border-radius: 8px; text-decoration: none; color: var(--primary-color, #3498db); font-weight: 600; transition: all 0.3s;">
-                <?php echo t('dashboard_view_all_activity'); ?> →
-            </a>
-        </div>
-    </div>
-</div>
-<?php 
-    endif;
-} catch (PDOException $e) { 
-    // Tabelle existiert noch nicht - kein Problem
-} 
-?>
-<!-- ============================== -->
+<?php /* Hier stand bis 4.3.29 der Kasten "Letzte Aktivitaet". Er erschien
+   nie: Die Abfrage sortierte nach der Spalte timestamp (heisst zeitstempel),
+   $db->select() schluckte den Fehler. Repariert haette er jedem Benutzer,
+   auch Lesern, die Aenderungen ALLER Benutzer gezeigt - gegen die Einstellung
+   "nur eigene Gegenstaende". Entfernt (Entscheidung 29.09.2026); das
+   Aktivitaetsprotokoll steht Admins in backend/logs.php zur Verfuegung. */ ?>
 
 <?php include 'footer_next_page.php'; ?>
