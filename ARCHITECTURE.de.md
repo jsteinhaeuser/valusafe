@@ -27,7 +27,7 @@ Rund 48.000 Zeilen Anwendungscode, gezählt im veröffentlichten Repository am 2
 
 ## 3. Technische Grundlagen
 
-**PHP 8.2 / 8.3**, MariaDB oder MySQL 8, vanilla JavaScript. **Kein Framework**, **keine Produktionsabhängigkeiten**. Die Tests benutzen PHPUnit als Entwicklungsabhängigkeit; Tests und `composer.json` liegen im Entwicklungs-Repository und gehören nicht zum veröffentlichten.
+**PHP 8.2 bis 8.4** (Docker-Image: 8.4), MariaDB oder MySQL 8, vanilla JavaScript. **Kein Framework**, **keine Produktionsabhängigkeiten**. Die Tests benutzen PHPUnit als Entwicklungsabhängigkeit; Tests und `composer.json` liegen im Entwicklungs-Repository und gehören nicht zum veröffentlichten.
 
 Das ist keine Nachlässigkeit, sondern eine Randbedingung: Die Anwendung muss auf einfachem Shared Hosting laufen, ohne Composer, ohne Node, ohne Shell-Zugang. Ein Installationsvorgang besteht aus „Dateien hochladen, `config.php` anlegen, Schema einspielen".
 

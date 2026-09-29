@@ -27,7 +27,7 @@ Roughly 48,000 lines of application code, counted in the published repository on
 
 ## 3. Technical foundations
 
-**PHP 8.2 / 8.3**, MariaDB or MySQL 8, vanilla JavaScript. **No framework**, **no production dependencies**. The tests use PHPUnit as a development dependency; tests and `composer.json` live in the development repository and are not part of the published one.
+**PHP 8.2 to 8.4** (Docker image: 8.4), MariaDB or MySQL 8, vanilla JavaScript. **No framework**, **no production dependencies**. The tests use PHPUnit as a development dependency; tests and `composer.json` live in the development repository and are not part of the published one.
 
 That is a constraint rather than an oversight: the application has to run on plain shared hosting, without Composer, without Node, without shell access. Installing it means "upload the files, create `config.php`, import the schema".
 

@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.4-apache
 
 LABEL maintainer="Jörg Steinhäuser <wert@palindrom.de>"
 LABEL description="Wertsachen-Inventarverwaltung (ValuSafe)"
