@@ -2,6 +2,7 @@
 // settings.php
 require_once 'db.php';
 if (!function_exists('correctImageOrientation')) require_once 'helpers.php';
+require_once __DIR__ . '/dsgvo_helpers.php';
 
 // tn()-Fallback falls nicht durch Next-Interface-Header definiert
 if (!function_exists('tn')) {
@@ -125,28 +126,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userId   = $_SESSION['user_id'];
             $username = $_SESSION['username'];
 
-            // Nutzerdaten
-            $user = $db->selectOne("SELECT id, username, rolle, created_at, standard_ersteller, theme FROM users WHERE id = ?", [$userId]);
-
-            // Gegenstände
-            $items = $db->select("SELECT w.*, k.name as kategorie, o.name as ort
-                FROM wertsachen w
-                LEFT JOIN kategorien k ON w.kategorie_id = k.id
-                LEFT JOIN raeume o ON w.raum_id = o.id
-                WHERE w.erstellt_von = ?
-                ORDER BY w.name", [$username]);
-
-            // Aktivitätslog
-            $activities = $db->select("SELECT aktion, tabelle, datensatz_name, erstellt_am
-                FROM activity_log WHERE benutzer_id = ?
-                ORDER BY erstellt_am DESC LIMIT 500", [$userId]);
-
-            $export = [
-                'export_datum'  => date('Y-m-d H:i:s'),
-                'benutzer'      => $user,
-                'gegenstaende'  => $items,
-                'aktivitaeten'  => $activities,
-            ];
+            // Abfragen in dsgvo_helpers.php, direkt ueber PDO: $db->select()
+            // schluckt Fehler und haette einen leeren Export geliefert - bis
+            // 4.3.29 genau das, wegen falscher Spaltennamen.
+            $export = dsgvoDatenSammeln($pdo, (int)$userId, (string)$username);
 
             $json = json_encode($export, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             $filename = 'meine-daten-' . date('Y-m-d') . '.json';
@@ -160,7 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
 
         } catch (PDOException $e) {
-            $error = 'Datenexport fehlgeschlagen: ' . $e->getMessage();
+            error_log('Datenexport: ' . $e->getMessage());
+            $error = 'Datenexport fehlgeschlagen. Bitte wende dich an den Administrator.';
         }
     }
 
@@ -178,11 +162,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Das Admin-Konto kann nicht gelöscht werden. Bitte zuerst einen anderen Admin ernennen.';
         } else {
             try {
-                // Aktivitätslogs des Nutzers anonymisieren
-                $db->execute("UPDATE activity_log SET benutzer_id = NULL WHERE benutzer_id = ?", [$userId]);
-
-                // Nutzerkonto löschen
-                $db->execute("DELETE FROM users WHERE id = ?", [$userId]);
+                // Konto loeschen, Protokolle davon loesen (dsgvo_helpers.php).
+                // Bis 4.3.29 scheiterte das hier an der Spalte benutzer_id,
+                // die es in activity_log nicht gibt - bei jedem Konto.
+                $avatar = dsgvoKontoLoeschen($pdo, (int)$userId);
+                if ($avatar !== null && basename($avatar) === $avatar
+                    && is_file(UPLOAD_DIR . 'avatars/' . $avatar)) {
+                    @unlink(UPLOAD_DIR . 'avatars/' . $avatar);
+                }
 
                 Security::logSecurityEvent('account_deleted', ['username' => $username]);
 
@@ -192,7 +179,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
 
             } catch (PDOException $e) {
-                $error = 'Account-Löschung fehlgeschlagen: ' . $e->getMessage();
+                error_log('Kontoloeschung: ' . $e->getMessage());
+                $error = 'Account-Löschung fehlgeschlagen. Bitte wende dich an den Administrator.';
             }
         }
     }

@@ -108,10 +108,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = t('users_cannot_delete_self') ?: 'Du kannst dich nicht selbst löschen';
         } else {
             try {
-                $db->execute("DELETE FROM users WHERE id = ?", [$id]);
+                // Dieselbe Loeschung wie "Account loeschen" in settings.php:
+                // Protokolle vom Konto loesen, Reset-Tokens und Anmeldeversuche
+                // entfernen. Bis 4.3.29 loeschte diese Stelle nur die Zeile in
+                // users, alles andere blieb mit der Nummer des Kontos stehen.
+                require_once __DIR__ . '/../dsgvo_helpers.php';
+                $avatar = dsgvoKontoLoeschen($pdo, $id);
+                if ($avatar !== null && basename($avatar) === $avatar
+                    && defined('UPLOAD_DIR') && is_file(UPLOAD_DIR . 'avatars/' . $avatar)) {
+                    @unlink(UPLOAD_DIR . 'avatars/' . $avatar);
+                }
                 $message = t('users_deleted_success') ?: 'Benutzer erfolgreich gelöscht';
             } catch (PDOException $e) {
-                $error = 'Fehler: ' . $e->getMessage();
+                error_log('Benutzer loeschen: ' . $e->getMessage());
+                $error = 'Fehler beim Löschen des Benutzers.';
             }
         }
     }

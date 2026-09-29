@@ -2,7 +2,10 @@
 // security.php
 
 class Security {
-    
+
+    /** Groesse, ab der logs/security.log rotiert wird (siehe logSecurityEvent). */
+    const SECURITY_LOG_MAX_BYTES = 5242880;
+
     /**
      * Generiert ein CSRF-Token
      */
@@ -167,7 +170,16 @@ class Security {
         if (!is_dir($logDir)) {
             mkdir($logDir, 0755, true);
         }
-        
+
+        // Rotation: Bis 4.3.29 wuchs die Datei unbegrenzt - loeschen liess sie
+        // sich nirgends (backend/activity_log.php leert nur die Tabelle
+        // activity_log). Ab 5 MB (grob 15.000 Eintraege) wird sie zu
+        // security.1.log, eine vorhandene aeltere faellt weg. Die Endung .log
+        // bleibt, damit die FilesMatch-Sperre der .htaccess auch sie trifft.
+        if (@filesize($logFile) > self::SECURITY_LOG_MAX_BYTES) {
+            @rename($logFile, $logDir . '/security.1.log');
+        }
+
         $logEntry = [
             'timestamp' => date('Y-m-d H:i:s'),
             'event' => $event,

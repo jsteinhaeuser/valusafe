@@ -26,9 +26,9 @@ if ($source === 'db') {
     try {
         if ($activeTab === 'security') {
             $logs = $db->select("
-                SELECT sl.*, b.benutzername
+                SELECT sl.*, u.username AS benutzername
                 FROM security_log sl
-                LEFT JOIN benutzer b ON sl.user_id = b.id
+                LEFT JOIN users u ON sl.user_id = u.id
                 ORDER BY sl.created_at DESC
                 LIMIT ?
             ", [$limit]);
@@ -129,11 +129,15 @@ include 'layout/header_next_page.php';
         </a>
     </div>
 
-    <!-- Diese Seite zeigt nur an. Geloescht wird in activity_log.php. -->
+    <!-- Diese Seite zeigt nur an. Bis 4.3.29 stand hier "Eintraege loeschen
+         oder aufraeumen" mit Link auf activity_log.php - die Seite verwaltet
+         aber die Tabelle activity_log, nicht die Datei und nicht security_log,
+         die hier angezeigt werden. -->
     <div style="margin: 14px 0 20px; font-size: 13px; color: var(--vs-text-muted);">
         <i class="ti ti-info-circle"></i>
         <?php echo t('syslog_view_only'); ?>
-        <a href="activity_log.php" style="color: var(--vs-accent);"><?php echo t('syslog_cleanup_link'); ?></a>
+        <?php echo t($source === 'file' ? 'syslog_file_note' : 'syslog_db_note'); ?>
+        <a href="activity_log.php" style="color: var(--vs-accent);"><?php echo t('syslog_activity_link'); ?></a>
     </div>
     
     <!-- Statistik-Karten -->
