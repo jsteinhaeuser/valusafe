@@ -733,7 +733,7 @@ return [
     'syslog_view_only'           => 'Diese Seite zeigt nur an.',
     'syslog_cleanup_link'        => 'Einträge löschen oder aufräumen',
     'syslog_file_note'         => 'Das Sicherheitsprotokoll (Datei logs/security.log) lässt sich nicht löschen; ab 5 MB wird es automatisch gekürzt.',
-    'syslog_db_note'           => 'Die Tabelle security_log wird derzeit nicht automatisch gekürzt.',
+    'syslog_db_note'           => 'Einträge der Tabelle security_log werden nach 90 Tagen automatisch gelöscht.',
     'syslog_activity_link'     => 'Zum Aktivitätsprotokoll (Datenbank, dort auch aufräumen)',
     'syslog_error'               => 'Fehler!',
     'syslog_none_found'          => 'Keine Logs gefunden',

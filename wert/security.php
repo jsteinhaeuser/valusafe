@@ -212,11 +212,37 @@ function logSecurityEvent($conn, $event_type, $user_id, $description) {
             $description,
             $_SERVER['REMOTE_ADDR'] ?? 'unknown'
         ]);
+        securityLogKuerzen($conn);
     } catch (PDOException $e) {
         // Fallback zu Datei-Logging wenn DB-Logging fehlschlägt
         Security::logSecurityEvent($event_type, [
             'user_id' => $user_id,
             'description' => $description
         ]);
+    }
+}
+
+/**
+ * Loescht Eintraege aus security_log, die aelter als $tage sind.
+ *
+ * Bis 4.3.30 wuchs die Tabelle unbegrenzt: Der 90-Tage-Befehl in
+ * security_actions.php laeuft nur auf Knopfdruck, und keine Seite verlinkt
+ * ihn. Jetzt raeumt jeder Schreibvorgang mit auf. Geschrieben wird nur bei
+ * An- und Abmeldungen, und created_at hat einen Index - das kostet nichts.
+ * Die Grenze wird in PHP berechnet statt mit DATE_SUB, damit der Test sie in
+ * SQLite pruefen kann.
+ *
+ * Fehler werden nur protokolliert: Das Aufraeumen darf eine Anmeldung nie
+ * scheitern lassen.
+ */
+function securityLogKuerzen($conn, int $tage = 90): int {
+    try {
+        $grenze = date('Y-m-d H:i:s', time() - $tage * 86400);
+        $stmt = $conn->prepare("DELETE FROM security_log WHERE created_at < ?");
+        $stmt->execute([$grenze]);
+        return $stmt->rowCount();
+    } catch (PDOException $e) {
+        error_log('security_log kuerzen: ' . $e->getMessage());
+        return 0;
     }
 }

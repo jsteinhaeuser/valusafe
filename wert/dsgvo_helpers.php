@@ -65,8 +65,8 @@ if (!function_exists('dsgvoKontoLoeschen')) {
      * Eintraege im Aktivitaets- und Sicherheitsprotokoll — dort aber ohne
      * Verweis auf das Konto; im Aktivitaetsprotokoll faellt auch die IP weg.
      * Das Sicherheitsprotokoll behaelt seine IPs: Es dient der Abwehr von
-     * Angriffen. (Die Tabelle wird bisher nicht automatisch gekuerzt; der
-     * 90-Tage-Befehl in security_actions.php ist von keiner Seite verlinkt.)
+     * Angriffen und wird nach 90 Tagen automatisch geleert (seit 4.3.31,
+     * securityLogKuerzen() in security.php).
      *
      * Rueckgabe: Dateiname des Profilbilds oder null — die Datei loescht der
      * Aufrufer, weil nur er das Upload-Verzeichnis kennt.

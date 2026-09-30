@@ -733,7 +733,7 @@ return [
     'syslog_view_only'           => 'This page only displays entries.',
     'syslog_cleanup_link'        => 'Delete or clean up entries',
     'syslog_file_note'         => 'The security log (file logs/security.log) cannot be deleted; it is trimmed automatically once it reaches 5 MB.',
-    'syslog_db_note'           => 'The security_log table is currently not trimmed automatically.',
+    'syslog_db_note'           => 'Entries in the security_log table are deleted automatically after 90 days.',
     'syslog_activity_link'     => 'Go to the activity log (database, cleanup there)',
     'syslog_error'               => 'Error!',
     'syslog_none_found'          => 'No logs found',
