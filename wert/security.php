@@ -225,9 +225,9 @@ function logSecurityEvent($conn, $event_type, $user_id, $description) {
 /**
  * Loescht Eintraege aus security_log, die aelter als $tage sind.
  *
- * Bis 4.3.30 wuchs die Tabelle unbegrenzt: Der 90-Tage-Befehl in
- * security_actions.php laeuft nur auf Knopfdruck, und keine Seite verlinkt
- * ihn. Jetzt raeumt jeder Schreibvorgang mit auf. Geschrieben wird nur bei
+ * Bis 4.3.30 wuchs die Tabelle unbegrenzt: Der 90-Tage-Befehl stand nur in
+ * security_actions.php, die keine Seite verlinkte (mit 4.3.31 entfernt).
+ * Jetzt raeumt jeder Schreibvorgang mit auf. Geschrieben wird nur bei
  * An- und Abmeldungen, und created_at hat einen Index - das kostet nichts.
  * Die Grenze wird in PHP berechnet statt mit DATE_SUB, damit der Test sie in
  * SQLite pruefen kann.
