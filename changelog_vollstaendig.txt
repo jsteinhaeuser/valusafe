@@ -2,7 +2,35 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 28.09.2026 aus der Projektchronik.
+Erzeugt am 30.09.2026 aus der Projektchronik.
+
+Version 4.3.30   30.09.2026
+---------------------------
+  [Fix] Das Docker-Image beruht jetzt auf PHP 8.4 statt 8.2. PHP 8.2 erhaelt
+        ab dem 31.12.2026 keine Sicherheitskorrekturen mehr. Wer ValuSafe mit
+        Docker betreibt, baut das Image neu (im Ordner docker: docker compose
+        build --pull, danach docker compose up -d). Datenbank, Fotos, Belege
+        und Sicherungen liegen in eigenen Volumes und bleiben erhalten; die
+        Zugangsdaten kommen wie bisher aus der .env. Wer ValuSafe bei einem
+        Hoster betreibt, ist nicht betroffen - dort bestimmt der Hoster die
+        PHP-Version; ValuSafe laeuft mit PHP 8.2 bis 8.4.
+  [Fix] Unter Einstellungen -> "Datenschutz & meine Daten" funktionieren beide
+        Knoepfe jetzt so, wie sie beschrieben sind. "Account loeschen" schlug
+        bisher bei jedem Konto mit einer technischen Fehlermeldung fehl - das
+        Konto blieb bestehen. "Daten herunterladen" lieferte zwar eine Datei,
+        darin fehlten aber die Kontodaten und das Aktivitaetsprotokoll; nur
+        die Gegenstaende waren enthalten. Jetzt enthaelt die Datei Konto,
+        Gegenstaende und Aktivitaeten (ohne Passwort und Zugangscodes), und
+        die Loeschung entfernt das Konto samt Profilbild, offenen Links zum
+        Zuruecksetzen des Passworts und den gespeicherten Anmeldeversuchen.
+        Gegenstaende bleiben erhalten und tragen weiter den Namen, der unter
+        "Erstellt von" steht; Protokolleintraege bleiben ebenfalls, verweisen
+        aber nicht mehr auf das Konto. Der Hinweis unter dem Knopf versprach
+        bisher, die Gegenstaende wuerden keinem Benutzer mehr zugeordnet - das
+        stimmte nicht und ist berichtigt (alle neun Sprachen). Dasselbe gilt
+        jetzt auch, wenn ein Administrator einen Benutzer in der
+        Benutzerverwaltung loescht. Wer frueher vergeblich versucht hat, sein
+        Konto zu loeschen, kann es jetzt erneut tun.
 
 Version 4.3.29   28.09.2026
 ---------------------------

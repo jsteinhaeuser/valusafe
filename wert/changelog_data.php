@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 28.09.2026 17:36 von bin/changelog_export.php.
+ * Erzeugt am 30.09.2026 07:45 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,22 @@
  */
 
 return [
+    [
+        'version' => '4.3.30',
+        'date' => '2026-09-30',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Das Docker-Image beruht jetzt auf PHP 8.4 statt 8.2. PHP 8.2 erhaelt ab dem 31.12.2026 keine Sicherheitskorrekturen mehr. Wer ValuSafe mit Docker betreibt, baut das Image neu (im Ordner docker: docker compose build --pull, danach docker compose up -d). Datenbank, Fotos, Belege und Sicherungen liegen in eigenen Volumes und bleiben erhalten; die Zugangsdaten kommen wie bisher aus der .env. Wer ValuSafe bei einem Hoster betreibt, ist nicht betroffen - dort bestimmt der Hoster die PHP-Version; ValuSafe laeuft mit PHP 8.2 bis 8.4.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Unter Einstellungen -> "Datenschutz & meine Daten" funktionieren beide Knoepfe jetzt so, wie sie beschrieben sind. "Account loeschen" schlug bisher bei jedem Konto mit einer technischen Fehlermeldung fehl - das Konto blieb bestehen. "Daten herunterladen" lieferte zwar eine Datei, darin fehlten aber die Kontodaten und das Aktivitaetsprotokoll; nur die Gegenstaende waren enthalten. Jetzt enthaelt die Datei Konto, Gegenstaende und Aktivitaeten (ohne Passwort und Zugangscodes), und die Loeschung entfernt das Konto samt Profilbild, offenen Links zum Zuruecksetzen des Passworts und den gespeicherten Anmeldeversuchen. Gegenstaende bleiben erhalten und tragen weiter den Namen, der unter "Erstellt von" steht; Protokolleintraege bleiben ebenfalls, verweisen aber nicht mehr auf das Konto. Der Hinweis unter dem Knopf versprach bisher, die Gegenstaende wuerden keinem Benutzer mehr zugeordnet - das stimmte nicht und ist berichtigt (alle neun Sprachen). Dasselbe gilt jetzt auch, wenn ein Administrator einen Benutzer in der Benutzerverwaltung loescht. Wer frueher vergeblich versucht hat, sein Konto zu loeschen, kann es jetzt erneut tun.'
+            ]
+        ]
+    ],
     [
         'version' => '4.3.29',
         'date' => '2026-09-28',
@@ -98,32 +114,6 @@ return [
                 'type' => 'fix',
                 'public' => true,
                 'text' => 'Die Installationsanleitung in der README war falsch. Sie sagte, setup.php aus dem Unterordner install/ heraus aufzurufen. Der Assistent schreibt die Konfiguration aber in seinen eigenen Ordner und muss deshalb neben index.php liegen; aus install/ heraus entstand eine Installation, die nicht lief. Das fertige Installationspaket war nie betroffen, es ist richtig aufgebaut. Wer ValuSafe aus dem Quellcode installiert, folgt jetzt der korrigierten Anleitung.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.25',
-        'date' => '2026-09-26',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Der Standort eines Gegenstandes wird jetzt gespeichert. Bisher diente das Auswahlfeld "Standort" beim Anlegen und Bearbeiten nur dazu, die Liste der Positionen einzugrenzen. Wer einen Standort waehlte, aber keine Position, verlor die Wahl beim Speichern ohne jede Meldung. Jetzt bleibt der Standort auch ohne Position erhalten und erscheint in der Liste. Ausserdem laesst sich ein Standort nicht mehr loeschen, solange noch Gegenstaende daran haengen. Zu tun ist nichts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Nach einer Neuinstallation war das Auswahlfeld "Raum" leer. Die vier Startraeume, die der Installationsassistent anlegt, landeten in einer alten Tabelle, die ValuSafe laengst nicht mehr liest. Wer ValuSafe frisch installiert hat, musste seine Raeume also erst selbst anlegen, bevor er einen Gegenstand einordnen konnte. Die Startraeume kommen jetzt dort an, wo ValuSafe sie sucht. Bestehende Installationen sind nicht betroffen; wer vor diesem Release neu installiert hat, legt die fehlenden Raeume einfach in der Verwaltung an.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Docker: Eine frische Installation fuehrt beim ersten Aufruf der Datenbank-Aktualisierung keine Migrationen mehr nach, die ihr Schema laengst enthaelt. Der Installationsassistent fuer Webhosting trug schon bisher alle mitgelieferten Migrationen als erledigt ein, der Docker-Start tat das nicht. Die ueberfluessigen Laeufe waren bisher harmlos, mit diesem Release waeren sie es nicht mehr gewesen: Eine der neuen Migrationen leert eine Spalte, in der ab jetzt echte Standorte stehen. Zu tun ist nichts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Drei alte Tabellen fuer Raeume und Standorte sind entfernt: orte, standort_raeume und standort_positionen, dazu die Spalte wertsachen.ort_id. Sie stammten aus frueheren Ausbaustufen, der Programmcode las sie nicht mehr, und eine Neuinstallation legte sie trotzdem an. Bestehende Datenbanken raeumt die Migration 011 auf, und sie loescht die alten Tabellen samt Inhalt. Wer ValuSafe selbst betreibt, legt nach dem Aktualisieren zuerst eine Sicherung der Datenbank an und ruft dann einmal migrate.php auf.'
             ],
             [
                 'type' => 'feature',

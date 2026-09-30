@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 28. September 2026 · Version 4.3.29 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 30. September 2026 · Version 4.3.30 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -267,4 +267,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 28. September 2026, Version 4.3.29. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 30. September 2026, Version 4.3.30. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

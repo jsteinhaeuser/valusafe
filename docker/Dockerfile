@@ -2,7 +2,7 @@ FROM php:8.4-apache
 
 LABEL maintainer="Jörg Steinhäuser <wert@palindrom.de>"
 LABEL description="Wertsachen-Inventarverwaltung (ValuSafe)"
-LABEL version="4.3.29"
+LABEL version="4.3.30"
 
 # ── System-Pakete ─────────────────────────────────────────────────────────────
 RUN apt-get update && apt-get install -y \

@@ -2,6 +2,8 @@
 
 Selbst gehostete Inventarverwaltung für Wertsachen. Sie erfassen, was Sie besitzen — mit Foto, Kaufpreis und Standort — und ValuSafe macht daraus Übersichten, Auswertungen und die Unterlagen, nach denen eine Versicherung nach einem Einbruch, einem Brand oder einem Wasserschaden fragt.
 
+Dasselbe taugt für Sammlungen — Gitarren, Uhren, Bücher, Kunst — und für die Wohnungsübergabe: Das Übergabeprotokoll listet alles Raum für Raum auf, mit Angaben zu Mieter und Vermieter, zum Ausdrucken und Unterschreiben.
+
 Es läuft auf gewöhnlichem Webhosting. Kein Framework, kein Composer, kein Node, keine fremden Server: Dateien hochladen, Assistenten durchklicken, fertig.
 
 **Stand:** 09.2026 · *(English version: [README.md](README.md))*
