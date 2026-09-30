@@ -312,7 +312,7 @@ $theme_tiles = [
 try {
     $stats = [
         'wertsachen' => $db->selectOne("SELECT COUNT(*) as count FROM wertsachen")['count'],
-        'orte'       => $db->selectOne("SELECT COUNT(*) as count FROM raeume")['count'],
+        'raeume'     => $db->selectOne("SELECT COUNT(*) as count FROM raeume")['count'],
         'kategorien' => $db->selectOne("SELECT COUNT(*) as count FROM kategorien")['count'],
         'gesamtwert' => $db->selectOne("SELECT SUM(preis) as sum FROM wertsachen")['sum'] ?? 0
     ];
@@ -763,8 +763,9 @@ include 'header_next_page.php';
                 <div class="stat-mini-label"><?php echo t('stats_items'); ?></div>
             </div>
             <div class="stat-mini">
-                <div class="stat-mini-value"><?php echo (int)$stats['orte']; ?></div>
-                <div class="stat-mini-label"><?php echo t('stats_locations'); ?></div>
+                <div class="stat-mini-value"><?php echo (int)$stats['raeume']; ?></div>
+                <?php /* bis 4.3.30 "Orte" (stats_locations) - gezaehlt werden Raeume */ ?>
+                <div class="stat-mini-label"><?php echo t('loc_tab_rooms'); ?></div>
             </div>
             <div class="stat-mini">
                 <div class="stat-mini-value"><?php echo (int)$stats['kategorien']; ?></div>

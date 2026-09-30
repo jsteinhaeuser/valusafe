@@ -161,7 +161,7 @@ include 'layout/header_next_page.php';
             <div class="widget-header">
                 <div>
                     <div class="widget-value"><?php echo $stats['orte_total']; ?></div>
-                    <div class="widget-label">📍 <?php echo t('stats_top_locations'); ?></div>
+                    <div class="widget-label">📍 <?php echo t('loc_tab_rooms'); ?></div>
                 </div>
                 <div class="widget-icon">📍</div>
             </div>
@@ -256,9 +256,9 @@ include 'layout/header_next_page.php';
         <?php endif; ?>
     </div>
     
-    <!-- Top 10 Orte -->
+    <!-- Top 10 Raeume (bis 4.3.30 "Top 10 Orte" beschriftet; gezaehlt wird raeume) -->
     <div class="activity-timeline" style="margin-bottom: 30px;">
-        <h2>📍 <?php echo t('stats_top10_locations'); ?></h2>
+        <h2>📍 Top 10 <?php echo t('loc_tab_rooms'); ?></h2>
         
         <?php if (count($topOrte) === 0): ?>
             <div style="text-align: center; padding: 40px; color: #999;">

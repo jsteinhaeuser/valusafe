@@ -209,19 +209,21 @@ include 'layout/header_next_page.php';
         </div>
         
 
-        <!-- Orte / Standorte -->
+        <!-- Raeume / Standorte / Positionen. Bis 4.3.30 waren die Beschriftungen
+             verrutscht: die Zahl der Raeume hiess "Orte", die der Standorte
+             "Raeume" ("6 Orte · 1 Raeume · 1 Pos."). -->
         <div class="widget-card">
             <div class="widget-header">
                 <div>
                     <?php
-                    $total_orte = $db->select("SELECT COUNT(*) as n FROM raeume")[0]['n'] ?? 0;
-                    try { $total_raeume     = $db->select("SELECT COUNT(*) as n FROM standorte")[0]['n'] ?? 0; } catch(Exception $e) { $total_raeume = '—'; }
+                    $total_raeume = $db->select("SELECT COUNT(*) as n FROM raeume")[0]['n'] ?? 0;
+                    try { $total_standorte  = $db->select("SELECT COUNT(*) as n FROM standorte")[0]['n'] ?? 0; } catch(Exception $e) { $total_standorte = '—'; }
                     try { $total_positionen = $db->select("SELECT COUNT(*) as n FROM positionen")[0]['n'] ?? 0; } catch(Exception $e) { $total_positionen = '—'; }
                     ?>
-                    <div class="widget-value"><?php echo $total_orte; ?></div>
-                    <div class="widget-label"><i class="ti ti-map-pin"></i> <?php echo t('nav_locations'); ?>
+                    <div class="widget-value"><?php echo $total_raeume; ?></div>
+                    <div class="widget-label"><i class="ti ti-map-pin"></i> <?php echo t('loc_tab_rooms'); ?>
                         <small style="color:var(--vs-muted);font-size:11px;">
-                            · <?php echo $total_raeume; ?> <?php echo t('loc_tab_rooms'); ?> · <?php echo $total_positionen; ?> <?php echo t('loc_tab_positions_short') ?: 'Pos.'; ?>
+                            · <?php echo t('loc_tab_locations'); ?>: <?php echo $total_standorte; ?> · <?php echo t('loc_tab_positions_short') ?: 'Pos.'; ?>: <?php echo $total_positionen; ?>
                         </small>
                     </div>
                 </div>
