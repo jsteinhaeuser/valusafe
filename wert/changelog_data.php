@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 30.09.2026 07:45 von bin/changelog_export.php.
+ * Erzeugt am 01.10.2026 08:03 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,17 @@
  */
 
 return [
+    [
+        'version' => '4.3.31',
+        'date' => '2026-10-01',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Die Uebersicht im Verwaltungsbereich, die Einstellungen und die Statistikseite zeigen die Zahl der Raeume jetzt als "Raeume" an. Bisher stand dort "Orte", und die kleinere Zahl daneben hiess "Raeume", obwohl sie die Standorte zaehlte - etwa "6 Orte · 1 Raeume · 1 Pos." bei sechs Raeumen und einem Standort. Jetzt: "6 Raeume · Standorte: 1 · Pos.: 1". Die Zahlen selbst waren immer richtig, nur falsch beschriftet. Zu tun ist nichts.'
+            ]
+        ]
+    ],
     [
         'version' => '4.3.30',
         'date' => '2026-09-30',
@@ -83,37 +94,6 @@ return [
                 'type' => 'fix',
                 'public' => true,
                 'text' => 'Die E-Mail nach einer automatischen Sicherung kommt jetzt von der eigenen Domain. Bisher stand als Absender fest die Adresse des Entwicklers darin, auch auf fremden Installationen - solche Mails landen meist im Spam oder werden abgewiesen. Jetzt wird der Absender aus der Adresse der eigenen Installation gebildet; wer einen bestimmten Absender braucht, setzt MAIL_FROM in der config.php. Sonst ist nichts zu tun.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.26',
-        'date' => '2026-09-27',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Wer ValuSafe als App auf dem Handy oder Rechner installiert hat, bekommt nach dem Update wieder die aktuellen Darstellungs- und Programmdateien. Die App haelt diese Dateien in einem Zwischenspeicher vor und erneuert ihn nur, wenn sich dessen Versionsname aendert - und der war seit Version 4.3.23 nicht mehr mitgezaehlt worden. Wer seitdem Merkwuerdigkeiten in der Darstellung sah, sollte sie jetzt los sein. Zu tun ist nichts; im Zweifel die App einmal schliessen und neu oeffnen.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Zwei Fehlermeldungen erscheinen jetzt als lesbarer Satz. Scheiterte das Speichern einer neuen Reihenfolge in der Liste oder eine Aktion in der Bildverwaltung, stand statt eines Hinweises der interne Bezeichner "error_generic" auf dem Bildschirm - der Text dazu fehlte in allen neun Sprachen. Zu tun ist nichts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Eine alte Hilfsdatei ist entfernt, die Fotos an einen fremden Dienst geschickt haette. Sie las Barcodes aus Bildern, indem sie das Bild an zxing.org uebertrug. Keine Seite von ValuSafe hat sie seit langem benutzt - das Scannen geschieht im Browser, ohne dass ein Bild den Server verlaesst -, aber sie lag noch bei und war fuer angemeldete Benutzer aufrufbar. Aufgefallen ist sie, weil die Beschreibung versprach, ausser der Barcode-Suche gehe nichts nach aussen. Zu tun ist nichts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Der Filter "Orte" im Aktivitaetsprotokoll findet jetzt etwas. Das Protokoll fuehrt Aenderungen an Raeumen unter einem anderen Namen, als der Filter suchte - er blieb deshalb immer leer. Zu tun ist nichts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Die Installationsanleitung in der README war falsch. Sie sagte, setup.php aus dem Unterordner install/ heraus aufzurufen. Der Assistent schreibt die Konfiguration aber in seinen eigenen Ordner und muss deshalb neben index.php liegen; aus install/ heraus entstand eine Installation, die nicht lief. Das fertige Installationspaket war nie betroffen, es ist richtig aufgebaut. Wer ValuSafe aus dem Quellcode installiert, folgt jetzt der korrigierten Anleitung.'
             ],
             [
                 'type' => 'feature',

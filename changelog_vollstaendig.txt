@@ -2,7 +2,17 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 30.09.2026 aus der Projektchronik.
+Erzeugt am 01.10.2026 aus der Projektchronik.
+
+Version 4.3.31   01.10.2026
+---------------------------
+  [Fix] Die Uebersicht im Verwaltungsbereich, die Einstellungen und die
+        Statistikseite zeigen die Zahl der Raeume jetzt als "Raeume" an.
+        Bisher stand dort "Orte", und die kleinere Zahl daneben hiess
+        "Raeume", obwohl sie die Standorte zaehlte - etwa "6 Orte · 1 Raeume
+        · 1 Pos." bei sechs Raeumen und einem Standort. Jetzt: "6 Raeume ·
+        Standorte: 1 · Pos.: 1". Die Zahlen selbst waren immer richtig, nur
+        falsch beschriftet. Zu tun ist nichts.
 
 Version 4.3.30   30.09.2026
 ---------------------------
