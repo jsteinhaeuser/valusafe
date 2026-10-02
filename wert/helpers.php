@@ -20,7 +20,7 @@ if (!function_exists('esc')) {
 if (!function_exists('sanitizeTheme')) {
     function sanitizeTheme($theme) {
         // Whitelist erlaubter Themes
-        $allowedThemes = ['cloud', 'ocean', 'forest', 'sunset', 'midnight', 'cherry', 'lavender', 'mint', 'sand', 'glass'];
+        $allowedThemes = ['cloud', 'ocean', 'forest', 'sunset', 'midnight', 'cherry', 'lavender', 'mint', 'sand', 'glass', 'navy', 'emerald'];
     
         // Default wenn nicht in Whitelist oder leer
         if (empty($theme) || !in_array($theme, $allowedThemes, true)) {

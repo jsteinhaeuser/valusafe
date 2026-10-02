@@ -126,6 +126,20 @@ $menu = [
         ]
     ]
 ];
+
+// Tools/ liefert paket_bauen.sh bewusst nicht aus - ohne den Ordner waere
+// "Diagnose-Tools" ein toter Link. Nur zeigen, was es auf dieser Instanz gibt.
+if (!is_dir(dirname(__DIR__, 2) . '/Tools')) {
+    foreach ($menu as $_k => $_item) {
+        if (!empty($_item['submenu'])) {
+            $menu[$_k]['submenu'] = array_values(array_filter(
+                $_item['submenu'],
+                fn($_s) => strpos($_s['url'] ?? '', '/Tools/') !== 0
+            ));
+        }
+    }
+    unset($_k, $_item);
+}
 ?>
 
 <!-- Sidebar -->

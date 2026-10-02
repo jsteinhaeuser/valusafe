@@ -18,9 +18,11 @@ require_once __DIR__ . '/backup_rotation.php';
 
 // Token-Schutz für HTTP-Aufrufe (CLI-Aufruf ist immer erlaubt)
 if (php_sapi_name() !== 'cli') {
-    $backupToken    = defined('BACKUP_TOKEN') ? BACKUP_TOKEN : 'changeme_set_in_config';
-    $providedToken  = $_GET['token'] ?? '';
-    if (!hash_equals($backupToken, $providedToken)) {
+    // Kein Ersatzwert: fehlt BACKUP_TOKEN, wird jede HTTP-Anfrage abgewiesen.
+    // Bis 4.3.31 galt dann 'changeme_set_in_config' - oeffentlich im Quellcode.
+    $backupToken    = defined('BACKUP_TOKEN') ? (string)BACKUP_TOKEN : '';
+    $providedToken  = (string)($_GET['token'] ?? '');
+    if ($backupToken === '' || !hash_equals($backupToken, $providedToken)) {
         header('HTTP/1.1 403 Forbidden');
         die('Access Denied');
     }
