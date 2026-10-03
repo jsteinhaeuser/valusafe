@@ -12,7 +12,7 @@
 // laufen ueber Cache First, bestehende Nutzer bekamen deshalb seit Monaten die
 // Dateien von v4.1 — auch das neue js/multi_image_upload.js haette sie nie
 // erreicht.
-const CACHE_VERSION = 'valusafe-v4.3.31';
+const CACHE_VERSION = 'valusafe-v4.3.32';
 
 // RELATIVE Pfade: sie gelten ab dem Ort dieser Datei. Bis 4.3.28 standen hier
 // "/css/..." usw. - das setzte eine Installation im Wurzelverzeichnis der

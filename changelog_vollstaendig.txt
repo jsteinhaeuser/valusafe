@@ -2,7 +2,27 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 01.10.2026 aus der Projektchronik.
+Erzeugt am 03.10.2026 aus der Projektchronik.
+
+Version 4.3.32   03.10.2026
+---------------------------
+  [Fix] Im persoenlichen Profil liessen sich die Farbthemen "Navy" und
+        "Emerald" zwar anklicken, gespeichert wurde aber "Cloud". Die Pruefung
+        der erlaubten Themen kannte die beiden juengsten nicht. In den
+        Einstellungen war es schon immer richtig.
+  [Fix] Die automatische Sicherung (cron_backup.php) nimmt Aufrufe ueber das
+        Web nur noch mit dem BACKUP_TOKEN aus der config.php an. Fehlte er,
+        galt bisher ein fest eingebauter Ersatzwert, der im Quellcode
+        nachzulesen war. Der Setup-Assistent legt den Token immer an; wer
+        seine config.php von Hand gebaut hat, sollte nachsehen, ob
+        BACKUP_TOKEN darin steht.
+  [Fix] Der Menuepunkt "Diagnose-Tools" im Verwaltungsbereich erscheint nur
+        noch, wenn der Ordner Tools vorhanden ist. Das Installationspaket
+        liefert ihn bewusst nicht aus, der Punkt fuehrte dort ins Leere.
+  [Fix] Die Auswahl "Aktion" in der Uebersicht (Verbergen, Wieder anzeigen,
+        Loeschen) zeigte in manchen Browsern, etwa Edge unter Windows, nur
+        einen Eintrag - die uebrigen standen weiss auf weiss. Gefunden beim
+        Windows-Test von Valu-Basic.
 
 Version 4.3.31   01.10.2026
 ---------------------------

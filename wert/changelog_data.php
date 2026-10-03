@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 01.10.2026 08:03 von bin/changelog_export.php.
+ * Erzeugt am 03.10.2026 09:15 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,32 @@
  */
 
 return [
+    [
+        'version' => '4.3.32',
+        'date' => '2026-10-03',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Im persoenlichen Profil liessen sich die Farbthemen "Navy" und "Emerald" zwar anklicken, gespeichert wurde aber "Cloud". Die Pruefung der erlaubten Themen kannte die beiden juengsten nicht. In den Einstellungen war es schon immer richtig.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Die automatische Sicherung (cron_backup.php) nimmt Aufrufe ueber das Web nur noch mit dem BACKUP_TOKEN aus der config.php an. Fehlte er, galt bisher ein fest eingebauter Ersatzwert, der im Quellcode nachzulesen war. Der Setup-Assistent legt den Token immer an; wer seine config.php von Hand gebaut hat, sollte nachsehen, ob BACKUP_TOKEN darin steht.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Der Menuepunkt "Diagnose-Tools" im Verwaltungsbereich erscheint nur noch, wenn der Ordner Tools vorhanden ist. Das Installationspaket liefert ihn bewusst nicht aus, der Punkt fuehrte dort ins Leere.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Die Auswahl "Aktion" in der Uebersicht (Verbergen, Wieder anzeigen, Loeschen) zeigte in manchen Browsern, etwa Edge unter Windows, nur einen Eintrag - die uebrigen standen weiss auf weiss. Gefunden beim Windows-Test von Valu-Basic.'
+            ]
+        ]
+    ],
     [
         'version' => '4.3.31',
         'date' => '2026-10-01',
@@ -78,22 +104,6 @@ return [
                 'type' => 'fix',
                 'public' => true,
                 'text' => 'Im Suchfilter der Liste heisst die erste Auswahl im Feld "Raum" jetzt "Alle Raeume" statt "Alle Orte" - passend zu dem, was das Feld seit der Umstellung auf Raeume auflistet. In allen neun Sprachen. Zu tun ist nichts.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.27',
-        'date' => '2026-09-27',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'WICHTIG fuer alle, die ValuSafe aus dem Installationspaket eingerichtet haben: Impressum und Datenschutzerklaerung enthielten bis Version 4.3.26 die Angaben des Entwicklers - Name, Anschrift, Telefon, E-Mail und Hoster - statt Platzhaltern. Wer diese beiden Seiten nach der Installation nicht selbst angepasst hat, nennt dort den Entwickler als Verantwortlichen. Bitte oeffnen Sie impressum.php und datenschutz.php und tragen Sie Ihre eigenen Angaben ein; neue Pakete enthalten ab jetzt Platzhalter in eckigen Klammern. Wer ValuSafe nur fuer sich selbst betreibt und die Seiten nicht oeffentlich zeigt, kann sie auch einfach leeren.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Die E-Mail nach einer automatischen Sicherung kommt jetzt von der eigenen Domain. Bisher stand als Absender fest die Adresse des Entwicklers darin, auch auf fremden Installationen - solche Mails landen meist im Spam oder werden abgewiesen. Jetzt wird der Absender aus der Adresse der eigenen Installation gebildet; wer einen bestimmten Absender braucht, setzt MAIL_FROM in der config.php. Sonst ist nichts zu tun.'
             ],
             [
                 'type' => 'feature',
