@@ -437,6 +437,9 @@ include 'header_next.php';
 .bulk-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .bulk-actions select, .bulk-actions button { padding: 8px 14px; border-radius: 6px; font-size: 13px; border: none; cursor: pointer; }
 .bulk-actions select { background: rgba(255,255,255,0.15); color: white; }
+/* Aufgeklappte Liste: Systemhintergrund ist weiss - ohne eigene Farbe standen die
+   Eintraege weiss auf weiss, sichtbar war nur der markierte (Windows-Test 02.10.2026) */
+.bulk-actions select option { color: #1f2937; background: #fff; }
 .bulk-actions button { background: white; color: var(--vs-accent); font-weight: 600; }
 .bulk-actions button:hover { background: var(--vs-accent-light); }
 .bulk-close { background: none !important; border: 1px solid rgba(255,255,255,0.4) !important; color: white !important; }
