@@ -87,7 +87,8 @@ If you find a security problem, [SECURITY.md](SECURITY.md) says where to report 
 | [ARCHITECTURE.md](ARCHITECTURE.md) | How the code is built, reconstructed from the source rather than from memory |
 | [SECURITY.md](SECURITY.md) | Reporting security issues, scope, what is out of scope |
 | [docker/INSTALL.de.md](docker/INSTALL.de.md) | Docker installation, step by step (German) |
-| [changelog_vollstaendig.txt](changelog_vollstaendig.txt) | Every change that affects users (German) |
+| [CHANGELOG.md](CHANGELOG.md) | Changes that affect users, in English, from version 4.3.28 on |
+| [changelog_vollstaendig.txt](changelog_vollstaendig.txt) | Every change that affects users, all versions (German) |
 | [doku/Benutzerhandbuch_v4_2_3.pdf](doku/Benutzerhandbuch_v4_2_3.pdf) | User manual (German) — as of version 4.2.3, older than the current release |
 | [doku/Benutzerhandbuch_Erweitert_v4_2_3.pdf](doku/Benutzerhandbuch_Erweitert_v4_2_3.pdf) | Extended manual (German), same vintage |
 | [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) | Bundled third-party components and their licenses |

@@ -88,6 +88,7 @@ Wenn Sie ein Sicherheitsproblem finden: In [SECURITY.de.md](SECURITY.de.md) steh
 | [SECURITY.de.md](SECURITY.de.md) | Sicherheitsmeldungen, Geltungsbereich, was ausdrücklich nicht dazugehört |
 | [docker/INSTALL.de.md](docker/INSTALL.de.md) | Docker-Installation, Schritt für Schritt |
 | [changelog_vollstaendig.txt](changelog_vollstaendig.txt) | Alle Änderungen, die Anwender betreffen |
+| [CHANGELOG.md](CHANGELOG.md) | Dasselbe auf Englisch, ab Version 4.3.28 |
 | [doku/Benutzerhandbuch_v4_2_3.pdf](doku/Benutzerhandbuch_v4_2_3.pdf) | Benutzerhandbuch — Stand 4.2.3, also älter als die aktuelle Fassung |
 | [doku/Benutzerhandbuch_Erweitert_v4_2_3.pdf](doku/Benutzerhandbuch_Erweitert_v4_2_3.pdf) | Erweitertes Handbuch, gleicher Stand |
 | [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) | Mitgelieferte fremde Bestandteile und ihre Lizenzen |
