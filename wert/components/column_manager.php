@@ -24,7 +24,7 @@ foreach (array_keys($availableSpalten) as $newSpalteId) {
     <div class="column-manager-overlay"></div>
     <div class="column-manager-content">
         <div class="column-manager-header">
-            <h3>📊 Spalten konfigurieren</h3>
+            <h3>📊 <?php echo htmlspecialchars(t('columns_title')); ?></h3>
             <button type="button" class="column-manager-close" id="closeColumnManager">×</button>
         </div>
         
@@ -55,14 +55,14 @@ foreach (array_keys($availableSpalten) as $newSpalteId) {
                             </span>
                             
                             <?php if ($isStandard): ?>
-                                <span class="column-badge">Standard</span>
+                                <span class="column-badge"><?php echo htmlspecialchars(t('columns_preset_standard')); ?></span>
                             <?php endif; ?>
                             
                             <!-- Visibility Toggle -->
                             <label class="column-toggle">
                                 <input type="checkbox" 
                                        class="column-visibility"
-                                       aria-label="<?php echo htmlspecialchars($customLabel); ?> ein-/ausblenden"
+                                       aria-label="<?php echo htmlspecialchars(sprintf(t('columns_toggle_aria'), $customLabel)); ?>"
                                        data-column-id="<?php echo $spalteId; ?>"
                                        <?php echo $isVisible ? 'checked' : ''; ?>
                                        <?php echo $spalte['required'] ? 'disabled' : ''; ?>>
@@ -74,16 +74,16 @@ foreach (array_keys($availableSpalten) as $newSpalteId) {
             </ul>
             
             <div class="column-manager-info">
-                💡 <strong>Tipp:</strong> Doppelklick auf Namen zum Umbenennen · Ziehen zum Sortieren
+                💡 <strong><?php echo htmlspecialchars(t('columns_tip_label')); ?></strong> <?php echo htmlspecialchars(t('columns_tip')); ?>
             </div>
         </div>
         
         <div class="column-manager-footer">
             <button type="button" class="btn btn-secondary" id="resetColumns">
-                🔄 Zurücksetzen
+                🔄 <?php echo htmlspecialchars(t('btn_reset')); ?>
             </button>
             <button type="button" class="btn btn-primary" id="saveColumns">
-                💾 Speichern
+                💾 <?php echo htmlspecialchars(t('btn_save')); ?>
             </button>
         </div>
     </div>

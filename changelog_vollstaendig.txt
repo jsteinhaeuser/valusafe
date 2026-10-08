@@ -2,7 +2,89 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 03.10.2026 aus der Projektchronik.
+Erzeugt am 08.10.2026 aus der Projektchronik.
+
+Version 4.3.33   09.10.2026
+---------------------------
+  [Neu] Die Schnellerfassung ist wieder erreichbar: Auf dem Handy öffnet der
+        runde Plus-Knopf jetzt die Schnellerfassung (Foto, Name, Speichern -
+        Raum und Kategorie bleiben für den nächsten Gegenstand stehen), am
+        Rechner weiter das vollständige Formular. Wer ValuSafe als App
+        installiert hat, findet sie außerdem beim langen Druck auf das
+        App-Symbol. Die Schnellerfassung setzte bisher heimlich das heutige
+        Datum als Kaufdatum - das Feld bleibt jetzt leer. Bei iPhone-Fotos
+        (HEIC), die der Browser nicht anzeigen kann, erscheint statt einer
+        leeren Vorschau ein Hinweis; umgewandelt wird beim Speichern. Alle
+        Texte der Seite sind übersetzt.
+  [Fix] Leser (Rolle "Nur lesen") konnten Gegenstände über die direkte
+        Adresse der Seiten "Hinzufügen", "Schnellerfassung" und "Bearbeiten"
+        anlegen und ändern - die Seiten prüften nur die Anmeldung, nicht die
+        Rechte. Jetzt gelten die Rechte "Neuen Gegenstand anlegen" bzw.
+        "Gegenstand bearbeiten" aus der Rechteverwaltung; die Meldung "Zugriff
+        verweigert" ist übersetzt.
+  [Fix] Die Einstellung "Benutzer sehen nur eigene Gegenstände" wirkte bisher
+        nur in der Listenansicht. Über die direkte Adresse konnten betroffene
+        Benutzer fremde Gegenstände trotzdem öffnen, bearbeiten, löschen
+        und deren Bilder verwalten, und Exporte, QR-Codes, Raumansicht,
+        Dashboard und Versicherungsübersicht enthielten alle Gegenstände.
+        Jetzt gilt die Einstellung überall. Wer nur eigene Gegenstände
+        sieht, legt Gegenstände außerdem immer unter dem eigenen Namen an.
+  [Fix] Einige Rechte aus der Rechteverwaltung wurden nicht beachtet: "Mehrere
+        Gegenstände löschen" (Löschen über die Auswahl ging mit dem Recht
+        zum Bearbeiten), die Export-Rechte (PDF, Excel/CSV, HTML,
+        Versicherungsexport, QR-Codes) und die Bilder-Rechte (Hochladen,
+        Löschen). Jetzt gelten sie; das Export-Menü zeigt nur noch erlaubte
+        Exporte.
+  [Fix] Weitere Stellen folgen jetzt der eingestellten Sprache statt fest
+        Deutsch: QR-Codes, Dokumentverwaltung eines Gegenstands,
+        Tabellenspalte im Aktivitätsprotokoll, Feld "Aktueller Wert" beim
+        Bearbeiten, Vorlesetexte des Suchfilters und die Abschnitte der
+        Rechteverwaltung (nach einer Neuinstallation waren sie deutsch).
+        Versicherungs-Export und Übergabeprotokoll sind weiterhin deutsch.
+  [Fix] Spaltennamen sind jetzt überall gleich und übersetzt: Tabellenkopf,
+        Spalten-Manager und Formular verwenden dieselben Namen. Bisher zeigte
+        der Tabellenkopf für einige Spalten Rohnamen wie "Custom1", und
+        Spalten, die man im Spalten-Manager umbenannt hatte, erschienen im
+        Tabellenkopf weiter unter dem alten Namen. Der Spalten-Manager selbst,
+        die Auswahlleiste für mehrere Gegenstände und die Vorlesetexte der
+        Übersicht folgen jetzt ebenfalls der eingestellten Sprache.
+  [Fix] Die Anmeldeseite war fest deutsch. Sie erscheint jetzt in der Sprache
+        des Browsers (eine der neun Sprachen, sonst Deutsch) und hat unten
+        eine Sprachwahl. Außerdem merkt sich ValuSafe die in den
+        Einstellungen gewählte Sprache jetzt wirklich: Sie wurde zwar
+        gespeichert, beim nächsten Anmelden aber nicht geladen - jede neue
+        Sitzung begann auf Deutsch.
+  [Fix] Auch der Verwaltungsbereich folgt jetzt der eingestellten Sprache an
+        Stellen, die bisher fest deutsch waren: Sicherung (Kacheln, Liste,
+        Meldungen), Versicherungsverwaltung (Übersicht, Formular, Zuordnen
+        von Gegenständen), Räume/Standorte/Positionen, Benutzerverwaltung,
+        Übersichtskacheln, Seitenleiste und Hilfe-Fenster. Der
+        Verwaltungsbereich ist wie bisher auf Deutsch und Englisch übersetzt.
+        Datenbankfehler zeigen dort keinen technischen Text mehr an, sondern
+        verweisen auf das Fehlerprotokoll. Außerdem führte "Versicherungen"
+        in der unteren Leiste auf dem Handy für Editoren und Leser auf eine
+        gesperrte Seite; der Knopf öffnet jetzt dieselbe Seite wie in der
+        Seitenleiste. "Statistiken" und "Galerie" erscheinen in den Leisten
+        nur noch für Administratoren - für alle anderen endeten sie bisher
+        ebenfalls bei "Zugriff verweigert".
+  [Neu] In der Rechteverwaltung lassen sich jetzt "Eigenes Passwort aendern"
+        und das neue Recht "Eigenes Konto loeschen" fuer Editoren und Leser
+        abschalten. Gedacht fuer Konten, die sich mehrere Personen teilen,
+        etwa eine oeffentliche Demo: Bisher konnte dort jeder das gemeinsame
+        Passwort aendern oder das Konto ueber "Account loeschen" ganz
+        entfernen und damit alle anderen aussperren. Ist ein Recht
+        abgeschaltet, zeigt die Einstellungsseite statt des Formulars einen
+        Hinweis. Voreingestellt bleibt beides erlaubt - wer nichts umstellt,
+        merkt keinen Unterschied. Nach dem Update einmal migrate.php aufrufen.
+  [Fix] Wer eine andere Sprache als Deutsch eingestellt hat, sah an mehreren
+        Stellen trotzdem deutsche Texte: im Export-Menue (CSV-Datei, PDF
+        Detailliert, Uebergabeprotokoll ...), in den Hinweisen der
+        Seitenleiste, in der unteren Leiste auf dem Handy, im Detailbereich
+        rechts neben der Liste, im Fenster "Hilfe & Informationen" und in den
+        Einstellungen bei Profilbild und Passwort samt allen Meldungen. Diese
+        Texte folgen jetzt der eingestellten Sprache (alle neun). Ausserdem
+        fuehrte "Einstellungen" in der unteren Leiste auf dem Handy auf eine
+        Seite, die es nicht gibt; der Knopf oeffnet jetzt die Einstellungen.
 
 Version 4.3.32   03.10.2026
 ---------------------------

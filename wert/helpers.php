@@ -494,7 +494,7 @@ if (!function_exists('renderThumbnail')) {
             // Mit Lightbox: Bild ist klickbar und öffnet Vergrößerung
             return '<img src="upload/' . htmlspecialchars($filename) . '"
                          alt="' . htmlspecialchars($alt) . '"
-                         title="' . htmlspecialchars($alt) . ' - Zum Vergrößern klicken"
+                         title="' . htmlspecialchars(vsUebersetzt('idx_click_enlarge', '%s - zum Vergrößern klicken', $alt)) . '"
                          class="' . $class . ' lightbox-trigger"
                          data-full="upload/' . htmlspecialchars($filename) . '"
                          loading="lazy">';
@@ -890,33 +890,15 @@ if (!function_exists('showSpalte')) {
 if (!function_exists('getSpaltenLabel')) {
     function getSpaltenLabel($spaltenId) {
         static $labels = null;
-        static $defaultLabels = null;
-    
-        if ($defaultLabels === null) {
-            $defaultLabels = [
-                'bild' => t('tab_image'),
-                'kategorie' => t('tab_category'),
-                'ort' => t('tab_location'),
-                'preis' => t('tab_price'),
-                'kaufdatum' => t('tab_purchase_date'),
-                'ersteller' => t('tab_created_by'),
-                'dokumente' => t('tab_documents'),
-                'notizen' => t('tab_notes'),
-                'aktueller_wert' => 'Akt. Wert',
-                'wert_differenz' => 'Differenz',
-                'wert_prozent' => '± %',
-                'bewertungsdatum' => 'Bewertet am',
-                'custom1' => 'Eigenes Feld 1',
-                'custom2' => 'Eigenes Feld 2'
-            ];
-        }
-    
+
         if ($labels === null) {
             $labels = $_SESSION['spalten_labels'] ?? [];
         }
-    
-        // Custom-Label verwenden oder Default
-        return $labels[$spaltenId] ?? $defaultLabels[$spaltenId] ?? $spaltenId;
+
+        // Eigener Name aus dem Spalten-Manager, sonst der uebersetzte
+        // Standardname (bis 4.3.32 hier teils fest deutsch, teils tab_*)
+        $eigen = trim((string)($labels[$spaltenId] ?? ''));
+        return $eigen !== '' ? $eigen : vsSpaltenStandardName((string)$spaltenId);
     }
 }
 
@@ -1096,7 +1078,10 @@ if (!function_exists('renderTableCell')) {
  */
 if (!function_exists('getAvailableSpalten')) {
     function getAvailableSpalten() {
-        return [
+        // Die deutschen 'label' sind nur noch Rueckfall; angezeigt wird
+        // t('col_<id>') - dieselben Namen wie im Tabellenkopf (index.php)
+        // und in getSpaltenLabel() (4.3.33, vorher fest deutsch).
+        $spalten = [
             'bild' => [
                 'label' => 'Bild',
                 'icon' => '🖼️',
@@ -1168,6 +1153,34 @@ if (!function_exists('getAvailableSpalten')) {
                 'required' => false
             ]
         ];
+        foreach ($spalten as $id => $s) {
+            $spalten[$id]['label'] = vsSpaltenStandardName($id, $s['label']);
+        }
+        return $spalten;
+    }
+}
+
+/**
+ * t($key) mit deutschem Rueckfall, Platzhalter per sprintf. Fuer Helfer, die
+ * auch ohne geladene Sprachdatei laufen koennen (Exporte, Tests).
+ */
+if (!function_exists('vsUebersetzt')) {
+    function vsUebersetzt(string $key, string $rueckfall, ...$werte): string {
+        $v = function_exists('t') ? t($key) : $key;
+        $text = ($v === '' || $v === $key) ? $rueckfall : $v;
+        return $werte ? sprintf($text, ...$werte) : $text;
+    }
+}
+
+/**
+ * Uebersetzter Standardname einer Spalte: t('col_<id>'), sonst $rueckfall.
+ * Eine gemeinsame Quelle fuer Tabellenkopf, Spalten-Manager und Formular.
+ */
+if (!function_exists('vsSpaltenStandardName')) {
+    function vsSpaltenStandardName(string $id, string $rueckfall = ''): string {
+        $key = 'col_' . $id;
+        $v   = function_exists('t') ? t($key) : $key;
+        return ($v === '' || $v === $key) ? ($rueckfall !== '' ? $rueckfall : $id) : $v;
     }
 }
 
@@ -1264,6 +1277,16 @@ if (!function_exists('formatDateTimeLocalized')) {
 if (!function_exists('userSeesOnlyOwnItems')) {
     function userSeesOnlyOwnItems(): bool {
         global $db;
+        // Je Aufruf einmal fragen - Mehrfachaktionen pruefen jeden Gegenstand.
+        static $cache = [];
+        $schluessel = $_SESSION['username'] ?? '';
+        if (array_key_exists($schluessel, $cache)) {
+            return $cache[$schluessel];
+        }
+        return $cache[$schluessel] = _userSeesOnlyOwnItemsAbfrage($db);
+    }
+
+    function _userSeesOnlyOwnItemsAbfrage($db): bool {
         try {
             $setting = $db->selectOne(
                 "SELECT setting_value FROM app_settings WHERE setting_key = 'only_own_items'"
@@ -1287,16 +1310,86 @@ if (!function_exists('userSeesOnlyOwnItems')) {
 }
 
 /**
+ * Darf der aktuelle Benutzer diesen Gegenstand sehen bzw. anfassen?
+ * Prueft NUR "only_own_items" (Besitz = wertsachen.erstellt_von); Rollen-
+ * rechte (items_edit, canDelete ...) prueft der Aufrufer wie bisher.
+ * $item muss erstellt_von enthalten - fehlt die Spalte, gilt der Gegenstand
+ * als fremd (restriktiv). Bis 4.3.32 wirkte die Einstellung nur in der
+ * Liste; per Adresse kam man an fremde Gegenstaende heran.
+ *
+ * Verglichen wird wie in MySQL (Liste: erstellt_von = ?): ohne Ruecksicht
+ * auf Gross-/Kleinschreibung und Leerzeichen am Ende. Sonst stuende "Lea"
+ * in der Liste von "lea", Bearbeiten meldete aber "nicht gefunden".
+ */
+if (!function_exists('darfGegenstand')) {
+    function darfGegenstand(?array $item): bool {
+        if (!$item) {
+            return false;
+        }
+        if (!userSeesOnlyOwnItems()) {
+            return true;
+        }
+        $ersteller = mb_strtolower(rtrim((string)($item['erstellt_von'] ?? '')));
+        $benutzer  = mb_strtolower(rtrim((string)($_SESSION['username'] ?? '')));
+        return $ersteller !== '' && $ersteller === $benutzer;
+    }
+}
+
+/**
+ * SQL-Zusatz fuer Listen, Exporte und Summen: bei "only_own_items"
+ * [" AND w.erstellt_von = ?", [benutzername]], sonst ['', []].
+ * $alias = Tabellenkuerzel von wertsachen ('' fuer ohne).
+ */
+if (!function_exists('nurEigeneSql')) {
+    function nurEigeneSql(string $alias = 'w'): array {
+        if (!userSeesOnlyOwnItems()) {
+            return ['', []];
+        }
+        $spalte = ($alias !== '' ? $alias . '.' : '') . 'erstellt_von';
+        return [" AND $spalte = ?", [$_SESSION['username'] ?? '']];
+    }
+}
+
+/**
+ * Anzeigename einer Tabelle im Aktivitaetsprotokoll (activity_log.tabelle).
+ * Bis 4.3.32 stand dort ucfirst() des Tabellennamens - "Wertsachen",
+ * "Positionen" usw. auch in der englischen Oberflaeche.
+ */
+if (!function_exists('vsTabellenName')) {
+    function vsTabellenName(?string $tabelle): string {
+        $schluessel = [
+            'wertsachen'     => 'stats_items',
+            'kategorien'     => 'settings_categories',
+            'raeume'         => 'loc_tab_rooms',
+            'positionen'     => 'loc_positions',
+            'standorte'      => 'loc_locations_label',
+            'dokumente'      => 'form_documents',
+            'versicherungen' => 'nav_insurance',
+            'benutzer'       => 'act_col_user',
+            'users'          => 'act_col_user',
+        ];
+        $tabelle = (string)$tabelle;
+        $key = $schluessel[strtolower($tabelle)] ?? null;
+        if ($key !== null && t($key) !== $key) {
+            return t($key);
+        }
+        return ucfirst($tabelle);
+    }
+}
+
+/**
  * Zeigt "Zugriff verweigert" Seite und beendet Script
  */
 if (!function_exists('showPermissionDenied')) {
     function showPermissionDenied($message = 'Sie haben keine Berechtigung für diese Aktion.') {
         header('HTTP/1.1 403 Forbidden');
+        $titel   = htmlspecialchars(vsUebersetzt('access_denied', 'Zugriff verweigert'));
+        $zurueck = htmlspecialchars(vsUebersetzt('btn_back_to_overview', '← Zurück zur Übersicht'));
         $html = '<!DOCTYPE html>
     <html>
     <head>
         <meta charset="UTF-8">
-        <title>Zugriff verweigert</title>
+        <title>' . $titel . '</title>
         <style>
             body { font-family: Arial, sans-serif; background: #f5f5f5; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
             .error-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; max-width: 500px; }
@@ -1310,9 +1403,9 @@ if (!function_exists('showPermissionDenied')) {
     <body>
         <div class="error-box">
             <div class="error-icon">🔒</div>
-            <h1>Zugriff verweigert</h1>
+            <h1>' . $titel . '</h1>
             <p>' . htmlspecialchars($message) . '</p>
-            <a href="index.php">← Zurück zur Startseite</a>
+            <a href="index.php">' . $zurueck . '</a>
         </div>
     </body>
     </html>';

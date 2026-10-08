@@ -4,7 +4,10 @@ require_once 'db.php';
 require_once 'helpers.php';
 require_once 'helpers_images.php';
 requireLogin();
-define('PAGE_TITLE', 'Schnellerfassung - ' . t('app_title'));
+// Bis 4.3.32 nur requireLogin(): ein Leser konnte per Adresse anlegen.
+requirePermission('items_add');
+// t(), nicht tn(): tn() definieren erst die Header-Dateien (weiter unten)
+define('PAGE_TITLE', t('quick_title') . ' - ' . t('app_title'));
 
 $success = null;
 $errors  = [];
@@ -28,6 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $user      = $db->selectOne("SELECT standard_ersteller FROM users WHERE username = ?", [$_SESSION['username']]);
             $ersteller = $user['standard_ersteller'] ?? $_SESSION['username'];
+            if (userSeesOnlyOwnItems()) {
+                $ersteller = $_SESSION['username'];
+            }
 
             $newId = $db->insert(
                 "INSERT INTO wertsachen (name, raum_id, kategorie_id, kaufdatum, preis, notizen, bild, erstellt_von, gelistet_am)
@@ -236,19 +242,19 @@ include 'header_next_page.php';
 </style>
 
 <div class="qa-wrap">
-    <div class="qa-title">⚡ Schnellerfassung</div>
-    <p class="qa-subtitle">Foto machen, Name eingeben, speichern — weiter geht's.</p>
+    <div class="qa-title">⚡ <?php echo tn('quick_title', 'Schnellerfassung'); ?></div>
+    <p class="qa-subtitle"><?php echo tn('quick_subtitle', 'Foto wählen, Name eingeben, speichern – Raum und Kategorie bleiben für den nächsten Gegenstand stehen.'); ?></p>
 
     <?php if ($success): ?>
     <div class="qa-toast">
-        ✅ <span>„<?php echo htmlspecialchars($success); ?>" gespeichert!</span>
-        <a href="edit.php?id=<?php echo $newId; ?>" style="margin-left:auto; font-size:12px; color:#065f46; text-decoration:underline;">Details →</a>
+        ✅ <span>„<?php echo htmlspecialchars($success); ?>“ <?php echo tn('quick_saved', 'gespeichert!'); ?></span>
+        <a href="edit.php?id=<?php echo (int)$newId; ?>" style="margin-left:auto; font-size:12px; color:#065f46; text-decoration:underline;"><?php echo tn('quick_details', 'Details'); ?> →</a>
     </div>
     <?php endif; ?>
 
     <?php if (!empty($errors)): ?>
     <div class="qa-errors">
-        ⚠️ Bitte korrigieren:
+        ⚠️ <?php echo tn('quick_fix_errors', 'Bitte korrigieren:'); ?>
         <ul><?php foreach ($errors as $e): ?><li><?php echo htmlspecialchars($e); ?></li><?php endforeach; ?></ul>
     </div>
     <?php endif; ?>
@@ -258,12 +264,12 @@ include 'header_next_page.php';
 
         <!-- Foto -->
         <div class="qa-photo-zone" id="qaPhotoZone" onclick="document.getElementById('bild').click()">
-            <input type="file" name="bild" id="bild" accept="image/*" capture="environment">
+            <input type="file" name="bild" id="bild" accept="image/*,.heic,.heif" capture="environment">
             <img class="qa-photo-preview" id="qaPreview" alt="">
             <button type="button" class="qa-photo-remove" id="qaRemove" onclick="removePhoto(event)">✕</button>
             <div id="qaPlaceholder">
                 <div class="qa-photo-icon">📷</div>
-                <div class="qa-photo-hint">Tippen zum Fotografieren</div>
+                <div class="qa-photo-hint"><?php echo tn('quick_photo_hint', 'Klicken, um ein Foto zu wählen'); ?></div>
             </div>
         </div>
 
@@ -271,7 +277,7 @@ include 'header_next_page.php';
         <div class="qa-group">
             <label class="qa-label" for="name"><?php echo t('form_name'); ?> <span class="req">*</span></label>
             <input type="text" name="name" id="name" class="qa-input"
-                   placeholder="z.B. Sony Kopfhörer WH-1000XM5"
+                   placeholder="<?php echo htmlspecialchars(tn('quick_name_placeholder', 'z. B. Kopfhörer, Bohrmaschine, Ring')); ?>"
                    value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>"
                    required autofocus>
         </div>
@@ -315,7 +321,7 @@ include 'header_next_page.php';
         <!-- Notiz (optional, eingeklappt) -->
         <details style="margin-bottom:14px;">
             <summary style="font-size:13px; color:var(--text-muted,#888); cursor:pointer; user-select:none; padding:4px 0;">
-                📝 Notiz hinzufügen (optional)
+                📝 <?php echo tn('quick_add_note', 'Notiz hinzufügen (optional)'); ?>
             </summary>
             <div style="margin-top:8px;">
                 <textarea name="notizen" id="notizen" class="qa-input"
@@ -325,35 +331,65 @@ include 'header_next_page.php';
         </details>
 
         <!-- Versteckte Felder mit Standardwerten -->
-        <input type="hidden" name="kaufdatum" value="<?php echo date('Y-m-d'); ?>">
-        <input type="hidden" name="gelistet_am" value="<?php echo date('Y-m-d'); ?>">
+        <!-- Kein verstecktes Kaufdatum mehr (ValuSafe bis 4.3.32 / Valu-Basic bis 2.0.3: heute) - das Datum
+             der Erfassung ist nicht das Kaufdatum. "Hier gelistet am" setzt
+             das INSERT oben selbst. -->
 
         <button type="submit" class="qa-submit">
-            ⚡ Speichern &amp; nächster Gegenstand
+            ⚡ <?php echo tn('quick_submit', 'Speichern & nächster Gegenstand'); ?>
         </button>
     </form>
 
     <div class="qa-full-link">
-        Mehr Felder? <a href="add.php">Vollständiges Formular →</a>
+        <?php echo tn('quick_more_fields', 'Mehr Felder?'); ?> <a href="add.php"><?php echo tn('quick_full_form', 'Vollständiges Formular'); ?> →</a>
         &nbsp;·&nbsp;
-        <a href="index.php">Zur Übersicht</a>
+        <a href="index.php"><?php echo tn('quick_to_overview', 'Zur Übersicht'); ?></a>
     </div>
 </div>
 
 <script>
 // Foto-Vorschau
+// Seit ValuSafe 4.3.33 / Valu-Basic 2.0.4: Kann der Browser das Bild nicht darstellen (HEIC vom iPhone in
+// Chrome/Firefox/Edge), blieb die Vorschau leer und es sah aus, als sei das
+// Foto nicht angenommen. Jetzt steht dann Dateiname + Hinweis im Feld; die
+// Umwandlung erledigt der Server beim Speichern.
+const QA_HINT_DEFAULT = <?php echo json_encode(tn('quick_photo_hint', 'Klicken, um ein Foto zu wählen')); ?>;
+const QA_HINT_NOPREV  = <?php echo json_encode(tn('quick_photo_no_preview', 'Keine Vorschau möglich – das Foto wird beim Speichern umgewandelt.')); ?>;
+
+function qaKeineVorschau(file) {
+    const placeholder = document.getElementById('qaPlaceholder');
+    document.getElementById('qaPreview').style.display = 'none';
+    placeholder.querySelector('.qa-photo-icon').textContent = '🖼️';
+    placeholder.querySelector('.qa-photo-hint').textContent = file.name + ' – ' + QA_HINT_NOPREV;
+    placeholder.style.display = '';
+    document.getElementById('qaRemove').style.display = 'flex';
+}
+
+function qaPlatzhalterZuruecksetzen() {
+    const placeholder = document.getElementById('qaPlaceholder');
+    placeholder.querySelector('.qa-photo-icon').textContent = '📷';
+    placeholder.querySelector('.qa-photo-hint').textContent = QA_HINT_DEFAULT;
+}
+
 document.getElementById('bild').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
+    if (/\.(heic|heif)$/i.test(file.name) && !/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
+        qaKeineVorschau(file);
+        return;
+    }
     const reader = new FileReader();
     reader.onload = function(e) {
         const preview = document.getElementById('qaPreview');
         const placeholder = document.getElementById('qaPlaceholder');
         const removeBtn = document.getElementById('qaRemove');
+        preview.onerror = function() { qaKeineVorschau(file); };
+        preview.onload  = function() {
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+            removeBtn.style.display = 'flex';
+        };
         preview.src = e.target.result;
-        preview.style.display = 'block';
-        placeholder.style.display = 'none';
-        removeBtn.style.display = 'flex';
     };
     reader.readAsDataURL(file);
 });
@@ -362,6 +398,7 @@ function removePhoto(e) {
     e.stopPropagation();
     document.getElementById('bild').value = '';
     document.getElementById('qaPreview').style.display = 'none';
+    qaPlatzhalterZuruecksetzen();
     document.getElementById('qaPlaceholder').style.display = '';
     document.getElementById('qaRemove').style.display = 'none';
 }

@@ -3,6 +3,10 @@
 require_once 'db.php';
 require_once 'helpers.php';
 requireLogin();
+// Export-Recht aus der Rechteverwaltung (bis 4.3.32 nicht geprueft).
+requirePermission('export_pdf');
+// Bei "nur eigene" nur eigene Gegenstaende exportieren.
+[$ownSql, $ownParams] = nurEigeneSql('w');
 
 // Alle Gegenstände gruppiert nach Ort laden
 $protokoll_items = $db->select(
@@ -10,8 +14,9 @@ $protokoll_items = $db->select(
      FROM wertsachen w
      LEFT JOIN raeume o ON w.raum_id = o.id
      LEFT JOIN kategorien k ON w.kategorie_id = k.id
-     WHERE (w.hidden = 0 OR w.hidden IS NULL)
-     ORDER BY o.name ASC, w.name ASC"
+     WHERE (w.hidden = 0 OR w.hidden IS NULL)" . $ownSql . "
+     ORDER BY o.name ASC, w.name ASC",
+    $ownParams
 );
 
 $raum_gruppen = [];

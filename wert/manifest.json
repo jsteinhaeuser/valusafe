@@ -47,10 +47,22 @@
   ],
   "shortcuts": [
     {
+      "name": "Schnellerfassung",
+      "short_name": "Schnell",
+      "description": "Foto machen, Name eingeben, speichern",
+      "url": "quick_add.php",
+      "icons": [
+        {
+          "src": "icon-add.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
       "name": "Neuer Gegenstand",
       "short_name": "Neu",
       "description": "Neuen Gegenstand hinzufügen",
-      "url": "/add.php",
+      "url": "add.php",
       "icons": [
         {
           "src": "icon-add.png",
@@ -62,7 +74,7 @@
       "name": "Übersicht",
       "short_name": "Liste",
       "description": "Alle Gegenstände anzeigen",
-      "url": "/index.php",
+      "url": "index.php",
       "icons": [
         {
           "src": "icon-list.png",

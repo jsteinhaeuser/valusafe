@@ -26,16 +26,18 @@ if ($versId) {
     $versicherungen = $db->select("SELECT * FROM versicherungen ORDER BY name ASC");
 }
 
-// Items je Versicherung laden
+// Items je Versicherung laden - bei "nur eigene" nur eigene (bis 4.3.32
+// listete die Seite alle zugeordneten Gegenstaende jedes Benutzers).
+[$ownSql, $ownParams] = nurEigeneSql('w');
 foreach ($versicherungen as &$v) {
     $v['items'] = $db->select("
         SELECT w.*, k.name as kategorie, o.name as ort
         FROM wertsachen w
         LEFT JOIN kategorien k ON w.kategorie_id = k.id
         LEFT JOIN raeume o ON w.raum_id = o.id
-        WHERE w.versicherung_id = ?
+        WHERE w.versicherung_id = ?" . $ownSql . "
         ORDER BY w.name ASC
-    ", [$v['id']]);
+    ", array_merge([$v['id']], $ownParams));
     $v['gesamtwert'] = array_sum(array_map(fn($i) => $i['aktueller_wert'] ?: $i['preis'], $v['items']));
     // Gegenstaende ohne aktueller_wert UND ohne preis gehen mit 0 in die Summe
     // ein. Der erfasste Gesamtwert ist damit eine Untergrenze, und ein gruener

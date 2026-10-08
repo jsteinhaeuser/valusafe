@@ -9,7 +9,7 @@ if (!function_exists('tn')) {
 ?>
 
         <!-- ── Detail-Pane ──────────────────────────────────── -->
-        <aside class="vs-detail" id="vsDetail" aria-label="Detailansicht">
+        <aside class="vs-detail" id="vsDetail" aria-label="<?php echo tn('nav_aria_detail', 'Detailansicht'); ?>">
             <div class="vs-detail-empty" id="vsDetailEmpty">
                 <i class="ti ti-cursor-text" aria-hidden="true"></i>
                 <p><?php echo tn('detail_select_item', 'Gegenstand auswählen'); ?></p>
@@ -23,30 +23,43 @@ if (!function_exists('tn')) {
 </div><!-- /.vs-main -->
 
 <!-- ── FAB ───────────────────────────────────────────────── -->
-<?php if (function_exists('canEdit') && canEdit()): ?>
-<a href="add.php" class="vs-fab" title="<?php echo tn('nav_add', 'Hinzufügen'); ?>"
-   aria-label="Neuen Gegenstand hinzufügen">
+<?php // Zwei Knoepfe, CSS zeigt je nach Breite einen (css/next.css): am Desktop das
+      // volle Formular, auf dem Handy die Schnellerfassung (Entscheidung Joerg
+      // 05.10.; quick_add.php war bis 4.3.32 von nirgends verlinkt).
+      // Bedingung items_add wie in add.php/quick_add.php. ?>
+<?php if (function_exists('hasPermission') && hasPermission('items_add')): ?>
+<a href="add.php" class="vs-fab vs-fab-full" title="<?php echo tn('nav_add', 'Hinzufügen'); ?>"
+   aria-label="<?php echo tn('nav_new_item', 'Neuer Gegenstand'); ?>">
+    <i class="ti ti-plus" aria-hidden="true" style="font-size:22px"></i>
+</a>
+<a href="quick_add.php" class="vs-fab vs-fab-quick" title="<?php echo tn('quick_title', 'Schnellerfassung'); ?>"
+   aria-label="<?php echo tn('quick_title', 'Schnellerfassung'); ?>">
     <i class="ti ti-plus" aria-hidden="true" style="font-size:22px"></i>
 </a>
 <?php endif; ?>
 
 <!-- ── Bottom Navigation (nur Mobile) ───────────────────── -->
-<nav class="vs-bottom-nav" aria-label="Mobile Navigation">
-    <a class="vs-bnav-btn vs-bnav-on" href="index.php" aria-label="Übersicht">
+<?php // Bis 4.3.32: Einstellungen zeigte auf backend/settings.php (gibt es nicht, 404),
+      // Versicherungen auf backend/insurance.php (nur Admin - Editor/Leser sahen
+      // "Zugriff verweigert"). Jetzt wie die Seitenleiste. ?>
+<nav class="vs-bottom-nav" aria-label="<?php echo tn('nav_aria_mobile', 'Mobile Navigation'); ?>">
+    <a class="vs-bnav-btn vs-bnav-on" href="index.php" aria-label="<?php echo tn('page_overview', 'Übersicht'); ?>">
         <i class="ti ti-layout-cards" aria-hidden="true"></i>
-        Übersicht
+        <?php echo tn('page_overview', 'Übersicht'); ?>
     </a>
-    <a class="vs-bnav-btn" href="backend/stats.php" aria-label="Statistiken">
+    <?php if ((function_exists('isSuperAdmin') && isSuperAdmin()) || ($_SESSION['role'] ?? '') === 'admin'): ?>
+    <a class="vs-bnav-btn" href="backend/stats.php" aria-label="<?php echo tn('nav_stats', 'Statistiken'); ?>">
         <i class="ti ti-chart-pie" aria-hidden="true"></i>
-        Statistiken
+        <?php echo tn('nav_stats', 'Statistiken'); ?>
     </a>
-    <a class="vs-bnav-btn" href="backend/insurance.php" aria-label="Versicherung">
+    <?php endif; ?>
+    <a class="vs-bnav-btn" href="insurance.php" aria-label="<?php echo tn('nav_insurance', 'Versicherungen'); ?>">
         <i class="ti ti-shield" aria-hidden="true"></i>
-        Versicherung
+        <?php echo tn('nav_insurance', 'Versicherungen'); ?>
     </a>
-    <a class="vs-bnav-btn" href="backend/settings.php" aria-label="Einstellungen">
+    <a class="vs-bnav-btn" href="settings.php" aria-label="<?php echo tn('nav_settings', 'Einstellungen'); ?>">
         <i class="ti ti-settings" aria-hidden="true"></i>
-        Einstellungen
+        <?php echo tn('nav_settings', 'Einstellungen'); ?>
     </a>
 </nav>
 
@@ -54,6 +67,16 @@ if (!function_exists('tn')) {
 <script>
 (function() {
     var fmt = new Intl.NumberFormat('de-DE', {style:'currency', currency:'EUR'});
+    // Beschriftungen aus der Sprachdatei; Grossschreibung macht .vs-dp-label (CSS)
+    var L = <?php echo json_encode([
+        'price'  => tn('field_price', 'Preis'),
+        'date'   => tn('field_purchase_date', 'Kaufdatum'),
+        'room'   => tn('field_location', 'Raum'),
+        'serial' => tn('detail_serial', 'Seriennummer'),
+        'notes'  => tn('field_notes', 'Notizen'),
+        'edit'   => tn('btn_edit', 'Bearbeiten'),
+        'docs'   => tn('form_documents', 'Dokumente'),
+    ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 
     function fmtDate(s) {
         if (!s) return '—';
@@ -85,34 +108,34 @@ if (!function_exists('tn')) {
         var fields = '';
 
         fields += '<div class="vs-dp-field">'
-            + '<div class="vs-dp-label">KAUFPREIS</div>'
+            + '<div class="vs-dp-label">' + L.price + '</div>'
             + '<div class="vs-dp-val vs-dp-price">' + price + '</div>'
             + '</div>';
 
         if (item.kaufdatum) {
             fields += '<div class="vs-dp-field">'
-                + '<div class="vs-dp-label">KAUFDATUM</div>'
+                + '<div class="vs-dp-label">' + L.date + '</div>'
                 + '<div class="vs-dp-val">' + datum + '</div>'
                 + '</div>';
         }
 
         if (item.raum) {
             fields += '<div class="vs-dp-field">'
-                + '<div class="vs-dp-label">RAUM</div>'
+                + '<div class="vs-dp-label">' + L.room + '</div>'
                 + '<div class="vs-dp-val">' + item.raum + '</div>'
                 + '</div>';
         }
 
         if (item.seriennummer) {
             fields += '<div class="vs-dp-field">'
-                + '<div class="vs-dp-label">SERIENNUMMER</div>'
+                + '<div class="vs-dp-label">' + L.serial + '</div>'
                 + '<div class="vs-dp-val" style="font-family:monospace;font-size:12px">' + item.seriennummer + '</div>'
                 + '</div>';
         }
 
         if (item.notizen) {
             fields += '<div class="vs-dp-field">'
-                + '<div class="vs-dp-label">NOTIZEN</div>'
+                + '<div class="vs-dp-label">' + L.notes + '</div>'
                 + '<div class="vs-dp-val vs-dp-notes">' + item.notizen + '</div>'
                 + '</div>';
         }
@@ -123,7 +146,7 @@ if (!function_exists('tn')) {
         var docsUrl  = 'manage_documents.php?id=' + item.id;
         var docCount = item.docCount || 0;
         var docsBtn  = docCount > 0
-            ? '<a href="' + docsUrl + '" class="vs-dp-btn" style="flex:0 0 auto" title="Dokumente"><i class="ti ti-file-text" aria-hidden="true"></i> ' + docCount + '</a>'
+            ? '<a href="' + docsUrl + '" class="vs-dp-btn" style="flex:0 0 auto" title="' + L.docs + '"><i class="ti ti-file-text" aria-hidden="true"></i> ' + docCount + '</a>'
             : '';
 
         content.innerHTML =
@@ -134,7 +157,7 @@ if (!function_exists('tn')) {
             + '</div>'
             + '<div class="vs-dp-fields">' + fields + '</div>'
             + '<div class="vs-dp-actions">'
-            +   '<a href="' + editUrl + '" class="vs-dp-btn vs-dp-btn-primary" style="flex:1">Bearbeiten</a>'
+            +   '<a href="' + editUrl + '" class="vs-dp-btn vs-dp-btn-primary" style="flex:1">' + L.edit + '</a>'
             +   docsBtn
             + '</div>';
 
@@ -221,28 +244,28 @@ if (!function_exists('tn')) {
 <div id="vs-export-menu" style="display:none;position:fixed;background:var(--vs-surface,#fff);
      border:1px solid var(--vs-border,#e2e8f0);border-radius:8px;
      box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:99999;min-width:220px;overflow:hidden;">
-    <a href="<?php echo $vsmBase; ?>export_csv.php"          class="vsexp-item"><i class="ti ti-table-export"></i> CSV-Datei</a>
-    <a href="<?php echo $vsmBase; ?>export_html.php"         class="vsexp-item"><i class="ti ti-file-type-html"></i> HTML-Seite</a>
-    <a href="<?php echo $vsmBase; ?>export_pdf.php"          class="vsexp-item"><i class="ti ti-file-type-pdf"></i> PDF Detailliert</a>
-    <a href="<?php echo $vsmBase; ?>export_pdf_compact.php"  class="vsexp-item"><i class="ti ti-file-description"></i> PDF Kompakt</a>
-    <a href="<?php echo $vsmBase; ?>export_pdf_handover.php" class="vsexp-item"><i class="ti ti-home-check"></i> Übergabeprotokoll</a>
-    <a href="<?php echo $vsmBase; ?>export_insurance.php"    class="vsexp-item" style="font-weight:600"><i class="ti ti-shield-check"></i> Versicherungs-Export</a>
-    <a href="<?php echo $vsmBase; ?>qr_generator.php"        class="vsexp-item" style="border-bottom:none"><i class="ti ti-qrcode"></i> QR-Codes</a>
+    <?php if (hasPermission('export_csv')): ?><a href="<?php echo $vsmBase; ?>export_csv.php"          class="vsexp-item"><i class="ti ti-table-export"></i> <?php echo tn('nav_export_csv', 'CSV-Datei'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_html')): ?><a href="<?php echo $vsmBase; ?>export_html.php"         class="vsexp-item"><i class="ti ti-file-type-html"></i> <?php echo tn('nav_export_html', 'HTML-Seite'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf.php"          class="vsexp-item"><i class="ti ti-file-type-pdf"></i> <?php echo tn('nav_export_pdf', 'PDF Detailliert'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf_compact.php"  class="vsexp-item"><i class="ti ti-file-description"></i> <?php echo tn('nav_export_pdf_compact', 'PDF Kompakt'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf_handover.php" class="vsexp-item"><i class="ti ti-home-check"></i> <?php echo tn('nav_export_handover', 'Übergabeprotokoll'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_insurance')): ?><a href="<?php echo $vsmBase; ?>export_insurance.php"    class="vsexp-item" style="font-weight:600"><i class="ti ti-shield-check"></i> <?php echo tn('nav_export_insurance', 'Versicherungs-Export'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_qr')): ?><a href="<?php echo $vsmBase; ?>qr_generator.php"        class="vsexp-item" style="border-bottom:none"><i class="ti ti-qrcode"></i> <?php echo tn('nav_export_qr', 'QR-Codes'); ?></a><?php endif; ?>
 </div>
 
 <div id="vsServiceModal" onclick="if(event.target===this)closeServiceModal()">
     <div class="vsm-box">
         <div class="vsm-header">
-            <h2>ℹ️ Hilfe &amp; Informationen</h2>
+            <h2>ℹ️ <?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?></h2>
             <button class="vsm-close" onclick="closeServiceModal()">✕</button>
         </div>
         <div class="vsm-body">
             <div class="vsm-sidebar">
-                <div class="vsm-sidebar-title">Dokumente</div>
-                <div id="vsmFileList"><div style="padding:16px;color:var(--vs-muted)">⏳ Lädt…</div></div>
+                <div class="vsm-sidebar-title"><?php echo tn('form_documents', 'Dokumente'); ?></div>
+                <div id="vsmFileList"><div style="padding:16px;color:var(--vs-muted)">⏳ <?php echo tn('loading', 'Lädt…'); ?></div></div>
             </div>
             <div class="vsm-content" id="vsmContent">
-                <div style="text-align:center;padding:40px;color:var(--vs-muted)">👈 Bitte ein Dokument auswählen</div>
+                <div style="text-align:center;padding:40px;color:var(--vs-muted)">👈 <?php echo tn('help_select_doc', 'Bitte ein Dokument auswählen'); ?></div>
             </div>
         </div>
     </div>
@@ -266,6 +289,7 @@ document.addEventListener('click',function(e){
 
 /* ── Service Modal Funktionen (kein PHP) ── */
 var _vsmFiles=[], _vsmLoaded=false, _vsmBase='';
+var _vsmT=<?php echo json_encode(['loading' => tn('loading', 'Lädt…'), 'none' => tn('help_no_docs', 'Keine Dokumente'), 'error' => tn('error_loading', 'Fehler beim Laden.')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 
 // Solange die Hilfe offen ist, traegt das (i) in der Leiste die Markierung,
 // nicht das Symbol der Seite darunter (aufgefallen beim Docker-Test 26.09.:
@@ -303,7 +327,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeService
 
 function _renderVsm(){
     var l=document.getElementById('vsmFileList');
-    if(!_vsmFiles||!_vsmFiles.length){l.innerHTML='<div style="padding:16px">Keine Dokumente</div>';_vsmLoaded=true;return;}
+    if(!_vsmFiles||!_vsmFiles.length){l.innerHTML='<div style="padding:16px">'+_vsmT.none+'</div>';_vsmLoaded=true;return;}
     l.innerHTML=_vsmFiles.map(function(f,i){
         return '<button class="vsm-file-btn" onclick="_loadVsm('+i+',this)"><span style="font-size:16px">'+f.icon+'</span><span>'+f.label+'</span></button>';
     }).join('');
@@ -348,11 +372,11 @@ async function _loadVsm(idx,btn){
             +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📋 '+f.label+' öffnen</a></div>';
         return;
     }
-    c.innerHTML='<div style="padding:16px;color:'+mu+'">⏳ Lädt…</div>';
+    c.innerHTML='<div style="padding:16px;color:'+mu+'">⏳ '+_vsmT.loading+'</div>';
     try{
         var r=await fetch(_vsmBase+'service_doc.php?file='+encodeURIComponent(f.file));
         c.innerHTML=_md.parse(await r.text()); c.scrollTop=0;
-    }catch(e){c.innerHTML='<div style="color:#c0392b">⚠️ Fehler beim Laden.</div>';}
+    }catch(e){c.innerHTML='<div style="color:#c0392b">⚠️ '+_vsmT.error+'</div>';}
 }
 </script>
 

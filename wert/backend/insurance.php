@@ -7,15 +7,14 @@
 require_once 'config.php';
 requireBackendAccess();
 
-$pageTitle = 'Versicherungen';
+$pageTitle = t('nav_insurance');
 $message = '';
 $messageType = '';
 
 // Nach einem fehlgeschlagenen Zuordnen leitet der POST-Zweig mit ?fehler=1
 // hierher zurueck - ein Redirect kann die Meldung nicht mittragen.
 if (isset($_GET['fehler'])) {
-    $message     = 'Zuordnung fehlgeschlagen - die Datenbank hat die Aenderung abgelehnt. '
-                 . 'Einzelheiten stehen im PHP-Fehlerlog.';
+    $message     = t('bi_assign_failed');
     $messageType = 'error';
 }
 
@@ -81,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $ueberspannung      = isset($_POST['ueberspannung']) ? 1 : 0;
 
     if (empty($name)) {
-        $message = 'Bitte einen Namen angeben.';
+        $message = t('bi_name_required');
         $messageType = 'error';
     } else {
         // ACHTUNG: Database::execute() faengt PDOException selbst ab, schreibt
@@ -107,8 +106,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      (int)$_POST['edit_id']]
                 );
                 $message = $gespeichert
-                    ? 'Versicherung aktualisiert.'
-                    : 'Speichern fehlgeschlagen - die Datenbank hat die Aenderung abgelehnt. Einzelheiten stehen im PHP-Fehlerlog.';
+                    ? t('bi_updated')
+                    : t('bi_update_failed');
             } else {
                 // Insert
                 $gespeichert = $db->execute(
@@ -123,15 +122,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      $fahrraddiebstahl, $glasbruch, $elementarschaeden, $ueberspannung]
                 );
                 $message = $gespeichert
-                    ? 'Versicherung angelegt.'
-                    : 'Anlegen fehlgeschlagen - die Datenbank hat die Anweisung abgelehnt. Einzelheiten stehen im PHP-Fehlerlog.';
+                    ? t('bi_created')
+                    : t('bi_create_failed');
             }
             $messageType = $gespeichert ? 'success' : 'error';
             if ($gespeichert) {
                 $action = 'list';
             }
         } catch (Exception $e) {
-            $message = 'Fehler: ' . $e->getMessage();
+            // Kein SQL-Text in die Oberflaeche (4.3.33)
+            error_log('backend/insurance.php: ' . $e->getMessage());
+            $message = t('be_save_failed');
             $messageType = 'error';
         }
     }
@@ -142,10 +143,10 @@ if ($action === 'delete' && $editId) {
     try {
         $db->execute("UPDATE wertsachen SET versicherung_id=NULL WHERE versicherung_id=?", [$editId]);
         $db->execute("DELETE FROM versicherungen WHERE id=?", [$editId]);
-        $message = 'Versicherung gelöscht.';
+        $message = t('bi_deleted');
         $messageType = 'success';
     } catch (Exception $e) {
-        $message = 'Fehler beim Löschen.';
+        $message = t('bi_delete_failed');
         $messageType = 'error';
     }
     $action = 'list';
@@ -206,15 +207,15 @@ include 'layout/header_next_page.php';
 
     <!-- Übersicht -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-        <h2 style="margin:0;"><i class="ti ti-shield"></i> Versicherungen</h2>
-        <a href="insurance.php?action=new" class="vs-btn vs-btn-primary">+ Neue Versicherung</a>
+        <h2 style="margin:0;"><i class="ti ti-shield"></i> <?php echo t('nav_insurance'); ?></h2>
+        <a href="insurance.php?action=new" class="vs-btn vs-btn-primary">+ <?php echo t('bi_new'); ?></a>
     </div>
 
     <?php if (empty($versicherungen)): ?>
         <div class="activity-timeline" style="text-align:center; padding:60px; color:#999;">
             <div style="font-size:56px; margin-bottom:16px;"><i class="ti ti-shield"></i></div>
-            <p style="font-size:16px;">Noch keine Versicherungen angelegt.</p>
-            <a href="insurance.php?action=new" class="vs-btn vs-btn-primary" style="margin-top:12px; display:inline-block;">Erste Versicherung anlegen</a>
+            <p style="font-size:16px;"><?php echo t('ins_none_yet'); ?></p>
+            <a href="insurance.php?action=new" class="vs-btn vs-btn-primary" style="margin-top:12px; display:inline-block;"><?php echo t('bi_first'); ?></a>
         </div>
     <?php else: ?>
         <div class="dashboard-grid" style="margin-bottom:30px;">
@@ -227,7 +228,7 @@ include 'layout/header_next_page.php';
                 <div class="widget-header">
                     <div>
                         <div class="widget-value"><?php echo count($versicherungen); ?></div>
-                        <div class="widget-label"><i class="ti ti-shield"></i> Verträge</div>
+                        <div class="widget-label"><i class="ti ti-shield"></i> <?php echo t('bi_contracts'); ?></div>
                     </div>
                     <div class="widget-icon"><i class="ti ti-shield"></i></div>
                 </div>
@@ -236,7 +237,7 @@ include 'layout/header_next_page.php';
                 <div class="widget-header">
                     <div>
                         <div class="widget-value"><?php echo $gesamtItems; ?></div>
-                        <div class="widget-label"><i class="ti ti-package"></i> Versicherte Gegenstände</div>
+                        <div class="widget-label"><i class="ti ti-package"></i> <?php echo t('bi_insured_items'); ?></div>
                     </div>
                     <div class="widget-icon"><i class="ti ti-package"></i></div>
                 </div>
@@ -245,7 +246,7 @@ include 'layout/header_next_page.php';
                 <div class="widget-header">
                     <div>
                         <div class="widget-value" style="font-size:22px;"><?php echo formatPrice($gesamtWert); ?></div>
-                        <div class="widget-label"><i class="ti ti-currency-euro"></i> Versicherter Wert</div>
+                        <div class="widget-label"><i class="ti ti-currency-euro"></i> <?php echo t('bi_insured_value'); ?></div>
                     </div>
                     <div class="widget-icon"><i class="ti ti-currency-euro"></i></div>
                 </div>
@@ -254,7 +255,7 @@ include 'layout/header_next_page.php';
                 <div class="widget-header">
                     <div>
                         <div class="widget-value" style="font-size:22px;"><?php echo formatPrice($gesamtPraemie); ?></div>
-                        <div class="widget-label"><i class="ti ti-clipboard-list"></i> Prämien/Jahr gesamt</div>
+                        <div class="widget-label"><i class="ti ti-clipboard-list"></i> <?php echo t('bi_premiums_total'); ?></div>
                     </div>
                     <div class="widget-icon"><i class="ti ti-clipboard-list"></i></div>
                 </div>
@@ -265,13 +266,13 @@ include 'layout/header_next_page.php';
             <table class="backend-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Anbieter</th>
-                        <th style="width:130px;">Prämie/Jahr</th>
-                        <th style="width:130px;">Läuft bis</th>
-                        <th style="width:100px;">Gegenstände</th>
-                        <th style="width:140px;">Vers. Wert</th>
-                        <th style="width:160px;">Aktionen</th>
+                        <th><?php echo t('field_name'); ?></th>
+                        <th><?php echo t('ins_provider'); ?></th>
+                        <th style="width:130px;"><?php echo t('bi_premium_year'); ?></th>
+                        <th style="width:130px;"><?php echo t('ins_until'); ?></th>
+                        <th style="width:100px;"><?php echo t('bi_items'); ?></th>
+                        <th style="width:140px;"><?php echo t('bi_ins_value_short'); ?></th>
+                        <th style="width:160px;"><?php echo t('tab_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -284,7 +285,7 @@ include 'layout/header_next_page.php';
                             <td>
                                 <strong><?php echo htmlspecialchars($v['name']); ?></strong>
                                 <?php if (!empty($v['vertragsnummer'])): ?>
-                                    <br><small style="color:#999;">Nr: <?php echo htmlspecialchars($v['vertragsnummer']); ?></small>
+                                    <br><small style="color:#999;"><?php echo t('ins_contract_no'); ?> <?php echo htmlspecialchars($v['vertragsnummer']); ?></small>
                                 <?php endif; ?>
                             </td>
                             <td><?php echo htmlspecialchars($v['anbieter'] ?? '—'); ?></td>
@@ -299,12 +300,12 @@ include 'layout/header_next_page.php';
                             </td>
                             <td style="text-align:center;">
                                 <a href="insurance.php?action=items&id=<?php echo $v['id']; ?>" style="text-decoration:none;">
-                                    <span class="badge badge-info"><?php echo $v['anzahl_items']; ?> Stück</span>
+                                    <span class="badge badge-info"><?php echo sprintf(t('bi_pieces'), (int)$v['anzahl_items']); ?></span>
                                 </a>
                             </td>
                             <td><strong style="color:var(--vs-success);"><?php echo $v['gesamtwert'] ? formatPrice($v['gesamtwert']) : '—'; ?></strong></td>
                             <td>
-                                <a href="insurance.php?action=items&id=<?php echo $v['id']; ?>" class="vs-btn vs-btn-sm" style="background:var(--vs-success);color:var(--vs-surface);margin-right:4px;"><i class="ti ti-package"></i> Items</a>
+                                <a href="insurance.php?action=items&id=<?php echo $v['id']; ?>" class="vs-btn vs-btn-sm" style="background:var(--vs-success);color:var(--vs-surface);margin-right:4px;"><i class="ti ti-package"></i> <?php echo t('bi_items'); ?></a>
                                 <a href="insurance.php?action=edit&id=<?php echo $v['id']; ?>" class="vs-btn vs-btn-sm"><i class="ti ti-pencil"></i></a>
                                 <a href="insurance.php?action=delete&id=<?php echo $v['id']; ?>" class="vs-btn vs-btn-sm" style="background:var(--vs-danger);color:var(--vs-surface);" onclick="return vsConfirmLink(event, <?php echo htmlspecialchars(json_encode(t('ins_confirm_delete')), ENT_QUOTES, 'UTF-8'); ?>);"><i class="ti ti-trash"></i></a>
                             </td>
@@ -319,8 +320,8 @@ include 'layout/header_next_page.php';
 
     <!-- Formular anlegen/bearbeiten -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-        <h2 style="margin:0;"><?php echo $action === 'new' ? '+ Neue Versicherung' : '<i class="ti ti-pencil"></i> Versicherung bearbeiten'; ?></h2>
-        <a href="insurance.php" style="color:#666; text-decoration:none;">← Zurück</a>
+        <h2 style="margin:0;"><?php echo $action === 'new' ? '+ ' . esc(t('bi_new')) : '<i class="ti ti-pencil"></i> ' . esc(t('bi_edit')); ?></h2>
+        <a href="insurance.php" style="color:#666; text-decoration:none;">← <?php echo t('btn_back'); ?></a>
     </div>
 
     <div class="activity-timeline" style="position:relative; z-index:10;">
@@ -332,81 +333,82 @@ include 'layout/header_next_page.php';
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; position:relative; z-index:10;">
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Name *</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('field_name'); ?> *</label>
                     <input type="text" name="name" required
                            value="<?php echo htmlspecialchars($editData['name'] ?? ''); ?>"
-                           placeholder="z.B. Hausrat Allianz"
+                           placeholder="<?php echo esc(t('bi_ph_name')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Anbieter</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_provider'); ?></label>
                     <input type="text" name="anbieter"
                            value="<?php echo htmlspecialchars($editData['anbieter'] ?? ''); ?>"
-                           placeholder="z.B. Allianz, ERGO, HUK..."
+                           placeholder="<?php echo esc(t('bi_ph_provider')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Vertragsnummer</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_contract_number'); ?></label>
                     <input type="text" name="vertragsnummer"
                            value="<?php echo htmlspecialchars($editData['vertragsnummer'] ?? ''); ?>"
-                           placeholder="z.B. HH-123456-78"
+                           placeholder="<?php echo esc(sprintf(t('be_eg'), 'HH-123456-78')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Jahresprämie (€)</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_annual_premium'); ?></label>
                     <input type="text" name="praemie"
                            value="<?php echo $editData['praemie'] ?? ''; ?>"
-                           placeholder="z.B. 249.50"
+                           placeholder="<?php echo esc(sprintf(t('be_eg'), '249.50')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Vertragsbeginn</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_contract_start'); ?></label>
                     <input type="date" name="vertragsbeginn"
                            value="<?php echo $editData['vertragsbeginn'] ?? ''; ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Laufzeit bis</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_term_until'); ?></label>
                     <input type="date" name="laufzeit_bis"
                            value="<?php echo $editData['laufzeit_bis'] ?? ''; ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Versicherungssumme (€)</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_sum_eur'); ?></label>
                     <input type="text" name="versicherungssumme"
                            value="<?php echo $editData['versicherungssumme'] ?? ''; ?>"
-                           placeholder="z.B. 50000"
+                           placeholder="<?php echo esc(sprintf(t('be_eg'), '50000')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Selbstbeteiligung (€)</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_deductible_eur'); ?></label>
                     <input type="text" name="selbstbeteiligung"
                            value="<?php echo $editData['selbstbeteiligung'] ?? ''; ?>"
-                           placeholder="z.B. 150"
+                           placeholder="<?php echo esc(sprintf(t('be_eg'), '150')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Zahlungsweise</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_payment_mode'); ?></label>
                     <select name="zahlungsweise" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
-                        <option value="">— bitte wählen —</option>
+                        <option value=""><?php echo t('be_choose'); ?></option>
+                        <?php // Gespeichert wird weiter der deutsche Wert, nur die Anzeige folgt der Sprache ?>
                         <?php foreach (['monatlich','vierteljaehrlich','halbjaehrlich','jaehrlich'] as $zw): ?>
                         <option value="<?php echo $zw; ?>" <?php echo ($editData['zahlungsweise'] ?? '') === $zw ? 'selected' : ''; ?>>
-                            <?php echo ucfirst($zw); ?>
+                            <?php echo t('bi_pay_' . $zw); ?>
                         </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Kündigungsfrist</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_notice_period'); ?></label>
                     <input type="text" name="kuendigungsfrist"
                            value="<?php echo htmlspecialchars($editData['kuendigungsfrist'] ?? ''); ?>"
-                           placeholder="z.B. 3 Monate zum Jahresende"
+                           placeholder="<?php echo esc(t('bi_ph_notice')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div style="grid-column:1/-1;">
-                    <label style="display:block; margin-bottom:6px; font-weight:600;">Notiz</label>
+                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_note'); ?></label>
                     <textarea name="notiz" rows="2"
-                              placeholder="Zusätzliche Informationen..."
+                              placeholder="<?php echo esc(t('bi_ph_note')); ?>"
                               style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px; resize:vertical;"><?php echo htmlspecialchars($editData['notiz'] ?? ''); ?></textarea>
                 </div>
             </div>
@@ -414,68 +416,68 @@ include 'layout/header_next_page.php';
             <!-- Bereich 2: Objekt (aufklappbar) -->
             <details style="margin-top:24px;" <?php echo !empty($editData['adresse']) || !empty($editData['wohnflaeche_qm']) ? 'open' : ''; ?>>
                 <summary style="cursor:pointer; font-weight:700; font-size:15px; padding:12px 16px; background:#f0f4ff; border-radius:8px; border:1px solid #d0d9ff; list-style:none; display:flex; align-items:center; gap:8px;">
-                    <i class="ti ti-home"></i> Objekt-Daten <span style="font-size:12px; font-weight:400; color:#888;">(optional)</span>
+                    <i class="ti ti-home"></i> <?php echo t('bi_property_data'); ?> <span style="font-size:12px; font-weight:400; color:#888;"><?php echo t('be_optional'); ?></span>
                 </summary>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:16px; padding:16px; background:#f8f9ff; border-radius:8px; border:1px solid #e0e8ff;">
                     <div style="grid-column:1/-1;">
-                        <label style="display:block; margin-bottom:6px; font-weight:600;">Straße und Hausnummer</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_street'); ?></label>
                         <input type="text" name="adresse"
                                value="<?php echo htmlspecialchars($editData['adresse'] ?? ''); ?>"
-                               placeholder="z.B. Musterstraße 12"
+                               placeholder="<?php echo esc(t('bi_ph_street')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;">PLZ</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_zip'); ?></label>
                         <input type="text" name="plz"
                                value="<?php echo htmlspecialchars($editData['plz'] ?? ''); ?>"
-                               placeholder="z.B. 50181"
+                               placeholder="<?php echo esc(sprintf(t('be_eg'), '50181')); ?>"
                                maxlength="10"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;">Ort</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_city'); ?></label>
                         <input type="text" name="wohnort"
                                value="<?php echo htmlspecialchars($editData['wohnort'] ?? ''); ?>"
-                               placeholder="z.B. Musterstadt"
+                               placeholder="<?php echo esc(t('bi_ph_city')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;">Gebäudeart</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_building_type'); ?></label>
                         <select name="gebaeudeart" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
-                            <option value="">— bitte wählen —</option>
+                            <option value=""><?php echo t('be_choose'); ?></option>
                             <?php foreach (['Wohnung','Haus','Gewerbe','Sonstiges'] as $ga): ?>
                             <option value="<?php echo $ga; ?>" <?php echo ($editData['gebaeudeart'] ?? '') === $ga ? 'selected' : ''; ?>>
-                                <?php echo $ga; ?>
+                                <?php echo t('bi_bt_' . $ga); ?>
                             </option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;">Wohnfläche (m²)</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_living_area_m2'); ?></label>
                         <input type="text" name="wohnflaeche_qm"
                                value="<?php echo $editData['wohnflaeche_qm'] ?? ''; ?>"
-                               placeholder="z.B. 85"
+                               placeholder="<?php echo esc(sprintf(t('be_eg'), '85')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;">Anzahl Zimmer</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_rooms_count'); ?></label>
                         <input type="number" name="anzahl_zimmer" min="1" max="20"
                                value="<?php echo $editData['anzahl_zimmer'] ?? ''; ?>"
-                               placeholder="z.B. 4"
+                               placeholder="<?php echo esc(sprintf(t('be_eg'), '4')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;">Etage</label>
+                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_floor'); ?></label>
                         <input type="number" name="etage" min="0" max="50"
                                value="<?php echo $editData['etage'] ?? ''; ?>"
-                               placeholder="0 = Erdgeschoss"
+                               placeholder="<?php echo esc(t('bi_ph_floor')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div style="display:flex; align-items:center; gap:10px; padding-top:28px;">
                         <input type="checkbox" name="keller" id="keller" value="1"
                                <?php echo !empty($editData['keller']) ? 'checked' : ''; ?>
                                style="width:18px; height:18px; cursor:pointer; accent-color:var(--vs-accent);">
-                        <label for="keller" style="font-weight:600; cursor:pointer;">Keller vorhanden</label>
+                        <label for="keller" style="font-weight:600; cursor:pointer;"><?php echo t('bi_cellar_present'); ?></label>
                     </div>
                 </div>
             </details>
@@ -483,15 +485,15 @@ include 'layout/header_next_page.php';
             <!-- Bereich 3: Zusatzbausteine -->
             <details style="margin-top:16px;" <?php echo (!empty($editData['fahrraddiebstahl']) || !empty($editData['glasbruch']) || !empty($editData['elementarschaeden']) || !empty($editData['ueberspannung'])) ? 'open' : ''; ?>>
                 <summary style="cursor:pointer; font-weight:700; font-size:15px; padding:12px 16px; background:#f0fff4; border-radius:8px; border:1px solid #c3e6cb; list-style:none; display:flex; align-items:center; gap:8px;">
-                    <i class="ti ti-circle-check" style="color:var(--vs-success);"></i> Zusatzbausteine <span style="font-size:12px; font-weight:400; color:#888;">(optional)</span>
+                    <i class="ti ti-circle-check" style="color:var(--vs-success);"></i> <?php echo t('ins_modules'); ?> <span style="font-size:12px; font-weight:400; color:#888;"><?php echo t('be_optional'); ?></span>
                 </summary>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:16px; padding:16px; background:#f0fff4; border-radius:8px; border:1px solid #c3e6cb;">
                     <?php
                     $bausteine = [
-                        'fahrraddiebstahl' => '🚲 Fahrraddiebstahl',
-                        'glasbruch'        => '🪟 Glasbruch',
-                        'elementarschaeden'=> '🌊 Elementarschäden',
-                        'ueberspannung'    => '⚡ Überspannung',
+                        'fahrraddiebstahl' => '🚲 ' . esc(t('ins_module_bike')),
+                        'glasbruch'        => '🪟 ' . esc(t('ins_module_glass')),
+                        'elementarschaeden'=> '🌊 ' . esc(t('ins_module_elemental')),
+                        'ueberspannung'    => '⚡ ' . esc(t('ins_module_surge')),
                     ];
                     foreach ($bausteine as $field => $label):
                     ?>
@@ -507,9 +509,9 @@ include 'layout/header_next_page.php';
 
             <div style="margin-top:24px; display:flex; gap:12px;">
                 <button type="submit" style="padding:10px 28px; background: var(--vs-accent); color:var(--vs-surface); border:none; border-radius:6px; cursor:pointer; font-weight:600; font-size:15px;">
-                    <i class="ti ti-device-floppy"></i> Speichern
+                    <i class="ti ti-device-floppy"></i> <?php echo t('btn_save'); ?>
                 </button>
-                <a href="insurance.php" style="padding:10px 20px; background:var(--vs-border); color:#333; border-radius:6px; text-decoration:none; font-weight:600;">Abbrechen</a>
+                <a href="insurance.php" style="padding:10px 20px; background:var(--vs-border); color:#333; border-radius:6px; text-decoration:none; font-weight:600;"><?php echo t('btn_cancel'); ?></a>
             </div>
         </form>
     </div>
@@ -522,22 +524,22 @@ include 'layout/header_next_page.php';
             <h2 style="margin:0;"><i class="ti ti-shield"></i> <?php echo htmlspecialchars($versInfo['name']); ?></h2>
             <p style="margin:4px 0 0; color:#666;">
                 <?php if ($versInfo['anbieter']): ?><?php echo htmlspecialchars($versInfo['anbieter']); ?> · <?php endif; ?>
-                <?php if ($versInfo['vertragsnummer']): ?>Nr. <?php echo htmlspecialchars($versInfo['vertragsnummer']); ?> · <?php endif; ?>
-                <?php if ($versInfo['praemie']): ?>Prämie: <?php echo formatPrice($versInfo['praemie']); ?>/Jahr<?php endif; ?>
+                <?php if ($versInfo['vertragsnummer']): ?><?php echo t('ins_contract_no'); ?> <?php echo htmlspecialchars($versInfo['vertragsnummer']); ?> · <?php endif; ?>
+                <?php if ($versInfo['praemie']): ?><?php echo t('ins_premium'); ?>: <?php echo sprintf(t('ins_per_year'), formatPrice($versInfo['praemie'])); ?><?php endif; ?>
             </p>
         </div>
         <div style="display:flex; gap:10px;">
-            <a href="../insurance.php?v=<?php echo $editId; ?>" target="_blank" class="vs-btn vs-btn-primary" style="background: var(--vs-accent);">📄 PDF-Export</a>
-            <a href="insurance.php" style="padding:8px 16px; background:var(--vs-border); color:#333; border-radius:6px; text-decoration:none; font-weight:600;">← Zurück</a>
+            <a href="../insurance.php?v=<?php echo $editId; ?>" target="_blank" class="vs-btn vs-btn-primary" style="background: var(--vs-accent);">📄 <?php echo t('bi_pdf_export'); ?></a>
+            <a href="insurance.php" style="padding:8px 16px; background:var(--vs-border); color:#333; border-radius:6px; text-decoration:none; font-weight:600;">← <?php echo t('btn_back'); ?></a>
         </div>
     </div>
 
     <!-- Zugeordnete Items -->
     <div class="activity-timeline" style="margin-bottom:24px;">
-        <h3 style="margin-top:0;"><i class="ti ti-package"></i> Zugeordnete Gegenstände (<?php echo count($versItems); ?>)</h3>
+        <h3 style="margin-top:0;"><i class="ti ti-package"></i> <?php echo sprintf(t('bi_assigned_items'), count($versItems)); ?></h3>
 
         <?php if (empty($versItems)): ?>
-            <p style="color:#999; padding:20px 0;">Noch keine Gegenstände zugeordnet.</p>
+            <p style="color:#999; padding:20px 0;"><?php echo t('ins_no_items'); ?></p>
         <?php else: ?>
             <?php
             $summe = array_sum(array_column($versItems, 'aktueller_wert'));
@@ -545,10 +547,10 @@ include 'layout/header_next_page.php';
             <table class="backend-table">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Kategorie</th>
-                        <th style="width:160px;">Wert</th>
-                        <th style="width:100px;">Entfernen</th>
+                        <th><?php echo t('field_name'); ?></th>
+                        <th><?php echo t('field_category'); ?></th>
+                        <th style="width:160px;"><?php echo t('bi_value'); ?></th>
+                        <th style="width:100px;"><?php echo t('bi_remove'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -569,7 +571,7 @@ include 'layout/header_next_page.php';
                         </tr>
                     <?php endforeach; ?>
                     <tr style="background:var(--bg-color); font-weight:bold;">
-                        <td colspan="2">Gesamtwert versicherte Gegenstände</td>
+                        <td colspan="2"><?php echo t('ins_total_all'); ?></td>
                         <td style="color:var(--vs-success); font-size:16px;"><?php echo formatPrice($summe); ?></td>
                         <td></td>
                     </tr>
@@ -581,7 +583,7 @@ include 'layout/header_next_page.php';
     <!-- Nicht zugeordnete Items -->
     <?php if (!empty($unassignedItems)): ?>
     <div class="activity-timeline">
-        <h3 style="margin-top:0;"><i class="ti ti-plus"></i> Gegenstände zuordnen</h3>
+        <h3 style="margin-top:0;"><i class="ti ti-plus"></i> <?php echo t('bi_assign_items'); ?></h3>
         <form method="POST">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="assign_item" value="1">
@@ -590,10 +592,10 @@ include 'layout/header_next_page.php';
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
                 <label style="font-size:13px; color:#666; cursor:pointer;">
                     <input type="checkbox" id="selectAll" style="margin-right:6px;">
-                    Alle auswählen
+                    <?php echo t('bi_select_all'); ?>
                 </label>
                 <button type="submit" class="vs-btn vs-btn-primary" style="padding:8px 18px;">
-                    <i class="ti ti-circle-check" style="color:var(--vs-success);"></i> Ausgewählte zuordnen
+                    <i class="ti ti-circle-check" style="color:var(--vs-success);"></i> <?php echo t('bi_assign_selected'); ?>
                 </button>
             </div>
 
@@ -602,9 +604,9 @@ include 'layout/header_next_page.php';
                     <thead>
                         <tr>
                             <th style="width:40px;"></th>
-                            <th>Name</th>
-                            <th>Kategorie</th>
-                            <th style="width:160px;">Wert</th>
+                            <th><?php echo t('field_name'); ?></th>
+                            <th><?php echo t('field_category'); ?></th>
+                            <th style="width:160px;"><?php echo t('bi_value'); ?></th>
                         </tr>
                     </thead>
                     <tbody>

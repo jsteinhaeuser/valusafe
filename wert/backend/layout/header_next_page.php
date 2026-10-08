@@ -77,17 +77,17 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
 <body class="vs-next">
 
 <!-- Icon Rail -->
-<aside class="vs-rail" aria-label="Hauptnavigation">
-    <a href="../index.php" class="vs-rail-logo" aria-label="Zur Übersicht" style="text-decoration:none">
+<aside class="vs-rail" aria-label="<?php echo tn('nav_aria_main', 'Hauptnavigation'); ?>">
+    <a href="../index.php" class="vs-rail-logo" aria-label="<?php echo tn('page_overview', 'Übersicht'); ?>" style="text-decoration:none">
         <i class="ti ti-shield-check" aria-hidden="true"></i>
     </a>
-    <nav class="vs-rail-nav" aria-label="Hauptmenü">
+    <nav class="vs-rail-nav" aria-label="<?php echo tn('nav_aria_menu', 'Hauptmenü'); ?>">
         <a class="vs-rail-btn <?php echo $_currentPage === 'index.php' ? 'vs-rail-on' : ''; ?>"
-           href="../index.php" title="Übersicht">
+           href="../index.php" title="<?php echo tn('page_overview', 'Übersicht'); ?>">
             <i class="ti ti-layout-cards" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn <?php echo in_array($_currentPage, ['dashboard.php']) ? 'vs-rail-on' : ''; ?>"
-           href="../dashboard.php" title="Dashboard">
+           href="../dashboard.php" title="<?php echo tn('nav_dashboard', 'Dashboard'); ?>">
             <i class="ti ti-chart-pie" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn <?php echo $_currentPage === 'insurance.php' ? 'vs-rail-on' : ''; ?>"
@@ -112,18 +112,18 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
         </a>
         <?php endif; ?>
         <a class="vs-rail-btn <?php echo in_array($_currentPage, ['index.php','users.php','categories.php','locations.php','backup.php','restore.php','logs.php','system.php','permissions.php']) ? 'vs-rail-on' : ''; ?>"
-           href="index.php" title="Admin-Dashboard">
+           href="index.php" title="<?php echo tn('nav_admin', 'Admin'); ?>">
             <i class="ti ti-settings-2" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn" href="#" onclick="openServiceModal();return false;"
-           title="Hilfe &amp; Informationen" aria-label="Hilfe">
+           title="<?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="<?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?>">
             <i class="ti ti-info-circle" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn <?php echo $_currentPage === 'settings.php' ? 'vs-rail-on' : ''; ?>"
-           href="../settings.php" title="Einstellungen">
+           href="../settings.php" title="<?php echo tn('nav_settings', 'Einstellungen'); ?>">
             <i class="ti ti-settings" aria-hidden="true"></i>
         </a>
-        <a class="vs-rail-btn" href="../logout.php" title="Abmelden (<?php echo htmlspecialchars($_username); ?>)">
+        <a class="vs-rail-btn" href="../logout.php" title="<?php echo tn('nav_logout', 'Abmelden'); ?> (<?php echo htmlspecialchars($_username); ?>)">
             <i class="ti ti-logout" aria-hidden="true"></i>
         </a>
     </div>

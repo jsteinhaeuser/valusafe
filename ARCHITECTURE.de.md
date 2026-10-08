@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 3. Oktober 2026 · Version 4.3.32 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 9. Oktober 2026 · Version 4.3.33 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -83,7 +83,7 @@ wert/                       Anwendungswurzel, jede .php ist ein Einstiegspunkt
 │   ├── backup.php          Sicherung (DB, Bilder, PHP-Dateien)
 │   └── restore.php         Wiederherstellung
 ├── components/             wiederverwendete UI-Blöcke
-├── lang/                   9 Sprachdateien, je ~980 Schlüssel
+├── lang/                   9 Sprachdateien, je ~1.100 Schlüssel
 ├── css/                    13 Theme-Dateien (7 auswählbar) plus Tokens und WCAG-Regeln
 ├── js/                     eigenes JS plus lokal gehostete Bibliotheken
 ├── upload/                 Nutzerfotos       [durch .htaccess geschützt]
@@ -142,7 +142,7 @@ Der Fallback greift, wenn die Tabelle fehlt — eine Installation ohne Migration
 
 Zwei Besonderheiten:
 
-**`sieht_alle`** — ein Flag pro Benutzer. Ist die Einstellung `only_own_items` aktiv, sehen Nicht-Admins ohne dieses Flag nur Datensätze, deren `erstellt_von` ihrem Benutzernamen entspricht.
+**`sieht_alle`** — ein Flag pro Benutzer. Ist die Einstellung `only_own_items` aktiv, sehen Nicht-Admins ohne dieses Flag nur Datensätze, deren `erstellt_von` ihrem Benutzernamen entspricht. Seit 4.3.33 gilt das an jeder Stelle, nicht nur in der Liste: Einzelzugriffe prüfen `darfGegenstand()`, Listen, Exporte und Summen hängen `nurEigeneSql()` an (beide in `helpers.php`). Verglichen wird wie in MySQL ohne Rücksicht auf Groß-/Kleinschreibung. `erstellt_von` ist ein Freitext; eine Besitzer-Spalte mit Benutzer-ID steht auf der Liste für 5.0.
 
 **`SUPERADMIN_USERNAME`** — eine Konstante in `config.php`, kommagetrennte Liste. SuperAdmins können bestimmte Funktionen für normale Admins sperren (Backup, Restore, Datei-Download).
 
@@ -210,7 +210,7 @@ Serverseitig gerendertes HTML, ergänzt um punktuelles JavaScript. Kein Build-Sc
 
 **Zwei Oberflächen-Generationen.** Die ältere („klassisch") und die neuere („Next Interface" — 52-Pixel-Icon-Leiste, Masonry-Raster, geteilte Detailansicht, mobile Bottom-Navigation). Erkennbar an den eingebundenen Rahmen: 37 Dateien nutzen `header_next_page.php`, nur noch eine — `index.php` — den alten `header_next.php`. Im Backend nutzen alle 21 Seiten `layout/header_next_page.php`.
 
-**Internationalisierung.** Neun Sprachen (DE, EN, FR, TR, ES, IT, NL, PL, PT), je etwa 980 Schlüssel. Zugriff über `t('schluessel')`. Fehlt ein Schlüssel, gibt `t()` den Schlüssel selbst zurück — fehlende Übersetzungen erscheinen also als roher Bezeichner im UI statt als leerer Text. Stand 27. September 2026 fehlt in keiner Sprache ein Schlüssel; `bin/check_lang.py` im Entwicklungs-Repository prüft das.
+**Internationalisierung.** Neun Sprachen (DE, EN, FR, TR, ES, IT, NL, PL, PT), je etwa 1.100 Schlüssel. Zugriff über `t('schluessel')`. Fehlt ein Schlüssel, gibt `t()` den Schlüssel selbst zurück — fehlende Übersetzungen erscheinen also als roher Bezeichner im UI statt als leerer Text. Stand 8. Oktober 2026 fehlt in keiner Sprache ein Schlüssel; `bin/check_lang.py` im Entwicklungs-Repository prüft das.
 
 **PWA.** Manifest, Offline-Seite, Service Worker mit Cache-First für statische Dateien und ohne Caching für PHP.
 
@@ -267,4 +267,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 3. Oktober 2026, Version 4.3.32. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 9. Oktober 2026, Version 4.3.33. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

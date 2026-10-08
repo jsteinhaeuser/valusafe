@@ -112,32 +112,36 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
 <body class="vs-next">
 
 <!-- ── Icon Rail ──────────────────────────────────────────── -->
-<aside class="vs-rail" aria-label="Hauptnavigation">
+<aside class="vs-rail" aria-label="<?php echo tn('nav_aria_main', 'Hauptnavigation'); ?>">
     <div class="vs-rail-logo" aria-hidden="true">
         <i class="ti ti-shield-check"></i>
     </div>
 
-    <nav class="vs-rail-nav" aria-label="Hauptmenü">
+    <nav class="vs-rail-nav" aria-label="<?php echo tn('nav_aria_menu', 'Hauptmenü'); ?>">
         <a class="vs-rail-btn vs-rail-on" href="index.php"
-           title="Übersicht" aria-label="Übersicht">
+           title="<?php echo tn('page_overview', 'Übersicht'); ?>" aria-label="<?php echo tn('page_overview', 'Übersicht'); ?>">
             <i class="ti ti-layout-cards" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn" href="dashboard.php"
-           title="Dashboard" aria-label="Dashboard">
+           title="<?php echo tn('nav_dashboard', 'Dashboard'); ?>" aria-label="<?php echo tn('nav_dashboard', 'Dashboard'); ?>">
             <i class="ti ti-chart-pie" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn" href="insurance.php"
-           title="Versicherung" aria-label="Versicherung">
+           title="<?php echo tn('nav_insurance', 'Versicherungen'); ?>" aria-label="<?php echo tn('nav_insurance', 'Versicherungen'); ?>">
             <i class="ti ti-shield" aria-hidden="true"></i>
         </a>
+        <?php // Statistik und Galerie liegen im Verwaltungsbereich (nur Admin) - fuer
+              // Editor/Leser endeten die Links bei "Zugriff verweigert" (bis 4.3.32). ?>
+        <?php if ((function_exists('isSuperAdmin') && isSuperAdmin()) || ($_SESSION['role'] ?? '') === 'admin'): ?>
         <a class="vs-rail-btn" href="backend/stats.php"
-           title="Statistiken" aria-label="Statistiken">
+           title="<?php echo tn('nav_stats', 'Statistiken'); ?>" aria-label="<?php echo tn('nav_stats', 'Statistiken'); ?>">
             <i class="ti ti-chart-bar" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn" href="backend/gallery.php"
-           title="Galerie" aria-label="Galerie">
+           title="<?php echo tn('nav_gallery', 'Galerie'); ?>" aria-label="<?php echo tn('nav_gallery', 'Galerie'); ?>">
             <i class="ti ti-photo" aria-hidden="true"></i>
         </a>
+        <?php endif; ?>
     </nav>
 
     <div class="vs-rail-spacer"></div>
@@ -151,21 +155,21 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
         <?php endif; ?>
         <?php if ((function_exists('isSuperAdmin') && isSuperAdmin()) || ($_SESSION['role'] ?? '') === 'admin'): ?>
         <a class="vs-rail-btn" href="backend/index.php"
-           title="<?php echo tn('nav_admin', 'Admin'); ?>" aria-label="Admin">
+           title="<?php echo tn('nav_admin', 'Admin'); ?>" aria-label="<?php echo tn('nav_admin', 'Admin'); ?>">
             <i class="ti ti-settings-2" aria-hidden="true"></i>
         </a>
         <?php endif; ?>
         <a class="vs-rail-btn" href="#" onclick="openServiceModal();return false;"
-           title="<?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="Hilfe">
+           title="<?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="<?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?>">
             <i class="ti ti-info-circle" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn" href="settings.php"
-           title="Einstellungen" aria-label="Einstellungen">
+           title="<?php echo tn('nav_settings', 'Einstellungen'); ?>" aria-label="<?php echo tn('nav_settings', 'Einstellungen'); ?>">
             <i class="ti ti-settings" aria-hidden="true"></i>
         </a>
         <a class="vs-rail-btn" href="logout.php"
-           title="Abmelden (<?php echo htmlspecialchars($_username); ?>)"
-           aria-label="Abmelden">
+           title="<?php echo tn('nav_logout', 'Abmelden'); ?> (<?php echo htmlspecialchars($_username); ?>)"
+           aria-label="<?php echo tn('nav_logout', 'Abmelden'); ?>">
             <i class="ti ti-logout" aria-hidden="true"></i>
         </a>
     </div>
@@ -179,15 +183,15 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
         <span class="vs-context"><?php echo htmlspecialchars($_appName); ?></span>
 
         <!-- Schnellsuche -->
-        <form method="GET" action="index.php" class="vs-search" role="search" aria-label="Schnellsuche">
+        <form method="GET" action="index.php" class="vs-search" role="search" aria-label="<?php echo tn('nav_aria_search', 'Schnellsuche'); ?>">
             <i class="ti ti-search" aria-hidden="true"></i>
             <input type="text" name="search"
                    value="<?php echo $_searchVal; ?>"
                    placeholder="<?php echo tn('search_placeholder', 'Suchen…'); ?>"
-                   aria-label="Gegenstände suchen">
+                   aria-label="<?php echo tn('nav_aria_search_items', 'Gegenstände suchen'); ?>">
         </form>
 
-        <a href="settings.php" class="vs-topstrip-avatar" title="<?php echo tn('nav_profile', 'Profil'); ?> (<?php echo htmlspecialchars($_username); ?>)" aria-label="Profil">
+        <a href="settings.php" class="vs-topstrip-avatar" title="<?php echo tn('nav_profile', 'Profil'); ?> (<?php echo htmlspecialchars($_username); ?>)" aria-label="<?php echo tn('nav_profile', 'Profil'); ?>">
             <?php if ($_avatarUrl): ?>
                 <img src="<?php echo htmlspecialchars($_avatarUrl); ?>" alt="">
             <?php else: ?>
@@ -219,7 +223,7 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
             </div>
 
             <?php if (function_exists('canEdit') && canEdit()): ?>
-            <a href="add.php" class="vs-add-btn" aria-label="Neuen Gegenstand hinzufügen">
+            <a href="add.php" class="vs-add-btn" aria-label="<?php echo tn('nav_new_item', 'Neuer Gegenstand'); ?>">
                 <i class="ti ti-plus" aria-hidden="true"></i>
                 <?php echo tn('nav_add', 'Hinzufügen'); ?>
             </a>

@@ -237,7 +237,7 @@ require_once 'layout/header_next_page.php';
 <div style="margin-top:32px; background:rgba(255,255,255,0.6); border:1px solid rgba(0,0,0,0.08); border-radius:16px; padding:24px;">
     <h3 style="margin:0 0 12px;">⏱️ Automatisches Backup (Cron-Job)</h3>
     <p style="color:#555; font-size:14px; margin:0 0 16px;">
-        Trage diese URL bei deinem Cron-Dienst (z.&nbsp;B. cron-job.org) ein. Der Token wird automatisch aus den DB-Zugangsdaten dieser Instanz berechnet.
+        Trage diese URL bei deinem Cron-Dienst (z.&nbsp;B. cron-job.org) ein. Der Token steht als <code>BACKUP_TOKEN</code> in der <code>config.php</code>; der Einrichtungsassistent erzeugt ihn zufällig. Behandle die URL wie ein Passwort – wer sie kennt, kann Sicherungen auslösen.
     </p>
     <?php
     $protocol  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';

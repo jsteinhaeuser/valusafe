@@ -8,7 +8,7 @@
 require_once __DIR__ . '/config.php';
 requireBackendAccess();
 
-$pageTitle = 'Öffentlicher Link';
+$pageTitle = t('dash_public_link');
 $message = '';
 $messageIcon = '';
 $error   = '';
@@ -267,12 +267,12 @@ include 'layout/header_next_page.php';
             <li><i class="ti ti-pencil"></i> <strong><?php echo t('pub_note_mark_items_title'); ?></strong> — <?php echo t('pub_note_mark_items_desc'); ?></li>
             <li><i class="ti ti-refresh"></i> <strong><?php echo t('pub_note_new_link_title'); ?></strong> — <?php echo t('pub_note_new_link_desc'); ?></li>
             <li><i class="ti ti-lock"></i> <strong><?php echo t('pub_note_deactivate_title'); ?></strong> — <?php echo t('pub_note_deactivate_desc'); ?></li>
-            <li><i class="ti ti-currency-euro"></i> <strong>Preis optional</strong> — kann für Versicherungslisten aktiviert werden</li>
+            <li><i class="ti ti-currency-euro"></i> <strong><?php echo t('pub_note_price_title'); ?></strong> — <?php echo t('pub_note_price_desc'); ?></li>
         </ul>
 
         <?php if ($public_count === 0 && $token): ?>
         <div style="margin-top:16px; padding:12px; background:#fef9c3; border-radius:8px; border:1px solid #fde047; font-size:13px; color:#713f12;">
-            <i class="ti ti-alert-triangle" style="color:var(--vs-warning);"></i> <strong>Noch keine Gegenstände als öffentlich markiert.</strong><br>
+            <i class="ti ti-alert-triangle" style="color:var(--vs-warning);"></i> <strong><?php echo t('pub_no_public_items'); ?></strong><br>
             <?php echo t('pub_no_public_items_hint'); ?>
         </div>
         <?php endif; ?>

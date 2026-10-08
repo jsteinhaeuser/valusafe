@@ -335,7 +335,7 @@ include 'layout/header_next_page.php';
             <?php if (empty($latestUploads)): ?>
                 <div style="padding: 40px; text-align: center; color: #999;">
                     <div style="font-size: 48px; margin-bottom: 10px;"><i class="ti ti-package"></i></div>
-                    <p>Noch keine Items mit Bildern</p>
+                    <p><?php echo t('bk_no_items_with_images'); ?></p>
                 </div>
             <?php else: ?>
                 <div class="uploads-list">
@@ -376,7 +376,7 @@ include 'layout/header_next_page.php';
             <?php if (empty($topItems)): ?>
                 <div style="padding: 40px; text-align: center; color: #999;">
                     <div style="font-size: 48px; margin-bottom: 10px;">💎</div>
-                    <p>Noch keine Gegenstände</p>
+                    <p><?php echo t('bk_no_items'); ?></p>
                 </div>
             <?php else: ?>
                 <div class="top-items-list">
@@ -453,12 +453,12 @@ include 'layout/header_next_page.php';
                     </div>
                     
                     <div class="backup-info">
-                        <div class="backup-label">Größe:</div>
+                        <div class="backup-label"><?php echo t('backup_size'); ?>:</div>
                         <div class="backup-value"><?php echo formatFileSize($backupSize); ?></div>
                     </div>
                     
                     <div class="backup-info">
-                        <div class="backup-label">Datei:</div>
+                        <div class="backup-label"><?php echo t('bk_file_label'); ?></div>
                         <div class="backup-value" style="font-size: 10px; word-break: break-all;">
                             <?php echo htmlspecialchars($lastBackup); ?>
                         </div>
@@ -467,7 +467,7 @@ include 'layout/header_next_page.php';
             <?php else: ?>
                 <div style="padding: 40px; text-align: center; color: #999;">
                     <div style="font-size: 48px; margin-bottom: 10px;"><i class="ti ti-device-floppy"></i></div>
-                    <p>Noch kein Backup vorhanden</p>
+                    <p><?php echo t('bk_no_backup'); ?></p>
                 </div>
             <?php endif; ?>
             
@@ -568,7 +568,7 @@ include 'layout/header_next_page.php';
                 <div class="widget-label"><i class="ti ti-lock"></i> <?php echo t('sys_login_security'); ?></div>
             </a>
             <a href="2fa_setup.php" class="widget-card vs-system-link">
-                <div class="widget-label"><i class="ti ti-shield-check"></i> 2FA-Einrichtung</div>
+                <div class="widget-label"><i class="ti ti-shield-check"></i> <?php echo t('2fa_page_title'); ?></div>
             </a>
             <a href="health_check.php" class="widget-card vs-system-link">
                 <div class="widget-label"><i class="ti ti-stethoscope"></i> Health Check</div>

@@ -10,6 +10,16 @@ if (isLoggedIn()) {
     exit;
 }
 
+// Sprache vor der Anmeldung waehlen (?lang=en). Die Sprache selbst erkennt
+// db.php beim ersten Aufruf (Cookie, Browser); hier nur der Umschalter.
+if (isset($_GET['lang']) && in_array($_GET['lang'], VS_SPRACHEN, true)) {
+    $_SESSION['lang'] = $_GET['lang'];
+    setcookie('user_language', $_GET['lang'],
+        ['expires' => time() + 365 * 24 * 3600, 'path' => '/', 'samesite' => 'Lax']);
+    header('Location: login.php' . (isset($_GET['timeout']) ? '?timeout=1' : ''));
+    exit;
+}
+
 // Rate Limiter
 $rateLimiter = new RateLimiter($db);
 $clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
@@ -36,15 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF validieren
     $submittedToken = $_POST['csrf_token_login'] ?? '';
     if (!hash_equals($_SESSION['csrf_token_login'] ?? '', $submittedToken)) {
-        $error = 'Ungültige Anfrage. Bitte die Seite neu laden.';
+        $error = t('login_csrf');
     } elseif ($rateLimiter->isLocked($clientIP)) {
         $minutes = ceil($rateLimiter->getRemainingLockTime($clientIP) / 60);
-        $error = "Zu viele fehlgeschlagene Login-Versuche. Bitte warten Sie $minutes Minute(n).";
+        $error = sprintf(t('login_locked_wait'), $minutes);
     } else {
         $username = trim($_POST['username'] ?? '');
         $passwort = trim($_POST['password'] ?? '');
         if (empty($username) || empty($passwort)) {
-            $error = 'Bitte alle Felder ausfüllen';
+            $error = t('login_fill_all_fields');
         } else {
             try {
                 $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
@@ -68,6 +78,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['username']     = $user['username'];
                     $_SESSION['role']         = $user['role'];
                     $_SESSION['theme']        = $user['theme'] ?? 'cloud';
+                    // Bis 4.3.32 wurde die im Konto gespeicherte Sprache (users.lang,
+                    // gesetzt von set_language.php) nie geladen - jede neue Sitzung
+                    // begann deutsch.
+                    if (in_array($user['lang'] ?? '', VS_SPRACHEN, true)) {
+                        $_SESSION['lang'] = $user['lang'];
+                    }
                     $_SESSION['login_time']   = time();
                     $_SESSION['last_activity']= time();
                     $pdo->prepare("UPDATE users SET letzter_login = NOW() WHERE id = ?")->execute([$user['id']]);
@@ -81,32 +97,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     logSecurityEvent($pdo, 'login_failed', $userId, 'Benutzer: ' . $username);
                     $remaining = $rateLimiter->getRemainingAttempts($clientIP);
                     if ($remaining > 0) {
-                        $error = "Ungültiger Benutzername oder Passwort. Noch $remaining Versuch(e) übrig.";
+                        $error = sprintf(t('login_invalid_remaining'), $remaining);
                     } else {
                         $minutes = ceil($rateLimiter->getRemainingLockTime($clientIP) / 60);
-                        $error = "Zu viele fehlgeschlagene Versuche. Account gesperrt für $minutes Minute(n).";
+                        $error = sprintf(t('login_locked_now'), $minutes);
                     }
                 }
             } catch (PDOException $e) {
                 error_log("Login error: " . $e->getMessage());
-                $error = 'Ein Fehler ist aufgetreten';
+                $error = t('login_error');
             }
         }
     }
 }
 
-$timeout_msg = isset($_GET['timeout']) ? 'Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.' : '';
+$timeout_msg = isset($_GET['timeout']) ? t('login_session_expired') : '';
 
 // App-Name und Tagline aus config.php (mit Fallback)
 $appName    = defined('APP_NAME')    ? APP_NAME    : 'ValuSafe';
-$appTagline = defined('APP_TAGLINE') ? APP_TAGLINE : 'Inventarverwaltung für Wertgegenstände';
+$appTagline = defined('APP_TAGLINE') ? APP_TAGLINE : t('login_tagline');
+$loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['lang'] : 'de';
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="<?php echo $loginLang; ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login – <?php echo htmlspecialchars($appName); ?></title>
+    <title><?php echo htmlspecialchars(t('login_title')); ?> – <?php echo htmlspecialchars($appName); ?></title>
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -335,6 +352,16 @@ $appTagline = defined('APP_TAGLINE') ? APP_TAGLINE : 'Inventarverwaltung für We
             line-height: 1.4;
         }
 
+        /* Sprachwahl unter dem Formular (4.3.33) */
+        .login-lang {
+            margin-top: 18px;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px;
+            font-size: 12px; color: #888780;
+        }
+        .login-lang a { color: #888780; text-decoration: none; padding: 2px 0; }
+        .login-lang a:hover, .login-lang a:focus { text-decoration: underline; }
+        .login-lang strong { color: #444441; }
+
         /* Mobile: Linke Seite ausblenden */
         @media (max-width: 520px) {
             .login-left { display: none; }
@@ -372,8 +399,8 @@ $appTagline = defined('APP_TAGLINE') ? APP_TAGLINE : 'Inventarverwaltung für We
 
     <!-- Rechte Seite -->
     <div class="login-right">
-        <h1>Anmelden</h1>
-        <p class="subtitle">Zugang zum Inventar</p>
+        <h1><?php echo htmlspecialchars(t('login_button')); ?></h1>
+        <p class="subtitle"><?php echo htmlspecialchars(t('login_subtitle')); ?></p>
 
         <?php if ($timeout_msg): ?>
             <div class="msg-info"><?php echo htmlspecialchars($timeout_msg); ?></div>
@@ -387,7 +414,7 @@ $appTagline = defined('APP_TAGLINE') ? APP_TAGLINE : 'Inventarverwaltung für We
             <input type="hidden" name="csrf_token_login" value="<?php echo htmlspecialchars($csrfToken); ?>">
 
             <div class="form-group">
-                <label for="username">Benutzername</label>
+                <label for="username"><?php echo htmlspecialchars(t('login_username')); ?></label>
                 <div class="input-wrap">
                     <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                         <circle cx="7.5" cy="5" r="2.5" stroke="#888780" stroke-width="1.4"/>
@@ -395,20 +422,20 @@ $appTagline = defined('APP_TAGLINE') ? APP_TAGLINE : 'Inventarverwaltung für We
                     </svg>
                     <input type="text" id="username" name="username"
                            value="<?php echo htmlspecialchars($username); ?>"
-                           placeholder="Benutzername" required autofocus autocomplete="username">
+                           placeholder="<?php echo htmlspecialchars(t('login_username')); ?>" required autofocus autocomplete="username">
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="password">Passwort</label>
+                <label for="password"><?php echo htmlspecialchars(t('login_password')); ?></label>
                 <div class="pw-wrap">
                     <svg style="flex-shrink:0; margin-left:10px;" width="15" height="15" viewBox="0 0 15 15" fill="none">
                         <rect x="2.5" y="6.5" width="10" height="6" rx="1.5" stroke="#888780" stroke-width="1.4"/>
                         <path d="M5 6.5V4.5a2.5 2.5 0 015 0v2" stroke="#888780" stroke-width="1.4" stroke-linecap="round"/>
                     </svg>
                     <input type="password" id="password" name="password"
-                           placeholder="Passwort" required autocomplete="current-password">
-                    <button type="button" class="pw-toggle" id="pwToggle" aria-label="Passwort anzeigen">
+                           placeholder="<?php echo htmlspecialchars(t('login_password')); ?>" required autocomplete="current-password">
+                    <button type="button" class="pw-toggle" id="pwToggle" aria-label="<?php echo htmlspecialchars(t('login_show_password')); ?>">
                         <svg id="eyeIcon" width="16" height="16" viewBox="0 0 16 16" fill="none">
                             <path d="M1 8s2.5-5 7-5 7 5 7 5-2.5 5-7 5-7-5-7-5z" stroke="currentColor" stroke-width="1.4"/>
                             <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/>
@@ -417,13 +444,24 @@ $appTagline = defined('APP_TAGLINE') ? APP_TAGLINE : 'Inventarverwaltung für We
                 </div>
             </div>
 
-            <button type="submit" class="btn-login">Anmelden</button>
+            <button type="submit" class="btn-login"><?php echo htmlspecialchars(t('login_button')); ?></button>
 
         </form>
 
         <p style="margin-top:14px; text-align:center;">
-            <a href="forgot_password.php" style="color:#888780; font-size:12px; text-decoration:underline;">Passwort vergessen?</a>
+            <a href="forgot_password.php" style="color:#888780; font-size:12px; text-decoration:underline;"><?php echo htmlspecialchars(t('login_forgot')); ?></a>
         </p>
+
+        <?php // Sprachwahl vor der Anmeldung (4.3.33) ?>
+        <nav class="login-lang" aria-label="<?php echo htmlspecialchars(t('login_language')); ?>">
+            <?php foreach (['de' => 'DE', 'en' => 'EN', 'fr' => 'FR', 'es' => 'ES', 'it' => 'IT', 'nl' => 'NL', 'pl' => 'PL', 'pt' => 'PT', 'tr' => 'TR'] as $code => $kurz): ?>
+                <?php if ($code === $loginLang): ?>
+                    <strong aria-current="true"><?php echo $kurz; ?></strong>
+                <?php else: ?>
+                    <a href="login.php?lang=<?php echo $code; ?><?php echo isset($_GET['timeout']) ? '&amp;timeout=1' : ''; ?>" lang="<?php echo $code; ?>" hreflang="<?php echo $code; ?>"><?php echo $kurz; ?></a>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </nav>
     </div>
 </div>
 

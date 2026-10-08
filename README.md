@@ -43,13 +43,13 @@ Insurance policies, with the items assigned to each and the sum per contract:
 
 Theme and language are chosen per user:
 
-![Settings, with themes and language selection](doku/screenshots/04-einstellungen.png)
+![Settings, with themes and language selection](doku/screenshots/04-einstellungen-en.png)
 
 What you can get out of a selection:
 
-<img src="doku/screenshots/05-export.png" alt="The export menu" width="260">
+<img src="doku/screenshots/05-export-en.png" alt="The export menu" width="260">
 
-*The screenshots come from the demo inventory; the items and their pictures are made up.*
+*The screenshots come from the demo inventory; the items and their pictures are made up. The demo data is German, so the list, item and insurance views show German names; settings and export menu are shown with the English interface.*
 
 ## Requirements
 

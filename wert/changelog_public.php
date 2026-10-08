@@ -145,11 +145,11 @@ $publicTypes = ['feature', 'fix'];
 <body>
 <div class="changelog-wrap">
 
-    <a href="index.php" class="back-link">← Zurück zur Übersicht</a>
+    <a href="index.php" class="back-link"><?php echo t('btn_back_to_overview'); ?></a>
 
     <div class="changelog-header">
         <h1>📋 Changelog</h1>
-        <p>Neue Funktionen und wichtige Verbesserungen der Inventarverwaltung</p>
+        <p><?php echo t('changelog_public_subtitle'); ?></p>
     </div>
 
     <?php foreach ($changelog as $i => $version):

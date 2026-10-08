@@ -372,6 +372,9 @@ INSERT IGNORE INTO `kategorien` (`name`) VALUES
 -- Rechteverwaltung waere also vorhanden, aber unbedienbar. Bis 4.3.22 legte
 -- nur der Setup-Assistent sie an, eine Docker-Installation bekam sie nie.
 --
+-- 4.3.33 (Migration 013): settings_password fuer Editor/Leser abschaltbar,
+-- settings_delete_account neu - beides fuer oeffentliche Demo-Konten.
+--
 -- Die 32 Eintraege sind aus der Berechtigungstabelle des Masters uebernommen
 -- und Schluessel fuer Schluessel mit der Liste im alten Setup-Assistenten
 -- (v3.27, Mai 2026) abgeglichen: identisch, in sechs Monaten nicht
@@ -404,7 +407,8 @@ INSERT IGNORE INTO `permissions`
   ('settings_theme', 'Einstellungen', '🎨', 'Theme ändern', 22, 1, 1, 1, 'admin,edit,read'),
   ('settings_lang', 'Einstellungen', '🌐', 'Sprache wechseln (DE/EN)', 23, 1, 1, 1, 'admin,edit,read'),
   ('settings_columns', 'Einstellungen', '📊', 'Spalten konfigurieren', 24, 1, 1, 1, 'admin'),
-  ('settings_password', 'Einstellungen', '👤', 'Eigenes Passwort ändern', 25, 1, 1, 1, 'admin,edit,read'),
+  ('settings_password', 'Einstellungen', '👤', 'Eigenes Passwort ändern', 25, 1, 1, 1, 'admin'),
+  ('settings_delete_account', 'Einstellungen', '🗑️', 'Eigenes Konto löschen', 25, 1, 1, 1, 'admin'),
   ('admin_users', 'Admin-Bereich', '👥', 'Benutzer verwalten', 26, 1, 0, 0, 'admin,edit,read'),
   ('admin_categories', 'Admin-Bereich', '🏷️', 'Kategorien verwalten', 27, 1, 0, 0, 'admin,edit,read'),
   ('admin_locations', 'Admin-Bereich', '📍', 'Orte verwalten', 28, 1, 0, 0, 'admin,edit,read'),

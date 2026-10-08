@@ -4,7 +4,7 @@ require_once 'db.php';
 require_once 'helpers.php';
 requireLogin();
 
-define('PAGE_TITLE', t('page_activity_log') . ' - Wertsachen-Inventar');
+define('PAGE_TITLE', t('page_activity_log') . ' - ' . t('app_title'));
 
 // Nicht-Admins sehen nur ihre eigene Aktivität, keine anderen Benutzer
 $isLogAdmin = isAdmin();
@@ -425,7 +425,7 @@ include 'header_next_page.php';
                                 <?php echo getActionText($log['aktion']); ?>
                             </span>
                         </td>
-                        <td><?php echo htmlspecialchars(ucfirst($log['tabelle'])); ?></td>
+                        <td><?php echo htmlspecialchars(vsTabellenName($log['tabelle'])); ?></td>
                         <td>
                             <?php if ($log['bezeichnung']): ?>
                                 <strong><?php echo htmlspecialchars($log['bezeichnung']); ?></strong>

@@ -119,7 +119,11 @@ if ($action === 'change_password') {
     $newPw  = $_POST['new_password']  ?? '';
     $newPw2 = $_POST['new_password2'] ?? '';
     $user = $db->selectOne("SELECT password FROM users WHERE id = ?", [$userId]);
-    if (!$user || !password_verify($oldPw, $user['password'])) {
+    // Recht wie in settings.php (4.3.33) - die Seite ist nicht verlinkt,
+    // aber direkt aufrufbar.
+    if (!hasPermission('settings_password')) {
+        $feedback = ['type' => 'error', 'msg' => '❌ ' . t('profile_pw_disabled')];
+    } elseif (!$user || !password_verify($oldPw, $user['password'])) {
         $feedback = ['type' => 'error', 'msg' => '❌ Aktuelles Passwort ist falsch.'];
     } elseif (strlen($newPw) < 8) {
         $feedback = ['type' => 'error', 'msg' => '❌ Neues Passwort muss mindestens 8 Zeichen haben.'];
@@ -421,6 +425,9 @@ include 'header_next_page.php';
         <!-- Passwort -->
         <div class="profil-card">
             <div class="profil-section-title">🔒 Passwort ändern</div>
+            <?php if (!hasPermission('settings_password')): ?>
+            <p style="font-size:13px;color:#6b7280;margin:0;"><?php echo t('profile_pw_disabled'); ?></p>
+            <?php else: ?>
             <form method="POST" autocomplete="off">
                 <?php echo Security::getCSRFInput(); ?>
                 <input type="hidden" name="action" value="change_password">
@@ -443,6 +450,7 @@ include 'header_next_page.php';
                 </div>
                 <button type="submit" class="profil-btn">🔑 Passwort ändern</button>
             </form>
+            <?php endif; ?>
         </div>
 
     </div>

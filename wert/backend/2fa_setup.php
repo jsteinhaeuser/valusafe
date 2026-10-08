@@ -140,7 +140,7 @@ include __DIR__ . '/layout/header_next_page.php';
                 </div>
             </div>
             <p style="margin-bottom:1.5rem"><?= t('2fa_app_hint') ?><br>
-            <strong>Google Authenticator</strong>, <strong>Authy</strong> oder <strong>Microsoft Authenticator</strong>.</p>
+            <strong>Google Authenticator</strong>, <strong>Authy</strong> <?= t('bk_or') ?> <strong>Microsoft Authenticator</strong>.</p>
             <form method="POST">
                 <?= Security::getCSRFInput() ?>
                 <input type="hidden" name="action" value="start_setup">

@@ -13,7 +13,7 @@ if (!isSuperAdmin()) {
     exit;
 }
 
-$pageTitle = 'Benutzerverwaltung';
+$pageTitle = t('settings_users_title');
 
 $message = '';
 $error = '';
@@ -34,15 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($username)) {
             $error = t('users_username_empty') ?: 'Benutzername darf nicht leer sein';
         } else if (empty($password)) {
-            $error = 'Passwort darf nicht leer sein';
+            $error = t('usr_password_empty');
         } else if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Bitte eine gültige E-Mail-Adresse eingeben (oder das Feld leer lassen).';
+            $error = t('usr_email_invalid');
         } else {
             try {
                 $existing = $db->selectOne("SELECT id FROM users WHERE username = ?", [$username]);
 
                 if ($existing) {
-                    $error = 'Dieser Benutzername existiert bereits';
+                    $error = t('usr_exists');
                 } else {
                     $hashedPassword = password_hash($password, PASSWORD_ARGON2ID);
                     $db->execute(
@@ -52,7 +52,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $message = t('users_added_success') ?: 'Benutzer erfolgreich hinzugefügt';
                 }
             } catch (PDOException $e) {
-                $error = 'Fehler: ' . $e->getMessage();
+                // Kein SQL-Text in die Oberflaeche (4.3.33)
+                error_log('users.php: ' . $e->getMessage());
+                $error = t('usr_save_failed');
             }
         }
     }
@@ -70,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($id <= 0) {
             $error = t('error_invalid_id') ?: 'Ungültige ID';
         } elseif ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Bitte eine gültige E-Mail-Adresse eingeben (oder das Feld leer lassen).';
+            $error = t('usr_email_invalid');
         } else {
             try {
                 $sieht_alle = isset($_POST['sieht_alle']) ? 1 : 0;
@@ -93,7 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $message = t('users_updated_success') ?: 'Benutzer erfolgreich aktualisiert';
             } catch (PDOException $e) {
-                $error = 'Fehler: ' . $e->getMessage();
+                // Kein SQL-Text in die Oberflaeche (4.3.33)
+                error_log('users.php: ' . $e->getMessage());
+                $error = t('usr_save_failed');
             }
         }
     }
@@ -121,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $message = t('users_deleted_success') ?: 'Benutzer erfolgreich gelöscht';
             } catch (PDOException $e) {
                 error_log('Benutzer loeschen: ' . $e->getMessage());
-                $error = 'Fehler beim Löschen des Benutzers.';
+                $error = t('usr_delete_failed');
             }
         }
     }
@@ -132,7 +136,8 @@ try {
     $users = $db->select("SELECT * FROM users ORDER BY username ASC");
 } catch (Exception $e) {
     $users = [];
-    $error = 'Fehler beim Laden der Benutzer: ' . $e->getMessage();
+    error_log('users.php laden: ' . $e->getMessage());
+    $error = t('usr_load_failed');
 }
 
 // Benutzer-Statistiken
@@ -173,7 +178,7 @@ include 'layout/header_next_page.php';
     
     <?php if ($error): ?>
         <div class="alert alert-danger">
-            <strong><i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> Fehler!</strong> <?php echo htmlspecialchars($error); ?>
+            <strong><i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> <?php echo t('usr_error_title'); ?></strong> <?php echo htmlspecialchars($error); ?>
         </div>
     <?php endif; ?>
     
@@ -232,7 +237,7 @@ include 'layout/header_next_page.php';
         <?php if (count($users) === 0): ?>
             <div style="text-align: center; padding: 40px; color: #999;">
                 <div style="font-size: 48px; margin-bottom: 15px;"><i class="ti ti-users"></i></div>
-                <p>Keine Benutzer gefunden</p>
+                <p><?php echo t('usr_none'); ?></p>
             </div>
         <?php else: ?>
             <table class="backend-table">
@@ -285,9 +290,9 @@ include 'layout/header_next_page.php';
                             </td>
                             <td><?php echo !empty($user['erstellt_am'] ?? '') ? date('d.m.Y H:i', strtotime($user['erstellt_am'])) : '–'; ?></td>
                             <td>
-                                <button onclick='editUser(<?php echo json_encode($user); ?>)' class="vs-btn vs-btn-sm" title="Bearbeiten"><i class="ti ti-pencil"></i></button>
+                                <button onclick='editUser(<?php echo json_encode($user); ?>)' class="vs-btn vs-btn-sm" title="<?php echo esc(t('btn_edit')); ?>"><i class="ti ti-pencil"></i></button>
                                 <?php if ($user['id'] != $_SESSION['user_id']): ?>
-                                    <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')" class="vs-btn vs-btn-sm vs-btn-danger" title="Löschen"><i class="ti ti-trash"></i></button>
+                                    <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')" class="vs-btn vs-btn-sm vs-btn-danger" title="<?php echo esc(t('btn_delete')); ?>"><i class="ti ti-trash"></i></button>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -364,7 +369,7 @@ include 'layout/header_next_page.php';
             </div>
 
             <div class="form-group">
-                <label>E-Mail (für Passwort-Reset)</label>
+                <label><?php echo t('usr_email_label'); ?></label>
                 <input type="email" name="email" class="form-control" placeholder="name@beispiel.de">
             </div>
 
@@ -409,7 +414,7 @@ include 'layout/header_next_page.php';
             </div>
 
             <div class="form-group">
-                <label>E-Mail (für Passwort-Reset)</label>
+                <label><?php echo t('usr_email_label'); ?></label>
                 <input type="email" name="email" id="edit_email" class="form-control" placeholder="name@beispiel.de">
             </div>
 

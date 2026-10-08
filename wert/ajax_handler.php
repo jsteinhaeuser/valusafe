@@ -10,6 +10,10 @@ header('Content-Type: application/json');
 
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
+// Wird von der Oberflaeche derzeit nicht aufgerufen, ist aber erreichbar:
+// "nur eigene" gilt auch hier (bis 4.3.32 lieferte jede Aktion alle).
+[$ownSql, $ownParams] = nurEigeneSql('w');
+
 try {
     switch ($action) {
         case 'quick_search':
@@ -24,12 +28,12 @@ try {
                     FROM wertsachen w
                     LEFT JOIN raeume o ON w.raum_id = o.id
                     LEFT JOIN kategorien k ON w.kategorie_id = k.id
-                    WHERE w.name LIKE ? OR w.notizen LIKE ?
+                    WHERE (w.name LIKE ? OR w.notizen LIKE ?)" . $ownSql . "
                     ORDER BY w.name
                     LIMIT 10";
             
             $searchParam = "%$query%";
-            $results = $db->select($sql, [$searchParam, $searchParam]);
+            $results = $db->select($sql, array_merge([$searchParam, $searchParam], $ownParams));
             
             echo json_encode([
                 'success' => true,
@@ -39,6 +43,11 @@ try {
             break;
             
         case 'get_statistics':
+            // Instanzweite Summen - wie die Statistikseite nur fuer Admins.
+            if (!isAdmin()) {
+                echo json_encode(['success' => false, 'message' => 'Keine Berechtigung']);
+                exit;
+            }
             $stats = [
                 'total_items' => $db->selectOne("SELECT COUNT(*) as count FROM wertsachen")['count'],
                 'total_value' => $db->selectOne("SELECT SUM(preis) as sum FROM wertsachen")['sum'] ?? 0,
@@ -71,11 +80,11 @@ try {
             $name = trim($_POST['name'] ?? '');
             $excludeId = intval($_POST['exclude_id'] ?? 0);
             
-            $sql = "SELECT id, name FROM wertsachen WHERE name LIKE ?";
-            $params = ["%$name%"];
+            $sql = "SELECT w.id, w.name FROM wertsachen w WHERE w.name LIKE ?" . $ownSql;
+            $params = array_merge(["%$name%"], $ownParams);
             
             if ($excludeId > 0) {
-                $sql .= " AND id != ?";
+                $sql .= " AND w.id != ?";
                 $params[] = $excludeId;
             }
             
@@ -121,7 +130,7 @@ try {
             
             $item = loadWertsachenWithDetails($db, $id);
             
-            if ($item) {
+            if ($item && darfGegenstand($item)) {
                 echo json_encode([
                     'success' => true,
                     'item' => $item

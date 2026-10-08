@@ -4,6 +4,8 @@ require_once 'db.php';
 require_once 'helpers.php';
 require_once 'helpers_images.php';
 requireLogin();
+// Bis 4.3.32 nur requireLogin(): ein Leser konnte per Adresse anlegen.
+requirePermission('items_add');
 define('PAGE_TITLE', t('form_new_item') . ' - ' . t('app_title'));
 
 $errors = [];
@@ -24,6 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($ersteller_check)) {
             $user_check = $db->selectOne("SELECT standard_ersteller FROM users WHERE username = ?", [$_SESSION['username']]);
             $ersteller_check = $user_check['standard_ersteller'] ?? $_SESSION['username'];
+        }
+        if (userSeesOnlyOwnItems()) {
+            $ersteller_check = $_SESSION['username'];
         }
         $existing = $db->selectOne(
             "SELECT id FROM wertsachen WHERE name = ? AND erstellt_von = ? LIMIT 1",
@@ -47,6 +52,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (empty($ersteller)) {
                 $user = $db->selectOne("SELECT standard_ersteller FROM users WHERE username = ?", [$_SESSION['username']]);
                 $ersteller = $user['standard_ersteller'] ?? $_SESSION['username'];
+            }
+            // Bei "nur eigene" waere ein Gegenstand unter anderem Namen fuer
+            // den Benutzer sofort unsichtbar - Ersteller fest auf das Konto.
+            if (userSeesOnlyOwnItems()) {
+                $ersteller = $_SESSION['username'];
             }
             
             // Gelistet am Datum
@@ -121,6 +131,10 @@ try {
     // Standard-Ersteller laden
     $user = $db->selectOne("SELECT standard_ersteller FROM users WHERE username = ?", [$_SESSION['username']]);
     $standard_ersteller = $user['standard_ersteller'] ?? $_SESSION['username'];
+    $erstellerFest = userSeesOnlyOwnItems();
+    if ($erstellerFest) {
+        $standard_ersteller = $_SESSION['username'];
+    }
 } catch (PDOException $e) {
     die(t('error_loading_data'));
 }
@@ -457,8 +471,9 @@ include 'header_next_page.php';
     <div class="form-group">
         <label for="erstellt_von"><?php echo t('form_created_by'); ?>:</label>
         <input type="text" id="erstellt_von" name="erstellt_von" maxlength="100"
-               value="<?php echo htmlspecialchars($_POST['erstellt_von'] ?? $standard_ersteller); ?>"
-               placeholder="<?php echo htmlspecialchars($standard_ersteller); ?>">
+               value="<?php echo htmlspecialchars($erstellerFest ? $standard_ersteller : ($_POST['erstellt_von'] ?? $standard_ersteller)); ?>"
+               placeholder="<?php echo htmlspecialchars($standard_ersteller); ?>"
+               <?php echo $erstellerFest ? 'readonly' : ''; ?>>
         <small><?php echo sprintf(t('form_help_created_by_default'), htmlspecialchars($standard_ersteller)); ?></small>
     </div>
 
@@ -521,7 +536,7 @@ include 'header_next_page.php';
     <!-- Barcode Scanner Modal -->
     <div id="barcodeScannerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
         <div style="background:white; border-radius:12px; padding:20px; max-width:420px; width:95%; text-align:center;">
-            <h3 style="margin-bottom:12px;"><i class="ti ti-barcode" aria-hidden="true"></i> Barcode scannen</h3>
+            <h3 style="margin-bottom:12px;"><i class="ti ti-barcode" aria-hidden="true"></i> <?php echo t('barcode_scan_title'); ?></h3>
             <div style="position:relative; width:100%; border-radius:8px; overflow:hidden; background:#000;">
                 <video id="barcodeVideo" style="width:100%; display:block;" autoplay playsinline muted></video>
                 <div style="position:absolute; top:50%; left:10%; right:10%; height:2px; background:rgba(52,152,219,0.8); transform:translateY(-50%); pointer-events:none;"></div>
@@ -529,7 +544,7 @@ include 'header_next_page.php';
             <p style="margin-top:10px; font-size:13px; color:#595959;"><?php echo t('barcode_in_frame'); ?></p>
             <button type="button" onclick="stopBarcodeScanner()"
                     style="margin-top:12px; padding:10px 24px; background:#e74c3c; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">
-                ✕ Abbrechen
+                ✕ <?php echo t('btn_cancel'); ?>
             </button>
         </div>
     </div>

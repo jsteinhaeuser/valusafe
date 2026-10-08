@@ -53,20 +53,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $standort_name     = trim($_POST['standort_name'] ?? '');
         $position_name     = trim($_POST['position_name'] ?? '');
         $position_beschr   = trim($_POST['position_beschreibung'] ?? '');
-        if (empty($name)) { $error = 'Raum-Name darf nicht leer sein'; }
+        if (empty($name)) { $error = t('lc_room_name_empty'); }
         else {
             try {
                 if ($db->selectOne("SELECT id FROM raeume WHERE name = ?", [$name])) {
-                    $error = 'Dieser Raum existiert bereits';
+                    $error = t('lc_room_exists');
                 } else {
                     $raum_id = $db->insert("INSERT INTO raeume (name) VALUES (?)", [$name]);
                     logActivity('created', 'raeume', $raum_id, $name);
-                    $msg = 'Raum "' . $name . '" erfolgreich angelegt';
+                    $msg = sprintf(t('lc_room_created'), $name);
                     // Optionaler Standort
                     if (!empty($standort_name)) {
                         $standort_id = $db->insert("INSERT INTO standorte (name) VALUES (?)", [$standort_name]);
                         logActivity('created', 'standorte', $standort_id, $standort_name);
-                        $msg .= ', Standort "' . $standort_name . '" angelegt';
+                        $msg .= sprintf(t('lc_and_location_created'), $standort_name);
                         // Optionale Position
                         if (!empty($position_name)) {
                             $pos_id = $db->insert(
@@ -74,31 +74,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 [$standort_id, $position_name, $position_beschr ?: null]
                             );
                             logActivity('created', 'positionen', $pos_id, $position_name);
-                            $msg .= ', Position "' . $position_name . '" angelegt';
+                            $msg .= sprintf(t('lc_and_position_created'), $position_name);
                         }
                     }
                     $_SESSION['vs_flash'] = $msg;
                     header('Location: locations.php?tab=raeume'); exit;
                 }
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
     if ($action === 'edit_raum') {
         $id = intval($_POST['id'] ?? 0); $name = trim($_POST['name'] ?? '');
-        if (empty($name) || $id <= 0) { $error = 'Ungültige Eingabe'; }
+        if (empty($name) || $id <= 0) { $error = t('be_invalid_input'); }
         else {
             try {
                 $old = $db->selectOne("SELECT name FROM raeume WHERE id = ?", [$id]);
                 $db->execute("UPDATE raeume SET name = ? WHERE id = ?", [$name, $id]);
                 if ($old) logActivity('updated', 'raeume', $id, $name, ['name' => $old['name']], ['name' => $name]);
-                $_SESSION['vs_flash'] = 'Raum erfolgreich aktualisiert';
+                $_SESSION['vs_flash'] = t('lc_room_updated');
                 header('Location: locations.php?tab=raeume'); exit;
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
     if ($action === 'delete_raum') {
         $id = intval($_POST['id'] ?? 0);
-        if ($id <= 0) { $error = 'Ungültige ID'; }
+        if ($id <= 0) { $error = t('loc_invalid_id'); }
         else {
             try {
                 $inUse = $db->selectOne("SELECT COUNT(*) as c FROM wertsachen WHERE raum_id = ?", [$id]);
@@ -108,62 +108,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $row = $db->selectOne("SELECT name FROM raeume WHERE id = ?", [$id]);
                     $db->execute("DELETE FROM raeume WHERE id = ?", [$id]);
                     if ($row) logActivity('deleted', 'raeume', $id, $row['name']);
-                    $_SESSION['vs_flash'] = 'Raum erfolgreich gelöscht';
+                    $_SESSION['vs_flash'] = t('lc_room_deleted');
                     header('Location: locations.php?tab=raeume'); exit;
                 }
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
 
     // STANDORTE (standorte-Tabelle)
     if ($action === 'add_standort') {
         $name = trim($_POST['name'] ?? '');
-        if (empty($name)) { $error = 'Standort-Name darf nicht leer sein'; }
+        if (empty($name)) { $error = t('lc_loc_name_empty'); }
         else {
             try {
                 if ($db->selectOne("SELECT id FROM standorte WHERE name = ?", [$name])) {
-                    $error = 'Dieser Standort existiert bereits';
+                    $error = t('lc_loc_exists');
                 } else {
                     $id = $db->insert("INSERT INTO standorte (name) VALUES (?)", [$name]);
                     logActivity('created', 'standorte', $id, $name);
-                    $_SESSION['vs_flash'] = 'Standort erfolgreich hinzugefügt';
+                    $_SESSION['vs_flash'] = t('lc_loc_added');
                     header('Location: locations.php?tab=standorte'); exit;
                 }
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
     if ($action === 'edit_standort') {
         $id = intval($_POST['id'] ?? 0); $name = trim($_POST['name'] ?? '');
-        if (empty($name) || $id <= 0) { $error = 'Ungültige Eingabe'; }
+        if (empty($name) || $id <= 0) { $error = t('be_invalid_input'); }
         else {
             try {
                 $old = $db->selectOne("SELECT name FROM standorte WHERE id = ?", [$id]);
                 $db->execute("UPDATE standorte SET name = ? WHERE id = ?", [$name, $id]);
                 if ($old) logActivity('updated', 'standorte', $id, $name, ['name' => $old['name']], ['name' => $name]);
-                $_SESSION['vs_flash'] = 'Standort erfolgreich aktualisiert';
+                $_SESSION['vs_flash'] = t('lc_loc_updated');
                 header('Location: locations.php?tab=standorte'); exit;
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
     if ($action === 'delete_standort') {
         $id = intval($_POST['id'] ?? 0);
-        if ($id <= 0) { $error = 'Ungültige ID'; }
+        if ($id <= 0) { $error = t('loc_invalid_id'); }
         else {
             try {
                 $inUse = $db->selectOne("SELECT COUNT(*) as c FROM positionen WHERE raum_id = ?", [$id]);
                 $items = $db->selectOne("SELECT COUNT(*) as c FROM wertsachen WHERE standort_id = ?", [$id]);
                 if ($inUse['c'] > 0) {
-                    $error = sprintf('Dieser Standort enthält noch %d Position(en).', $inUse['c']);
+                    $error = sprintf(t('lc_loc_has_positions'), $inUse['c']);
                 } elseif ($items['c'] > 0) {
-                    $error = sprintf('Diesem Standort sind noch %d Gegenstand/Gegenstände zugeordnet.', $items['c']);
+                    $error = sprintf(t('lc_loc_has_items'), $items['c']);
                 } else {
                     $row = $db->selectOne("SELECT name FROM standorte WHERE id = ?", [$id]);
                     $db->execute("DELETE FROM standorte WHERE id = ?", [$id]);
                     if ($row) logActivity('deleted', 'standorte', $id, $row['name']);
-                    $_SESSION['vs_flash'] = 'Standort erfolgreich gelöscht';
+                    $_SESSION['vs_flash'] = t('lc_loc_deleted');
                     header('Location: locations.php?tab=standorte'); exit;
                 }
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
 
@@ -172,18 +172,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $standort_id  = intval($_POST['standort_id'] ?? 0);
         $name         = trim($_POST['name'] ?? '');
         $beschreibung = trim($_POST['beschreibung'] ?? '');
-        if (empty($name) || $standort_id <= 0) { $error = 'Positions-Name und Standort sind Pflichtfelder'; }
+        if (empty($name) || $standort_id <= 0) { $error = t('lc_pos_required'); }
         else {
             try {
                 if ($db->selectOne("SELECT id FROM positionen WHERE raum_id = ? AND name = ?", [$standort_id, $name])) {
-                    $error = 'Diese Position existiert an diesem Standort bereits';
+                    $error = t('lc_pos_exists');
                 } else {
                     $id = $db->insert("INSERT INTO positionen (raum_id, name, beschreibung) VALUES (?, ?, ?)", [$standort_id, $name, $beschreibung ?: null]);
                     logActivity('created', 'positionen', $id, $name);
-                    $_SESSION['vs_flash'] = 'Position erfolgreich hinzugefügt';
+                    $_SESSION['vs_flash'] = t('lc_pos_added');
                     header('Location: locations.php?tab=positionen'); exit;
                 }
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
     if ($action === 'edit_position') {
@@ -191,20 +191,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $standort_id  = intval($_POST['standort_id'] ?? 0);
         $name         = trim($_POST['name'] ?? '');
         $beschreibung = trim($_POST['beschreibung'] ?? '');
-        if (empty($name) || $standort_id <= 0 || $id <= 0) { $error = 'Ungültige Eingabe'; }
+        if (empty($name) || $standort_id <= 0 || $id <= 0) { $error = t('be_invalid_input'); }
         else {
             try {
                 $old = $db->selectOne("SELECT name FROM positionen WHERE id = ?", [$id]);
                 $db->execute("UPDATE positionen SET raum_id = ?, name = ?, beschreibung = ? WHERE id = ?", [$standort_id, $name, $beschreibung ?: null, $id]);
                 if ($old) logActivity('updated', 'positionen', $id, $name, ['name' => $old['name']], ['name' => $name]);
-                $_SESSION['vs_flash'] = 'Position erfolgreich aktualisiert';
+                $_SESSION['vs_flash'] = t('lc_pos_updated');
                 header('Location: locations.php?tab=positionen'); exit;
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
     if ($action === 'delete_position') {
         $id = intval($_POST['id'] ?? 0);
-        if ($id <= 0) { $error = 'Ungültige ID'; }
+        if ($id <= 0) { $error = t('loc_invalid_id'); }
         else {
             try {
                 $inUse = $db->selectOne("SELECT COUNT(*) as c FROM wertsachen WHERE position_id = ?", [$id]);
@@ -214,10 +214,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $row = $db->selectOne("SELECT name FROM positionen WHERE id = ?", [$id]);
                     $db->execute("DELETE FROM positionen WHERE id = ?", [$id]);
                     if ($row) logActivity('deleted', 'positionen', $id, $row['name']);
-                    $_SESSION['vs_flash'] = 'Position erfolgreich gelöscht';
+                    $_SESSION['vs_flash'] = t('lc_pos_deleted');
                     header('Location: locations.php?tab=positionen'); exit;
                 }
-            } catch (PDOException $e) { $error = 'Fehler: ' . $e->getMessage(); }
+            } catch (PDOException $e) { error_log('locations.php: ' . $e->getMessage()); $error = t('be_save_failed'); }
         }
     }
 }
@@ -273,10 +273,10 @@ include 'layout/header_next_page.php';
 <main class="backend-main">
 
 <?php if ($message): ?>
-    <div class="alert alert-success"><strong><i class="ti ti-circle-check"></i> Erfolg!</strong> <?php echo htmlspecialchars($message); ?></div>
+    <div class="alert alert-success"><strong><i class="ti ti-circle-check"></i> <?php echo t('be_success_title'); ?></strong> <?php echo htmlspecialchars($message); ?></div>
 <?php endif; ?>
 <?php if ($error): ?>
-    <div class="alert alert-danger"><strong><i class="ti ti-circle-x"></i> Fehler!</strong> <?php echo htmlspecialchars($error); ?></div>
+    <div class="alert alert-danger"><strong><i class="ti ti-circle-x"></i> <?php echo t('usr_error_title'); ?></strong> <?php echo htmlspecialchars($error); ?></div>
 <?php endif; ?>
 
 <!-- Statistik -->
@@ -302,7 +302,7 @@ include 'layout/header_next_page.php';
     <div class="widget-card">
         <div class="widget-header"><div>
             <div class="widget-value"><?php echo $stats['positionen']; ?></div>
-            <div class="widget-label">📌 <?php echo t('loc_positions_label'); ?> <small style="color:var(--vs-muted);font-size:11px;">(<?php echo $stats['pos_used']; ?> belegt)</small></div>
+            <div class="widget-label">📌 <?php echo t('loc_positions_label'); ?> <small style="color:var(--vs-muted);font-size:11px;"><?php echo sprintf(t('lc_used_count'), (int)$stats['pos_used']); ?></small></div>
         </div><div class="widget-icon">📌</div></div>
     </div>
 </div>
@@ -354,7 +354,7 @@ include 'layout/header_next_page.php';
         <button onclick="showModal('addStandortModal')" class="vs-btn vs-btn-primary"><i class="ti ti-plus"></i> <?php echo t('loc_new_location'); ?></button>
     </div>
     <?php if (empty($alle_standorte)): ?>
-        <div style="text-align:center; padding:40px; color:#999;"><div style="font-size:48px;">📦</div><p><?php echo t('loc_no_locations'); ?></p><p style="font-size:13px; margin-top:5px;">Standorte sind Möbel/Orte innerhalb eines Raums (z.B. Schrank, Regal, Sideboard).</p></div>
+        <div style="text-align:center; padding:40px; color:#999;"><div style="font-size:48px;">📦</div><p><?php echo t('loc_no_locations'); ?></p><p style="font-size:13px; margin-top:5px;"><?php echo esc(t('lc_loc_hint')); ?></p></div>
     <?php else: ?>
     <table class="backend-table">
         <thead><tr><th>ID</th><th><?php echo t('loc_location_name'); ?></th><th><?php echo t('loc_positions'); ?></th><th style="width:120px;"><?php echo t('tab_actions'); ?></th></tr></thead>
@@ -383,7 +383,7 @@ include 'layout/header_next_page.php';
         <button onclick="showModal('addPositionModal')" class="vs-btn vs-btn-primary" <?php echo empty($alle_standorte) ? 'disabled title="Bitte zuerst einen Standort anlegen"' : ''; ?>><i class="ti ti-plus"></i> <?php echo t('loc_new_position'); ?></button>
     </div>
     <?php if (empty($alle_positionen)): ?>
-        <div style="text-align:center; padding:40px; color:#999;"><div style="font-size:48px;">📌</div><p><?php echo t('loc_no_positions'); ?></p><p style="font-size:13px; margin-top:5px;">Positionen sind präzise Orte an einem Standort (z.B. "Obere Schublade", "Linkes Fach").</p></div>
+        <div style="text-align:center; padding:40px; color:#999;"><div style="font-size:48px;">📌</div><p><?php echo t('loc_no_positions'); ?></p><p style="font-size:13px; margin-top:5px;"><?php echo esc(t('lc_pos_hint')); ?></p></div>
     <?php else: ?>
     <table class="backend-table">
         <thead><tr><th>ID</th><th><?php echo t('loc_location'); ?></th><th><?php echo t('loc_position_name'); ?></th><th><?php echo t('field_notes'); ?></th><th><?php echo t('loc_usage'); ?></th><th style="width:120px;"><?php echo t('tab_actions'); ?></th></tr></thead>
@@ -419,27 +419,27 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="tab" value="raeume">
             <div class="form-group">
                 <label><?php echo t('loc_room_name'); ?> *</label>
-                <input type="text" name="name" required class="form-control" placeholder="z.B. Wohnzimmer, Schlafzimmer, Küche...">
+                <input type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_room_ph')); ?>">
             </div>
 
             <!-- Optionaler Standort -->
             <div style="border-top:1px solid var(--vs-border,#e2e8f0); margin:16px 0 0; padding-top:14px;">
                 <button type="button" onclick="toggleOptional(this)"
                         style="background:none; border:none; cursor:pointer; color:var(--vs-accent,#185fa5); font-size:13px; font-weight:600; padding:0; display:flex; align-items:center; gap:6px;">
-                    <i class="ti ti-plus" id="optionalIcon"></i> Standort direkt anlegen <span style="color:#999; font-weight:400;">(optional)</span>
+                    <i class="ti ti-plus" id="optionalIcon"></i> <?php echo t('lc_add_location_now'); ?> <span style="color:#999; font-weight:400;"><?php echo t('be_optional'); ?></span>
                 </button>
                 <div id="optionalFields" style="display:none; margin-top:14px;">
                     <div class="form-group">
-                        <label>Standort-Name <span style="color:#999;">(optional)</span></label>
-                        <input type="text" name="standort_name" class="form-control" placeholder="z.B. Kleiderschrank, Bücherregal...">
+                        <label><?php echo t('loc_location_name'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label>
+                        <input type="text" name="standort_name" class="form-control" placeholder="<?php echo esc(t('lc_loc_ph')); ?>">
                     </div>
                     <div class="form-group">
-                        <label>Positions-Name <span style="color:#999;">(optional, nur mit Standort)</span></label>
-                        <input type="text" name="position_name" class="form-control" placeholder="z.B. Obere Schublade, Linkes Fach...">
+                        <label><?php echo t('loc_position_name'); ?> <span style="color:#999;"><?php echo t('lc_optional_with_loc'); ?></span></label>
+                        <input type="text" name="position_name" class="form-control" placeholder="<?php echo esc(t('lc_pos_ph')); ?>">
                     </div>
                     <div class="form-group">
-                        <label>Positions-Beschreibung <span style="color:#999;">(optional)</span></label>
-                        <input type="text" name="position_beschreibung" class="form-control" placeholder="z.B. Hinter dem Ordner">
+                        <label><?php echo t('lc_pos_desc_label'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label>
+                        <input type="text" name="position_beschreibung" class="form-control" placeholder="<?php echo esc(t('lc_pos_desc_ph')); ?>">
                     </div>
                 </div>
             </div>
@@ -452,7 +452,7 @@ include 'layout/header_next_page.php';
 <!-- ── Modal: Raum bearbeiten ─────────────────────────────────────────────── -->
 <div id="editRaumModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-pencil"></i> Raum bearbeiten</h3><span class="modal-close" onclick="closeModal('editRaumModal')">&times;</span></div>
+        <div class="modal-header"><h3><i class="ti ti-pencil"></i> <?php echo t('lc_edit_room'); ?></h3><span class="modal-close" onclick="closeModal('editRaumModal')">&times;</span></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="edit_raum">
@@ -472,7 +472,7 @@ include 'layout/header_next_page.php';
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="add_standort">
             <input type="hidden" name="tab" value="standorte">
-            <div class="form-group"><label>Standort-Name *</label><input type="text" name="name" required class="form-control" placeholder="z.B. Wohnzimmerschrank, Regal, Sideboard..."></div>
+            <div class="form-group"><label><?php echo t('loc_location_name'); ?> *</label><input type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_loc_ph2')); ?>"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('addStandortModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_create'); ?></button></div>
         </form>
     </div>
@@ -481,13 +481,13 @@ include 'layout/header_next_page.php';
 <!-- ── Modal: Standort bearbeiten ────────────────────────────────────────── -->
 <div id="editStandortModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-pencil"></i> Standort bearbeiten</h3><span class="modal-close" onclick="closeModal('editStandortModal')">&times;</span></div>
+        <div class="modal-header"><h3><i class="ti ti-pencil"></i> <?php echo t('lc_edit_loc'); ?></h3><span class="modal-close" onclick="closeModal('editStandortModal')">&times;</span></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="edit_standort">
             <input type="hidden" name="tab" value="standorte">
             <input type="hidden" name="id" id="edit_standort_id">
-            <div class="form-group"><label>Standort-Name *</label><input type="text" name="name" id="edit_standort_name" required class="form-control"></div>
+            <div class="form-group"><label><?php echo t('loc_location_name'); ?> *</label><input type="text" name="name" id="edit_standort_name" required class="form-control"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('editStandortModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_save'); ?></button></div>
         </form>
     </div>
@@ -502,16 +502,16 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="add_position">
             <input type="hidden" name="tab" value="positionen">
             <div class="form-group">
-                <label>Standort *</label>
+                <label><?php echo t('loc_location'); ?> *</label>
                 <select name="standort_id" required class="form-control">
-                    <option value="">— Standort wählen —</option>
+                    <option value=""><?php echo t('lc_choose_loc'); ?></option>
                     <?php foreach ($alle_standorte as $s): ?>
                         <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['name']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="form-group"><label>Positions-Name *</label><input type="text" name="name" required class="form-control" placeholder="z.B. Obere Schublade, Linkes Fach..."></div>
-            <div class="form-group"><label>Beschreibung <span style="color:#999;">(optional)</span></label><input type="text" name="beschreibung" class="form-control" placeholder="z.B. Hinter dem Regal"></div>
+            <div class="form-group"><label><?php echo t('loc_position_name'); ?> *</label><input type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_pos_ph')); ?>"></div>
+            <div class="form-group"><label><?php echo t('be_description'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label><input type="text" name="beschreibung" class="form-control" placeholder="<?php echo esc(t('lc_pos_desc_ph2')); ?>"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('addPositionModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_create'); ?></button></div>
         </form>
     </div>
@@ -520,22 +520,22 @@ include 'layout/header_next_page.php';
 <!-- ── Modal: Position bearbeiten ────────────────────────────────────────── -->
 <div id="editPositionModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-pencil"></i> Position bearbeiten</h3><span class="modal-close" onclick="closeModal('editPositionModal')">&times;</span></div>
+        <div class="modal-header"><h3><i class="ti ti-pencil"></i> <?php echo t('lc_edit_pos'); ?></h3><span class="modal-close" onclick="closeModal('editPositionModal')">&times;</span></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="edit_position">
             <input type="hidden" name="tab" value="positionen">
             <input type="hidden" name="id" id="edit_pos_id">
             <div class="form-group">
-                <label>Standort *</label>
+                <label><?php echo t('loc_location'); ?> *</label>
                 <select name="standort_id" id="edit_pos_standort_id" required class="form-control">
                     <?php foreach ($alle_standorte as $s): ?>
                         <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['name']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="form-group"><label>Positions-Name *</label><input type="text" name="name" id="edit_pos_name" required class="form-control"></div>
-            <div class="form-group"><label>Beschreibung <span style="color:#999;">(optional)</span></label><input type="text" name="beschreibung" id="edit_pos_beschreibung" class="form-control"></div>
+            <div class="form-group"><label><?php echo t('loc_position_name'); ?> *</label><input type="text" name="name" id="edit_pos_name" required class="form-control"></div>
+            <div class="form-group"><label><?php echo t('be_description'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label><input type="text" name="beschreibung" id="edit_pos_beschreibung" class="form-control"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('editPositionModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_save'); ?></button></div>
         </form>
     </div>
@@ -550,7 +550,7 @@ include 'layout/header_next_page.php';
 <div id="confirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:20px;">
     <div style="background:var(--vs-surface); border-radius:16px; padding:28px; max-width:360px; width:100%; box-shadow:0 16px 48px rgba(0,0,0,0.2); text-align:center;">
         <div style="font-size:36px; margin-bottom:12px;"><i class="ti ti-trash"></i></div>
-        <h3 style="margin:0 0 8px;" id="confirmTitle">Löschen?</h3>
+        <h3 style="margin:0 0 8px;" id="confirmTitle"><?php echo t('be_delete_q'); ?></h3>
         <p id="confirmName" style="color:var(--vs-text-muted); margin:0 0 24px; font-size:14px;"></p>
         <div style="display:flex; gap:10px; justify-content:center;">
             <button onclick="closeConfirm()" class="vs-btn vs-btn-secondary" style="padding:10px 24px;"><?php echo t('btn_cancel'); ?></button>
@@ -622,7 +622,7 @@ function editPosition(p) {
 function deleteItem(type, id, name, count) {
     var limits = { raum: <?php echo json_encode(t('loc_err_room_in_use') ?: 'Dieser Raum wird noch verwendet'); ?>, standort: <?php echo json_encode(t('loc_err_location_has_positions') ?: 'Dieser Standort enthält noch Positionen'); ?>, position: <?php echo json_encode(t('loc_err_position_in_use') ?: 'Diese Position wird noch verwendet'); ?> };
     if (count > 0) { vsAlert(<?php echo json_encode(t('loc_err_cannot_delete')); ?>.replace('%s', function () { return limits[type]; })); return; }
-    var titles = { raum: 'Raum löschen?', standort: 'Standort löschen?', position: 'Position löschen?' };
+    var titles = <?php echo json_encode(['raum' => t('lc_del_room'), 'standort' => t('lc_del_loc'), 'position' => t('lc_del_pos')], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
     var forms  = { raum: 'deleteRaumForm', standort: 'deleteStandortForm', position: 'deletePositionForm' };
     var ids    = { raum: 'del_raum_id', standort: 'del_standort_id', position: 'del_position_id' };
     document.getElementById('confirmTitle').textContent = titles[type];

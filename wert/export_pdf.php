@@ -3,15 +3,20 @@
 require_once 'db.php';
 require_once 'helpers.php';
 requireLogin();
+// Export-Recht aus der Rechteverwaltung (bis 4.3.32 nicht geprueft).
+requirePermission('export_pdf');
+// Bei "nur eigene" nur eigene Gegenstaende exportieren.
+[$ownSql, $ownParams] = nurEigeneSql('w');
 
 try {
     $sql = "SELECT w.*, o.name as ort_name, k.name as kategorie_name 
             FROM wertsachen w 
             LEFT JOIN raeume o ON w.raum_id = o.id 
             LEFT JOIN kategorien k ON w.kategorie_id = k.id 
+            WHERE 1=1" . $ownSql . "
             ORDER BY w.name";
     
-    $wertsachen = $db->select($sql);
+    $wertsachen = $db->select($sql, $ownParams);
     
     Security::logSecurityEvent('pdf_export', [
         'count' => count($wertsachen)

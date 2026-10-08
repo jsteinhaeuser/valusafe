@@ -209,7 +209,10 @@ function hasPermission(string $key): bool {
         return _permissionFallback($key, $role);
     }
 
-    if (!isset($perms[$key])) return false;
+    // Zeile fehlt (z. B. neues Recht, Migration noch nicht gelaufen): Vorgabe
+    // aus _permissionFallback() statt still "verboten". Unbekannte Schluessel
+    // bleiben dort weiter false.
+    if (!isset($perms[$key])) return _permissionFallback($key, $role);
 
     $col = match(true) {
         in_array($role, ['editor', 'edit', 'editieren']) => 'edit_can',
@@ -222,6 +225,9 @@ function requirePermission(string $key): void {
     if (!hasPermission($key)) {
         http_response_code(403);
         $msg = 'Sie haben keine Berechtigung für diesen Bereich.';
+        if (function_exists('t') && t('user_no_permission') !== 'user_no_permission') {
+            $msg = t('user_no_permission');
+        }
         if (function_exists('showPermissionDenied')) {
             showPermissionDenied($msg);
         } else {
@@ -260,6 +266,7 @@ function _permissionFallback(string $key, string $role): bool {
         'settings_lang'     => ['edit' => true,  'read' => true],
         'settings_columns'  => ['edit' => true,  'read' => true],
         'settings_password' => ['edit' => true,  'read' => true],
+        'settings_delete_account' => ['edit' => true,  'read' => true],
     ];
     if (!isset($defaults[$key])) return false;
     return $isEdit ? $defaults[$key]['edit'] : $defaults[$key]['read'];
@@ -358,12 +365,32 @@ if (file_exists(__DIR__ . '/lang/language.php')) {
     require_once __DIR__ . '/lang/language.php';
 }
 
+// Die neun Sprachen der Anwendung (wert/lang/*.php)
+const VS_SPRACHEN = ['de', 'en', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'tr'];
+
+/** Sprache ohne Sitzung: Cookie user_language, dann Accept-Language, dann 'de'. */
+function vsErkannteSprache(): string {
+    $cookie = $_COOKIE['user_language'] ?? '';
+    if (in_array($cookie, VS_SPRACHEN, true)) return $cookie;
+    // "en-GB,en;q=0.9,de;q=0.8" - Reihenfolge der Angaben genuegt, die
+    // Browser schreiben sie ohnehin nach Gewichtung absteigend.
+    foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '') as $teil) {
+        $code = strtolower(substr(trim($teil), 0, 2));
+        if (in_array($code, VS_SPRACHEN, true)) return $code;
+    }
+    return 'de';
+}
+
 if (!function_exists('loadLanguage')) {
     function loadLanguage() {
         global $translations;
         
         if (!isset($_SESSION['lang'])) {
-            $_SESSION['lang'] = 'de';
+            // Noch keine Sitzungssprache (z. B. Anmeldeseite): bis 4.3.32 immer
+            // 'de' - englische Besucher der Demo sahen zuerst Deutsch. Jetzt:
+            // gemerktes Cookie, sonst Browsersprache, sonst Deutsch. Nach der
+            // Anmeldung gilt die im Konto gespeicherte Sprache (login.php).
+            $_SESSION['lang'] = vsErkannteSprache();
         }
         
         $currentLang = $_SESSION['lang'];

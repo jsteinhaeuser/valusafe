@@ -32,8 +32,14 @@ if (setLanguage($requestedLang)) {
 $referer = $_SERVER['HTTP_REFERER'] ?? 'index.php';
 
 // Sicherstellen dass wir auf gleicher Domain bleiben
-$host = $_SERVER['HTTP_HOST'] ?? '';
-if ($host && strpos($referer, $host) === false) {
+// Hostnamen vergleichen, nicht nur enthalten pruefen: bis 4.3.32 genuegte
+// eine fremde Adresse, die den eigenen Namen irgendwo enthielt
+// (https://fremd.example/?x=meine-instanz.de), fuer eine Weiterleitung dorthin.
+$host    = $_SERVER['HTTP_HOST'] ?? '';
+$refHost = parse_url($referer, PHP_URL_HOST);
+$refPort = parse_url($referer, PHP_URL_PORT);
+if ($refHost !== null && $refHost !== false
+    && strcasecmp($refHost . ($refPort ? ':' . $refPort : ''), $host) !== 0) {
     $referer = 'index.php';
 }
 

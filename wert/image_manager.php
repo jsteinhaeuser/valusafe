@@ -38,9 +38,25 @@ if (!$itemId) {
 }
 
 // Prüfe ob Item existiert und User Zugriff hat
-$item = $db->selectOne("SELECT id, name FROM wertsachen WHERE id = ?", [$itemId]);
-if (!$item) {
+$item = $db->selectOne("SELECT id, name, erstellt_von FROM wertsachen WHERE id = ?", [$itemId]);
+// Fremder Gegenstand bei "nur eigene": wie nicht vorhanden.
+if (!$item || !darfGegenstand($item)) {
     echo json_encode(['success' => false, 'error' => 'Item nicht gefunden']);
+    exit;
+}
+
+// Rechte je Aktion (bis 4.3.32 nur requireLogin: ein Leser konnte per
+// Anfrage Bilder hochladen und loeschen).
+$rechtJeAktion = [
+    'get_images'  => 'media_view',
+    'upload'      => 'media_upload',
+    'delete'      => 'media_delete',
+    'set_primary' => 'items_edit',
+    'reorder'     => 'items_edit',
+];
+if (isset($rechtJeAktion[$action]) && !hasPermission($rechtJeAktion[$action])) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'error' => t('user_no_permission')]);
     exit;
 }
 

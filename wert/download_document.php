@@ -42,8 +42,8 @@ try {
     }
 
     // Sichtbarkeitsregel wie in index.php / helpers_search.php
-    if (userSeesOnlyOwnItems()
-        && ($doc['erstellt_von'] ?? '') !== ($_SESSION['username'] ?? '')) {
+    // (darfGegenstand: Vergleich wie MySQL, ohne Gross-/Kleinschreibung)
+    if (!darfGegenstand($doc)) {
         Security::logSecurityEvent('document_access_denied', ['doc_id' => $doc_id, 'reason' => 'not_owner']);
         http_response_code(403);
         die('Kein Zugriff auf dieses Dokument');

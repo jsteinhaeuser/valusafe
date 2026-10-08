@@ -12,7 +12,14 @@ if (!function_exists('tn')) {
     }
 }
 requireLogin();
-define('PAGE_TITLE', t('nav_settings') . ' - Wertsachen-Inventar');
+define('PAGE_TITLE', t('nav_settings') . ' - ' . t('app_title'));
+
+// Eigenes Konto (4.3.33): auf einer oeffentlichen Demo teilen sich alle
+// Besucher ein Konto - Passwort aendern oder Konto loeschen sperrte dort alle
+// anderen aus. Beides ist jetzt ein Recht (backend/permissions.php), Standard
+// wie bisher erlaubt. Gilt auch fuer profil.php.
+$darfPasswort      = hasPermission('settings_password');
+$darfKontoLoeschen = hasPermission('settings_delete_account');
 
 $message = '';
 $error = '';
@@ -29,10 +36,10 @@ if (!function_exists('handleAvatarUpload')) {
             return ['filename' => $oldAvatar];
         }
         if ($file['error'] !== UPLOAD_ERR_OK) {
-            return ['error' => 'Upload-Fehler (Code ' . $file['error'] . ')'];
+            return ['error' => sprintf(t('profile_avatar_upload_error'), $file['error'])];
         }
         if ($file['size'] > 5 * 1024 * 1024) {
-            return ['error' => 'Datei zu groß (max. 5 MB)'];
+            return ['error' => t('profile_avatar_too_big')];
         }
 
         $finfo    = finfo_open(FILEINFO_MIME_TYPE);
@@ -43,7 +50,7 @@ if (!function_exists('handleAvatarUpload')) {
 
         $allowed = ['image/jpeg','image/png','image/gif','image/webp','image/heic','image/heif'];
         if (!in_array($mimeType, $allowed)) {
-            return ['error' => 'Ungültiger Dateityp (' . $mimeType . ')'];
+            return ['error' => sprintf(t('profile_avatar_bad_type'), $mimeType)];
         }
 
         $src = match($mimeType) {
@@ -53,7 +60,7 @@ if (!function_exists('handleAvatarUpload')) {
             'image/webp' => @imagecreatefromwebp($file['tmp_name']),
             default      => false,
         };
-        if (!$src) return ['error' => 'Bild konnte nicht verarbeitet werden'];
+        if (!$src) return ['error' => t('profile_avatar_unreadable')];
 
         if (function_exists('correctImageOrientation')) {
             $src = correctImageOrientation($src, $file['tmp_name']);
@@ -72,7 +79,7 @@ if (!function_exists('handleAvatarUpload')) {
         $filename = 'avatar_' . $userId . '_' . time() . '.jpg';
         $path     = $avatarDir . $filename;
         if (!imagejpeg($dest, $path, 88)) {
-            return ['error' => 'Speichern fehlgeschlagen'];
+            return ['error' => t('profile_avatar_store_failed')];
         }
         imagedestroy($src);
         imagedestroy($dest);
@@ -144,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } catch (PDOException $e) {
             error_log('Datenexport: ' . $e->getMessage());
-            $error = 'Datenexport fehlgeschlagen. Bitte wende dich an den Administrator.';
+            $error = t('settings_export_failed');
         }
     }
 
@@ -154,12 +161,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userId      = $_SESSION['user_id'];
         $username    = $_SESSION['username'];
 
-        if ($confirmText !== $username) {
-            $error = 'Bestätigung fehlgeschlagen. Bitte gib deinen Benutzernamen exakt ein.';
+        if (!$darfKontoLoeschen) {
+            $error = t('settings_delete_disabled');
+        } elseif ($confirmText !== $username) {
+            $error = t('settings_delete_confirm_failed');
         // isRealAdmin(): ein Admin-Konto bleibt ein Admin-Konto, auch waehrend
         // eines Rollenwechsels. Zuvor griff der Schutz im Testmodus nicht.
         } elseif (isRealAdmin()) {
-            $error = 'Das Admin-Konto kann nicht gelöscht werden. Bitte zuerst einen anderen Admin ernennen.';
+            $error = t('settings_admin_undeletable');
         } else {
             try {
                 // Konto loeschen, Protokolle davon loesen (dsgvo_helpers.php).
@@ -180,7 +189,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             } catch (PDOException $e) {
                 error_log('Kontoloeschung: ' . $e->getMessage());
-                $error = 'Account-Löschung fehlgeschlagen. Bitte wende dich an den Administrator.';
+                $error = t('settings_delete_failed');
             }
         }
     }
@@ -191,10 +200,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $db->execute("UPDATE users SET theme = ? WHERE username = ?", [$theme, $_SESSION['username']]);
                 $_SESSION['theme'] = $theme;
-                $message = 'Theme erfolgreich gespeichert';
+                $message = t('settings_theme_saved');
                 Security::logSecurityEvent('theme_changed', ['theme' => $theme]);
             } catch (PDOException $e) {
-                $error = t('settings_error_theme_save') . ': ' . $e->getMessage();
+                // Kein SQL-Text in die Oberflaeche (wie bei den uebrigen Meldungen)
+                error_log('settings theme: ' . $e->getMessage());
+                $error = t('settings_error_theme_save');
             }
         } else {
             $error = t('settings_error_invalid_theme');
@@ -211,10 +222,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             try {
                 $db->execute("UPDATE users SET avatar = ? WHERE id = ?", [$result['filename'], $userId]);
-                $message = 'Profilbild gespeichert';
+                $message = t('profile_avatar_saved');
             } catch (PDOException $e) {
                 error_log('settings avatar: ' . $e->getMessage());
-                $error = 'Profilbild konnte nicht gespeichert werden.';
+                $error = t('profile_avatar_save_failed');
             }
         }
     }
@@ -229,10 +240,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         try {
             $db->execute("UPDATE users SET avatar = NULL WHERE id = ?", [$userId]);
-            $message = 'Profilbild entfernt';
+            $message = t('profile_avatar_removed');
         } catch (PDOException $e) {
             error_log('settings avatar delete: ' . $e->getMessage());
-            $error = 'Profilbild konnte nicht entfernt werden.';
+            $error = t('profile_avatar_remove_failed');
         }
     }
 
@@ -243,12 +254,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $newPw  = $_POST['new_password']  ?? '';
         $newPw2 = $_POST['new_password2'] ?? '';
         $pwUser = $db->selectOne("SELECT password FROM users WHERE id = ?", [$userId]);
-        if (!$pwUser || !password_verify($oldPw, $pwUser['password'])) {
-            $error = 'Aktuelles Passwort ist falsch.';
+        if (!$darfPasswort) {
+            $error = t('profile_pw_disabled');
+        } elseif (!$pwUser || !password_verify($oldPw, $pwUser['password'])) {
+            $error = t('profile_pw_wrong');
         } elseif (strlen($newPw) < 8) {
-            $error = 'Neues Passwort muss mindestens 8 Zeichen haben.';
+            $error = t('profile_pw_too_short');
         } elseif ($newPw !== $newPw2) {
-            $error = 'Die neuen Passwörter stimmen nicht überein.';
+            $error = t('profile_pw_mismatch');
         } else {
             // Siehe profil.php: bis 4.3.17 wurde der Erfolg gemeldet und
             // protokolliert, ohne dass feststand, ob das UPDATE durchging.
@@ -256,10 +269,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hash = password_hash($newPw, PASSWORD_ARGON2ID);
                 $db->execute("UPDATE users SET password = ? WHERE id = ?", [$hash, $userId]);
                 Security::logSecurityEvent('password_changed', ['user_id' => $userId, 'username' => $_SESSION['username']]);
-                $message = 'Passwort erfolgreich geändert';
+                $message = t('profile_pw_changed');
             } catch (PDOException $e) {
                 error_log('settings password: ' . $e->getMessage());
-                $error = 'Das Passwort konnte nicht gespeichert werden. Das bisherige gilt weiter.';
+                $error = t('profile_pw_save_failed');
             }
         }
     }
@@ -310,11 +323,12 @@ $theme_tiles = [
 
 // Statistiken vorab laden
 try {
+    [$ownSql, $ownParams] = nurEigeneSql('');
     $stats = [
-        'wertsachen' => $db->selectOne("SELECT COUNT(*) as count FROM wertsachen")['count'],
+        'wertsachen' => $db->selectOne("SELECT COUNT(*) as count FROM wertsachen WHERE 1=1" . $ownSql, $ownParams)['count'],
         'raeume'     => $db->selectOne("SELECT COUNT(*) as count FROM raeume")['count'],
         'kategorien' => $db->selectOne("SELECT COUNT(*) as count FROM kategorien")['count'],
-        'gesamtwert' => $db->selectOne("SELECT SUM(preis) as sum FROM wertsachen")['sum'] ?? 0
+        'gesamtwert' => $db->selectOne("SELECT SUM(preis) as sum FROM wertsachen WHERE 1=1" . $ownSql, $ownParams)['sum'] ?? 0
     ];
 } catch (PDOException $e) {
     $stats = null;
@@ -483,11 +497,11 @@ include 'header_next_page.php';
 
 <?php if (isset($_SESSION['original_role'])): ?>
 <div style="background:rgba(243,156,18,0.12); border:1.5px solid rgba(243,156,18,0.4); padding:14px 18px; border-radius:12px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
-    <span><i class="ti ti-alert-triangle" style="color:var(--vs-warning);"></i> Testmodus: Sie sind als <strong><?php echo esc($_SESSION['role']); ?></strong> angemeldet (Original: Admin)</span>
+    <span><i class="ti ti-alert-triangle" style="color:var(--vs-warning);"></i> <?php echo sprintf(htmlspecialchars(t('settings_testmode'), ENT_QUOTES, 'UTF-8'), '<strong>' . esc($_SESSION['role']) . '</strong>'); ?></span>
     <form method="POST" action="switch_role.php" style="margin:0;">
         <?php echo Security::getCSRFInput(); ?>
         <input type="hidden" name="restore" value="1">
-        <button type="submit" class="vs-btn vs-btn-primary vs-btn-sm"><i class="ti ti-arrow-back-up"></i> Zurück zu Admin</button>
+        <button type="submit" class="vs-btn vs-btn-primary vs-btn-sm"><i class="ti ti-arrow-back-up"></i> <?php echo t('settings_testmode_back'); ?></button>
     </form>
 </div>
 <?php endif; ?>
@@ -652,7 +666,7 @@ include 'header_next_page.php';
         <form method="POST" action="">
             <?php echo Security::getCSRFInput(); ?>
             <div class="form-group">
-                <label for="standard_ersteller">Name:</label>
+                <label for="standard_ersteller"><?php echo t('field_name'); ?>:</label>
                 <input type="text" id="standard_ersteller" name="standard_ersteller"
                        value="<?php echo esc($user['standard_ersteller'] ?? $_SESSION['username']); ?>"
                        required maxlength="100">
@@ -678,7 +692,7 @@ include 'header_next_page.php';
 
     <!-- Profil: Avatar + Passwort ändern -->
     <div class="settings-card">
-        <h3><i class="ti ti-user-circle"></i> Profil</h3>
+        <h3><i class="ti ti-user-circle"></i> <?php echo t('nav_profile'); ?></h3>
 
         <!-- Avatar-Upload (unsichtbares Input, per Klick auf Avatar aktiviert) -->
         <form method="POST" enctype="multipart/form-data" id="avatarForm">
@@ -692,11 +706,11 @@ include 'header_next_page.php';
 
         <div class="profil-avatar-wrap"
              onclick="document.getElementById('avatarInput').click()"
-             title="Profilbild ändern">
+             title="<?php echo htmlspecialchars(t('profile_avatar_change'), ENT_QUOTES, 'UTF-8'); ?>">
             <div class="profil-avatar">
                 <?php if ($avatarUrl): ?>
                     <img src="<?php echo htmlspecialchars($avatarUrl); ?>"
-                         alt="Profilbild von <?php echo htmlspecialchars($_SESSION['username']); ?>">
+                         alt="<?php echo htmlspecialchars(sprintf(t('profile_avatar_alt'), $_SESSION['username']), ENT_QUOTES, 'UTF-8'); ?>">
                 <?php else: ?>
                     <?php echo mb_strtoupper(mb_substr($_SESSION['username'], 0, 1)); ?>
                 <?php endif; ?>
@@ -711,15 +725,20 @@ include 'header_next_page.php';
                 <button type="submit"
                         class="profil-avatar-delete"
                         onclick="event.stopPropagation();"
-                        title="Profilbild entfernen">✕</button>
+                        title="<?php echo htmlspecialchars(t('profile_avatar_remove'), ENT_QUOTES, 'UTF-8'); ?>">✕</button>
             </form>
             <?php endif; ?>
         </div>
         <p style="font-size:12px; color:#aaa; text-align:center; margin:0 0 18px;">
-            Klick auf den Avatar zum Ändern
+            <?php echo t('profile_avatar_hint'); ?>
         </p>
 
         <!-- Passwort ändern -->
+        <?php if (!$darfPasswort): ?>
+        <p style="font-size:13px; color:var(--vs-text-muted); margin:0;">
+            <i class="ti ti-lock" aria-hidden="true"></i> <?php echo t('profile_pw_disabled'); ?>
+        </p>
+        <?php else: ?>
         <form method="POST" autocomplete="off">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="change_password">
@@ -732,22 +751,23 @@ include 'header_next_page.php';
             <input type="text" value="<?php echo htmlspecialchars($_SESSION['username'] ?? ''); ?>"
                    autocomplete="username" readonly hidden aria-hidden="true" tabindex="-1">
             <div class="form-group">
-                <label for="old_password">Aktuelles Passwort</label>
+                <label for="old_password"><?php echo t('profile_pw_current'); ?></label>
                 <input type="password" name="old_password" id="old_password"
                        placeholder="••••••••" autocomplete="current-password" required>
             </div>
             <div class="form-group">
-                <label for="new_password">Neues Passwort <small style="color:#999;font-weight:400;">(min. 8 Zeichen)</small></label>
+                <label for="new_password"><?php echo t('profile_pw_new'); ?> <small style="color:#999;font-weight:400;"><?php echo t('profile_pw_min'); ?></small></label>
                 <input type="password" name="new_password" id="new_password"
                        placeholder="••••••••" autocomplete="new-password" required minlength="8">
             </div>
             <div class="form-group">
-                <label for="new_password2">Neues Passwort bestätigen</label>
+                <label for="new_password2"><?php echo t('profile_pw_confirm'); ?></label>
                 <input type="password" name="new_password2" id="new_password2"
                        placeholder="••••••••" autocomplete="new-password" required minlength="8">
             </div>
-            <button type="submit" class="btn btn-primary">Passwort ändern</button>
+            <button type="submit" class="btn btn-primary"><?php echo t('profile_pw_submit'); ?></button>
         </form>
+        <?php endif; ?>
     </div>
 
     </div><!-- Ende Zeile-2-Wrapper -->
@@ -785,7 +805,7 @@ include 'header_next_page.php';
     <div class="settings-card">
         <h3><i class="ti ti-device-floppy"></i> Backup</h3>
         <p style="font-size:13px; color:#888; margin-bottom:16px;"><?php echo t('settings_backup_description'); ?></p>
-        <a href="backend/backup.php" class="vs-btn vs-btn-secondary">Zum Backup-Dashboard →</a>
+        <a href="backend/backup.php" class="vs-btn vs-btn-secondary"><?php echo t('settings_backup_link'); ?></a>
     </div>
 
     <!-- DSGVO: Datenschutz & Meine Daten -->
@@ -811,6 +831,14 @@ include 'header_next_page.php';
         </div>
 
         <!-- Account-Löschung -->
+        <?php if (!$darfKontoLoeschen): ?>
+        <div>
+            <strong style="font-size:14px;"><i class="ti ti-trash"></i> <?php echo t('settings_delete_account_title'); ?></strong>
+            <p style="font-size:13px; color:var(--vs-text-muted); margin:6px 0 0;">
+                <i class="ti ti-lock" aria-hidden="true"></i> <?php echo t('settings_delete_disabled'); ?>
+            </p>
+        </div>
+        <?php else: ?>
         <div>
             <strong style="font-size:14px; color:var(--vs-danger);"><i class="ti ti-trash"></i> <?php echo t('settings_delete_account_title'); ?></strong>
             <p style="font-size:13px; color:var(--vs-text-muted); margin:6px 0 12px;">
@@ -821,6 +849,7 @@ include 'header_next_page.php';
                 <i class="ti ti-trash"></i> <?php echo t('settings_delete_account_btn'); ?>
             </button>
         </div>
+        <?php endif; ?>
     </div>
 
     <!-- Modal: Account löschen -->

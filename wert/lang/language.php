@@ -25,9 +25,10 @@ if (!function_exists('getCurrentLanguage')) {
 // setLanguage() - Sprache setzen
 if (!function_exists('setLanguage')) {
     function setLanguage($lang) {
-        if (in_array($lang, ['de', 'en'])) {
+        // Bis 4.3.32 nur de/en - die Anwendung hat neun Sprachen (Anmeldeseite)
+        if (in_array($lang, ['de', 'en', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'tr'], true)) {
             $_SESSION['lang'] = $lang;
-            setcookie('user_language', $lang, time() + (365 * 24 * 60 * 60), '/');
+            setcookie('user_language', $lang, ['expires' => time() + (365 * 24 * 60 * 60), 'path' => '/', 'samesite' => 'Lax']);
             return true;
         }
         return false;

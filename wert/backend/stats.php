@@ -325,7 +325,7 @@ include 'layout/header_next_page.php';
                         <th style="width: 80px;"><?php echo t('col_rang'); ?></th>
                         <th>Name</th>
                         <th style="width: 200px;"><?php echo t('col_kategorie'); ?></th>
-                        <th style="width: 180px;">Preis</th>
+                        <th style="width: 180px;"><?php echo t('col_preis'); ?></th>
                         <th style="width: 100px;">Aktionen</th>
                     </tr>
                 </thead>

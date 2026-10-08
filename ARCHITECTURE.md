@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 3 October 2026 · Version 4.3.32 (all sections checked against the source before publication)
+**As of:** 9 October 2026 · Version 4.3.33 (all sections checked against the source before publication)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -83,7 +83,7 @@ wert/                       application root; every .php is an entry point
 │   ├── backup.php          backup (DB, images, PHP files)
 │   └── restore.php         restore
 ├── components/             reusable UI blocks
-├── lang/                   9 language files, ~980 keys each
+├── lang/                   9 language files, ~1,100 keys each
 ├── css/                    13 theme stylesheets (7 selectable) plus tokens and WCAG rules
 ├── js/                     own JS plus locally hosted libraries
 ├── upload/                 user photos       [protected by .htaccess]
@@ -142,7 +142,7 @@ The fallback applies when the table is missing, so an installation without the m
 
 Two specifics:
 
-**`sieht_alle`** ("sees everything") — a per-user flag. When the `only_own_items` setting is active, non-admins without this flag see only records whose `erstellt_von` matches their username.
+**`sieht_alle`** ("sees everything") — a per-user flag. When the `only_own_items` setting is active, non-admins without this flag see only records whose `erstellt_von` matches their username. Since 4.3.33 this applies everywhere, not just in the list: single-item access checks `darfGegenstand()`, lists, exports and totals append `nurEigeneSql()` (both in `helpers.php`). The comparison ignores case, as MySQL does. `erstellt_von` is free text; an owner column holding a user ID is on the list for 5.0.
 
 **`SUPERADMIN_USERNAME`** — a constant in `config.php`, a comma-separated list. SuperAdmins can disable certain capabilities for ordinary admins (backup, restore, file download).
 
@@ -210,7 +210,7 @@ Server-rendered HTML with JavaScript sprinkled in where needed. No build step, n
 
 **Two UI generations.** The older one ("classic") and the newer one ("Next Interface" — 52-pixel icon rail, masonry grid, split-pane detail view, mobile bottom navigation). You can tell them apart by which frame a page includes: 37 files use `header_next_page.php`, only one — `index.php` — still uses the old `header_next.php`. In the backend all 21 pages use `layout/header_next_page.php`.
 
-**Internationalisation.** Nine locales (DE, EN, FR, TR, ES, IT, NL, PL, PT), around 980 keys each, accessed via `t('key')`. When a key is missing, `t()` returns the key itself — so a missing translation surfaces as a raw identifier in the UI rather than as empty text. As of 27 September 2026 no key is missing in any language; `bin/check_lang.py` in the development repository checks this.
+**Internationalisation.** Nine locales (DE, EN, FR, TR, ES, IT, NL, PL, PT), around 1,100 keys each, accessed via `t('key')`. When a key is missing, `t()` returns the key itself — so a missing translation surfaces as a raw identifier in the UI rather than as empty text. As of 8 October 2026 no key is missing in any language; `bin/check_lang.py` in the development repository checks this.
 
 **PWA.** Manifest, offline page, service worker with cache-first for static assets and no caching for PHP.
 
@@ -270,4 +270,4 @@ For a critical eye, the most rewarding read is `helpers.php` (1,516 lines, grown
 
 ---
 
-*This document describes the state as of 3 October 2026, version 4.3.32. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 9 October 2026, version 4.3.33. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

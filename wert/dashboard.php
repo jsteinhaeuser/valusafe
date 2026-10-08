@@ -8,8 +8,18 @@ define('PAGE_TITLE', t('dashboard_title') . ' - ' . t('app_title'));
 
 // Statistiken laden
 try {
+    // Bei "nur eigene" zaehlen nur eigene Gegenstaende (bis 4.3.32 zeigte
+    // die Seite Summen und Top-5 mit Namen/Bildern ALLER Gegenstaende).
+    [$ownSql, $ownParams] = nurEigeneSql('w');
+    [$ownSqlT, $ownParamsT] = nurEigeneSql('');
+    $abfrage = function (string $sql, array $params) use ($pdo) {
+        $st = $pdo->prepare($sql);
+        $st->execute($params);
+        return $st;
+    };
+
     // Gesamtwert und Anzahl
-    $stats = $pdo->query("
+    $stats = $abfrage("
         SELECT 
             COUNT(*) as total_items,
             COALESCE(SUM(preis), 0) as total_value,
@@ -18,12 +28,14 @@ try {
             COUNT(CASE WHEN aktueller_wert IS NOT NULL AND aktueller_wert > 0 THEN 1 END) as items_bewertet,
             MAX(aktueller_wert) as max_zeitwert
         FROM wertsachen
-    ")->fetch();
+        WHERE 1=1" . $ownSqlT . "
+    ", $ownParamsT)->fetch();
     
     // Name des wertvollsten Gegenstands nach Zeitwert
     try {
         $maxZeitwertItem = $db->selectOne(
-            "SELECT name FROM wertsachen WHERE aktueller_wert IS NOT NULL AND aktueller_wert > 0 ORDER BY aktueller_wert DESC LIMIT 1"
+            "SELECT name FROM wertsachen WHERE aktueller_wert IS NOT NULL AND aktueller_wert > 0" . $ownSqlT . " ORDER BY aktueller_wert DESC LIMIT 1",
+            $ownParamsT
         );
     } catch (Exception $e) { $maxZeitwertItem = null; }
 
@@ -35,11 +47,12 @@ try {
                 SELECT wertsache_id, MAX(datum) as max_datum
                 FROM wert_historie
                 WHERE datum <= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+                  AND wertsache_id IN (SELECT id FROM wertsachen WHERE 1=1" . $ownSqlT . ")
                 GROUP BY wertsache_id
             ) latest
             JOIN wert_historie h ON h.wertsache_id = latest.wertsache_id
                                  AND h.datum = latest.max_datum
-        ");
+        ", $ownParamsT);
         $wert_30d = floatval($trend['wert_30d'] ?? 0);
         $trend_diff = floatval($stats['total_value']) - $wert_30d;
         $trend_pct  = $wert_30d > 0 ? round(($trend_diff / $wert_30d) * 100, 1) : null;
@@ -49,31 +62,31 @@ try {
     }
 
     // Wert pro Kategorie
-    $categoryStats = $pdo->query("
+    $categoryStats = $abfrage("
         SELECT 
             k.name as kategorie,
             COUNT(w.id) as anzahl,
             COALESCE(SUM(COALESCE(w.aktueller_wert, w.preis)), 0) as wert
         FROM kategorien k
-        LEFT JOIN wertsachen w ON k.id = w.kategorie_id
+        LEFT JOIN wertsachen w ON k.id = w.kategorie_id" . $ownSql . "
         GROUP BY k.id, k.name
         ORDER BY wert DESC
-    ")->fetchAll();
+    ", $ownParams)->fetchAll();
     
     // Anzahl pro Ort
-    $locationStats = $pdo->query("
+    $locationStats = $abfrage("
         SELECT 
             o.name as ort,
             COUNT(w.id) as anzahl
         FROM raeume o
-        LEFT JOIN wertsachen w ON o.id = w.raum_id
+        LEFT JOIN wertsachen w ON o.id = w.raum_id" . $ownSql . "
         GROUP BY o.id, o.name
         HAVING anzahl > 0
         ORDER BY anzahl DESC
-    ")->fetchAll();
+    ", $ownParams)->fetchAll();
     
     // Top 5 wertvollste Gegenstände (nach Zeitwert, Fallback auf Kaufpreis)
-    $topItems = $pdo->query("
+    $topItems = $abfrage("
         SELECT 
             w.id,
             w.name,
@@ -85,12 +98,13 @@ try {
         FROM wertsachen w
         LEFT JOIN kategorien k ON w.kategorie_id = k.id
         LEFT JOIN raeume o ON w.raum_id = o.id
+        WHERE 1=1" . $ownSql . "
         ORDER BY COALESCE(w.aktueller_wert, w.preis) DESC
         LIMIT 5
-    ")->fetchAll();
+    ", $ownParams)->fetchAll();
     
     // Zuletzt hinzugefügt
-    $recentItems = $pdo->query("
+    $recentItems = $abfrage("
         SELECT 
             w.id,
             w.name,
@@ -100,9 +114,10 @@ try {
             k.name as kategorie
         FROM wertsachen w
         LEFT JOIN kategorien k ON w.kategorie_id = k.id
+        WHERE 1=1" . $ownSql . "
         ORDER BY w.gelistet_am DESC, w.id DESC
         LIMIT 5
-    ")->fetchAll();
+    ", $ownParams)->fetchAll();
     
     // Wertvollste Kategorie
     $topCategory = !empty($categoryStats) ? $categoryStats[0] : null;
@@ -110,7 +125,7 @@ try {
     // Schadenfall-Bereitschaft
     $b_score = 0; $b_foto_pct = 0; $b_preis_pct = 0; $b_datum_pct = 0;
     try {
-        $b_stmt = $pdo->query("SELECT COUNT(*) as total, COUNT(CASE WHEN bild IS NOT NULL AND bild != '' THEN 1 END) as mit_foto, COUNT(CASE WHEN preis IS NOT NULL AND preis > 0 THEN 1 END) as mit_preis, COUNT(CASE WHEN kaufdatum IS NOT NULL THEN 1 END) as mit_datum FROM wertsachen");
+        $b_stmt = $abfrage("SELECT COUNT(*) as total, COUNT(CASE WHEN bild IS NOT NULL AND bild != '' THEN 1 END) as mit_foto, COUNT(CASE WHEN preis IS NOT NULL AND preis > 0 THEN 1 END) as mit_preis, COUNT(CASE WHEN kaufdatum IS NOT NULL THEN 1 END) as mit_datum FROM wertsachen WHERE 1=1" . $ownSqlT, $ownParamsT);
         if ($b_stmt) {
             $b = $b_stmt->fetch(PDO::FETCH_ASSOC);
             if ($b && (int)$b['total'] > 0) {

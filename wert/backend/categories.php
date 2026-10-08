@@ -6,7 +6,7 @@
 require_once __DIR__ . '/config.php';
 requireBackendAccess();
 
-$pageTitle = 'Kategorien';
+$pageTitle = t('nav_categories');
 
 $message = '';
 $error = '';

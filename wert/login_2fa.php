@@ -70,6 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['username']      = $user['username'];
         $_SESSION['role']          = $user['role'];
         $_SESSION['theme']         = $user['theme'] ?? 'cloud';
+        // Im Konto gespeicherte Sprache (wie login.php, seit 4.3.33)
+        if (in_array($user['lang'] ?? '', VS_SPRACHEN, true)) {
+            $_SESSION['lang'] = $user['lang'];
+        }
         $_SESSION['login_time']    = time();
         $_SESSION['last_activity'] = time();
         unset($_SESSION['totp_pending_user_id'],

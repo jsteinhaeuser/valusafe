@@ -22,23 +22,22 @@ if (!$wertsache_id) {
 try {
     $wertsache = $db->selectOne("SELECT * FROM wertsachen WHERE id = ?", [$wertsache_id]);
     if (!$wertsache) {
-        redirectWithMessage('index.php', 'Gegenstand nicht gefunden', 'error');
+        redirectWithMessage('index.php', t('error_item_not_found'), 'error');
     }
     // Zugriffspruefung wie in index.php / download_document.php: bei aktiver
     // Einstellung "only_own_items" nur eigene Gegenstaende.
-    if (userSeesOnlyOwnItems()
-        && ($wertsache['erstellt_von'] ?? '') !== ($_SESSION['username'] ?? '')) {
+    if (!darfGegenstand($wertsache)) {
         Security::logSecurityEvent('document_access_denied', [
             'wertsache_id' => $wertsache_id,
             'reason'       => 'not_owner'
         ]);
-        redirectWithMessage('index.php', 'Kein Zugriff auf diesen Gegenstand', 'error');
+        redirectWithMessage('index.php', t('error_item_not_found'), 'error');
     }
 } catch (PDOException $e) {
-    die('Fehler beim Laden.');
+    die(t('error_loading_data'));
 }
 
-define('PAGE_TITLE', 'Dokumente verwalten - ' . htmlspecialchars($wertsache['name']));
+define('PAGE_TITLE', t('doc_manage_title') . ' - ' . htmlspecialchars($wertsache['name']));
 define('DOCUMENTS_DIR', __DIR__ . '/documents/');
 define('MAX_DOCUMENT_SIZE', 5 * 1024 * 1024); // 5 MB
 define('ALLOWED_DOCUMENT_TYPES', [
@@ -72,9 +71,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['dokument'])) {
         if ($fileSize > MAX_DOCUMENT_SIZE) {
             $error = t('doc_too_large');
         } elseif (!in_array($fileType, ALLOWED_DOCUMENT_TYPES)) {
-            $error = 'Dateityp nicht erlaubt';
+            $error = t('doc_type_not_allowed');
         } elseif (!in_array($extension, ALLOWED_DOCUMENT_EXTENSIONS)) {
-            $error = 'Dateiendung nicht erlaubt';
+            $error = t('doc_ext_not_allowed');
         } else {
             // Verzeichnis erstellen falls nicht vorhanden
             if (!is_dir(DOCUMENTS_DIR)) {
@@ -93,21 +92,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['dokument'])) {
                         [$wertsache_id, $filename, $originalName, $fileType, $fileSize, $_SESSION['username']]
                     );
                     
-                    $message = 'Dokument erfolgreich hochgeladen';
+                    $message = t('doc_uploaded');
                     Security::logSecurityEvent('document_uploaded', [
                         'wertsache_id' => $wertsache_id,
                         'filename' => $originalName
                     ]);
                 } catch (PDOException $e) {
                     unlink($filepath);
-                    $error = 'Fehler beim Speichern in Datenbank';
+                    $error = t('doc_error_save');
                 }
             } else {
-                $error = 'Fehler beim Hochladen';
+                $error = t('doc_error_upload');
             }
         }
     } else {
-        $error = 'Upload-Fehler';
+        $error = t('msg_error_upload_failed');
     }
 }
 
@@ -152,7 +151,7 @@ include 'header_next_page.php';
 ?>
 
 <main class="backend-main">
-<h2>📄 Dokumente: <?php echo htmlspecialchars($wertsache['name']); ?></h2>
+<h2>📄 <?php echo t('form_documents'); ?>: <?php echo htmlspecialchars($wertsache['name']); ?></h2>
 
 
 
@@ -165,39 +164,39 @@ include 'header_next_page.php';
 <?php endif; ?>
 
 <div class="activity-timeline" style="margin-bottom:24px;">
-    <h3>Neues Dokument hochladen</h3>
+    <h3><?php echo t('doc_upload_new'); ?></h3>
     <form method="POST" action="" enctype="multipart/form-data">
         <?php echo Security::getCSRFInput(); ?>
         
         <div class="form-group">
-            <label for="dokument">Dokument auswählen:</label>
+            <label for="dokument"><?php echo t('doc_choose'); ?>:</label>
             <input type="file" id="dokument" name="dokument" required 
                    accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
             <small>
-                Erlaubte Formate: PDF, Word (DOC/DOCX), Excel (XLS/XLSX), Bilder (JPG/PNG)<br>
-                Maximale Größe: 5 MB
+                <?php echo t('doc_allowed_formats'); ?><br>
+                <?php echo t('doc_max_size'); ?>
             </small>
         </div>
         
-        <button type="submit" class="vs-btn vs-btn-primary">📤 Hochladen</button>
+        <button type="submit" class="vs-btn vs-btn-primary">📤 <?php echo t('btn_upload'); ?></button>
     </form>
 </div>
 
 <div class="activity-timeline" style="margin-bottom:24px;">
-    <h3>Vorhandene Dokumente (<?php echo count($dokumente); ?>)</h3>
+    <h3><?php echo sprintf(t('doc_existing'), count($dokumente)); ?></h3>
     
     <?php if (empty($dokumente)): ?>
-        <p style="color: #999; padding: 20px; text-align: center;">Keine Dokumente vorhanden</p>
+        <p style="color: #999; padding: 20px; text-align: center;"><?php echo t('doc_none'); ?></p>
     <?php else: ?>
         <table class="backend-table">
             <thead>
                 <tr>
-                    <th>Typ</th>
-                    <th>Dateiname</th>
-                    <th>Größe</th>
-                    <th>Hochgeladen</th>
-                    <th>Von</th>
-                    <th>Aktionen</th>
+                    <th><?php echo t('doc_col_type'); ?></th>
+                    <th><?php echo t('doc_col_filename'); ?></th>
+                    <th><?php echo t('doc_col_size'); ?></th>
+                    <th><?php echo t('doc_col_uploaded'); ?></th>
+                    <th><?php echo t('doc_col_by'); ?></th>
+                    <th><?php echo t('tab_actions'); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -226,14 +225,14 @@ include 'header_next_page.php';
                             ?>
                                 <a href="download_document.php?id=<?php echo $doc['id']; ?>&view=1" 
                                    class="vs-btn vs-btn-sm" target="_blank" 
-                                   title="Im Browser öffnen">👁️ Ansicht</a>
+                                   title="<?php echo t('doc_open_browser'); ?>">👁️ <?php echo t('btn_view'); ?></a>
                             <?php endif; ?>
                             <a href="download_document.php?id=<?php echo $doc['id']; ?>" 
                                class="vs-btn vs-btn-sm vs-btn-secondary" target="_blank" 
-                               title="Herunterladen">⬇️ Download</a>
+                               title="<?php echo t('doc_download_title'); ?>">⬇️ <?php echo t('btn_download'); ?></a>
                             <a href="?id=<?php echo $wertsache_id; ?>&delete=<?php echo $doc['id']; ?>&<?php echo http_build_query(['csrf_token' => $_SESSION['csrf_token']]); ?>" 
                                class="vs-btn vs-btn-sm vs-btn-danger"
-                               onclick="return vsConfirmLink(event, '<?php echo t('doc_confirm_delete'); ?>')">🗑️ Löschen</a>
+                               onclick="return vsConfirmLink(event, '<?php echo t('doc_confirm_delete'); ?>')">🗑️ <?php echo t('btn_delete'); ?></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -243,8 +242,8 @@ include 'header_next_page.php';
 </div>
 
 <div style="display:flex; gap:12px; margin-top:20px;">
-    <a href="edit.php?id=<?php echo $wertsache_id; ?>" class="vs-btn vs-btn-secondary">← Zurück zum Gegenstand</a>
-    <a href="index.php" class="vs-btn vs-btn-secondary">🏠 Zur Übersicht</a>
+    <a href="edit.php?id=<?php echo $wertsache_id; ?>" class="vs-btn vs-btn-secondary">← <?php echo t('doc_back_to_item'); ?></a>
+    <a href="index.php" class="vs-btn vs-btn-secondary">🏠 <?php echo t('quick_to_overview'); ?></a>
 </div>
 
 </main>

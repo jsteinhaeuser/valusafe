@@ -216,7 +216,7 @@ if (isset($_POST['create_backup'])) {
         $message = (t('backup_created') ?: '<i class="ti ti-circle-check" style="color:var(--vs-success);"></i> Backup erstellt: ') . implode(', ', $backupResults);
         Security::logSecurityEvent('backup_created', ['method' => 'manual']);
     } elseif (!empty($backupErrors)) {
-        $error = '<i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> Fehler: ' . implode('; ', $backupErrors);
+        $error = '<i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> ' . t('bk_error_prefix') . implode('; ', $backupErrors);
     } else {
         $error = t('backup_no_types') ?: '<i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> Keine Backup-Typen aktiviert. Bitte Konfiguration prüfen.';
     }
@@ -248,7 +248,7 @@ if (isset($_POST['delete_backup'])) {
         $message = (t('backup_deleted') ?: '<i class="ti ti-circle-check" style="color:var(--vs-success);"></i> Backup gelöscht: ') . esc($filename);
         Security::logSecurityEvent('backup_deleted', ['file' => $filename]);
     } else {
-        $error = '<i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> Datei nicht gefunden.';
+        $error = '<i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> ' . t('bk_file_not_found');
     }
 }
 
@@ -328,7 +328,7 @@ if (isset($_GET['download'])) {
     if (!$filename || !file_exists($filepath) ||
         strpos(realpath($filepath), realpath(BACKUP_DIR)) !== 0) {
         http_response_code(404);
-        exit('Datei nicht gefunden.');
+        exit(t('bk_file_not_found'));
     }
     header('Content-Type: application/octet-stream');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -505,35 +505,35 @@ setTimeout(() => {
             <label class="backup-config-tile <?php echo $config['db'] ? 'tile-active' : ''; ?>"
                    style="--tile-color:var(--vs-accent); --tile-bg:rgba(37,99,235,0.07);"
                    onclick="toggleTile(this, 'backup_db')">
-                <input type="checkbox" name="backup_db" id="backup_db" aria-label="Datenbank sichern" <?php echo $config['db'] ? 'checked' : ''; ?>>
+                <input type="checkbox" name="backup_db" id="backup_db" aria-label="<?php echo esc(t('bk_tile_db_aria')); ?>" <?php echo $config['db'] ? 'checked' : ''; ?>>
                 <div class="tile-check">✓</div>
                 <div class="tile-icon">🗄️</div>
-                <div class="tile-label">Datenbank</div>
-                <div class="tile-desc">Alle Tabellen als SQL-Dump</div>
+                <div class="tile-label"><?php echo t('bk_tile_db'); ?></div>
+                <div class="tile-desc"><?php echo t('bk_tile_db_desc'); ?></div>
             </label>
 
             <label class="backup-config-tile <?php echo $config['images'] ? 'tile-active' : ''; ?> <?php echo !$sa_images_allowed ? 'tile-disabled' : ''; ?>"
                    style="--tile-color:#059669; --tile-bg:rgba(5,150,105,0.07); <?php echo !$sa_images_allowed ? 'opacity:0.4; pointer-events:none;' : ''; ?>"
                    onclick="<?php echo $sa_images_allowed ? "toggleTile(this, 'backup_images')" : ''; ?>">
-                <input type="checkbox" name="backup_images" id="backup_images" aria-label="Bilder und Dateien sichern"
+                <input type="checkbox" name="backup_images" id="backup_images" aria-label="<?php echo esc(t('bk_tile_files_aria')); ?>"
                        <?php echo $config['images'] ? 'checked' : ''; ?>
                        <?php echo !$sa_images_allowed ? 'disabled' : ''; ?>>
                 <div class="tile-check">✓</div>
                 <div class="tile-icon"><i class="ti ti-photo"></i></div>
-                <div class="tile-label">Bilder & Dateien</div>
-                <div class="tile-desc"><?php echo $sa_images_allowed ? 'Upload- & Dokumente-Ordner' : 'Vom Betreiber deaktiviert'; ?></div>
+                <div class="tile-label"><?php echo esc(t('bk_tile_files')); ?></div>
+                <div class="tile-desc"><?php echo esc($sa_images_allowed ? t('bk_tile_files_desc') : t('bk_disabled_by_operator')); ?></div>
             </label>
 
             <label class="backup-config-tile <?php echo $config['phpfiles'] ? 'tile-active' : ''; ?> <?php echo !$sa_php_allowed ? 'tile-disabled' : ''; ?>"
                    style="--tile-color:#7c3aed; --tile-bg:rgba(124,58,237,0.07); <?php echo !$sa_php_allowed ? 'opacity:0.4; pointer-events:none;' : ''; ?>"
                    onclick="<?php echo $sa_php_allowed ? "toggleTile(this, 'backup_phpfiles')" : ''; ?>">
-                <input type="checkbox" name="backup_phpfiles" id="backup_phpfiles" aria-label="PHP-Dateien sichern"
+                <input type="checkbox" name="backup_phpfiles" id="backup_phpfiles" aria-label="<?php echo esc(t('bk_tile_php_aria')); ?>"
                        <?php echo $config['phpfiles'] ? 'checked' : ''; ?>
                        <?php echo !$sa_php_allowed ? 'disabled' : ''; ?>>
                 <div class="tile-check">✓</div>
                 <div class="tile-icon">📄</div>
-                <div class="tile-label">PHP-Dateien</div>
-                <div class="tile-desc"><?php echo $sa_php_allowed ? 'Alle .php Dateien im Projekt' : 'Vom Betreiber deaktiviert'; ?></div>
+                <div class="tile-label"><?php echo t('bk_tile_php'); ?></div>
+                <div class="tile-desc"><?php echo esc($sa_php_allowed ? t('bk_tile_php_desc') : t('bk_disabled_by_operator')); ?></div>
             </label>
 
         </div>
@@ -566,7 +566,7 @@ setTimeout(() => {
     <h3 style="margin:0 0 16px;"><i class="ti ti-package"></i> <?php echo t('backup_files') ?: 'Backup-Dateien'; ?></h3>
 
     <?php if (empty($backups)): ?>
-        <p style="text-align:center; color:var(--vs-text-muted); padding:30px;">Noch keine Backups vorhanden.</p>
+        <p style="text-align:center; color:var(--vs-text-muted); padding:30px;"><?php echo t('bk_none_yet'); ?></p>
     <?php else: ?>
 
     <form method="POST" id="bulkForm">
@@ -574,16 +574,16 @@ setTimeout(() => {
 
         <!-- Bulk-Aktionsleiste -->
         <div class="bulk-bar" id="bulkBar">
-            <span class="bulk-bar-count" id="bulkCount">0 ausgewählt</span>
+            <span class="bulk-bar-count" id="bulkCount">0 <?php echo t('backup_selected'); ?></span>
             <span class="bulk-bar-info">|</span>
             <button type="button" class="vs-btn vs-btn-secondary" style="padding:5px 12px; font-size:13px;"
-                    onclick="selectAll(true)">Alle</button>
+                    onclick="selectAll(true)"><?php echo t('bk_select_all'); ?></button>
             <button type="button" class="vs-btn vs-btn-secondary" style="padding:5px 12px; font-size:13px;"
-                    onclick="selectAll(false)">Keine</button>
+                    onclick="selectAll(false)"><?php echo t('bk_select_none'); ?></button>
             <button type="submit" name="bulk_delete_backups" value="1"
                     class="vs-btn vs-btn-secondary" style="padding:5px 14px; font-size:13px; background:var(--vs-danger); color:var(--vs-surface); border-color:var(--vs-danger); margin-left:auto;"
                     onclick="return confirmBulkDelete(event)">
-                🗑 Ausgewählte löschen
+                🗑 <?php echo t('bk_delete_selected'); ?>
             </button>
         </div>
 
@@ -593,14 +593,14 @@ setTimeout(() => {
                     <th style="width:36px;">
                         <input type="checkbox" class="bulk-checkbox" id="selectAllCb"
                                onchange="selectAll(this.checked)"
-                               aria-label="Alle Backups auswählen">
+                               aria-label="<?php echo esc(t('bk_select_all_aria')); ?>">
                     </th>
                     <th><?php echo t('backup_col_filename') ?: 'Dateiname'; ?></th>
                     <th><?php echo t('backup_col_type') ?: 'Typ'; ?></th>
                     <th><?php echo t('backup_size') ?: 'Größe'; ?></th>
                     <th><?php echo t('backup_col_created') ?: 'Erstellt'; ?></th>
                     <th><?php echo t('backup_col_age') ?: 'Alter'; ?></th>
-                    <th style="text-align:right;">Aktionen</th>
+                    <th style="text-align:right;"><?php echo t('tab_actions'); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -610,7 +610,7 @@ setTimeout(() => {
                         <input type="checkbox" class="bulk-checkbox row-cb"
                                name="selected_backups[]"
                                value="<?php echo esc($b['filename']); ?>"
-                               aria-label="<?php echo esc($b['filename']); ?> auswählen"
+                               aria-label="<?php echo esc(sprintf(t('bk_select_one_aria'), $b['filename'])); ?>"
                                onchange="updateBulkBar()">
                     </td>
                     <td style="font-size:12px; font-family:monospace; color:#555;"><?php echo esc($b['filename']); ?></td>
@@ -632,11 +632,11 @@ setTimeout(() => {
                         $today = date('Y-m-d');
                         $yesterday = date('Y-m-d', strtotime('-1 day'));
                         if ($b['date_str'] === $today): ?>
-                            <span style="color:var(--vs-success);">Heute</span>
+                            <span style="color:var(--vs-success);"><?php echo t('bk_today'); ?></span>
                         <?php elseif ($b['date_str'] === $yesterday): ?>
-                            <span style="color:var(--vs-warning);">Gestern</span>
+                            <span style="color:var(--vs-warning);"><?php echo t('bk_yesterday'); ?></span>
                         <?php else: ?>
-                            <?php echo $b['age_days']; ?> Tage
+                            <?php echo sprintf(t('bk_days'), (int)$b['age_days']); ?>
                         <?php endif; ?>
                     </td>
                     <td style="text-align:right; white-space:nowrap;">
@@ -654,7 +654,7 @@ setTimeout(() => {
                            onclick="event.preventDefault(); document.getElementById('restoreFile').value='<?php echo esc($b['filename']); ?>'; document.getElementById('restoreForm').submit();">♻️</a>
                         <?php endif; ?>
                         <button type="submit" name="delete_backup" value="1"
-                                title="Löschen" class="icon-btn icon-btn-danger"
+                                title="<?php echo esc(t('btn_delete')); ?>" class="icon-btn icon-btn-danger"
                                 style="border:none; margin-left:5px;"
                                 onclick="setSingleDelete('<?php echo esc($b['filename']); ?>'); return vsConfirmSubmit(event, '<?php echo t('backup_confirm_delete') ?: 'Backup löschen?'; ?>')">🗑</button>
                     </td>
@@ -677,13 +677,13 @@ setTimeout(() => {
         <form method="POST">
             <?php echo Security::getCSRFInput(); ?>
             <div class="form-group">
-                <label>Email-Adresse:</label>
+                <label><?php echo t('bk_email_label'); ?></label>
                 <input type="email" name="admin_email" value="<?php echo esc($savedEmail); ?>" placeholder="admin@example.com">
-                <small>Leer lassen um Benachrichtigungen zu deaktivieren.</small>
+                <small><?php echo t('bk_email_hint'); ?></small>
             </div>
             <div class="form-actions">
                 <button type="submit" name="save_email" class="vs-btn vs-btn-primary"><?php echo t('btn_save') ?: '<i class="ti ti-device-floppy"></i> Speichern'; ?></button>
-                <button type="button" class="vs-btn vs-btn-secondary" onclick="document.getElementById('emailModal').style.display='none'">Abbrechen</button>
+                <button type="button" class="vs-btn vs-btn-secondary" onclick="document.getElementById('emailModal').style.display='none'"><?php echo t('btn_cancel'); ?></button>
             </div>
         </form>
     </div>
@@ -693,7 +693,7 @@ setTimeout(() => {
 <div id="logModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:20px;">
     <div style="background:var(--vs-surface); border-radius:16px; padding:32px; max-width:860px; width:100%; box-shadow:0 16px 48px rgba(0,0,0,0.2); max-height:80vh; display:flex; flex-direction:column;">
         <h3 style="margin-top:0; flex-shrink:0;"><i class="ti ti-clipboard-list"></i> <?php echo t('backup_cron_log') ?: 'Cron Log'; ?></h3>
-        <pre style="flex:1; overflow:auto; background:#1e2837; color:#a8d8a8; padding:20px; border-radius:8px; font-size:12px; line-height:1.7; margin:0;"><?php echo esc($cronLog ?: 'Kein Log vorhanden.'); ?></pre>
+        <pre style="flex:1; overflow:auto; background:#1e2837; color:#a8d8a8; padding:20px; border-radius:8px; font-size:12px; line-height:1.7; margin:0;"><?php echo esc($cronLog ?: t('bk_no_log')); ?></pre>
         <button type="button" class="vs-btn vs-btn-secondary" style="margin-top:16px; flex-shrink:0;"
                 onclick="document.getElementById('logModal').style.display='none'"><?php echo t('btn_close') ?: '✖ Schließen'; ?></button>
     </div>

@@ -25,7 +25,7 @@ $hasFilters = hasActiveFilters($currentFilters);
                 <span class="filter-badge"><?php echo count(array_filter($currentFilters)); ?> aktiv</span>
             <?php endif; ?>
         </h3>
-        <button type="button" class="toggle-filters-btn collapsed" id="toggleFilters" aria-label="Filter ein-/ausklappen">
+        <button type="button" class="toggle-filters-btn collapsed" id="toggleFilters" aria-label="<?php echo t('filter_toggle'); ?>">
             <span class="toggle-icon">▼</span>
         </button>
     </div>
@@ -123,7 +123,7 @@ $hasFilters = hasActiveFilters($currentFilters);
                         type="date" 
                         id="date_from" 
                         name="date_from" 
-                        aria-label="<?php echo t('filter_label_date'); ?> von"
+                        aria-label="<?php echo t('filter_label_date') . ' ' . t('filter_from'); ?>"
                         class="filter-input filter-input-small"
                         value="<?php echo htmlspecialchars($currentFilters['date_from']); ?>">
                     <span class="range-separator" aria-hidden="true">-</span>
@@ -131,7 +131,7 @@ $hasFilters = hasActiveFilters($currentFilters);
                         type="date" 
                         id="date_to" 
                         name="date_to" 
-                        aria-label="<?php echo t('filter_label_date'); ?> bis"
+                        aria-label="<?php echo t('filter_label_date') . ' ' . t('filter_to'); ?>"
                         class="filter-input filter-input-small"
                         value="<?php echo htmlspecialchars($currentFilters['date_to']); ?>">
                 </div>

@@ -4,6 +4,8 @@ require_once 'db.php';
 require_once 'helpers.php';
 require_once 'helpers_images.php';
 requireLogin();
+// Bis 4.3.32 nur requireLogin(): ein Leser konnte per Adresse bearbeiten.
+requirePermission('items_edit');
 define('PAGE_TITLE', t('form_edit_item') . ' - ' . t('app_title'));
 
 $id = filter_var($_GET['id'] ?? 0, FILTER_VALIDATE_INT);
@@ -23,7 +25,8 @@ if (!$id) {
 try {
     $item = loadWertsachenWithDetails($db, $id);
     
-    if (!$item) {
+    // Fremder Gegenstand bei "nur eigene": wie nicht vorhanden behandeln.
+    if (!$item || !darfGegenstand($item)) {
         redirectWithMessage('index.php', t('error_item_not_found'), 'error');
     }
     
@@ -57,6 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Daten bereinigen
     $data = sanitizeWertsachenInput($_POST);
     $erstellt_von = trim($_POST['erstellt_von'] ?? '') ?: $_SESSION['username'];
+    // Bei "nur eigene" bliebe ein umbenannter Gegenstand fuer den Benutzer
+    // unsichtbar - Ersteller fest auf das eigene Konto.
+    if (userSeesOnlyOwnItems()) {
+        $erstellt_von = $_SESSION['username'];
+    }
     
     // Validierung
     $errors = validateWertsachenData($data);
@@ -607,7 +615,7 @@ include 'header_next_page.php';
     <!-- AKTUELLER WERT -->
     <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
         <div class="form-group">
-            <label for="aktueller_wert"><i class="ti ti-trending-up" aria-hidden="true"></i> Aktueller Wert (€):</label>
+            <label for="aktueller_wert"><i class="ti ti-trending-up" aria-hidden="true"></i> <?php echo t('col_aktueller_wert'); ?> (€):</label>
             <input type="text" id="aktueller_wert" name="aktueller_wert"
                    inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
                    value="<?php echo htmlspecialchars($item['aktueller_wert'] ?? ''); ?>"
@@ -627,7 +635,7 @@ include 'header_next_page.php';
             <?php endif; ?>
         </div>
         <div class="form-group">
-            <label for="aktueller_wert_datum"><i class="ti ti-calendar" aria-hidden="true"></i> Bewertet am:</label>
+            <label for="aktueller_wert_datum"><i class="ti ti-calendar" aria-hidden="true"></i> <?php echo t('col_bewertungsdatum'); ?>:</label>
             <input type="date" id="aktueller_wert_datum" name="aktueller_wert_datum"
                    value="<?php echo htmlspecialchars($item['aktueller_wert_datum'] ?? ''); ?>">
         </div>
@@ -720,14 +728,14 @@ include 'header_next_page.php';
     if (!empty($historie)):
     ?>
     <div class="form-group">
-        <label><i class="ti ti-chart-line" aria-hidden="true"></i> Werthistorie:</label>
+        <label><i class="ti ti-chart-line" aria-hidden="true"></i> <?php echo t('edit_value_history'); ?>:</label>
         <table style="width:100%; font-size:13px; border-collapse:collapse;">
             <thead>
                 <tr style="background:var(--vs-surface-2);">
-                    <th style="padding:6px 10px; text-align:left;">Datum</th>
-                    <th style="padding:6px 10px; text-align:right;">Wert</th>
-                    <th style="padding:6px 10px; text-align:right;">Differenz</th>
-                    <th style="padding:6px 10px; text-align:left;">Notiz</th>
+                    <th style="padding:6px 10px; text-align:left;"><?php echo t('settings_date'); ?></th>
+                    <th style="padding:6px 10px; text-align:right;"><?php echo t('col_wert'); ?></th>
+                    <th style="padding:6px 10px; text-align:right;"><?php echo t('col_wert_differenz'); ?></th>
+                    <th style="padding:6px 10px; text-align:left;"><?php echo t('ins_note'); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -802,15 +810,16 @@ include 'header_next_page.php';
     <div class="form-group">
         <label for="erstellt_von"><?php echo t('form_created_by'); ?>:</label>
         <input type="text" id="erstellt_von" name="erstellt_von" maxlength="100"
-               value="<?php echo htmlspecialchars($item['erstellt_von'] ?? $_SESSION['username']); ?>">
+               value="<?php echo htmlspecialchars($item['erstellt_von'] ?? $_SESSION['username']); ?>"
+               <?php echo userSeesOnlyOwnItems() ? 'readonly' : ''; ?>>
         <small><?php echo t('form_help_created_by_empty'); ?></small>
     </div>
     
     <!-- MULTI-IMAGE UPLOAD -->
     <div class="form-group">
-        <label><i class="ti ti-photo" aria-hidden="true"></i> Bilder:</label>
+        <label><i class="ti ti-photo" aria-hidden="true"></i> <?php echo t('dash_storage_images'); ?>:</label>
         <div id="multi-image-container">
-            <p style="color:#999; font-size:13px;">Lade Bilder...</p>
+            <p style="color:#999; font-size:13px;"><?php echo t('loading'); ?></p>
         </div>
     </div>
     
@@ -848,7 +857,7 @@ include 'header_next_page.php';
 <!-- Barcode Scanner Modal -->
 <div id="barcodeScannerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:20px; max-width:420px; width:95%; text-align:center;">
-        <h3 style="margin-bottom:12px;">📷 Barcode scannen</h3>
+        <h3 style="margin-bottom:12px;">📷 <?php echo t('barcode_scan_title'); ?></h3>
         <div style="position:relative; width:100%; border-radius:8px; overflow:hidden; background:#000;">
             <video id="barcodeVideo" style="width:100%; display:block;" autoplay playsinline muted></video>
             <div style="position:absolute; top:50%; left:10%; right:10%; height:2px; background:rgba(52,152,219,0.8); transform:translateY(-50%); pointer-events:none;"></div>
@@ -856,7 +865,7 @@ include 'header_next_page.php';
         <p style="margin-top:10px; font-size:13px; color:#666;"><?php echo t('barcode_in_frame'); ?></p>
         <button type="button" onclick="stopBarcodeScanner()" 
                 style="margin-top:12px; padding:10px 24px; background:#e74c3c; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">
-            ✕ Abbrechen
+            ✕ <?php echo t('btn_cancel'); ?>
         </button>
     </div>
 </div>
@@ -1063,22 +1072,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 
-<!-- Barcode Scanner Modal -->
-<div id="barcodeScannerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:12px; padding:20px; max-width:420px; width:95%; text-align:center;">
-        <h3 style="margin-bottom:12px;">&#128247; Barcode scannen</h3>
-        <div style="position:relative; width:100%; border-radius:8px; overflow:hidden; background:#000;">
-            <video id="barcodeVideo" style="width:100%; display:block;" autoplay playsinline muted></video>
-            <div style="position:absolute; top:50%; left:10%; right:10%; height:2px; background:rgba(52,152,219,0.8); transform:translateY(-50%); pointer-events:none;"></div>
-        </div>
-        <p style="margin-top:10px; font-size:13px; color:#666;"><?php echo t('barcode_in_frame'); ?></p>
-        <button type="button" onclick="stopBarcodeScanner()" 
-                style="margin-top:12px; padding:10px 24px; background:#e74c3c; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">
-            &#x2715; Abbrechen
-        </button>
-    </div>
-</div>
-
+<?php // Das Scanner-Fenster steht einmal, direkt nach dem Formular. Bis 4.3.32
+      // stand hier eine zweite Kopie mit denselben ids (barcodeScannerModal,
+      // barcodeVideo) - getElementById fand immer nur die erste. ?>
 <script src="js/zxing-browser.min.js"></script>
 <script>
 (function() {

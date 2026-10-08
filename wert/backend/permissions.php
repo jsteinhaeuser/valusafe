@@ -16,9 +16,22 @@ include 'layout/header_next_page.php';
 $permsBySection = [];
 $dbOk = false;
 try {
-    $rows = $pdo->query("SELECT * FROM permissions ORDER BY sort_order ASC")->fetchAll();
+    // id als zweites Kriterium: settings_delete_account (4.3.33) teilt sich
+    // sort_order 25 mit settings_password und soll darunter stehen.
+    $rows = $pdo->query("SELECT * FROM permissions ORDER BY sort_order ASC, id ASC")->fetchAll();
+    // install/schema.sql legt die Abschnitte mit deutschen Namen an
+    // ("Gegenstände", "Admin-Bereich" ...), die Uebersetzung unten kennt nur
+    // die Kurzschluessel - bis 4.3.32 erschienen sie dann als "• GEGENSTäNDE".
+    $abschnittAlias = [
+        'Gegenstände'        => 'items',
+        'Bulk-Aktionen'      => 'bulk',
+        'Bilder & Dokumente' => 'media',
+        'Export'             => 'export',
+        'Einstellungen'      => 'settings',
+        'Admin-Bereich'      => 'admin',
+    ];
     foreach ($rows as $r) {
-        $permsBySection[$r['section']][] = $r;
+        $permsBySection[$abschnittAlias[$r['section']] ?? $r['section']][] = $r;
     }
     $dbOk = true;
 } catch (PDOException $e) {
@@ -61,10 +74,12 @@ $actionLabelMap = [
     'settings_lang'    => 'perm_act_settings_lang',
     'settings_columns' => 'perm_act_settings_columns',
     'settings_password'=> 'perm_act_settings_password',
+    'settings_delete_account' => 'perm_act_settings_delete_account',
     'admin_users'      => 'perm_act_admin_users',
     'admin_categories' => 'perm_act_admin_categories',
     'admin_locations'  => 'perm_act_admin_locations',
     'admin_logs'       => 'perm_act_admin_logs',
+    'admin_log'        => 'perm_act_admin_logs', // so heisst der Schluessel in install/schema.sql
     'admin_backup'     => 'perm_act_admin_backup',
     'admin_permissions'=> 'perm_act_admin_permissions',
     'admin_restore'    => 'perm_act_admin_restore',

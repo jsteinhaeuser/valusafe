@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     try {
         $item = $db->selectOne("SELECT * FROM wertsachen WHERE id = ?", [$id]);
         
-        if (!$item) {
+        if (!$item || !darfGegenstand($item)) {
             header('Location: index.php');
             exit;
         }
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
         
         <?php if ($item['bild'] && file_exists(UPLOAD_DIR . $item['bild'])): ?>
             <div class="current-image" style="margin: 20px 0;">
-                <img src="upload/<?php echo htmlspecialchars($item['bild']); ?>" alt="Bild" style="max-width: 200px; height: auto;">
+                <img src="upload/<?php echo htmlspecialchars($item['bild']); ?>" alt="<?php echo htmlspecialchars(t('col_bild')); ?>" style="max-width: 200px; height: auto;">
             </div>
         <?php endif; ?>
         
@@ -86,7 +86,7 @@ if (!isset($_POST['confirm_delete'])) {
 try {
     $item = $db->selectOne("SELECT * FROM wertsachen WHERE id = ?", [$id]);
     
-    if ($item) {
+    if ($item && darfGegenstand($item)) {
         // Daten vor Löschung für Activity Log speichern
         $deletedData = [
             'name' => $item['name'],
@@ -151,7 +151,7 @@ try {
             
             throw $e;
         }
-    } else {
+    } elseif (!$item) {
         // Item existiert nicht mehr - trotzdem loggen
         logActivity('deleted', 'wertsachen', $id, 'Unbekannter Gegenstand (ID: ' . $id . ')', ['id' => $id], null);
     }

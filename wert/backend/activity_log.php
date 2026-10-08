@@ -33,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'clean
 }
 
 
-$pageTitle = 'Aktivitäts-Log';
+$pageTitle = t('page_activity_log');
 
 // Pagination
 $page = filter_var($_GET['page'] ?? 1, FILTER_VALIDATE_INT) ?: 1;
@@ -444,7 +444,7 @@ include 'layout/header_next_page.php';
                                 <?php echo getActionText($log['aktion']); ?>
                             </span>
                         </td>
-                        <td><?php echo htmlspecialchars(ucfirst($log['tabelle'])); ?></td>
+                        <td><?php echo htmlspecialchars(function_exists('vsTabellenName') ? vsTabellenName($log['tabelle']) : ucfirst($log['tabelle'])); ?></td>
                         <td>
                             <?php if ($log['bezeichnung']): ?>
                                 <strong><?php echo htmlspecialchars($log['bezeichnung']); ?></strong>

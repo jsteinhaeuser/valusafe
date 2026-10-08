@@ -18,10 +18,11 @@ if (isset($_POST['action']) && $_POST['action'] === 'save_order' && canEdit()) {
         exit;
     }
     $ids = array_map('intval', $_POST['ids'] ?? []);
+    [$ownSql, $ownParams] = nurEigeneSql('');
     try {
         foreach ($ids as $pos => $id) {
             if ($id > 0) {
-                $db->execute("UPDATE wertsachen SET sort_order = ? WHERE id = ?", [$pos + 1, $id]);
+                $db->execute("UPDATE wertsachen SET sort_order = ? WHERE id = ?" . $ownSql, array_merge([$pos + 1, $id], $ownParams));
             }
         }
     } catch (PDOException $e) {
@@ -104,17 +105,8 @@ if (!empty($_returnParams) || !empty($_katIds)) {
 }
 $editReturnParam = '&return_url=' . urlencode($_returnUrl);
 
-// Only-own-items prüfen
-$onlyOwnItems = false;
-try {
-    $ownSetting = $db->selectOne("SELECT setting_value FROM app_settings WHERE setting_key = 'only_own_items'");
-    if (($ownSetting['setting_value'] ?? '0') === '1') {
-        $currentUserOwn = $db->selectOne("SELECT role, sieht_alle FROM users WHERE username = ?", [$_SESSION['username'] ?? '']);
-        if ($currentUserOwn && $currentUserOwn['role'] !== 'admin' && !$currentUserOwn['sieht_alle']) {
-            $onlyOwnItems = true;
-        }
-    }
-} catch (Exception $e) {}
+// Only-own-items prüfen (gleiche Regel wie Einzelzugriffe, helpers.php)
+$onlyOwnItems = userSeesOnlyOwnItems();
 
 $sql = "SELECT w.*, o.name as raum_name, k.name as kategorie_name,
                sp.name AS standort_position_name, sr.name AS standort_name
@@ -293,10 +285,12 @@ try {
     $kategorien = $db->select("SELECT * FROM kategorien ORDER BY name");
     
     // Kategorie-Counts für Schnellfilter (nur sichtbare Items)
+    [$kcOwnSql, $kcOwnParams] = nurEigeneSql('');
     $kategorie_counts_raw = $db->select(
         "SELECT kategorie_id, COUNT(*) as cnt FROM wertsachen 
-         WHERE (hidden = 0 OR hidden IS NULL) 
-         GROUP BY kategorie_id"
+         WHERE (hidden = 0 OR hidden IS NULL)" . $kcOwnSql . "
+         GROUP BY kategorie_id",
+        $kcOwnParams
     );
     $kategorie_counts = [];
     foreach ($kategorie_counts_raw as $row) {
@@ -313,36 +307,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
     
     $action = $_POST['bulk_action'];
     $selected_ids = $_POST['selected_items'] ?? [];
-    
-    if (!empty($selected_ids) && is_array($selected_ids)) {
+    $selected_ids = is_array($selected_ids)
+        ? array_values(array_filter(array_map(fn($v) => filter_var($v, FILTER_VALIDATE_INT), $selected_ids)))
+        : [];
+
+    // Bei "nur eigene" fremde IDs still verwerfen (bis 4.3.32 per
+    // selbst gebautem Formular an fremden Gegenstaenden moeglich).
+    if (!empty($selected_ids)) {
+        [$ownSql, $ownParams] = nurEigeneSql('');
+        if ($ownSql !== '') {
+            $ph = implode(',', array_fill(0, count($selected_ids), '?'));
+            $selected_ids = array_map('intval', array_column(
+                $db->select("SELECT id FROM wertsachen WHERE id IN ($ph)" . $ownSql, array_merge($selected_ids, $ownParams)),
+                'id'
+            ));
+        }
+    }
+
+    if (!empty($selected_ids)) {
         $success_count = 0;
         
         try {
+            // Rechte je Aktion wie in der Rechteverwaltung (bulk_delete,
+            // bulk_hide, bulk_update). Bis 4.3.32 nur canEdit(): ein Editor
+            // ohne "Mehrere loeschen" konnte trotzdem mehrere loeschen.
             switch ($action) {
                 case 'delete':
-                    if (canEdit()) {
+                    if (hasPermission('bulk_delete')) {
                         foreach ($selected_ids as $id) {
-                            $id = filter_var($id, FILTER_VALIDATE_INT);
-                            if ($id) {
-                                $item = $db->selectOne("SELECT bild FROM wertsachen WHERE id = ?", [$id]);
-                                if ($item) {
-                                    // Bild löschen
-                                    if ($item['bild'] && file_exists(UPLOAD_DIR . $item['bild'])) {
-                                        unlink(UPLOAD_DIR . $item['bild']);
-                                    }
-                                    // Dokumente löschen
-                                    $docs = $db->select("SELECT dateiname FROM dokumente WHERE wertsache_id = ?", [$id]);
-                                    foreach ($docs as $doc) {
-                                        $docPath = __DIR__ . '/documents/' . $doc['dateiname'];
-                                        if (file_exists($docPath)) {
-                                            unlink($docPath);
-                                        }
-                                    }
-                                    $db->execute("DELETE FROM dokumente WHERE wertsache_id = ?", [$id]);
-                                    // Eintrag löschen
-                                    $db->execute("DELETE FROM wertsachen WHERE id = ?", [$id]);
-                                    $success_count++;
+                            $item = $db->selectOne("SELECT name, bild FROM wertsachen WHERE id = ?", [$id]);
+                            if ($item) {
+                                // Bild löschen
+                                if ($item['bild'] && file_exists(UPLOAD_DIR . $item['bild'])) {
+                                    unlink(UPLOAD_DIR . $item['bild']);
                                 }
+                                // Weitere Bilder (item_images) wie in delete.php
+                                if (function_exists('deleteAllItemImages')) {
+                                    deleteAllItemImages($id);
+                                }
+                                // Dokumente löschen
+                                $docs = $db->select("SELECT dateiname FROM dokumente WHERE wertsache_id = ?", [$id]);
+                                foreach ($docs as $doc) {
+                                    $docPath = __DIR__ . '/documents/' . $doc['dateiname'];
+                                    if (file_exists($docPath)) {
+                                        unlink($docPath);
+                                    }
+                                }
+                                $db->execute("DELETE FROM dokumente WHERE wertsache_id = ?", [$id]);
+                                // Eintrag löschen
+                                $db->execute("DELETE FROM wertsachen WHERE id = ?", [$id]);
+                                logActivity('deleted', 'wertsachen', $id, $item['name']);
+                                $success_count++;
                             }
                         }
                         redirectWithMessage('index.php', sprintf(t('index_success_deleted'), $success_count));
@@ -350,15 +365,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
                     break;
                     
                 case 'change_category':
-                    if (canEdit() && isset($_POST['new_category'])) {
+                    if (hasPermission('bulk_update') && isset($_POST['new_category'])) {
                         $new_category = filter_var($_POST['new_category'], FILTER_VALIDATE_INT);
                         if ($new_category) {
                             foreach ($selected_ids as $id) {
-                                $id = filter_var($id, FILTER_VALIDATE_INT);
-                                if ($id) {
-                                    $db->execute("UPDATE wertsachen SET kategorie_id = ? WHERE id = ?", [$new_category, $id]);
-                                    $success_count++;
-                                }
+                                $db->execute("UPDATE wertsachen SET kategorie_id = ? WHERE id = ?", [$new_category, $id]);
+                                $success_count++;
                             }
                             redirectWithMessage('index.php', sprintf(t('index_success_updated'), $success_count));
                         }
@@ -366,15 +378,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
                     break;
                     
                 case 'change_location':
-                    if (canEdit() && isset($_POST['new_location'])) {
+                    if (hasPermission('bulk_update') && isset($_POST['new_location'])) {
                         $new_location = filter_var($_POST['new_location'], FILTER_VALIDATE_INT);
                         if ($new_location) {
                             foreach ($selected_ids as $id) {
-                                $id = filter_var($id, FILTER_VALIDATE_INT);
-                                if ($id) {
-                                    $db->execute("UPDATE wertsachen SET raum_id = ? WHERE id = ?", [$new_location, $id]);
-                                    $success_count++;
-                                }
+                                $db->execute("UPDATE wertsachen SET raum_id = ? WHERE id = ?", [$new_location, $id]);
+                                $success_count++;
                             }
                             redirectWithMessage('index.php', sprintf(t('index_success_updated'), $success_count));
                         }
@@ -382,26 +391,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
                     break;
 
                 case 'hide':
-                    if (canEdit()) {
+                    if (hasPermission('bulk_hide')) {
                         foreach ($selected_ids as $id) {
-                            $id = filter_var($id, FILTER_VALIDATE_INT);
-                            if ($id) {
-                                $db->execute("UPDATE wertsachen SET hidden = 1 WHERE id = ?", [$id]);
-                                $success_count++;
-                            }
+                            $db->execute("UPDATE wertsachen SET hidden = 1 WHERE id = ?", [$id]);
+                            $success_count++;
                         }
                         redirectWithMessage('index.php', sprintf(t('index_success_hidden'), $success_count));
                     }
                     break;
 
                 case 'unhide':
-                    if (canEdit()) {
+                    if (hasPermission('bulk_hide')) {
                         foreach ($selected_ids as $id) {
-                            $id = filter_var($id, FILTER_VALIDATE_INT);
-                            if ($id) {
-                                $db->execute("UPDATE wertsachen SET hidden = 0 WHERE id = ?", [$id]);
-                                $success_count++;
-                            }
+                            $db->execute("UPDATE wertsachen SET hidden = 0 WHERE id = ?", [$id]);
+                            $success_count++;
                         }
                         redirectWithMessage('index.php', sprintf(t('index_success_visible'), $success_count));
                     }
@@ -469,7 +472,7 @@ $activeKatIds = $currentFilters['kategorie'] ?? [];
 $chipBaseParams = $paginationParams;
 unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
 ?>
-<div class="vs-chips" role="navigation" aria-label="Kategoriefilter">
+<div class="vs-chips" role="navigation" aria-label="<?php echo htmlspecialchars(tn('idx_filter_categories', 'Kategoriefilter')); ?>">
     <a href="index.php?<?php echo http_build_query($chipBaseParams); ?>"
        class="vs-chip <?php echo empty($activeKatIds) ? 'vs-chip-on' : ''; ?>">
         <?php echo tn('filter_all', 'Alle'); ?>
@@ -491,20 +494,20 @@ unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
 
 <!-- Toolbar: View-Toggle + Sortierung + Optionen ─────────────────────────── -->
 <div class="vs-gtoolbar">
-    <div class="vs-vbtns" role="group" aria-label="Ansicht wählen">
+    <div class="vs-vbtns" role="group" aria-label="<?php echo htmlspecialchars(tn('idx_choose_view', 'Ansicht wählen')); ?>">
         <a href="index.php?view=masonry<?php echo !empty($chipBaseParams) ? '&' . http_build_query($chipBaseParams) : ''; ?>"
            class="vs-vbtn <?php echo $view_mode === 'masonry' ? 'vs-vbtn-on' : ''; ?>"
-           title="Kachelansicht" aria-label="Kachelansicht">
+           title="<?php echo htmlspecialchars(tn('idx_view_tiles', 'Kachelansicht')); ?>" aria-label="<?php echo htmlspecialchars(tn('idx_view_tiles', 'Kachelansicht')); ?>">
             <i class="ti ti-layout-cards" aria-hidden="true"></i>
         </a>
         <a href="index.php?view=table<?php echo !empty($chipBaseParams) ? '&' . http_build_query($chipBaseParams) : ''; ?>"
            class="vs-vbtn <?php echo $view_mode === 'table' ? 'vs-vbtn-on' : ''; ?>"
-           title="Tabellenansicht" aria-label="Tabellenansicht">
+           title="<?php echo htmlspecialchars(tn('idx_view_table', 'Tabellenansicht')); ?>" aria-label="<?php echo htmlspecialchars(tn('idx_view_table', 'Tabellenansicht')); ?>">
             <i class="ti ti-table" aria-hidden="true"></i>
         </a>
         <a href="index.php?view=room<?php echo !empty($chipBaseParams) ? '&' . http_build_query($chipBaseParams) : ''; ?>"
            class="vs-vbtn <?php echo $view_mode === 'room' ? 'vs-vbtn-on' : ''; ?>"
-           title="Raumansicht" aria-label="Raumansicht">
+           title="<?php echo htmlspecialchars(tn('idx_view_room', 'Raumansicht')); ?>" aria-label="<?php echo htmlspecialchars(tn('idx_view_room', 'Raumansicht')); ?>">
             <i class="ti ti-home" aria-hidden="true"></i>
         </a>
     </div>
@@ -601,18 +604,22 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
 <form id="masonryForm">
 <?php if (canEdit()): ?>
 <div id="bulkActionsBar" class="bulk-actions-bar" style="display:none;" aria-live="polite">
-    <span class="bulk-info" id="bulkCount">0 ausgewählt</span>
+    <span class="bulk-info" id="bulkCount"><?php echo htmlspecialchars(sprintf(tn('idx_n_selected', '%d ausgewählt'), 0)); ?></span>
     <div class="bulk-actions">
-        <select id="bulkActionSelect" aria-label="Bulk-Aktion wählen">
+        <select id="bulkActionSelect" aria-label="<?php echo htmlspecialchars(tn('idx_bulk_choose', 'Sammelaktion wählen')); ?>">
             <option value=""><?php echo tn('index_bulk_action', 'Aktion…'); ?></option>
+            <?php if (hasPermission('bulk_hide')): ?>
             <option value="hide"><?php echo tn('index_bulk_hide', 'Verbergen'); ?></option>
             <option value="unhide"><?php echo tn('index_bulk_unhide', 'Wieder anzeigen'); ?></option>
+            <?php endif; ?>
+            <?php if (hasPermission('bulk_delete')): ?>
             <option value="delete"><?php echo tn('index_bulk_delete', 'Löschen'); ?></option>
+            <?php endif; ?>
         </select>
-        <button type="button" onclick="executeBulkAction()" aria-label="Aktion ausführen">
+        <button type="button" onclick="executeBulkAction()" aria-label="<?php echo htmlspecialchars(tn('idx_bulk_run', 'Aktion ausführen')); ?>">
             <?php echo tn('index_bulk_apply', 'Anwenden'); ?>
         </button>
-        <button type="button" class="bulk-close" onclick="clearBulkSelection()" aria-label="Auswahl aufheben">✕</button>
+        <button type="button" class="bulk-close" onclick="clearBulkSelection()" aria-label="<?php echo htmlspecialchars(tn('idx_clear_selection', 'Auswahl aufheben')); ?>">✕</button>
     </div>
 </div>
 <?php endif; ?>
@@ -650,7 +657,7 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
     <?php if (canEdit()): ?>
     <div style="position:absolute; top:8px; left:8px; z-index:10;" onclick="event.stopPropagation()">
         <label class="sr-only" for="mcb-<?php echo $item['id']; ?>">
-            <?php echo htmlspecialchars($item['name']); ?> auswählen
+            <?php echo htmlspecialchars(sprintf(tn('idx_select_item', '%s auswählen'), $item['name'])); ?>
         </label>
         <input type="checkbox" id="mcb-<?php echo $item['id']; ?>"
                class="item-checkbox"
@@ -717,26 +724,30 @@ if ($view_mode === 'table'):
   <form id="tableForm">
     <?php if (canEdit()): ?>
     <div id="bulkActionsBar" class="bulk-actions-bar" style="display:none;" aria-live="polite">
-        <span class="bulk-info" id="bulkCount">0 ausgewählt</span>
+        <span class="bulk-info" id="bulkCount"><?php echo htmlspecialchars(sprintf(tn('idx_n_selected', '%d ausgewählt'), 0)); ?></span>
         <div class="bulk-actions">
-            <select id="bulkActionSelect" aria-label="Bulk-Aktion wählen">
+            <select id="bulkActionSelect" aria-label="<?php echo htmlspecialchars(tn('idx_bulk_choose', 'Sammelaktion wählen')); ?>">
                 <option value=""><?php echo tn('index_bulk_action', 'Aktion…'); ?></option>
+                <?php if (hasPermission('bulk_hide')): ?>
                 <option value="hide"><?php echo tn('index_bulk_hide', 'Verbergen'); ?></option>
                 <option value="unhide"><?php echo tn('index_bulk_unhide', 'Wieder anzeigen'); ?></option>
+                <?php endif; ?>
+                <?php if (hasPermission('bulk_delete')): ?>
                 <option value="delete"><?php echo tn('index_bulk_delete', 'Löschen'); ?></option>
+                <?php endif; ?>
             </select>
-            <button type="button" onclick="executeBulkAction()" aria-label="Aktion ausführen">
+            <button type="button" onclick="executeBulkAction()" aria-label="<?php echo htmlspecialchars(tn('idx_bulk_run', 'Aktion ausführen')); ?>">
                 <?php echo tn('index_bulk_apply', 'Anwenden'); ?>
             </button>
-            <button type="button" onclick="clearBulkSelection()" aria-label="Auswahl aufheben"
+            <button type="button" onclick="clearBulkSelection()" aria-label="<?php echo htmlspecialchars(tn('idx_clear_selection', 'Auswahl aufheben')); ?>"
                     style="background:none;border:none;cursor:pointer;font-size:18px;line-height:1;padding:0 4px;color:inherit;opacity:.7;">✕</button>
         </div>
     </div>
     <?php endif; ?>
     <table class="data-table">
       <thead><tr>
-        <?php if (canEdit()): ?><th class="checkbox-cell" scope="col" aria-label="Alle auswählen">
-          <input type="checkbox" id="selectAll" aria-label="Alle auswählen">
+        <?php if (canEdit()): ?><th class="checkbox-cell" scope="col" aria-label="<?php echo htmlspecialchars(tn('index_select_all', 'Alle auswählen')); ?>">
+          <input type="checkbox" id="selectAll" aria-label="<?php echo htmlspecialchars(tn('index_select_all', 'Alle auswählen')); ?>">
         </th><?php endif; ?>
         <th scope="col" class="sortable <?php echo $sort_column === 'name' ? 'sorted-' . strtolower($sort_order) : ''; ?>"
             onclick="sortTable('name')"><?php echo tn('tab_name', 'Name'); ?></th>
@@ -747,7 +758,10 @@ if ($view_mode === 'table'):
             if ($spaltenId === 'dokumente' && !$dokumente_aktiv) continue;
             if (!showSpalte($spaltenId)) continue;
             $sortColumn = $sortableColumns[$spaltenId] ?? null;
-            $label = tn('col_' . $spaltenId, ucfirst(str_replace('_', ' ', $spaltenId)));
+            // Eigener Name aus dem Spalten-Manager, sonst Standardname - bis 4.3.32
+            // ignorierte der Tabellenkopf Umbenennungen und zeigte fuer acht
+            // Spalten Rohnamen wie "Custom1"
+            $label = getSpaltenLabel($spaltenId);
         ?>
         <?php if ($sortColumn): ?>
         <th scope="col" class="sortable <?php echo $sort_column === $sortColumn ? 'sorted-' . strtolower($sort_order) : ''; ?>"
@@ -766,8 +780,8 @@ if ($view_mode === 'table'):
         <tr <?php echo $is_manual_sort && canEdit() ? 'draggable="true" data-id="' . $item['id'] . '" class="drag-row"' : ''; ?>>
           <?php if (canEdit()): ?>
           <td class="checkbox-cell">
-            <?php if ($is_manual_sort): ?><span class="drag-handle" title="Ziehen zum Sortieren">⠿</span><?php endif; ?>
-            <label for="item-cb-<?php echo $item['id']; ?>" class="sr-only"><?php echo htmlspecialchars($item['name']); ?> auswählen</label>
+            <?php if ($is_manual_sort): ?><span class="drag-handle" title="<?php echo htmlspecialchars(tn('idx_drag_sort', 'Ziehen zum Sortieren')); ?>">⠿</span><?php endif; ?>
+            <label for="item-cb-<?php echo $item['id']; ?>" class="sr-only"><?php echo htmlspecialchars(sprintf(tn('idx_select_item', '%s auswählen'), $item['name'])); ?></label>
             <input type="checkbox" class="item-checkbox" id="item-cb-<?php echo $item['id']; ?>"
                    value="<?php echo $item['id']; ?>" data-name="<?php echo htmlspecialchars($item['name']); ?>">
           </td>
@@ -817,6 +831,11 @@ if ($view_mode === 'room'):
     $room_params = [];
     $roomConditions = buildSearchQuery($currentFilters, $room_params);
     foreach ($roomConditions as $c) { $room_sql .= " AND " . $c; }
+    // "nur eigene" galt bis 4.3.32 in der Raumansicht nicht.
+    if ($onlyOwnItems) {
+        $room_sql .= " AND w.erstellt_von = ?";
+        $room_params[] = $_SESSION['username'] ?? '';
+    }
     $room_sql .= " ORDER BY o.name ASC, w.name ASC";
     $alle_items = $db->select($room_sql, $room_params);
     $raeume = [];
@@ -863,7 +882,7 @@ if ($view_mode === 'room'):
         <span class="room-item-price"><?php echo $item['preis'] > 0 ? formatPriceLocalized($item['preis']) : '—'; ?></span>
         <?php if (canEdit()): ?>
         <a href="edit.php?id=<?php echo $item['id']; ?>&return_url=index.php?view=room"
-           class="icon-action-btn icon-action-edit" aria-label="Bearbeiten">✏️</a>
+           class="icon-action-btn icon-action-edit" aria-label="<?php echo htmlspecialchars(tn('btn_edit', 'Bearbeiten')); ?>">✏️</a>
         <?php endif; ?>
     </div>
     <?php endforeach; ?>
@@ -888,7 +907,7 @@ function updateBulkBar() {
     if (!bar) return;
     if (checked.length > 0) {
         bar.style.display = 'flex';
-        cnt.textContent = checked.length + ' ausgewählt';
+        cnt.textContent = <?php echo json_encode(tn('idx_n_selected', '%d ausgewählt'), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>.replace('%d', checked.length);
     } else {
         bar.style.display = 'none';
     }
@@ -1026,7 +1045,7 @@ function sortTable(col) {
 <?php include 'components/column_manager.php'; ?>
 
 <!-- ── Bild-Lightbox ─────────────────────────────────────── -->
-<div id="vsLightbox" class="vs-lightbox" onclick="vsCloseLightbox()" aria-modal="true" role="dialog" aria-label="Bildvorschau">
+<div id="vsLightbox" class="vs-lightbox" onclick="vsCloseLightbox()" aria-modal="true" role="dialog" aria-label="<?php echo htmlspecialchars(tn('idx_image_preview', 'Bildvorschau')); ?>">
     <img id="vsLightboxImg" src="" alt="">
 </div>
 <script>

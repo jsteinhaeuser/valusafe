@@ -2,9 +2,12 @@
 // qr_generator.php - QR-Code Generator (serverseitig PHP, kein JS, CSP-konform)
 require_once 'db.php';
 require_once 'helpers_permissions.php';
+require_once 'helpers.php';
 requireLogin();
+// Export-Recht aus der Rechteverwaltung (bis 4.3.32 nicht geprueft).
+requirePermission('export_qr');
 
-define('PAGE_TITLE', 'QR-Codes');
+define('PAGE_TITLE', t('nav_export_qr'));
 
 // ─── Minimaler QR-Code Generator ────────────────────────────────────────────
 // Erzeugt QR-Codes als SVG. Unterstützt URLs bis ~120 Zeichen (Version 1-5, ECL L).
@@ -282,24 +285,29 @@ if (isset($_GET['ids'])) {
     $selectedIds = array_filter(array_map('intval', explode(',', $_GET['ids'])));
 }
 
+// Bei "nur eigene" nur eigene Gegenstaende (auch bei ?ids=...).
+[$ownSql, $ownParams] = nurEigeneSql('w');
+
 if (!empty($selectedIds)) {
     $placeholders = implode(',', array_fill(0, count($selectedIds), '?'));
     $stmt = $pdo->prepare("SELECT w.id, w.name, k.name as kategorie_name
         FROM wertsachen w LEFT JOIN kategorien k ON w.kategorie_id = k.id
-        WHERE w.id IN ($placeholders) ORDER BY w.name");
-    $stmt->execute($selectedIds);
+        WHERE w.id IN ($placeholders)" . $ownSql . " ORDER BY w.name");
+    $stmt->execute(array_merge($selectedIds, $ownParams));
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } elseif ($filterCategory > 0) {
     $stmt = $pdo->prepare("SELECT w.id, w.name, k.name as kategorie_name
         FROM wertsachen w LEFT JOIN kategorien k ON w.kategorie_id = k.id
-        WHERE w.kategorie_id = ? ORDER BY w.name");
-    $stmt->execute([$filterCategory]);
+        WHERE w.kategorie_id = ?" . $ownSql . " ORDER BY w.name");
+    $stmt->execute(array_merge([$filterCategory], $ownParams));
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    $items = $pdo->query("SELECT w.id, w.name, k.name as kategorie_name
+    $stmt = $pdo->prepare("SELECT w.id, w.name, k.name as kategorie_name
         FROM wertsachen w LEFT JOIN kategorien k ON w.kategorie_id = k.id
-        WHERE (w.hidden = 0 OR w.hidden IS NULL)
-        ORDER BY w.name")->fetchAll(PDO::FETCH_ASSOC);
+        WHERE (w.hidden = 0 OR w.hidden IS NULL)" . $ownSql . "
+        ORDER BY w.name");
+    $stmt->execute($ownParams);
+    $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 $categories = $pdo->query("SELECT id, name FROM kategorien ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
@@ -393,17 +401,17 @@ include 'header_next_page.php';
 
 <div class="no-print">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap;">
-        <a href="index.php" class="btn">← Zurück</a>
-        <h2 style="margin:0; border:none; padding:0;">📱 QR-Codes</h2>
-        <span style="font-size:13px; color:#64748b;"><?php echo count($items); ?> Gegenstände</span>
-        <button onclick="window.print()" class="btn btn-secondary" style="margin-left:auto;">🖨️ Drucken</button>
+        <a href="index.php" class="btn">← <?php echo t('btn_back'); ?></a>
+        <h2 style="margin:0; border:none; padding:0;">📱 <?php echo t('nav_export_qr'); ?></h2>
+        <span style="font-size:13px; color:#64748b;"><?php echo sprintf(t('qr_items_count'), count($items)); ?></span>
+        <button onclick="window.print()" class="btn btn-secondary" style="margin-left:auto;">🖨️ <?php echo t('qr_print'); ?></button>
     </div>
 
     <div class="qr-controls">
-        <label style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;">Kategorie:</label>
+        <label style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo t('col_kategorie'); ?>:</label>
         <select class="form-control" style="max-width:220px; margin:0;"
                 onchange="window.location.href='qr_generator.php'+(this.value>0?'?kategorie='+this.value:'')">
-            <option value="0">Alle Kategorien</option>
+            <option value="0"><?php echo t('placeholder_all_categories'); ?></option>
             <?php foreach ($categories as $cat): ?>
                 <option value="<?php echo $cat['id']; ?>" <?php echo $filterCategory == $cat['id'] ? 'selected' : ''; ?>>
                     <?php echo htmlspecialchars($cat['name']); ?>
@@ -411,21 +419,21 @@ include 'header_next_page.php';
             <?php endforeach; ?>
         </select>
         <?php if ($filterCategory > 0): ?>
-            <a href="qr_generator.php" class="btn btn-secondary">✕ Filter aufheben</a>
+            <a href="qr_generator.php" class="btn btn-secondary">✕ <?php echo t('qr_clear_filter'); ?></a>
         <?php endif; ?>
         <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-            <label style="font-size:13px; color:#64748b; margin:0;">Größe:</label>
+            <label style="font-size:13px; color:#64748b; margin:0;"><?php echo t('qr_size'); ?>:</label>
             <select class="form-control" style="max-width:110px; margin:0;" onchange="changeSize(this.value)">
-                <option value="120">Klein</option>
-                <option value="160" selected>Mittel</option>
-                <option value="200">Groß</option>
+                <option value="120"><?php echo t('qr_size_small'); ?></option>
+                <option value="160" selected><?php echo t('qr_size_medium'); ?></option>
+                <option value="200"><?php echo t('qr_size_large'); ?></option>
             </select>
         </div>
     </div>
 </div>
 
 <?php if (empty($items)): ?>
-    <div class="alert alert-info no-print">Keine Gegenstände gefunden.</div>
+    <div class="alert alert-info no-print"><?php echo t('qr_no_items'); ?></div>
 <?php else: ?>
 
 <div class="qr-grid">
@@ -438,12 +446,12 @@ include 'header_next_page.php';
     ?>
     <div class="qr-card">
         <?php if ($qrSrc): ?>
-            <img src="<?php echo $qrSrc; ?>" alt="QR-Code für <?php echo $safeName; ?>"
+            <img src="<?php echo $qrSrc; ?>" alt="<?php echo sprintf(htmlspecialchars(t('qr_alt')), $safeName); ?>"
                  id="qrimg-<?php echo $item['id']; ?>">
         <?php else: ?>
             <div style="width:160px;height:160px;margin:0 auto 12px;background:#f3f4f6;border-radius:8px;
                         display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:12px;">
-                Fehler
+                <?php echo t('qr_error'); ?>
             </div>
         <?php endif; ?>
         <div class="qr-name" title="<?php echo $safeName; ?>"><?php echo $safeName; ?></div>
@@ -470,7 +478,7 @@ function copyUrl(url, btn) {
     if (navigator.clipboard) {
         navigator.clipboard.writeText(url).then(function() {
             var orig = btn.innerHTML;
-            btn.innerHTML = '✅ Kopiert';
+            btn.innerHTML = '✅ ' + <?php echo json_encode(t('qr_copied')); ?>;
             setTimeout(function() { btn.innerHTML = orig; }, 2000);
         });
     } else {
