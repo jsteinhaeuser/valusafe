@@ -7,7 +7,7 @@ unbequemer sind als in einer Firmenrichtlinie.
 
 ## Eine Schwachstelle melden
 
-Eine E-Mail an **wert@palindrom.de**. Deutsch oder Englisch, beides ist recht.
+Eine E-Mail an **valusafe@palindrom.de**. Deutsch oder Englisch, beides ist recht.
 
 Bitte kein öffentliches Issue und keine Veröffentlichung der Einzelheiten,
 bevor das Problem behoben ist.

@@ -7,7 +7,7 @@ than a corporate policy would be.
 
 ## Reporting a vulnerability
 
-Send an email to **wert@palindrom.de**. German or English, both are fine.
+Send an email to **valusafe@palindrom.de**. German or English, both are fine.
 
 Please do not open a public issue or post the details anywhere before the
 problem is fixed.
