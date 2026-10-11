@@ -295,7 +295,7 @@ function hc_run_check_roh(string $checkId, string $baseUrl): array {
             return hc_check_no_fatal($baseUrl . '/settings.php');
 
         case 'twofa':
-            return hc_check_no_fatal($baseUrl . '/backend/2fa_setup.php');
+            return hc_check_no_fatal($baseUrl . '/2fa_setup.php');
 
         case 'ajax_pos':
             $r = hc_do_curl($baseUrl . '/ajax/get_positionen.php');

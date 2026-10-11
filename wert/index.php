@@ -341,10 +341,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
                                 if ($item['bild'] && file_exists(UPLOAD_DIR . $item['bild'])) {
                                     unlink(UPLOAD_DIR . $item['bild']);
                                 }
-                                // Weitere Bilder (item_images) wie in delete.php
-                                if (function_exists('deleteAllItemImages')) {
-                                    deleteAllItemImages($id);
-                                }
+                                // Weitere Bilder (item_images) wie in delete.php.
+                                // index.php bindet helpers_images.php sonst nicht
+                                // ein - in 4.3.33 lief der Aufruf deshalb nie.
+                                require_once __DIR__ . '/helpers_images.php';
+                                deleteAllItemImages($id);
                                 // Dokumente löschen
                                 $docs = $db->select("SELECT dateiname FROM dokumente WHERE wertsache_id = ?", [$id]);
                                 foreach ($docs as $doc) {
@@ -651,7 +652,7 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
      data-id="<?php echo $item['id']; ?>"
      data-item-id="<?php echo $item['id']; ?>"
      data-item='<?php echo $itemJson; ?>'
-     onclick="vsOpenDetail(this)"
+     onclick="vsOpenDetail(this, event)"
      <?php echo $is_manual_sort && canEdit() ? 'draggable="true"' : ''; ?>>
 
     <?php if (canEdit()): ?>
@@ -696,8 +697,10 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
         <?php endif; ?>
     </div>
     <div class="vs-mcard-body">
+        <?php // Echter Knopf, damit die Karte per Tastatur erreichbar ist (WCAG 2.1.1).
+              // Der Klick laeuft zur Karte hoch (vsOpenDetail). ?>
         <div class="vs-mcard-name" title="<?php echo htmlspecialchars($item['name']); ?>">
-            <?php echo htmlspecialchars($item['name']); ?>
+            <button type="button" class="vs-mcard-open" aria-controls="vsDetail" aria-expanded="false"><?php echo htmlspecialchars($item['name']); ?></button>
         </div>
         <div class="vs-mcard-meta">
             <span class="vs-mcard-cat"><?php echo htmlspecialchars($item['kategorie_name'] ?? '—'); ?></span>

@@ -2,7 +2,68 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 08.10.2026 aus der Projektchronik.
+Erzeugt am 11.10.2026 aus der Projektchronik.
+
+Version 4.3.34   11.10.2026
+---------------------------
+  [Fix] Beim Löschen mehrerer Gegenstände über die Auswahl blieben weitere
+        Fotos der Gegenstände auf dem Server liegen. Sie werden jetzt mit
+        gelöscht.
+  [Fix] Schnellerfassung: Der runde Plus-Knopf lag auf dem Smartphone über
+        dem Preisfeld und führte nur wieder zur Schnellerfassung. Auf den
+        Erfassungsseiten selbst erscheint er nicht mehr.
+  [Neu] Zwei-Faktor-Anmeldung für alle: Jedes Konto kann die Anmeldung mit
+        Authenticator-App jetzt selbst einrichten (Einstellungen →
+        Zwei-Faktor verwalten). Bisher ging das nur für Administratoren. Wer
+        sein Handy und die Backup-Codes verloren hat, dem setzt der
+        Administrator die Zwei-Faktor-Anmeldung in der Benutzerverwaltung
+        zurück. Auf Demo-Konten lässt sich die Einrichtung zusammen mit
+        „Eigenes Passwort ändern“ abschalten.
+  [Fix] Benutzerverwaltung: Beim Bearbeiten eines Kontos konnte die
+        Passwortverwaltung des Browsers das Feld „Neues Passwort“
+        unbemerkt mit dem eigenen gespeicherten Passwort füllen – beim
+        Speichern bekam das bearbeitete Konto dann dieses Passwort und konnte
+        sich nicht mehr anmelden. Das Feld wird jetzt nicht mehr automatisch
+        ausgefüllt.
+  [Fix] Benutzerverwaltung: Der Hinweis bei „Alle Gegenstände sehen“ sagt
+        jetzt, dass er nur wirkt, wenn unter „Öffentlicher Link“ die
+        Einstellung „Benutzer sehen nur eigene Gegenstände“ eingeschaltet
+        ist. Bisher klang es, als genüge das Häkchen allein.
+  [Fix] QR-Codes: Bei manchen Textlängen erschien kein QR-Code – bei der
+        Einrichtung der Zwei-Faktor-Anmeldung je nach Benutzername, beim
+        öffentlichen Link je nach Adresse der Installation. Ursache ist ein
+        Fehler der eingesetzten QR-Bibliothek; sie weicht jetzt bei Bedarf auf
+        eine andere Fehlerkorrekturstufe aus.
+  [Fix] Öffentlicher Link: Der Hinweis „Erstellt mit …“ unten auf der
+        öffentlichen Seite verwies auf eine Instanz des Entwicklers statt auf
+        die Projektseite palindrom.de/valusafe.
+  [Fix] Benutzerverwaltung: Die Seite enthielt im Quelltext zu jedem Konto den
+        Passwort-Hash und, falls eingerichtet, das Geheimnis der
+        Zwei-Faktor-Anmeldung samt Backup-Codes. Sichtbar war das nur für den
+        Administrator, der die Seite öffnen darf - es gehört trotzdem nicht
+        in den Browser. Jetzt nur noch die Angaben, die das Bearbeiten-Fenster
+        braucht.
+  [Fix] Übersetzungen: Rund 45 Meldungen im Browser waren in jeder Sprache
+        deutsch – die Bildverwaltung beim Bearbeiten, der Hinweis auf einen
+        gespeicherten Entwurf, die Barcode- und ISBN-Suche und das
+        Hilfe-Fenster. Sie erscheinen jetzt in allen neun Sprachen. Die Seite
+        meldet Bildschirmlesern außerdem die gewählte Sprache statt immer
+        der Sprache der Installation, und die Hilfe im Verwaltungsbereich ist
+        auf Englisch nicht mehr deutsch.
+  [Fix] Gegenstand bearbeiten: Nach der Barcode-Suche versprach „Bild
+        übernehmen“, das Cover werde nach dem Speichern übernommen – es
+        ging aber verloren. Jetzt wird es sofort zu den Bildern des
+        Gegenstands hochgeladen.
+  [Fix] Sicherheit: Die Detailansicht neben der Übersicht übernahm Name,
+        Raum, Seriennummer und Notizen eines Gegenstands ungefiltert in die
+        Seite. Ein Benutzer mit Bearbeitungsrecht konnte so Skriptcode in
+        einen Gegenstandsnamen schreiben, der bei jedem ausgeführt wurde, der
+        die Karte anklickte – auch beim Administrator. Die Werte werden
+        jetzt als Text dargestellt.
+  [Fix] Bedienung per Tastatur: Die Karten der Übersicht ließen sich nur mit
+        der Maus öffnen. Jetzt erreicht man sie mit der Tabulatortaste und
+        öffnet die Detailansicht mit Enter; der Fokus springt dabei in die
+        Detailansicht.
 
 Version 4.3.33   09.10.2026
 ---------------------------

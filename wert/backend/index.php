@@ -567,7 +567,7 @@ include 'layout/header_next_page.php';
             <a href="login_security.php" class="widget-card vs-system-link">
                 <div class="widget-label"><i class="ti ti-lock"></i> <?php echo t('sys_login_security'); ?></div>
             </a>
-            <a href="2fa_setup.php" class="widget-card vs-system-link">
+            <a href="../2fa_setup.php" class="widget-card vs-system-link">
                 <div class="widget-label"><i class="ti ti-shield-check"></i> <?php echo t('2fa_page_title'); ?></div>
             </a>
             <a href="health_check.php" class="widget-card vs-system-link">

@@ -102,6 +102,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
     
+    // Zwei-Faktor eines anderen Kontos zuruecksetzen (4.3.34): seit 2FA allen
+    // Rollen offensteht, braucht es einen Weg bei verlorenem Handy UND verlorenen
+    // Backup-Codes - vorher half nur ein Eingriff in der Datenbank.
+    if (isset($_POST['action']) && $_POST['action'] === 'reset_2fa') {
+        $id = intval($_POST['id'] ?? 0);
+        if ($id <= 0 || $id == $_SESSION['user_id']) {
+            $error = t('error_invalid_id') ?: 'Ungültige ID';
+        } else {
+            try {
+                $ziel = $db->selectOne("SELECT username FROM users WHERE id = ?", [$id]);
+                $pdo->prepare("UPDATE users SET totp_secret = NULL, totp_enabled = 0, totp_backup_codes = NULL WHERE id = ?")
+                    ->execute([$id]);
+                if (function_exists('logActivity')) {
+                    logActivity('update', 'users', $id, ($ziel['username'] ?? '') . ' (2FA zurückgesetzt)');
+                }
+                $message = t('usr_2fa_reset_done');
+            } catch (PDOException $e) {
+                error_log('2FA zuruecksetzen: ' . $e->getMessage());
+                $error = t('usr_2fa_reset_failed');
+            }
+        }
+    }
+
     // Benutzer löschen
     if (isset($_POST['action']) && $_POST['action'] === 'delete') {
         $id = intval($_POST['id'] ?? 0);
@@ -290,7 +313,16 @@ include 'layout/header_next_page.php';
                             </td>
                             <td><?php echo !empty($user['erstellt_am'] ?? '') ? date('d.m.Y H:i', strtotime($user['erstellt_am'])) : '–'; ?></td>
                             <td>
-                                <button onclick='editUser(<?php echo json_encode($user); ?>)' class="vs-btn vs-btn-sm" title="<?php echo esc(t('btn_edit')); ?>"><i class="ti ti-pencil"></i></button>
+                                <?php
+                                // Nur, was das Bearbeiten-Fenster braucht. Bis 4.3.33 stand hier
+                                // json_encode($user) - mit Passwort-Hash, TOTP-Geheimnis und
+                                // Backup-Codes im HTML der Seite.
+                                $_editDaten = array_diff_key($user, array_flip(['password', 'totp_secret', 'totp_backup_codes']));
+                                ?>
+                                <button onclick='editUser(<?php echo json_encode($_editDaten, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP); ?>)' class="vs-btn vs-btn-sm" title="<?php echo esc(t('btn_edit')); ?>" aria-label="<?php echo esc(t('btn_edit')); ?>"><i class="ti ti-pencil" aria-hidden="true"></i></button>
+                                <?php if ($user['id'] != $_SESSION['user_id'] && !empty($user['totp_enabled'])): ?>
+                                    <button type="button" onclick="reset2fa(<?php echo (int)$user['id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')" class="vs-btn vs-btn-sm" title="<?php echo esc(t('usr_2fa_reset')); ?>" aria-label="<?php echo esc(t('usr_2fa_reset')); ?>"><i class="ti ti-shield-off" aria-hidden="true"></i></button>
+                                <?php endif; ?>
                                 <?php if ($user['id'] != $_SESSION['user_id']): ?>
                                     <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')" class="vs-btn vs-btn-sm vs-btn-danger" title="<?php echo esc(t('btn_delete')); ?>"><i class="ti ti-trash"></i></button>
                                 <?php endif; ?>
@@ -360,12 +392,12 @@ include 'layout/header_next_page.php';
             
             <div class="form-group">
                 <label><?php echo t('field_username') ?: 'Benutzername'; ?> *</label>
-                <input type="text" name="username" required class="form-control">
+                <input type="text" name="username" required class="form-control" autocomplete="off">
             </div>
             
             <div class="form-group">
                 <label><?php echo t('field_password') ?: 'Passwort'; ?> *</label>
-                <input type="password" name="password" required class="form-control">
+                <input type="password" name="password" required class="form-control" autocomplete="new-password">
             </div>
 
             <div class="form-group">
@@ -404,12 +436,15 @@ include 'layout/header_next_page.php';
             
             <div class="form-group">
                 <label><?php echo t('field_username') ?: 'Benutzername'; ?> *</label>
-                <input type="text" name="username" id="edit_username" required class="form-control">
+                <input type="text" name="username" id="edit_username" required class="form-control" autocomplete="off">
             </div>
             
             <div class="form-group">
                 <label><?php echo t('users_new_password') ?: 'Neues Passwort (optional)'; ?></label>
-                <input type="password" name="new_password" class="form-control" placeholder="<?php echo t('users_password_placeholder') ?: 'Nur ausfüllen wenn ändern'; ?>">
+                <?php // autocomplete=new-password: sonst fuellt die Passwortverwaltung des Browsers
+                      // hier das gespeicherte Passwort ein, und "Speichern" setzt es still als
+                      // neues Passwort des bearbeiteten Kontos (Test 2ix 11.10.). ?>
+                <input type="password" name="new_password" class="form-control" autocomplete="new-password" placeholder="<?php echo t('users_password_placeholder') ?: 'Nur ausfüllen wenn ändern'; ?>">
                 <small style="color: #999;"><?php echo t('users_password_hint') ?: 'Leer lassen um Passwort beizubehalten'; ?></small>
             </div>
 
@@ -446,6 +481,13 @@ include 'layout/header_next_page.php';
         </form>
     </div>
 </div>
+
+<!-- Form für 2FA-Zuruecksetzen (versteckt) -->
+<form id="reset2faForm" method="POST" style="display: none;">
+    <?php echo Security::getCSRFInput(); ?>
+    <input type="hidden" name="action" value="reset_2fa">
+    <input type="hidden" name="id" id="reset2fa_user_id">
+</form>
 
 <!-- Form für Löschen (versteckt) -->
 <form id="deleteUserForm" method="POST" style="display: none;">
@@ -717,12 +759,23 @@ function editUser(user) {
     document.getElementById('edit_email').value = user.email || '';
     document.getElementById('edit_role').value = user.role;
     document.getElementById('edit_sieht_alle').checked = (user.sieht_alle == 1 || user.role === 'admin');
+    // Feld "Neues Passwort" bei jedem Oeffnen leeren (Browser-Autofill, s. Formular)
+    var pw = document.querySelector('#editUserModal input[name="new_password"]');
+    if (pw) pw.value = '';
     updateSiehtAlleVisibility();
     document.getElementById('editUserModal').classList.add('active');
 }
 
 function closeEditUserModal() {
     document.getElementById('editUserModal').classList.remove('active');
+}
+
+function reset2fa(id, username) {
+    vsConfirm(<?php echo json_encode(t('usr_2fa_reset_confirm')); ?> + ' "' + username + '"?\n\n' + <?php echo json_encode(t('usr_2fa_reset_text')); ?>).then(function (ja) {
+        if (!ja) return;
+        document.getElementById('reset2fa_user_id').value = id;
+        document.getElementById('reset2faForm').submit();
+    });
 }
 
 function deleteUser(id, username) {

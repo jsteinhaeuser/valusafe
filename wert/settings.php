@@ -712,7 +712,7 @@ include 'header_next_page.php';
                     <img src="<?php echo htmlspecialchars($avatarUrl); ?>"
                          alt="<?php echo htmlspecialchars(sprintf(t('profile_avatar_alt'), $_SESSION['username']), ENT_QUOTES, 'UTF-8'); ?>">
                 <?php else: ?>
-                    <?php echo mb_strtoupper(mb_substr($_SESSION['username'], 0, 1)); ?>
+                    <?php echo htmlspecialchars(mb_strtoupper(mb_substr($_SESSION['username'], 0, 1))); ?>
                 <?php endif; ?>
             </div>
             <div class="profil-avatar-overlay">📷</div>
@@ -768,6 +768,20 @@ include 'header_next_page.php';
             <button type="submit" class="btn btn-primary"><?php echo t('profile_pw_submit'); ?></button>
         </form>
         <?php endif; ?>
+
+        <?php
+        // Zwei-Faktor-Anmeldung (4.3.34: fuer alle Rollen, Einrichtung in 2fa_setup.php)
+        $_2faRow = $db->selectOne("SELECT totp_enabled FROM users WHERE id = ?", [$_SESSION['user_id']]);
+        $_2faAn  = !empty($_2faRow['totp_enabled']);
+        ?>
+        <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--vs-border);">
+            <h4 style="font-size:14px; margin:0 0 6px;"><i class="ti ti-shield-check" aria-hidden="true"></i> <?php echo t('2fa_page_title'); ?></h4>
+            <p style="font-size:13px; color:var(--vs-text-muted); margin:0 0 10px;">
+                <?php echo $_2faAn ? t('2fa_status_active') : t('2fa_status_inactive'); ?>
+            </p>
+            <a href="2fa_setup.php" class="btn btn-secondary"><?php echo t('2fa_btn_manage'); ?></a>
+        </div>
+        <?php unset($_2faRow, $_2faAn); ?>
     </div>
 
     </div><!-- Ende Zeile-2-Wrapper -->
@@ -852,7 +866,9 @@ include 'header_next_page.php';
         <?php endif; ?>
     </div>
 
-    <!-- Modal: Account löschen -->
+    <!-- Modal: Account löschen (nur mit Recht - sonst stand es bis 4.3.33
+         ohne Ausloeser im HTML) -->
+    <?php if ($darfKontoLoeschen): ?>
     <div id="deleteAccountModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:20px;">
         <div style="background:var(--vs-surface); border-radius:16px; padding:32px; max-width:460px; width:100%; box-shadow:0 16px 48px rgba(0,0,0,0.2);">
             <h3 style="margin:0 0 12px; color:var(--vs-danger);"><i class="ti ti-alert-triangle"></i> <?php echo t('settings_delete_confirm_title'); ?></h3>
@@ -884,6 +900,7 @@ include 'header_next_page.php';
             </form>
         </div>
     </div>
+    <?php endif; ?>
 
     <?php if (isAdmin() && !isset($_SESSION['original_role'])): ?>
     <div class="settings-card">

@@ -26,8 +26,12 @@ if (!function_exists('tn')) {
 <?php // Zwei Knoepfe, CSS zeigt je nach Breite einen (css/next.css): am Desktop das
       // volle Formular, auf dem Handy die Schnellerfassung (Entscheidung Joerg
       // 05.10.; quick_add.php war bis 4.3.32 von nirgends verlinkt).
-      // Bedingung items_add wie in add.php/quick_add.php. ?>
-<?php if (function_exists('hasPermission') && hasPermission('items_add')): ?>
+      // Bedingung items_add wie in add.php/quick_add.php.
+      // Nicht auf den Erfassungsseiten selbst: auf quick_add.php lag der Knopf
+      // am Handy ueber dem Preisfeld (Foto Joerg 08.10.) und fuehrte nur zur
+      // selben Seite. ?>
+<?php if (function_exists('hasPermission') && hasPermission('items_add')
+          && !in_array(basename($_SERVER['SCRIPT_NAME'] ?? ''), ['quick_add.php', 'add.php'], true)): ?>
 <a href="add.php" class="vs-fab vs-fab-full" title="<?php echo tn('nav_add', 'Hinzufügen'); ?>"
    aria-label="<?php echo tn('nav_new_item', 'Neuer Gegenstand'); ?>">
     <i class="ti ti-plus" aria-hidden="true" style="font-size:22px"></i>
@@ -78,6 +82,16 @@ if (!function_exists('tn')) {
         'docs'   => tn('form_documents', 'Dokumente'),
     ], JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP); ?>;
 
+    // Werte der Gegenstaende kommen ungefiltert aus der Datenbank (Name, Raum,
+    // Notizen ... werden beim Speichern nicht bereinigt). Bis 4.3.33 gingen sie
+    // roh in innerHTML - ein Gegenstandsname mit Skriptcode lief beim Anklicken
+    // der Karte im Browser jedes Betrachters (gespeichertes XSS).
+    function esc(v) {
+        return String(v == null ? '' : v).replace(/[&<>"']/g, function (c) {
+            return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+        });
+    }
+
     function fmtDate(s) {
         if (!s) return '—';
         var d = new Date(s);
@@ -85,7 +99,9 @@ if (!function_exists('tn')) {
         return d.toLocaleDateString('de-DE');
     }
 
-    window.vsOpenDetail = function(card) {
+    // ev: Klick-Ereignis. ev.detail === 0 heisst Tastatur (Enter/Leertaste auf
+    // dem Knopf in der Karte) - dann springt der Fokus in die Detailansicht.
+    window.vsOpenDetail = function(card, ev) {
         document.querySelectorAll('.vs-mcard').forEach(function(c) {
             c.classList.remove('vs-mcard-on');
         });
@@ -100,8 +116,8 @@ if (!function_exists('tn')) {
 
         var dpIcon = item.catIcon || 'ti-package';
         var photoHtml = item.bild
-            ? '<img src="' + item.bild + '" alt="' + (item.name || '') + '">'
-            : '<div class="vs-dp-photo-ph vs-cat-placeholder"><i class="ti ' + dpIcon + '" aria-hidden="true"></i></div>';
+            ? '<img src="' + esc(item.bild) + '" alt="' + esc(item.name || '') + '">'
+            : '<div class="vs-dp-photo-ph vs-cat-placeholder"><i class="ti ' + esc(dpIcon) + '" aria-hidden="true"></i></div>';
 
         var price  = item.preis > 0 ? fmt.format(item.preis) : '—';
         var datum  = fmtDate(item.kaufdatum);
@@ -122,28 +138,28 @@ if (!function_exists('tn')) {
         if (item.raum) {
             fields += '<div class="vs-dp-field">'
                 + '<div class="vs-dp-label">' + L.room + '</div>'
-                + '<div class="vs-dp-val">' + item.raum + '</div>'
+                + '<div class="vs-dp-val">' + esc(item.raum) + '</div>'
                 + '</div>';
         }
 
         if (item.seriennummer) {
             fields += '<div class="vs-dp-field">'
                 + '<div class="vs-dp-label">' + L.serial + '</div>'
-                + '<div class="vs-dp-val" style="font-family:monospace;font-size:12px">' + item.seriennummer + '</div>'
+                + '<div class="vs-dp-val" style="font-family:monospace;font-size:12px">' + esc(item.seriennummer) + '</div>'
                 + '</div>';
         }
 
         if (item.notizen) {
             fields += '<div class="vs-dp-field">'
                 + '<div class="vs-dp-label">' + L.notes + '</div>'
-                + '<div class="vs-dp-val vs-dp-notes">' + item.notizen + '</div>'
+                + '<div class="vs-dp-val vs-dp-notes">' + esc(item.notizen) + '</div>'
                 + '</div>';
         }
 
         var catOrt = [item.kategorie, item.raum].filter(Boolean).join(' · ');
 
-        var editUrl  = 'edit.php?id=' + item.id;
-        var docsUrl  = 'manage_documents.php?id=' + item.id;
+        var editUrl  = 'edit.php?id=' + parseInt(item.id, 10);
+        var docsUrl  = 'manage_documents.php?id=' + parseInt(item.id, 10);
         var docCount = item.docCount || 0;
         var docsBtn  = docCount > 0
             ? '<a href="' + docsUrl + '" class="vs-dp-btn" style="flex:0 0 auto" title="' + L.docs + '"><i class="ti ti-file-text" aria-hidden="true"></i> ' + docCount + '</a>'
@@ -152,8 +168,8 @@ if (!function_exists('tn')) {
         content.innerHTML =
             '<div class="vs-dp-photo">' + photoHtml + '</div>'
             + '<div class="vs-dp-header">'
-            +   '<div class="vs-dp-title">' + item.name + '</div>'
-            +   '<div class="vs-dp-cat">' + catOrt + '</div>'
+            +   '<h2 class="vs-dp-title" id="vsDetailTitle" tabindex="-1">' + esc(item.name) + '</h2>'
+            +   '<div class="vs-dp-cat">' + esc(catOrt) + '</div>'
             + '</div>'
             + '<div class="vs-dp-fields">' + fields + '</div>'
             + '<div class="vs-dp-actions">'
@@ -163,6 +179,14 @@ if (!function_exists('tn')) {
 
         empty.style.display   = 'none';
         content.style.display = 'flex';
+
+        document.querySelectorAll('.vs-mcard-open').forEach(function (b) {
+            b.setAttribute('aria-expanded', b.closest('.vs-mcard') === card ? 'true' : 'false');
+        });
+        if (ev && ev.detail === 0) {
+            var t = document.getElementById('vsDetailTitle');
+            if (t) t.focus();
+        }
     };
 
     // Detail schließen bei Klick außerhalb der Masonry-Karten
@@ -360,8 +384,8 @@ async function _loadVsm(idx,btn){
             +'<div style="font-size:14pt;font-weight:600;margin-bottom:6px;color:'+tx+'">'+f.label+'</div>'
             +'<div style="margin-bottom:24px">PDF-Dokument</div>'
             +'<a href="'+_vsmBase+'service_doc.php?file='+encodeURIComponent(f.file)+'" target="_blank"'
-            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📕 PDF öffnen</a>'
-            +'<div style="margin-top:10px;font-size:9pt;color:'+mu+'">Öffnet in einem neuen Tab</div></div>';
+            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📕 '+vsEsc(vsT('js_pdf_open','PDF öffnen'))+'</a>'
+            +'<div style="margin-top:10px;font-size:9pt;color:'+mu+'">'+vsEsc(vsT('js_opens_new_tab','Öffnet in einem neuen Tab'))+'</div></div>';
         return;
     }
     if(f.type==='php'){
@@ -369,7 +393,7 @@ async function _loadVsm(idx,btn){
             +'<div style="font-size:48px;margin-bottom:16px">📋</div>'
             +'<div style="font-size:14pt;font-weight:600;margin-bottom:24px;color:'+tx+'">'+f.label+'</div>'
             +'<a href="'+_vsmBase+f.file+'" target="_blank"'
-            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📋 '+f.label+' öffnen</a></div>';
+            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📋 '+vsEsc(vsT('js_doc_open','%s öffnen',f.label))+'</a></div>';
         return;
     }
     c.innerHTML='<div style="padding:16px;color:'+mu+'">⏳ '+_vsmT.loading+'</div>';

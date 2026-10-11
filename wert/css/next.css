@@ -258,6 +258,17 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     overflow: hidden; text-overflow: ellipsis;
 }
 
+/* Name als Knopf (Tastatur, 4.3.34) - sieht aus wie bisher der Text */
+.vs-mcard-open {
+    all: unset; display: block; width: 100%; box-sizing: border-box;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    cursor: pointer; font: inherit; color: inherit;
+}
+.vs-mcard:has(.vs-mcard-open:focus-visible) { outline: 3px solid var(--vs-accent); outline-offset: 2px; }
+.vs-mcard-open:focus-visible { text-decoration: underline; }
+.vs-dp-title:focus { outline: none; }
+.vs-dp-title:focus-visible { outline: 2px solid var(--vs-accent); outline-offset: 2px; }
+
 .vs-mcard-meta { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
 
 .vs-mcard-cat {
@@ -299,7 +310,7 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
 .vs-dp-photo-ph i       { font-size: 40px; }
 
 .vs-dp-header           { padding: 12px 14px 8px; border-bottom: 1px solid var(--vs-border); flex-shrink: 0; }
-.vs-dp-title            { font-size: 14px; font-weight: 600; color: var(--vs-text); margin-bottom: 2px; }
+.vs-dp-title            { font-size: 14px; font-weight: 600; color: var(--vs-text); margin: 0 0 2px; line-height: 1.3; }
 .vs-dp-cat              { font-size: 12px; color: var(--vs-text-muted); }
 
 .vs-dp-fields           { flex: 1; overflow-y: auto; padding: 12px 14px; }

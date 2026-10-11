@@ -3,6 +3,12 @@
  * Multi-Image Upload, Galerie, Lightbox, Drag & Drop Sort
  */
 
+// Texte in der Sprache des Benutzers (components/js_texte.php, seit 4.3.34);
+// der zweite Wert ist der deutsche Rueckfall.
+const _miuT = (k, f, ...a) => (window.vsT ? window.vsT(k, f, ...a)
+    : a.reduce((s, v) => s.replace('%s', v), f));
+const _miuE = (s) => (window.vsEsc ? window.vsEsc(s) : String(s));
+
 class MultiImageUpload {
     constructor(itemId, csrfToken, options = {}) {
         this.itemId = itemId;
@@ -26,36 +32,36 @@ class MultiImageUpload {
         this.container.innerHTML = `
             <!-- Bild-Anzahl -->
             <div class="image-count-badge" id="imageCountBadge">
-                📷 <span id="imageCount">0</span> von ${this.maxImages} Bildern
+                📷 ${_miuT('js_img_count', '%s von %s Bildern', '<span id="imageCount">0</span>', this.maxImages)}
             </div>
             
             <!-- Galerie -->
             <div class="image-gallery" id="imageGallery">
                 <div class="image-gallery-empty" id="imageGalleryEmpty">
-                    Noch keine Bilder vorhanden
+                    ${_miuE(_miuT('js_img_none', 'Noch keine Bilder vorhanden'))}
                 </div>
             </div>
             
             <!-- Upload Zone -->
             <div class="multi-upload-zone" id="multiUploadZone">
-                <div class="multi-upload-zone-icon">📸</div>
-                <div class="multi-upload-zone-text">Bilder hochladen</div>
+                <div class="multi-upload-zone-icon" aria-hidden="true">📸</div>
+                <div class="multi-upload-zone-text">${_miuE(_miuT('js_img_upload', 'Bilder hochladen'))}</div>
                 <div class="multi-upload-zone-hint">
-                    Mehrere Bilder auswählen oder hierher ziehen<br>
-                    Max. 5MB pro Bild · JPG, PNG, WebP, GIF
+                    ${_miuE(_miuT('js_img_hint', 'Mehrere Bilder auswählen oder hierher ziehen'))}<br>
+                    ${_miuE(_miuT('js_img_limits', 'JPG, PNG, WebP, GIF'))}
                 </div>
                 <!-- Input ist außerhalb der Zone um Bubbling zu verhindern -->
             </div>
             
             <!-- Versteckter File-Input: außerhalb der Zone, kein Bubbling -->
-            <input type="file" id="multiFileInput" aria-label="Bilder auswählen"
+            <input type="file" id="multiFileInput" aria-label="${_miuE(_miuT('js_img_select', 'Bilder auswählen'))}"
                    accept="image/*" multiple
                    style="display:none;">
             
             <!-- Kamera-Button (nur Mobile) -->
             <div class="camera-options" id="multiCameraOptions" style="display:none;">
-                <button type="button" onclick="multiImageUpload.openCamera()">📷 Foto aufnehmen</button>
-                <button type="button" onclick="document.getElementById('multiFileInput').click()">🖼️ Aus Galerie</button>
+                <button type="button" onclick="multiImageUpload.openCamera()">📷 ${_miuE(_miuT('js_img_camera', 'Foto aufnehmen'))}</button>
+                <button type="button" onclick="document.getElementById('multiFileInput').click()">🖼️ ${_miuE(_miuT('js_img_gallery', 'Aus Galerie'))}</button>
             </div>
             
             <!-- Progress -->
@@ -63,7 +69,7 @@ class MultiImageUpload {
                 <div class="upload-progress-bar">
                     <div class="upload-progress-fill" id="uploadProgressFill"></div>
                 </div>
-                <div class="upload-progress-text" id="uploadProgressText">Lade hoch...</div>
+                <div class="upload-progress-text" id="uploadProgressText" role="status">${_miuE(_miuT('js_img_uploading', 'Lade hoch …'))}</div>
             </div>
             
             <!-- Errors -->
@@ -82,10 +88,10 @@ class MultiImageUpload {
             lb.id = 'lightboxOverlay';
             lb.innerHTML = `
                 <div class="lightbox-content">
-                    <button type="button" class="lightbox-close" onclick="multiImageUpload.closeLightbox()">✕</button>
-                    <button type="button" class="lightbox-nav lightbox-prev" onclick="event.preventDefault();event.stopPropagation();multiImageUpload.lightboxPrev();">‹</button>
+                    <button type="button" class="lightbox-close" onclick="multiImageUpload.closeLightbox()" aria-label="${_miuE(_miuT('js_close', 'Schließen'))}">✕</button>
+                    <button type="button" class="lightbox-nav lightbox-prev" onclick="event.preventDefault();event.stopPropagation();multiImageUpload.lightboxPrev();" aria-label="${_miuE(_miuT('js_prev', 'Vorheriges Bild'))}">‹</button>
                     <img id="lightboxImg" src="" alt="">
-                    <button type="button" class="lightbox-nav lightbox-next" onclick="event.preventDefault();event.stopPropagation();multiImageUpload.lightboxNext();">›</button>
+                    <button type="button" class="lightbox-nav lightbox-next" onclick="event.preventDefault();event.stopPropagation();multiImageUpload.lightboxNext();" aria-label="${_miuE(_miuT('js_next', 'Nächstes Bild'))}">›</button>
                     <div class="lightbox-counter" id="lightboxCounter"></div>
                 </div>`;
             document.body.appendChild(lb);
@@ -212,20 +218,20 @@ class MultiImageUpload {
                  data-id="${img.id}" 
                  data-index="${index}"
                  draggable="true">
-                ${img.is_primary ? '<div class="primary-badge">★ Haupt</div>' : ''}
+                ${img.is_primary ? '<div class="primary-badge">★ ' + _miuE(_miuT('js_img_primary', 'Hauptbild')) + '</div>' : ''}
                 <img src="${img.url}" 
-                     alt="Bild ${index + 1}"
+                     alt="${_miuE(_miuT('js_img_alt', 'Bild %s', index + 1))}"
                      onclick="multiImageUpload.openLightbox(${index})"
                      loading="lazy">
                 <div class="image-actions">
                     ${!img.is_primary ? `
                     <button type="button" class="image-action-btn primary-btn" 
                             onclick="multiImageUpload.setPrimary(${img.id})"
-                            title="Als Hauptbild setzen">★</button>
+                            title="${_miuE(_miuT('js_img_set_primary', 'Als Hauptbild setzen'))}" aria-label="${_miuE(_miuT('js_img_set_primary', 'Als Hauptbild setzen'))}">★</button>
                     ` : ''}
                     <button type="button" class="image-action-btn delete-btn" 
                             onclick="multiImageUpload.deleteImage(${img.id})"
-                            title="Bild löschen">🗑️</button>
+                            title="${_miuE(_miuT('js_img_delete', 'Bild löschen'))}" aria-label="${_miuE(_miuT('js_img_delete', 'Bild löschen'))}">🗑️</button>
                 </div>
             </div>
         `).join('');
@@ -242,7 +248,7 @@ class MultiImageUpload {
         const div = document.createElement('div');
         div.className = 'image-gallery-empty';
         div.id = 'imageGalleryEmpty';
-        div.textContent = 'Noch keine Bilder vorhanden';
+        div.textContent = _miuT('js_img_none', 'Noch keine Bilder vorhanden');
         return div;
     }
     
@@ -259,12 +265,12 @@ class MultiImageUpload {
         // Prüfe Limit
         const remaining = this.maxImages - this.images.length;
         if (remaining <= 0) {
-            this.showError(`Maximum von ${this.maxImages} Bildern erreicht`);
+            this.showError(_miuE(_miuT('js_img_max', 'Maximum von %s Bildern erreicht', this.maxImages)));
             return;
         }
         
         // Progress anzeigen
-        this.showProgress(0, 'Lade hoch...');
+        this.showProgress(0, _miuT('js_img_uploading', 'Lade hoch …'));
         this.hideError();
         
         const formData = new FormData();
@@ -285,17 +291,17 @@ class MultiImageUpload {
 
         try {
             // Progress
-            this.showProgress(30, `Lade ${added} Bild${added > 1 ? 'er' : ''} hoch...`);
+            this.showProgress(30, _miuT('js_img_uploading_n', 'Lade %s Bild(er) hoch …', added));
             
             const response = await fetch('image_manager.php', {
                 method: 'POST',
                 body: formData
             });
             
-            this.showProgress(80, 'Verarbeite...');
+            this.showProgress(80, _miuT('js_img_processing', 'Verarbeite …'));
             const data = await response.json();
             
-            this.showProgress(100, 'Fertig!');
+            this.showProgress(100, _miuT('js_img_done', 'Fertig!'));
             
             if (data.uploaded && data.uploaded.length > 0) {
                 this.images = [...this.images, ...data.uploaded];
@@ -306,11 +312,12 @@ class MultiImageUpload {
             }
             
             if (data.errors && data.errors.length > 0) {
-                this.showError(data.errors.join('<br>'));
+                // Fehlertexte koennen den Dateinamen enthalten (image_manager.php) - maskieren
+                this.showError(data.errors.map(_miuE).join('<br>'));
             }
             
         } catch (err) {
-            this.showError('Upload fehlgeschlagen: ' + err.message);
+            this.showError(_miuE(_miuT('js_img_upload_failed', 'Upload fehlgeschlagen: %s', err.message)));
         } finally {
             setTimeout(() => this.hideProgress(), 1500);
         }
@@ -362,10 +369,10 @@ class MultiImageUpload {
                 }
                 if (navigator.vibrate) navigator.vibrate(30);
             } else {
-                this.showError(data.error || 'Löschen fehlgeschlagen');
+                this.showError(_miuE(data.error || _miuT('js_img_delete_failed', 'Löschen fehlgeschlagen')));
             }
         } catch (err) {
-            this.showError('Fehler: ' + err.message);
+            this.showError(_miuE(_miuT('js_error_prefix', 'Fehler: %s', err.message)));
         }
     }
 
@@ -395,10 +402,10 @@ class MultiImageUpload {
                 this.renderGallery();
                 if (navigator.vibrate) navigator.vibrate(30);
             } else {
-                this.showError(data.error || 'Fehler beim Setzen');
+                this.showError(_miuE(data.error || _miuT('js_img_primary_failed', 'Hauptbild konnte nicht gesetzt werden')));
             }
         } catch (err) {
-            this.showError('Fehler: ' + err.message);
+            this.showError(_miuE(_miuT('js_error_prefix', 'Fehler: %s', err.message)));
         }
     }
     
@@ -552,7 +559,7 @@ class MultiImageUpload {
         // Unter Limit: Original zurückgeben
         if (file.size <= MAX_BYTES) return file;
 
-        if (onStatus) onStatus('🗜️ Komprimiere ' + file.name + '…');
+        if (onStatus) onStatus('🗜️ ' + _miuT('js_img_compressing', 'Komprimiere %s …', file.name));
 
         return new Promise((resolve) => {
             // FileReader statt createObjectURL: data:-URL ist CSP-konform

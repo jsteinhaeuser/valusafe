@@ -74,7 +74,9 @@ $_railActive  = [
 ];
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo defined('APP_LANG') ? APP_LANG : 'de'; ?>">
+<?php // lang = gewaehlte Sprache des Benutzers (WCAG 3.1.1; bis 4.3.33 immer die
+      // Installationssprache APP_LANG - Bildschirmleser lasen Englisch mit deutscher Stimme). ?>
+<html lang="<?php echo preg_match('/^[a-z]{2}$/', $_SESSION['lang'] ?? '') ? $_SESSION['lang'] : (defined('APP_LANG') ? APP_LANG : 'de'); ?>">
 <head>
     <meta charset="UTF-8">
     <link rel="manifest" href="manifest.json">
@@ -104,6 +106,7 @@ $_railActive  = [
             border-bottom: 2px solid var(--vs-border, #e2e8f0);
         }
     </style>
+    <?php include __DIR__ . '/components/js_texte.php'; // JS-Texte in Benutzersprache (4.3.34) ?>
 </head>
 <body class="vs-next">
 

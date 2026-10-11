@@ -1,8 +1,23 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-08.
+All changes that affect users. Generated from the project history on 2026-10-11.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.3.34 — 2026-10-11
+
+- **Fixed:** When deleting several items via the selection, additional photos of the items stayed on the server. They are now deleted as well.
+- **Fixed:** Quick entry: on smartphones the round plus button covered the price field and only led back to quick entry. It no longer appears on the entry pages themselves.
+- **New:** Two-factor sign-in for everyone: every account can now set up sign-in with an authenticator app itself (Settings → Manage two-factor). Until now only administrators could. If someone has lost their phone and backup codes, the administrator resets two-factor sign-in in user management. On demo accounts the setup can be switched off together with "Change own password".
+- **Fixed:** User management: when editing an account, the browser's password manager could silently fill the "New password" field with your own saved password – saving then gave the edited account that password and it could no longer sign in. The field is no longer filled automatically.
+- **Fixed:** User management: the hint at "See all items" now says that it only takes effect when "Users see only their own items" is switched on under "Public link". Until now it sounded as if the checkbox alone was enough.
+- **Fixed:** QR codes: for some text lengths no QR code appeared – when setting up two-factor sign-in depending on the user name, for the public link depending on the installation's address. The cause is a bug in the QR library used; it now falls back to another error correction level when needed.
+- **Fixed:** Public link: the "Created with …" note at the bottom of the public page pointed to one of the developer's instances instead of the project page palindrom.de/valusafe.
+- **Fixed:** User management: the page source contained the password hash of every account and, where set up, the two-factor secret and backup codes. Only the administrator allowed to open the page could see it - it still does not belong in the browser. Now only the data the edit dialog needs.
+- **Fixed:** Translations: about 45 messages in the browser were German in every language – image management when editing, the notice about a saved draft, barcode and ISBN lookup and the help window. They now appear in all nine languages. The page also tells screen readers the chosen language instead of always the installation language, and the help in the admin area is no longer German when English is selected.
+- **Fixed:** Edit item: after a barcode lookup, "Use image" promised the cover would be added after saving – but it was lost. It is now uploaded to the item's images straight away.
+- **Fixed:** Security: the detail view next to the overview inserted an item's name, room, serial number and notes into the page unfiltered. A user with edit rights could put script code into an item name that ran for anyone clicking the card – including the administrator. The values are now shown as plain text.
+- **Fixed:** Keyboard use: the cards in the overview could only be opened with the mouse. They can now be reached with the Tab key and opened with Enter; focus then moves to the detail view.
 
 ## 4.3.33 — 2026-10-09
 

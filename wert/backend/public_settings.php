@@ -281,6 +281,7 @@ include 'layout/header_next_page.php';
 </div>
 
 <script src="../js/qrcode.min.js"></script>
+<script src="../js/qrcode_sicher.js"></script>
 <script>
 <?php if ($token): ?>
 const qrUrl   = <?php echo json_encode($public_url); ?>;
@@ -299,13 +300,13 @@ window.addEventListener('load', function() {
     qrHidden.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
     document.body.appendChild(qrHidden);
 
-    new QRCode(qrHidden, {
+    vsQrCode(qrHidden, {
         text:         qrUrl,
         width:        160,
         height:       160,
         colorDark:    '#1e293b',
         colorLight:   '#ffffff',
-        correctLevel: 1  // M = 1 (L=0, M=1, Q=2, H=3)
+        correctLevel: QRErrorCorrectLevel.M  // in QRCode.js gilt L=1, M=0, Q=3, H=2 (bis 4.3.33 stand hier 1 = L mit falschem Kommentar)
     });
 
     setTimeout(function() {

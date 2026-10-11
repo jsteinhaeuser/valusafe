@@ -4,8 +4,12 @@
  * Sprache folgt der App-Sprache (data-lang am <html>-Tag)
  */
 
+// Sprache aus <html lang> (seit 4.3.34 die des Benutzers). Bis 4.3.33 wurde ein
+// Attribut data-lang gelesen, das keine Seite setzte - die Hilfe war immer deutsch.
+// Hilfetexte gibt es deutsch und englisch; alle anderen Sprachen bekommen Englisch.
 function getHelpLang() {
-    return (document.documentElement.getAttribute('data-lang') || 'de').substring(0, 2);
+    const l = (document.documentElement.getAttribute('lang') || 'de').substring(0, 2);
+    return l === 'de' ? 'de' : 'en';
 }
 
 const helpTexts = {
@@ -309,7 +313,7 @@ function initContextHelp() {
     if (!helpTexts[currentPage]) return;
 
     const lang = getHelpLang();
-    const entry = helpTexts[currentPage][lang] || helpTexts[currentPage]['de'];
+    const entry = helpTexts[currentPage][lang] || helpTexts[currentPage]['en'] || helpTexts[currentPage]['de'];
     if (!entry) return;
 
     const helpButton = document.createElement('button');
@@ -329,7 +333,7 @@ function showHelp(page) {
     const lang = getHelpLang();
     const pageHelp = helpTexts[page];
     if (!pageHelp) return;
-    const help = pageHelp[lang] || pageHelp['de'];
+    const help = pageHelp[lang] || pageHelp['en'] || pageHelp['de'];
     if (!help) return;
 
     const modal = document.createElement('div');

@@ -154,8 +154,8 @@ async function _loadVsm(idx,btn){
             +'<div style="font-size:14pt;font-weight:600;margin-bottom:6px;color:'+tx+'">'+f.label+'</div>'
             +'<div style="margin-bottom:24px">PDF-Dokument</div>'
             +'<a href="'+_vsmBase+'service_doc.php?file='+encodeURIComponent(f.file)+'" target="_blank"'
-            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📕 PDF öffnen</a>'
-            +'<div style="margin-top:10px;font-size:9pt;color:'+mu+'">Öffnet in einem neuen Tab</div></div>';
+            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📕 '+vsEsc(vsT('js_pdf_open','PDF öffnen'))+'</a>'
+            +'<div style="margin-top:10px;font-size:9pt;color:'+mu+'">'+vsEsc(vsT('js_opens_new_tab','Öffnet in einem neuen Tab'))+'</div></div>';
         return;
     }
     if(f.type==='php'){
@@ -163,7 +163,7 @@ async function _loadVsm(idx,btn){
             +'<div style="font-size:48px;margin-bottom:16px">📋</div>'
             +'<div style="font-size:14pt;font-weight:600;margin-bottom:24px;color:'+tx+'">'+f.label+'</div>'
             +'<a href="'+_vsmBase+f.file+'" target="_blank"'
-            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📋 '+f.label+' öffnen</a></div>';
+            +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📋 '+vsEsc(vsT('js_doc_open','%s öffnen',f.label))+'</a></div>';
         return;
     }
     c.innerHTML='<div style="padding:16px;color:'+mu+'">⏳ '+_vsmT.loading+'</div>';

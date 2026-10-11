@@ -802,7 +802,7 @@ function handleFileSelect(file) {
     const isValidType = allowedTypes.includes(file.type) || allowedExtensions.includes(extension);
 
     if (!isValidType) {
-        errDiv.textContent   = translations.errorType + ' (Erkannt: ' + file.type + ', Extension: .' + extension + ')';
+        errDiv.textContent   = translations.errorType + ' (' + vsT('js_detected_type', 'erkannt: %s, Endung: .%s', file.type, extension) + ')';
         errDiv.style.display = 'block';
         return;
     }
@@ -826,7 +826,7 @@ function handleFileSelect(file) {
             imagePreview.src = ev.target.result;
             imagePreviewContainer.classList.add('active');
             uploadZone.style.display = 'none';
-            infoDiv.textContent   = '✓ ' + formatBytes(originalSize) + ' — keine Komprimierung nötig';
+            infoDiv.textContent   = '✓ ' + formatBytes(originalSize) + ' – ' + vsT('js_compress_none', 'keine Komprimierung nötig');
             infoDiv.style.display = 'block';
         };
         reader.readAsDataURL(file);
@@ -866,7 +866,7 @@ function handleFileSelect(file) {
             uploadZone.style.display = 'none';
         };
         reader.readAsDataURL(file);
-        infoDiv.textContent   = '! Komprimierung fehlgeschlagen — Original (' + formatBytes(file.size) + ')';
+        infoDiv.textContent   = '! ' + vsT('js_compress_failed', 'Komprimierung fehlgeschlagen – Original') + ' (' + formatBytes(file.size) + ')';
         infoDiv.style.display = 'block';
     });
 }
@@ -932,9 +932,10 @@ document.addEventListener('keydown', (e) => {
         var banner = document.createElement('div');
         banner.id = 'autosave-banner';
         banner.style.cssText = 'background:#fff8e1; border:1px solid #f59e0b; border-radius:10px; padding:14px 20px; margin-bottom:18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:14px;';
-        banner.innerHTML = '<span>💾 <strong>Entwurf vom ' + draft._saved + '</strong> gefunden.</span>'
-            + '<button id="autosave-restore" style="padding:6px 14px; background:#f59e0b; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600;">Wiederherstellen</button>'
-            + '<button id="autosave-discard" style="padding:6px 14px; background:transparent; border:1px solid #ccc; border-radius:6px; cursor:pointer;">Verwerfen</button>';
+        banner.setAttribute('role', 'status');
+        banner.innerHTML = '<span>💾 <strong>' + vsEsc(vsT('js_draft_found', 'Entwurf vom %s gefunden.', draft._saved)) + '</strong></span>'
+            + '<button type="button" id="autosave-restore" style="padding:6px 14px; background:#b45309; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:600;">' + vsEsc(vsT('js_restore', 'Wiederherstellen')) + '</button>'
+            + '<button type="button" id="autosave-discard" style="padding:6px 14px; background:transparent; border:1px solid #767676; border-radius:6px; cursor:pointer;">' + vsEsc(vsT('js_discard', 'Verwerfen')) + '</button>';
         
         var form = document.getElementById('addForm');
         form.parentNode.insertBefore(banner, form);
@@ -1049,14 +1050,14 @@ document.addEventListener('keydown', (e) => {
         const clean = code.replace(/[^0-9X]/gi, '').toUpperCase();
         const res   = document.getElementById('isbn-lookup-result');
         res.style.display = 'block';
-        res.textContent   = '… Produktdaten werden gesucht…';
+        res.textContent   = '… ' + vsT('js_lookup_searching', 'Produktdaten werden gesucht …');
         res.style.background = '#f0fdf4'; res.style.borderColor = '#16a34a'; res.style.color = '#166534';
         try {
             const r    = await fetch(`barcode_lookup.php?code=${clean}`);
             const data = await r.json();
             if (!data.found) {
                 res.style.background = '#fef2f2'; res.style.borderColor = '#dc2626'; res.style.color = '#991b1b';
-                res.textContent = '✗ Keine Produktdaten gefunden – bitte manuell eintragen.';
+                res.textContent = '✗ ' + vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.');
                 return;
             }
             const nameEl  = document.getElementById('name');
@@ -1075,25 +1076,25 @@ document.addEventListener('keydown', (e) => {
             } else if (!notesEl.value) {
                 // Fallback: Notizen manuell zusammenbauen
                 const lines = [];
-                if (data.brand    && data.type === 'book') lines.push('Autor: ' + data.brand);
-                if (data.brand    && data.type !== 'book') lines.push('Marke: ' + data.brand);
-                if (data.category) lines.push('Kategorie: ' + data.category);
-                if (data.year)     lines.push('Jahr: ' + data.year);
+                if (data.brand    && data.type === 'book') lines.push(vsT('js_note_author', 'Autor') + ': ' + data.brand);
+                if (data.brand    && data.type !== 'book') lines.push(vsT('js_note_brand', 'Marke') + ': ' + data.brand);
+                if (data.category) lines.push(vsT('js_note_category', 'Kategorie') + ': ' + data.category);
+                if (data.year)     lines.push(vsT('js_note_year', 'Jahr') + ': ' + data.year);
                 if (lines.length)  notesEl.value = lines.join('\n');
             }
             if (data.cover) {
                 window._isbnCoverUrl = data.cover;
-                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${data.source})</span>` : '';
-                res.innerHTML = `<i class="ti ti-check" style="color:var(--vs-success)"></i> <strong>${data.name}</strong>${data.brand ? ' – ' + data.brand : ''}${data.year ? ' (' + data.year + ')' : ''}${src}<br>
-                    <button type="button" onclick="applyISBNCover()" style="background:none; border:none; padding:0; color:#0369a1; font-size:12px; cursor:pointer; text-decoration:underline;"><i class='ti ti-camera'></i> Bild übernehmen</button>`;
+                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${vsEsc(data.source)})</span>` : '';
+                res.innerHTML = `<i class="ti ti-check" style="color:var(--vs-success)"></i> <strong>${vsEsc(data.name)}</strong>${data.brand ? ' – ' + vsEsc(data.brand) : ''}${data.year ? ' (' + vsEsc(data.year) + ')' : ''}${src}<br>
+                    <button type="button" onclick="applyISBNCover()" style="background:none; border:none; padding:0; color:#0369a1; font-size:12px; cursor:pointer; text-decoration:underline;"><i class='ti ti-camera' aria-hidden='true'></i> ${vsEsc(vsT('js_lookup_take_image', 'Bild übernehmen'))}</button>`;
             } else {
-                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${data.source})</span>` : '';
-                res.innerHTML = `<i class="ti ti-check" style="color:var(--vs-success)"></i> <strong>${data.name}</strong>${data.brand ? ' – ' + data.brand : ''}${data.year ? ' (' + data.year + ')' : ''}${src}`;
+                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${vsEsc(data.source)})</span>` : '';
+                res.innerHTML = `<i class="ti ti-check" style="color:var(--vs-success)"></i> <strong>${vsEsc(data.name)}</strong>${data.brand ? ' – ' + vsEsc(data.brand) : ''}${data.year ? ' (' + vsEsc(data.year) + ')' : ''}${src}`;
             }
             res.style.background = '#f0fdf4'; res.style.borderColor = '#16a34a'; res.style.color = '#166534';
         } catch(e) {
             res.style.background = '#fef2f2'; res.style.borderColor = '#dc2626'; res.style.color = '#991b1b';
-            res.textContent = '! Fehler beim Abrufen: ' + e.message;
+            res.textContent = '! ' + vsT('js_lookup_error', 'Fehler beim Abrufen: %s', e.message);
         }
     };
     window.lookupISBN = window.lookupBarcode;
@@ -1131,7 +1132,7 @@ document.addEventListener('keydown', (e) => {
     if (!raumSelect || !positionSelect) return;
 
     function ladePositionen(raumId, preselectId) {
-        positionSelect.innerHTML = '<option value="">Position wählen…</option>';
+        positionSelect.innerHTML = '<option value="">' + vsEsc(vsT('js_position_choose', 'Position wählen …')) + '</option>';
         if (!raumId) { positionSelect.disabled = true; return; }
         fetch('ajax/get_positionen.php?raum_id=' + raumId)
             .then(function(r) { return r.json(); })

@@ -60,7 +60,9 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo defined('APP_LANG') ? APP_LANG : 'de'; ?>">
+<?php // lang = gewaehlte Sprache des Benutzers (WCAG 3.1.1; bis 4.3.33 immer die
+      // Installationssprache APP_LANG - Bildschirmleser lasen Englisch mit deutscher Stimme). ?>
+<html lang="<?php echo preg_match('/^[a-z]{2}$/', $_SESSION['lang'] ?? '') ? $_SESSION['lang'] : (defined('APP_LANG') ? APP_LANG : 'de'); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,6 +75,7 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
     <link rel="stylesheet" href="../css/backend.css">
     <link rel="icon" type="image/png" href="../favicon.png">
     
+    <?php include __DIR__ . '/../../components/js_texte.php'; // JS-Texte in Benutzersprache (4.3.34) ?>
 </head>
 <body class="vs-next">
 

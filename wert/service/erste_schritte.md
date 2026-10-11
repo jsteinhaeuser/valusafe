@@ -60,7 +60,7 @@ Empfehlung: Aktiviere den automatischen Cron-Backup (täglich).
 
 ## Schritt 5 — Zwei-Faktor-Authentifizierung aktivieren (empfohlen)
 
-Für zusätzlichen Schutz deines Kontos: Gehe zu **Backend → 2FA-Einrichtung**, scanne den angezeigten QR-Code mit einer Authenticator-App (Google Authenticator, Authy, Microsoft Authenticator) und bestätige den 6-stelligen Code. Bewahre die danach angezeigten Backup-Codes sicher auf.
+Für zusätzlichen Schutz deines Kontos: Gehe zu **Einstellungen → Zwei-Faktor verwalten**, scanne den angezeigten QR-Code mit einer Authenticator-App (Google Authenticator, Authy, Microsoft Authenticator) und bestätige den 6-stelligen Code. Bewahre die danach angezeigten Backup-Codes sicher auf.
 
 ---
 

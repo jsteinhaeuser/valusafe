@@ -1001,11 +1001,12 @@ document.addEventListener('DOMContentLoaded', function() {
         var banner = document.createElement('div');
         banner.id = 'autosave-banner';
         banner.style.cssText = 'background:#fff8e1; border:1px solid #f59e0b; border-radius:10px; padding:16px 20px; margin-bottom:18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; font-size:14px;';
-        banner.innerHTML = '<span style="font-size:20px;">💾</span>'
-            + '<div style="flex:1;"><strong>Ungespeicherter Entwurf vom ' + draft._saved + '</strong><br>'
-            + '<span style="font-size:12px;color:#666;">Möchtest du die zuletzt eingegebenen Werte wiederherstellen?</span></div>'
-            + '<button id="autosave-restore" style="padding:8px 16px; background:#f59e0b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">Wiederherstellen</button>'
-            + '<button id="autosave-discard" style="padding:8px 16px; background:white; border:1px solid #d1d5db; border-radius:8px; cursor:pointer;">Verwerfen</button>';
+        banner.setAttribute('role', 'status');
+        banner.innerHTML = '<span style="font-size:20px;" aria-hidden="true">💾</span>'
+            + '<div style="flex:1;"><strong>' + vsEsc(vsT('js_draft_unsaved', 'Ungespeicherter Entwurf vom %s', draft._saved)) + '</strong><br>'
+            + '<span style="font-size:12px;color:#595959;">' + vsEsc(vsT('js_draft_question', 'Möchtest du die zuletzt eingegebenen Werte wiederherstellen?')) + '</span></div>'
+            + '<button type="button" id="autosave-restore" style="padding:8px 16px; background:#b45309; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:600;">' + vsEsc(vsT('js_restore', 'Wiederherstellen')) + '</button>'
+            + '<button type="button" id="autosave-discard" style="padding:8px 16px; background:white; border:1px solid #767676; border-radius:8px; cursor:pointer;">' + vsEsc(vsT('js_discard', 'Verwerfen')) + '</button>';
 
         var form = document.getElementById('editForm') || document.querySelector('form');
         if (form) form.parentNode.insertBefore(banner, form);
@@ -1146,14 +1147,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const clean = code.replace(/[^0-9X]/gi, '').toUpperCase();
         const res   = document.getElementById('isbn-lookup-result');
         res.style.display = 'block';
-        res.textContent   = '⏳ Produktdaten werden gesucht…';
+        res.textContent   = '⏳ ' + vsT('js_lookup_searching', 'Produktdaten werden gesucht …');
         res.style.background = '#f0fdf4'; res.style.borderColor = '#16a34a'; res.style.color = '#166534';
         try {
             const r    = await fetch(`barcode_lookup.php?code=${clean}`);
             const data = await r.json();
             if (!data.found) {
                 res.style.background = '#fef2f2'; res.style.borderColor = '#dc2626'; res.style.color = '#991b1b';
-                res.textContent = '❌ Keine Produktdaten gefunden – bitte manuell eintragen.';
+                res.textContent = '❌ ' + vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.');
                 return;
             }
             const nameEl  = document.getElementById('name');
@@ -1170,25 +1171,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 notesEl.value = data.description;
             } else if (!notesEl.value) {
                 const lines = [];
-                if (data.brand    && data.type === 'book') lines.push('Autor: ' + data.brand);
-                if (data.brand    && data.type !== 'book') lines.push('Marke: ' + data.brand);
-                if (data.category) lines.push('Kategorie: ' + data.category);
-                if (data.year)     lines.push('Jahr: ' + data.year);
+                if (data.brand    && data.type === 'book') lines.push(vsT('js_note_author', 'Autor') + ': ' + data.brand);
+                if (data.brand    && data.type !== 'book') lines.push(vsT('js_note_brand', 'Marke') + ': ' + data.brand);
+                if (data.category) lines.push(vsT('js_note_category', 'Kategorie') + ': ' + data.category);
+                if (data.year)     lines.push(vsT('js_note_year', 'Jahr') + ': ' + data.year);
                 if (lines.length)  notesEl.value = lines.join('\n');
             }
             if (data.cover) {
                 window._isbnCoverUrl = data.cover;
-                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${data.source})</span>` : '';
-                res.innerHTML = `✅ <strong>${data.name}</strong>${data.brand ? ' – ' + data.brand : ''}${data.year ? ' (' + data.year + ')' : ''}${src}<br>
-                    <button type="button" onclick="applyISBNCover()" style="background:none; border:none; padding:0; color:#0369a1; font-size:12px; cursor:pointer; text-decoration:underline;">📷 Bild übernehmen</button>`;
+                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${vsEsc(data.source)})</span>` : '';
+                res.innerHTML = `✅ <strong>${vsEsc(data.name)}</strong>${data.brand ? ' – ' + vsEsc(data.brand) : ''}${data.year ? ' (' + vsEsc(data.year) + ')' : ''}${src}<br>
+                    <button type="button" onclick="applyISBNCover()" style="background:none; border:none; padding:0; color:#0369a1; font-size:12px; cursor:pointer; text-decoration:underline;">📷 ${vsEsc(vsT('js_lookup_take_image', 'Bild übernehmen'))}</button>`;
             } else {
-                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${data.source})</span>` : '';
-                res.innerHTML = `✅ <strong>${data.name}</strong>${data.brand ? ' – ' + data.brand : ''}${data.year ? ' (' + data.year + ')' : ''}${src}`;
+                const src = data.source ? ` <span style="font-size:12px;color:#595959;">(${vsEsc(data.source)})</span>` : '';
+                res.innerHTML = `✅ <strong>${vsEsc(data.name)}</strong>${data.brand ? ' – ' + vsEsc(data.brand) : ''}${data.year ? ' (' + vsEsc(data.year) + ')' : ''}${src}`;
             }
             res.style.background = '#f0fdf4'; res.style.borderColor = '#16a34a'; res.style.color = '#166534';
         } catch(e) {
             res.style.background = '#fef2f2'; res.style.borderColor = '#dc2626'; res.style.color = '#991b1b';
-            res.textContent = '⚠️ Fehler beim Abrufen: ' + e.message;
+            res.textContent = '⚠️ ' + vsT('js_lookup_error', 'Fehler beim Abrufen: %s', e.message);
         }
     };
     window.lookupISBN = window.lookupBarcode;
@@ -1200,11 +1201,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!r.ok) throw new Error('HTTP ' + r.status);
             const blob = await r.blob();
             const file = new File([blob], 'cover.jpg', { type: blob.type });
-            const dt   = new DataTransfer();
-            dt.items.add(file);
-            // In edit.php kein single-image input — Lookup-Ergebnis anzeigen reicht
-            document.getElementById('isbn-lookup-result').innerHTML +=
-                '<br><span style="color:var(--vs-success-text);font-size:12px;">✅ Bild wird nach Speichern übernommen</span>';
+            // Bis 4.3.33 stand hier nur der Hinweis "Bild wird nach Speichern
+            // uebernommen" - die Datei wurde aber nirgends hingegeben und ging
+            // verloren. Jetzt laedt die Bildverwaltung sie sofort hoch (wie ein
+            // per Hand gewaehltes Foto, mit Fortschritt und Galerie-Aktualisierung).
+            // multiImageUpload ist ein globales let (js/multi_image_upload.js), kein window-Feld
+            if (typeof multiImageUpload !== 'undefined' && multiImageUpload && typeof multiImageUpload.handleFiles === 'function') {
+                await multiImageUpload.handleFiles([file]);
+            } else {
+                throw new Error('MultiImageUpload');
+            }
         } catch(e) {
             vsAlert(<?php echo json_encode(t('error_cover_load')); ?>.replace('%s', function () { return e.message; }));
         }
@@ -1229,7 +1235,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var currentPositionId = <?php echo (int)($item['position_id'] ?? 0); ?>;
 
     function ladePositionen(raumId, preselectId) {
-        positionSelect.innerHTML = '<option value="">Position wählen…</option>';
+        positionSelect.innerHTML = '<option value="">' + vsEsc(vsT('js_position_choose', 'Position wählen …')) + '</option>';
         if (!raumId) { positionSelect.disabled = true; return; }
         fetch('ajax/get_positionen.php?raum_id=' + raumId)
             .then(function(r) { return r.json(); })
