@@ -1274,6 +1274,29 @@ if (!function_exists('formatDateTimeLocalized')) {
  * Faellt bewusst RESTRIKTIV aus (true), wenn die Abfrage scheitert: ein
  * DB-Fehler darf eine Zugriffspruefung nicht stillschweigend aufheben.
  */
+if (!function_exists('vsMigration014Da')) {
+    /**
+     * Ist Migration 014 (Schadensfaelle, wertsachen.seriennummer) gelaufen?
+     * Nach einem Update liegt der neue Code eine Weile vor der Datenbank -
+     * bis migrate.php gelaufen ist, duerfen Hinzufuegen/Bearbeiten die Spalte
+     * nicht beschreiben (sonst scheitert jedes Speichern), und schadenfall.php
+     * zeigt einen Hinweis statt eines Fehlers. Ein SELECT mit LIMIT 0 klappt
+     * in MySQL und SQLite.
+     */
+    function vsMigration014Da(): bool {
+        static $da = null;
+        if ($da !== null) return $da;
+        global $pdo;
+        try {
+            $pdo->query("SELECT seriennummer FROM wertsachen LIMIT 0");
+            $pdo->query("SELECT fall_id FROM schadensfall_gegenstaende LIMIT 0");
+            return $da = true;
+        } catch (Throwable $e) {
+            return $da = false;
+        }
+    }
+}
+
 if (!function_exists('userSeesOnlyOwnItems')) {
     function userSeesOnlyOwnItems(): bool {
         global $db;

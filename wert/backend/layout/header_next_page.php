@@ -78,6 +78,10 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
     <?php include __DIR__ . '/../../components/js_texte.php'; // JS-Texte in Benutzersprache (4.3.34) ?>
 </head>
 <body class="vs-next">
+<?php // Sprunglink + Hauptbereich (WCAG 2.4.1, 1.3.1; 4.4). Seiten mit eigenem <main>
+      // setzen vor dem Einbinden $vsEigenesMain - dann traegt der Inhaltsbereich
+      // nur die Sprungmarke, keine zweite main-Rolle. ?>
+<a class="vs-skip" href="#hauptinhalt"><?php echo htmlspecialchars(tn('nav_skip_content', 'Zum Inhalt springen'), ENT_QUOTES, 'UTF-8'); ?></a>
 
 <!-- Icon Rail -->
 <aside class="vs-rail" aria-label="<?php echo tn('nav_aria_main', 'Hauptnavigation'); ?>">
@@ -97,6 +101,11 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
            href="../insurance.php" title="<?php echo tn('nav_insurance', 'Versicherungen'); ?>">
             <i class="ti ti-shield" aria-hidden="true"></i>
         </a>
+        <?php if (function_exists('hasPermission') && hasPermission('claims_view') && function_exists('vsMigration014Da') && vsMigration014Da()): ?>
+        <a class="vs-rail-btn" href="../schadenfall.php" title="<?php echo htmlspecialchars(tn('claims_title', 'Schadensfall'), ENT_QUOTES, 'UTF-8'); ?>" aria-label="<?php echo htmlspecialchars(tn('claims_title', 'Schadensfall'), ENT_QUOTES, 'UTF-8'); ?>">
+            <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        </a>
+        <?php endif; ?>
         <a class="vs-rail-btn <?php echo $_currentPage === 'stats.php' ? 'vs-rail-on' : ''; ?>"
            href="stats.php" title="<?php echo tn('nav_stats', 'Statistiken'); ?>">
             <i class="ti ti-chart-bar" aria-hidden="true"></i>
@@ -152,4 +161,6 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
 
     <!-- Workspace -->
     <div class="vs-workspace">
-        <div class="vs-page-content">
+        <?php // Die meisten Verwaltungsseiten haben ein eigenes <main class="backend-main">;
+              // Seiten ohne setzen $vsEigenesMain = false vor dem Einbinden. ?>
+        <div class="vs-page-content" id="hauptinhalt" tabindex="-1"<?php echo (isset($vsEigenesMain) && !$vsEigenesMain) ? ' role="main"' : ''; ?>>

@@ -22,13 +22,15 @@ Nach einem Schaden stellt die Versicherung drei Fragen: Was hatten Sie, was war 
 - **Standorte** als Räume, Orte und Positionen, damit „wo ist es" eine Antwort hat
 - **Versicherungen** mit zugeordneten Gegenständen
 - **Barcode-Scan** im Browser, mit Nachschlagen für Bücher und Medien
+- **Schadensfall-Assistent**: nach Einbruch, Brand oder Wasserschaden betroffene Gegenstände auswählen und daraus eine Liste für die Polizei und eine Schadensmeldung für die Versicherung drucken
 - **Exporte**: PDF (darunter ein Versicherungsbericht und ein Übergabeprotokoll), CSV, HTML, QR-Codes zum Aufkleben
 - **Übersichtsseite** mit Auswertungen nach Kategorie, Raum und Wert
 - **Benutzer und Rollen** (admin, edit, read) samt feiner Rechtematrix
-- **Zwei-Faktor-Anmeldung** (TOTP nach RFC 6238)
+- **Zwei-Faktor-Anmeldung** (TOTP nach RFC 6238) für alle Konten
 - **Datensicherung** von Datenbank, Bildern und Programmdateien, mit Wiederherstellung
 - **Neun Sprachen**: Deutsch, Englisch, Französisch, Spanisch, Italienisch, Niederländisch, Polnisch, Portugiesisch, Türkisch
-- **Sieben Farbschemata** zur Auswahl, darunter ein dunkles, gegen die WCAG-Kontrastregeln geprüft
+- **Sieben Farbschemata** zur Auswahl, darunter ein dunkles
+- **Bedienung per Tastatur**: Sprunglink zum Inhalt, sichtbarer Fokus, Karten mit Enter öffnen; vollständige WCAG-2.1-AA-Konformität ist für Version 5.0 geplant
 - **Änderungsverlauf** — wer hat was wann geändert
 
 ## Ein paar Ansichten

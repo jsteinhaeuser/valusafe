@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 10. Oktober 2026 · Version 4.3.34 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 12. Oktober 2026 · Version 4.4 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -96,7 +96,7 @@ Kerntabelle ist `wertsachen`. Relevante Spalten:
 
 `id`, `name`, `kategorie_id`, `raum_id`, `standort_id`, `position_id`, `kaufdatum`, `preis`, `aktueller_wert`, `aktueller_wert_datum`, `notizen`, `bild`, `barcode`, `versicherung_id`, `hidden`, `schadenfall`, `oeffentlich`, `public_token`, `sort_order`, `erstellt_von`, `erstellt_am`, `geaendert_am`, `gelistet_am`, sowie zwei frei belegbare Felder (`custom1_wert`/`custom1_typ`, `custom2_wert`/`custom2_typ`).
 
-Weitere Tabellen: `users`, `kategorien`, `raeume`, `standorte`, `positionen`, `dokumente`, `item_images`, `wert_historie`, `versicherungen`, `app_settings`, `activity_log`, `user_activity`, `security_log`, `login_attempts`, `rate_limit`, `permissions`, `password_resets`, `schema_migrations` — insgesamt 19.
+Weitere Tabellen: `users`, `kategorien`, `raeume`, `standorte`, `positionen`, `dokumente`, `item_images`, `wert_historie`, `versicherungen`, `app_settings`, `activity_log`, `user_activity`, `security_log`, `login_attempts`, `rate_limit`, `permissions`, `password_resets`, `schema_migrations`, `schadensfaelle`, `schadensfall_gegenstaende` (Schadensfälle, seit 4.4) — insgesamt 21.
 
 **Standorte — im September 2026 bereinigt.** Bis dahin bestanden drei Modelle
 nebeneinander, und `wertsachen.raum_id` wurde je nach Stelle gegen zwei
@@ -267,4 +267,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 10. Oktober 2026, Version 4.3.34. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 12. Oktober 2026, Version 4.4. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

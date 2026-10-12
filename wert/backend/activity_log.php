@@ -125,6 +125,7 @@ try {
     die('Fehler beim Laden der Daten: ' . $e->getMessage());
 }
 
+$vsEigenesMain = false; // kein eigenes <main> - Inhaltsbereich bekommt die main-Rolle (4.4)
 include 'layout/header_next_page.php';
 ?>
 

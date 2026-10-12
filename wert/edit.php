@@ -135,6 +135,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $standort_id,
                 $id
             ]);
+            // Seriennummer erst nach Migration 014 (4.4)
+            if (vsMigration014Da()) {
+                $db->execute("UPDATE wertsachen SET seriennummer = ? WHERE id = ?",
+                    [mb_substr(trim($_POST['seriennummer'] ?? ''), 0, 100) ?: null, $id]);
+            }
             
             // Werthistorie-Eintrag wenn aktueller_wert gesetzt und geändert
             if ($aktueller_wert !== null) {
@@ -791,6 +796,16 @@ include 'header_next_page.php';
         <label for="notizen"><?php echo t('form_notes'); ?>:</label>
         <textarea id="notizen" name="notizen" rows="5" maxlength="5000"><?php echo htmlspecialchars($item['notizen']); ?></textarea>
     </div>
+
+    <?php if (vsMigration014Da()): ?>
+    <div class="form-group">
+        <label for="seriennummer"><i class="ti ti-hash" aria-hidden="true"></i> <?php echo t('field_serial'); ?></label>
+        <input type="text" id="seriennummer" name="seriennummer" maxlength="100" autocomplete="off"
+               value="<?php echo htmlspecialchars($item['seriennummer'] ?? ''); ?>"
+               aria-describedby="seriennummer_hint">
+        <small id="seriennummer_hint"><?php echo t('field_serial_hint'); ?></small>
+    </div>
+    <?php endif; ?>
 
     <div class="form-group">
         <label for="barcode"><i class="ti ti-barcode" aria-hidden="true"></i> Barcode / ISBN:</label>

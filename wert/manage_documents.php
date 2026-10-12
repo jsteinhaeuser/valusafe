@@ -147,6 +147,7 @@ try {
     $dokumente = [];
 }
 
+$vsEigenesMain = true; // eigenes <main> weiter unten (Sprunglink, 4.4)
 include 'header_next_page.php';
 ?>
 

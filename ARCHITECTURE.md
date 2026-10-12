@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 10 October 2026 · Version 4.3.34 (all sections checked against the source before publication)
+**As of:** 12 October 2026 · Version 4.4 (all sections checked against the source before publication)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -96,7 +96,7 @@ The core table is `wertsachen` (items). Relevant columns:
 
 `id`, `name`, `kategorie_id`, `raum_id`, `standort_id`, `position_id`, `kaufdatum`, `preis`, `aktueller_wert`, `aktueller_wert_datum`, `notizen`, `bild`, `barcode`, `versicherung_id`, `hidden`, `schadenfall`, `oeffentlich`, `public_token`, `sort_order`, `erstellt_von`, `erstellt_am`, `geaendert_am`, `gelistet_am`, plus two free-form fields (`custom1_wert`/`custom1_typ`, `custom2_wert`/`custom2_typ`).
 
-Other tables: `users`, `kategorien`, `raeume`, `standorte`, `positionen`, `dokumente`, `item_images`, `wert_historie`, `versicherungen`, `app_settings`, `activity_log`, `user_activity`, `security_log`, `login_attempts`, `rate_limit`, `permissions`, `password_resets`, `schema_migrations` — 19 in all.
+Other tables: `users`, `kategorien`, `raeume`, `standorte`, `positionen`, `dokumente`, `item_images`, `wert_historie`, `versicherungen`, `app_settings`, `activity_log`, `user_activity`, `security_log`, `login_attempts`, `rate_limit`, `permissions`, `password_resets`, `schema_migrations`, `schadensfaelle`, `schadensfall_gegenstaende` (damage claims, since 4.4) — 21 in all.
 
 **Locations — resolved in September 2026.** Until then three models for
 locations coexisted, and `wertsachen.raum_id` was resolved against two different
@@ -270,4 +270,4 @@ For a critical eye, the most rewarding read is `helpers.php` (1,516 lines, grown
 
 ---
 
-*This document describes the state as of 10 October 2026, version 4.3.34. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 12 October 2026, version 4.4. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

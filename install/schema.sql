@@ -171,6 +171,30 @@ CREATE TABLE IF NOT EXISTS `rate_limit` (
   KEY `idx_locked` (`locked_until`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE IF NOT EXISTS `schadensfaelle` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `art` varchar(20) NOT NULL DEFAULT 'einbruch',
+  `datum` date DEFAULT NULL,
+  `aktenzeichen` varchar(100) DEFAULT NULL,
+  `versicherung_id` int(11) DEFAULT NULL,
+  `beschreibung` text DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'offen',
+  `erstellt_von` varchar(100) DEFAULT NULL,
+  `erstellt_am` datetime DEFAULT current_timestamp(),
+  `geaendert_am` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `schadensfall_gegenstaende` (
+  `fall_id` int(11) NOT NULL,
+  `wertsache_id` int(11) NOT NULL,
+  `zustand` varchar(20) NOT NULL DEFAULT 'gestohlen',
+  `notiz` text DEFAULT NULL,
+  PRIMARY KEY (`fall_id`, `wertsache_id`),
+  KEY `idx_wertsache` (`wertsache_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 CREATE TABLE IF NOT EXISTS `schema_migrations` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `migration` varchar(191) NOT NULL,
@@ -287,6 +311,7 @@ CREATE TABLE IF NOT EXISTS `wertsachen` (
   `custom2_wert` text DEFAULT NULL,
   `custom2_typ` enum('text','zahl') DEFAULT 'text',
   `barcode` varchar(100) DEFAULT NULL,
+  `seriennummer` varchar(100) DEFAULT NULL,
   `versicherung_id` int(11) DEFAULT NULL,
   `oeffentlich` tinyint(1) NOT NULL DEFAULT 0,
   `public_token` varchar(64) DEFAULT NULL,
@@ -409,6 +434,8 @@ INSERT IGNORE INTO `permissions`
   ('settings_columns', 'Einstellungen', '📊', 'Spalten konfigurieren', 24, 1, 1, 1, 'admin'),
   ('settings_password', 'Einstellungen', '👤', 'Eigenes Passwort ändern', 25, 1, 1, 1, 'admin'),
   ('settings_delete_account', 'Einstellungen', '🗑️', 'Eigenes Konto löschen', 25, 1, 1, 1, 'admin'),
+  ('claims_view', 'Schadensfall', '🚨', 'Schadensfälle ansehen', 26, 1, 1, 1, 'admin'),
+  ('claims_manage', 'Schadensfall', '📝', 'Schadensfälle anlegen und bearbeiten', 27, 1, 1, 0, 'admin'),
   ('admin_users', 'Admin-Bereich', '👥', 'Benutzer verwalten', 26, 1, 0, 0, 'admin,edit,read'),
   ('admin_categories', 'Admin-Bereich', '🏷️', 'Kategorien verwalten', 27, 1, 0, 0, 'admin,edit,read'),
   ('admin_locations', 'Admin-Bereich', '📍', 'Orte verwalten', 28, 1, 0, 0, 'admin,edit,read'),

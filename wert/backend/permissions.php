@@ -29,6 +29,7 @@ try {
         'Export'             => 'export',
         'Einstellungen'      => 'settings',
         'Admin-Bereich'      => 'admin',
+        'Schadensfall'       => 'claims',
     ];
     foreach ($rows as $r) {
         $permsBySection[$abschnittAlias[$r['section']] ?? $r['section']][] = $r;
@@ -44,6 +45,7 @@ $sectionIcons = [
     'media'    => ['icon' => '<i class="ti ti-camera"></i>',   'label' => 'perm_group_media'],
     'export'   => ['icon' => '<i class="ti ti-upload"></i>',   'label' => 'perm_group_export'],
     'settings' => ['icon' => '<i class="ti ti-settings"></i>', 'label' => 'perm_group_settings'],
+    'claims'   => ['icon' => '<i class="ti ti-alert-triangle"></i>', 'label' => 'perm_group_claims'],
     'admin'    => ['icon' => '<i class="ti ti-key"></i>',      'label' => 'perm_group_admin'],
 ];
 
@@ -75,6 +77,8 @@ $actionLabelMap = [
     'settings_columns' => 'perm_act_settings_columns',
     'settings_password'=> 'perm_act_settings_password',
     'settings_delete_account' => 'perm_act_settings_delete_account',
+    'claims_view'      => 'perm_act_claims_view',
+    'claims_manage'    => 'perm_act_claims_manage',
     'admin_users'      => 'perm_act_admin_users',
     'admin_categories' => 'perm_act_admin_categories',
     'admin_locations'  => 'perm_act_admin_locations',

@@ -2,7 +2,33 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 11.10.2026 aus der Projektchronik.
+Erzeugt am 12.10.2026 aus der Projektchronik.
+
+Version 4.4   12.10.2026
+------------------------
+  [Neu] Schadensfall-Assistent: Nach einem Einbruch, Brand oder Wasserschaden
+        legen Sie in drei Schritten einen Schadensfall an – was ist
+        passiert, welche Gegenstände sind betroffen (gestohlen, zerstört,
+        beschädigt), Zusammenfassung mit Kauf- und Zeitwert,
+        Versicherungssumme und Selbstbeteiligung. Daraus entstehen eine Liste
+        für die Polizei (mit Fotos, Seriennummern und Merkmalen) und eine
+        Schadensmeldung für die Versicherung mit anpassbarem
+        Begleitschreiben, beides druckbar oder als PDF. Neues Symbol in der
+        linken Leiste.
+  [Neu] Neues Feld „Seriennummer“ beim Anlegen und Bearbeiten – für die
+        Polizei nach einem Diebstahl das wichtigste Merkmal. Die Detailansicht
+        zeigt sie an.
+  [Fix] Gegenstand hinzufügen: Der Barcode wurde beim Anlegen nicht
+        gespeichert (nur beim Bearbeiten).
+  [Fix] Datenbank: Nach dem Update bitte migrate.php aufrufen (Migration 014:
+        Schadensfälle, Seriennummer, zwei neue Rechte). Bis dahin bleiben
+        Seriennummer und Schadensfall ausgeblendet, alles andere läuft
+        normal.
+  [Fix] Barrierefreiheit, Grundrahmen: Jede Seite hat einen Link „Zum Inhalt
+        springen“ (erscheint mit der ersten Tab-Taste) und einen
+        gekennzeichneten Hauptbereich. Alle Bedienelemente zeigen einen
+        deutlichen Rahmen, wenn sie per Tastatur den Fokus haben – das
+        Suchfeld oben und die Formularfelder zeigten bisher keinen.
 
 Version 4.3.34   11.10.2026
 ---------------------------

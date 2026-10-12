@@ -92,6 +92,7 @@ $host      = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $base_path = rtrim(dirname(dirname($_SERVER['SCRIPT_NAME'])), '/');
 $public_url = $token ? "{$protocol}://{$host}{$base_path}/public.php?token={$token}" : null;
 
+$vsEigenesMain = false; // kein eigenes <main> - Inhaltsbereich bekommt die main-Rolle (4.4)
 include 'layout/header_next_page.php';
 ?>
 

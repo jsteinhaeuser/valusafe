@@ -22,13 +22,15 @@ Insurers ask three questions after a loss: what did you own, what was it worth, 
 - **Locations** as rooms, places and positions, so "where is it" has an answer
 - **Insurance policies** with items assigned to them
 - **Barcode scanning** in the browser, with lookup for books and media
+- **Damage claim assistant**: after a burglary, fire or water damage, select the affected items and print a list for the police and a claim report for your insurer
 - **Exports**: PDF (including an insurance report and a handover report), CSV, HTML, printable QR code labels
 - **Dashboard** with charts by category, room and value
 - **Users and roles** (admin, edit, read) plus a fine-grained permission matrix
-- **Two-factor authentication** (TOTP, RFC 6238)
+- **Two-factor authentication** (TOTP, RFC 6238) for every account
 - **Backups** of database, images and application files, with restore
 - **Nine languages**: German, English, French, Spanish, Italian, Dutch, Polish, Portuguese, Turkish
-- **Seven themes** to choose from, one of them dark, checked against WCAG contrast rules
+- **Seven themes** to choose from, one of them dark
+- **Keyboard use**: skip-to-content link, visible focus, cards open with Enter; full WCAG 2.1 AA conformance is planned for version 5.0
 - **Activity log** — who changed what, and when
 
 ## A few views

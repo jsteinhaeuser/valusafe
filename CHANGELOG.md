@@ -1,8 +1,16 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-11.
+All changes that affect users. Generated from the project history on 2026-10-12.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.4 — 2026-10-12
+
+- **New:** Damage claim assistant: after a burglary, fire or water damage you create a damage claim in three steps – what happened, which items are affected (stolen, destroyed, damaged), and a summary with purchase and current value, sum insured and deductible. From this you get a list for the police (with photos, serial numbers and features) and a claim report for your insurer with an editable cover letter, both printable or as PDF. New icon in the left sidebar.
+- **New:** New "Serial number" field when adding and editing items – the most important detail for the police after a theft. The detail view shows it.
+- **Fixed:** Add item: the barcode was not saved when creating an item (only when editing).
+- **Fixed:** Database: after updating, please run migrate.php (migration 014: damage claims, serial number, two new permissions). Until then the serial number and damage claims stay hidden; everything else works normally.
+- **Fixed:** Accessibility, basic framework: every page has a "Skip to content" link (appears with the first Tab key) and a marked main area. All controls show a clear outline when they have keyboard focus – the search field at the top and the form fields showed none until now.
 
 ## 4.3.34 — 2026-10-11
 

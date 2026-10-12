@@ -267,6 +267,9 @@ function _permissionFallback(string $key, string $role): bool {
         'settings_columns'  => ['edit' => true,  'read' => true],
         'settings_password' => ['edit' => true,  'read' => true],
         'settings_delete_account' => ['edit' => true,  'read' => true],
+        // Schadensfall-Assistent (4.4, Migration 014)
+        'claims_view'       => ['edit' => true,  'read' => true],
+        'claims_manage'     => ['edit' => true,  'read' => false],
     ];
     if (!isset($defaults[$key])) return false;
     return $isEdit ? $defaults[$key]['edit'] : $defaults[$key]['read'];

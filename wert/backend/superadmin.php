@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $settings = getSASettings($db);
 
 $breadcrumb = ['SuperAdmin-Einstellungen', '<i class="ti ti-key"></i>', 'System'];
+$vsEigenesMain = false; // kein eigenes <main> - Inhaltsbereich bekommt die main-Rolle (4.4)
 require_once 'layout/header_next_page.php';
 ?>
 

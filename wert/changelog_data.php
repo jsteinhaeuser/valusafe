@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 11.10.2026 15:26 von bin/changelog_export.php.
+ * Erzeugt am 12.10.2026 09:36 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,42 @@
  */
 
 return [
+    [
+        'version' => '4.4',
+        'date' => '2026-10-12',
+        'entries' => [
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Schadensfall-Assistent: Nach einem Einbruch, Brand oder Wasserschaden legen Sie in drei Schritten einen Schadensfall an – was ist passiert, welche Gegenstände sind betroffen (gestohlen, zerstört, beschädigt), Zusammenfassung mit Kauf- und Zeitwert, Versicherungssumme und Selbstbeteiligung. Daraus entstehen eine Liste für die Polizei (mit Fotos, Seriennummern und Merkmalen) und eine Schadensmeldung für die Versicherung mit anpassbarem Begleitschreiben, beides druckbar oder als PDF. Neues Symbol in der linken Leiste.',
+                'text_en' => 'Damage claim assistant: after a burglary, fire or water damage you create a damage claim in three steps – what happened, which items are affected (stolen, destroyed, damaged), and a summary with purchase and current value, sum insured and deductible. From this you get a list for the police (with photos, serial numbers and features) and a claim report for your insurer with an editable cover letter, both printable or as PDF. New icon in the left sidebar.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Neues Feld „Seriennummer“ beim Anlegen und Bearbeiten – für die Polizei nach einem Diebstahl das wichtigste Merkmal. Die Detailansicht zeigt sie an.',
+                'text_en' => 'New "Serial number" field when adding and editing items – the most important detail for the police after a theft. The detail view shows it.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Gegenstand hinzufügen: Der Barcode wurde beim Anlegen nicht gespeichert (nur beim Bearbeiten).',
+                'text_en' => 'Add item: the barcode was not saved when creating an item (only when editing).'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Datenbank: Nach dem Update bitte migrate.php aufrufen (Migration 014: Schadensfälle, Seriennummer, zwei neue Rechte). Bis dahin bleiben Seriennummer und Schadensfall ausgeblendet, alles andere läuft normal.',
+                'text_en' => 'Database: after updating, please run migrate.php (migration 014: damage claims, serial number, two new permissions). Until then the serial number and damage claims stay hidden; everything else works normally.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Barrierefreiheit, Grundrahmen: Jede Seite hat einen Link „Zum Inhalt springen“ (erscheint mit der ersten Tab-Taste) und einen gekennzeichneten Hauptbereich. Alle Bedienelemente zeigen einen deutlichen Rahmen, wenn sie per Tastatur den Fokus haben – das Suchfeld oben und die Formularfelder zeigten bisher keinen.',
+                'text_en' => 'Accessibility, basic framework: every page has a "Skip to content" link (appears with the first Tab key) and a marked main area. All controls show a clear outline when they have keyboard focus – the search field at the top and the form fields showed none until now.'
+            ]
+        ]
+    ],
     [
         'version' => '4.3.34',
         'date' => '2026-10-11',
@@ -195,24 +231,6 @@ return [
                 'public' => true,
                 'text' => 'Die Uebersicht im Verwaltungsbereich, die Einstellungen und die Statistikseite zeigen die Zahl der Raeume jetzt als "Raeume" an. Bisher stand dort "Orte", und die kleinere Zahl daneben hiess "Raeume", obwohl sie die Standorte zaehlte - etwa "6 Orte · 1 Raeume · 1 Pos." bei sechs Raeumen und einem Standort. Jetzt: "6 Raeume · Standorte: 1 · Pos.: 1". Die Zahlen selbst waren immer richtig, nur falsch beschriftet. Zu tun ist nichts.',
                 'text_en' => 'The admin overview, the settings and the statistics page now label the number of rooms as "Rooms". Previously it said "Locations", and the smaller number next to it was called "Rooms" although it counted the locations within rooms - for example "6 Locations · 1 Rooms · 1 Pos." for six rooms and one location. Now: "6 Rooms · Locations: 1 · Pos.: 1". The numbers themselves were always right, only the labels were wrong. No action needed.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.30',
-        'date' => '2026-09-30',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Das Docker-Image beruht jetzt auf PHP 8.4 statt 8.2. PHP 8.2 erhaelt ab dem 31.12.2026 keine Sicherheitskorrekturen mehr. Wer ValuSafe mit Docker betreibt, baut das Image neu (im Ordner docker: docker compose build --pull, danach docker compose up -d). Datenbank, Fotos, Belege und Sicherungen liegen in eigenen Volumes und bleiben erhalten; die Zugangsdaten kommen wie bisher aus der .env. Wer ValuSafe bei einem Hoster betreibt, ist nicht betroffen - dort bestimmt der Hoster die PHP-Version; ValuSafe laeuft mit PHP 8.2 bis 8.4.',
-                'text_en' => 'The Docker image is now based on PHP 8.4 instead of 8.2. PHP 8.2 receives no security fixes after 31 December 2026. If you run ValuSafe with Docker, rebuild the image (in the docker folder: docker compose build --pull, then docker compose up -d). Database, photos, receipts and backups live in their own volumes and are kept; credentials still come from the .env file. If ValuSafe runs at a web host, you are not affected - the host decides the PHP version; ValuSafe runs on PHP 8.2 to 8.4.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Unter Einstellungen -> "Datenschutz & meine Daten" funktionieren beide Knoepfe jetzt so, wie sie beschrieben sind. "Account loeschen" schlug bisher bei jedem Konto mit einer technischen Fehlermeldung fehl - das Konto blieb bestehen. "Daten herunterladen" lieferte zwar eine Datei, darin fehlten aber die Kontodaten und das Aktivitaetsprotokoll; nur die Gegenstaende waren enthalten. Jetzt enthaelt die Datei Konto, Gegenstaende und Aktivitaeten (ohne Passwort und Zugangscodes), und die Loeschung entfernt das Konto samt Profilbild, offenen Links zum Zuruecksetzen des Passworts und den gespeicherten Anmeldeversuchen. Gegenstaende bleiben erhalten und tragen weiter den Namen, der unter "Erstellt von" steht; Protokolleintraege bleiben ebenfalls, verweisen aber nicht mehr auf das Konto. Der Hinweis unter dem Knopf versprach bisher, die Gegenstaende wuerden keinem Benutzer mehr zugeordnet - das stimmte nicht und ist berichtigt (alle neun Sprachen). Dasselbe gilt jetzt auch, wenn ein Administrator einen Benutzer in der Benutzerverwaltung loescht. Wer frueher vergeblich versucht hat, sein Konto zu loeschen, kann es jetzt erneut tun.',
-                'text_en' => 'Under Settings -> "Privacy & my data", both buttons now work as described. "Delete account" used to fail for every account with a technical error message - the account remained. "Download data" did produce a file, but it lacked the account data and the activity log; only the items were included. Now the file contains account, items and activities (without password and access codes), and deletion removes the account together with its profile picture, open password-reset links and stored login attempts. Items are kept and still carry the name shown under "Created by"; log entries are kept as well but no longer point to the account. The note below the button used to promise that items would no longer be assigned to any user - that was not true and has been corrected (all nine languages). The same now applies when an administrator deletes a user in user management. If you tried to delete your account before without success, you can now try again.'
             ],
             [
                 'type' => 'feature',

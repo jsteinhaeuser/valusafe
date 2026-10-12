@@ -70,6 +70,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $custom2_wert = trim($_POST['custom2_wert'] ?? '') ?: null;
             $custom2_typ  = in_array($_POST['custom2_typ'] ?? '', ['text','zahl']) ? $_POST['custom2_typ'] : 'text';
             [$standort_id, $position_id] = standortAusFormular($db, $_POST);
+            // Barcode: bis 4.3.34 stand hier $data['barcode'] - das Feld liefert
+            // sanitizeWertsachenInput() nicht, der Barcode ging beim Anlegen verloren.
+            $barcode      = trim($_POST['barcode'] ?? '') ?: null;
+            $seriennummer = mb_substr(trim($_POST['seriennummer'] ?? ''), 0, 100) ?: null;
 
             $sql = "INSERT INTO wertsachen (name, raum_id, kategorie_id, kaufdatum, preis, notizen, bild, erstellt_von, gelistet_am, custom1_wert, custom1_typ, custom2_wert, custom2_typ, barcode, position_id, standort_id) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -88,10 +92,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $custom1_typ,
                 $custom2_wert,
                 $custom2_typ,
-                $data['barcode'] ?? null,
+                $barcode,
                 $position_id,
                 $standort_id,
             ]);
+            // Seriennummer erst nach Migration 014 (4.4) - sonst scheitert das Speichern
+            if ($newId && $seriennummer !== null && vsMigration014Da()) {
+                $db->execute("UPDATE wertsachen SET seriennummer = ? WHERE id = ?", [$seriennummer, $newId]);
+            }
             
             Security::logSecurityEvent('item_created', [
                 'item_name' => $data['name'],
@@ -516,6 +524,17 @@ include 'header_next_page.php';
                placeholder="0.00">
         <small style="color: #595959; font-size: 12px;"><?php echo t('price_decimal_hint'); ?></small>
     </div>
+
+    <?php if (vsMigration014Da()): ?>
+    <!-- SERIENNUMMER (4.4) -->
+    <div class="form-group">
+        <label for="seriennummer"><i class="ti ti-hash" aria-hidden="true"></i> <?php echo t('field_serial'); ?></label>
+        <input type="text" id="seriennummer" name="seriennummer" maxlength="100" autocomplete="off"
+               value="<?php echo htmlspecialchars($_POST['seriennummer'] ?? ''); ?>"
+               aria-describedby="seriennummer_hint">
+        <small id="seriennummer_hint" style="color: #595959; font-size: 12px;"><?php echo t('field_serial_hint'); ?></small>
+    </div>
+    <?php endif; ?>
 
     <!-- BARCODE -->
     <div class="form-group">

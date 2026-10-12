@@ -62,6 +62,7 @@ try {
     $stats = null;
 }
 
+$vsEigenesMain = false; // kein eigenes <main> - Inhaltsbereich bekommt die main-Rolle (4.4)
 include 'layout/header_next_page.php';
 ?>
 

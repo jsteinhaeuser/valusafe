@@ -143,6 +143,7 @@ $pageTitle = t('insurance_overview');
 $exportDatum = date('d.m.Y');
 
 if (!$printMode) {
+    $vsEigenesMain = true; // eigenes <main> weiter unten (Sprunglink, 4.4)
     include 'header_next_page.php';
 }
 ?>
