@@ -37,8 +37,10 @@ const STATIC_ASSETS = [
     'css/tabler-icons.min.css',
     // 4.4.1: alles, was sich mit dem Release aendert, gehoert hierher - nur
     // diese Dateien holt der Install-Schritt an der HTTP-Ablage vorbei
-    // (cache: 'reload'). Fehlte wcag_global.css, blieb es bis zu 30 Tage alt
-    // (css max-age 1 Monat, Links ohne ?v=; aufgefallen auf einer Testinstanz 13.10.2026).
+    // (cache reload). Fehlte wcag_global.css, blieb es bis zu 30 Tage alt
+    // (css max-age 1 Monat, Links ohne ?v=; Testinstanz 13.10.2026).
+    // KEINE Anfuehrungszeichen in Kommentaren dieser Liste: der Health-Check
+    // im Hub liest jeden Wert in einfachen Hochkommas als Datei.
     'css/wcag_global.css',
     'css/multi_image_upload.css',
     'css/cropper.min.css',

@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 13.10.2026 17:02 von bin/changelog_export.php.
+ * Erzeugt am 13.10.2026 17:47 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
