@@ -1,0 +1,84 @@
+/* bild_zuschnitt.css - Dialog zu js/bild_zuschnitt.js (4.4.1)
+   Farben nur ueber die Theme-Variablen, damit Midnight und die hellen
+   Themes ohne eigene Regeln lesbar bleiben. Nach css/cropper.min.css laden. */
+
+html.vs-crop-offen { overflow: hidden; }
+
+.vs-crop-backdrop {
+    position: fixed; inset: 0; z-index: 100000;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+}
+.vs-crop-backdrop[hidden] { display: none; }
+
+.vs-crop-dialog {
+    background: var(--vs-surface, #fff);
+    color: var(--vs-text, #14181d);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    width: min(860px, 100%);
+    max-height: calc(100vh - 32px);
+    display: flex; flex-direction: column; gap: 10px;
+    padding: 18px 20px;
+    overflow: auto;
+}
+.vs-crop-title { margin: 0; font-size: 1.1rem; font-weight: 600; }
+.vs-crop-help  { margin: 0; font-size: 13px; color: var(--vs-text-muted, #5a6474); }
+
+.vs-crop-stage {
+    position: relative;
+    height: min(60vh, 520px);
+    background: var(--vs-surface-2, #edf2f9);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.vs-crop-stage:focus-visible { outline: 3px solid var(--vs-accent, #185fa5); outline-offset: 2px; }
+.vs-crop-img { display: block; max-width: 100%; }
+
+.vs-crop-tools, .vs-crop-ratios, .vs-crop-actions {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+}
+.vs-crop-actions { justify-content: flex-end; }
+.vs-crop-status { margin: 0; min-height: 1.2em; font-size: 13px; color: var(--vs-text-muted, #5a6474); }
+
+.vs-crop-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    min-height: 44px; min-width: 44px; padding: 8px 14px;   /* WCAG 2.5.5 */
+    border-radius: 8px; cursor: pointer; font: inherit; font-size: 14px;
+    background: var(--vs-surface, #fff);
+    color: var(--vs-text, #14181d);
+    border: 1px solid var(--vs-border-strong, #8a94a6);
+}
+.vs-crop-btn .ti { font-size: 18px; }
+.vs-crop-btn:hover { background: var(--vs-surface-2, #edf2f9); }
+.vs-crop-ratio[aria-pressed="true"] {
+    background: var(--vs-accent-light, #e6f1fb);
+    color: var(--vs-accent-on-light, #185fa5);
+    border-color: var(--vs-accent, #185fa5);
+    font-weight: 600;
+}
+.vs-crop-btn-primary {
+    background: var(--vs-accent, #185fa5);
+    color: var(--vs-accent-text, #fff);
+    border-color: var(--vs-accent, #185fa5);
+    font-weight: 600;
+}
+.vs-crop-btn-primary:hover { background: var(--vs-accent-hover, #0e4a82); }
+
+/* Knopf "Zuschneiden / drehen" an den Vorschauen in add, quick_add, edit */
+.vs-crop-open {
+    display: inline-flex; align-items: center; gap: 6px;
+    min-height: 44px; padding: 8px 14px; border-radius: 8px;
+    font: inherit; font-size: 14px; cursor: pointer;
+    background: var(--vs-surface, #fff);
+    color: var(--vs-text, #14181d);
+    border: 1px solid var(--vs-border-strong, #8a94a6);
+}
+.vs-crop-open:hover { background: var(--vs-surface-2, #edf2f9); }
+.vs-crop-open[hidden] { display: none; }
+
+@media (max-width: 600px) {
+    .vs-crop-dialog { padding: 14px; }
+    .vs-crop-stage  { height: 50vh; }
+}

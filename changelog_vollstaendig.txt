@@ -2,7 +2,31 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 12.10.2026 aus der Projektchronik.
+Erzeugt am 13.10.2026 aus der Projektchronik.
+
+Version 4.4.1   13.10.2026
+--------------------------
+  [Fix] Barrierefreiheit: Alle Formularfelder sind jetzt mit ihrer
+        Beschriftung verbunden – Bildschirmleser nennen bei jedem Feld,
+        wofür es ist (vor allem im Verwaltungsbereich: Versicherungen,
+        Räume, Benutzer, Rechteverwaltung). Die Farbschemata in den
+        Einstellungen lassen sich per Tastatur auswählen (Tab, Pfeiltasten).
+  [Fix] Barrierefreiheit: Bessere Kontraste in den Farbschemata Cloud, Ocean,
+        Midnight, Mint, Glass, Navy und Emerald – Hinweistexte und
+        Akzentfarben sind besser lesbar, Eingabefelder haben einen deutlich
+        sichtbaren Rahmen.
+  [Neu] Bilder zuschneiden und drehen: Beim Anlegen, in der Schnellerfassung
+        und beim Bearbeiten gibt es unter dem Foto den Knopf „Zuschneiden /
+        drehen“. Rahmen frei oder im Format 1:1 bzw. 4:3 setzen, in
+        90-Grad-Schritten drehen – auch per Tastatur. Beim Bearbeiten lassen
+        sich so auch schon gespeicherte Bilder nachträglich gerade rücken.
+  [Neu] Schadensfall: Neuer Knopf „Fotos und Belege (ZIP)“ in der
+        Zusammenfassung. Er lädt alle Fotos und Rechnungen der betroffenen
+        Gegenstände in einer Datei herunter – ein Ordner je Gegenstand,
+        dazu eine Übersicht als Text und als Tabelle für die Versicherung.
+  [Fix] Schadensfall löschen: Die Rückfrage erschien in manchen Browsern
+        nicht, der Fall ließ sich dann nicht löschen. Sie kommt jetzt als
+        eigenes Fenster der App.
 
 Version 4.4   12.10.2026
 ------------------------

@@ -4,10 +4,21 @@
  * Ladereihenfolge: tokens.css → next.css → midnight.css → wcag_global.css
  */
 :root {
-  --vs-accent:          #7c3aed;
-  --vs-accent-hover:    #6d28d9;
+  --vs-accent:          #9a66f1;
+  --vs-accent-hover:    #b08af4;
   --vs-accent-light:    #2d1b69;
-  --vs-accent-text:     #ffffff;
+  --vs-accent-text:     #111111;
+  --vs-accent-on-light: #b08af4;  /* 5.29:1 auf #2d1b69 (Akzent selbst nur 3.77:1) */
+
+  /* Ersatzfarben fuer wcag_global.css - Kontrast auf #0f0f1a / #1a1a2e /
+     #1e1e38 / #16213e / #2d1b69, schlechtester Wert in Klammern */
+  --vs-wcag-grey:       #a8a8c8;   /* (6.18:1) */
+  --vs-wcag-text:       #e0e0f0;   /* (10.9:1) */
+  --vs-wcag-link:       #b08af4;   /* (5.29:1) */
+  --vs-wcag-value:      #7dd3fc;   /* (8.55:1) */
+  --vs-wcag-info:       #93c5fd;   /* (7.91:1) */
+  --vs-wcag-success:    #4ade80;   /* (8.19:1) */
+  --vs-wcag-danger:     #f87171;   /* (5.16:1) - --vs-danger bleibt fuer Knopfflaechen */
 
   --vs-bg:              #0f0f1a;
   --vs-surface:         #1a1a2e;
@@ -15,10 +26,10 @@
 
   --vs-text:            #e0e0f0;
   --vs-text-muted:      #9090b0;
-  --vs-text-subtle:     #6060a0;
+  --vs-text-subtle:     #8080b3;
 
   --vs-border:          #2a2a4a;
-  --vs-border-strong:   #3a3a6a;
+  --vs-border-strong:   #6060a8;
 
   --vs-rail-bg:         #16213e;
   --vs-rail-text:       #9090b0;

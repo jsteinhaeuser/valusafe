@@ -31,7 +31,7 @@ small,
 [style*="color:#aaa"],
 [style*="color: #888"],
 [style*="color:#888"] {
-    color: #595959 !important; /* 7.00:1 ✅ — sicherer Puffer */
+    color: var(--vs-wcag-grey) !important; /* 7.00:1 ✅ — sicherer Puffer */
 }
 
 /* Muted-Texte (Tailwind gray-400, slate-400) */
@@ -41,7 +41,7 @@ small,
 [style*="color:#9ca3af"],
 [style*="color: #94a3b8"],
 [style*="color:#94a3b8"] {
-    color: #6b7280 !important; /* 4.83:1 ✅ */
+    color: var(--vs-wcag-grey) !important; /* 4.83:1 ✅ */
 }
 
 /* ── 2. BADGE / STATUS-TEXTE ──────────────────────────────────────────────
@@ -80,7 +80,7 @@ small,
 .activity-action-updated,
 [style*="color: #0c5460"],
 [style*="color:#0c5460"] {
-    color: #1e3a8a !important; /* 8.49:1 auf #dbeafe ✅ */
+    color: var(--vs-wcag-info) !important; /* 8.49:1 auf #dbeafe ✅ */
 }
 
 /* ── 3. BACKEND-SPEZIFISCH ────────────────────────────────────────────────
@@ -89,23 +89,23 @@ small,
 /* Breadcrumb-Links: --primary-color #667eea = 3.41:1 → #4f46e5 = 5.86:1 */
 .backend-breadcrumb a,
 .bc-item {
-    color: #4f46e5; /* 5.86:1 auf #f5f7fa ✅ */
+    color: var(--vs-wcag-link); /* 5.86:1 auf #f5f7fa ✅ */
 }
 .bc-item.bc-current,
 .bc-group {
-    color: #374151; /* 9.37:1 ✅ */
+    color: var(--vs-wcag-text); /* 9.37:1 ✅ */
 }
 
 /* Admin-Badges im Header */
 .badge-admin { background: rgba(239,68,68,0.12); color: #7f1d1d; } /* 8.20:1 ✅ */
 .badge-edit  { background: rgba(245,158,11,0.12); color: #78350f; } /* 8.15:1 ✅ */
-.badge-view  { background: rgba(59,130,246,0.12); color: #1e3a8a; } /* 8.49:1 ✅ */
+.badge-view  { background: rgba(59,130,246,0.12); color: var(--vs-wcag-info); } /* 8.49:1 ✅ */
 
 /* Stat-Labels im Backend */
 .stat-box-label,
 .stat-footer,
 .backend-table th {
-    color: #595959; /* 7.00:1 ✅ */
+    color: var(--vs-wcag-grey); /* 7.00:1 ✅ */
 }
 
 /* ── 4. CHECKLISTE FÜR NEUE FEATURES ─────────────────────────────────────
@@ -143,7 +143,7 @@ small,
 [style*="color:#6c757d"],
 [style*="color: #6c7581"],
 [style*="color:#6c7581"] {
-    color: #595959 !important; /* 6.65:1 ✅ */
+    color: var(--vs-wcag-grey) !important; /* 6.65:1 ✅ */
 }
 
 /* Sortierbare Spaltenheader und aktive Sortiericons */
@@ -151,13 +151,13 @@ small,
 .sortable::after,
 [style*="color: #667eea"],
 [style*="color:#667eea"] {
-    color: #4f46e5 !important; /* 6.29:1 auf weiß ✅ */
+    color: var(--vs-wcag-link) !important; /* 6.29:1 auf weiß ✅ */
 }
 
 /* Quick-stats Bar in index.php (Einträge/Gesamtwert/Durchschnitt Labels) */
 .stats-divider,
 .quick-stat-label {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* ── 6. RGB-INLINE-STYLES (häufige Problemfarben) ─────────────────────────
@@ -170,13 +170,13 @@ small,
 [style*="color:rgb(136,136,136)"],
 [style*="color: #888888"],
 [style*="color:#888888"] {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* #999999 = rgb(153,153,153) = 2.85:1 → #767676 ✅ */
 [style*="color: rgb(153, 153, 153)"],
 [style*="color:rgb(153,153,153)"] {
-    color: #767676 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* #3498db = rgb(52,152,219) = 3.15:1 auf weiß → #1a6fb5 = 5.27:1 ✅
@@ -186,7 +186,7 @@ small,
 [style*="color:rgb(52,152,219)"],
 [style*="color: #3498db"],
 [style*="color:#3498db"] {
-    color: #1a6fb5 !important;
+    color: var(--vs-wcag-value) !important;
 }
 
 /* #3498db Varianten (Ocean, andere Themes) */
@@ -198,36 +198,36 @@ small,
 /* dashboard.php stat-Werte in blau */
 .stat-value[style*="color"],
 .stat-value {
-    color: #1a6fb5 !important;
+    color: var(--vs-wcag-value) !important;
 }
 
 /* EK-Preis klein (font-size:11px, color:#999) in dashboard Top-5 */
 .item-price div,
 .item-price small {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* ── 7. DASHBOARD SPEZIFISCH ──────────────────────────────────────────────
    stat-sublabel: color rgb(153,153,153) als inline-style → !important nötig
    ──────────────────────────────────────────────────────────────────────── */
 .stat-sublabel {
-    color: #767676 !important; /* 4.54:1 ✅ */
+    color: var(--vs-wcag-grey) !important; /* 4.54:1 ✅ */
 }
 
 /* stat-card Labels (GESAMTWERT, GEGENSTÄNDE etc.) */
 .stat-label {
-    color: #595959 !important; /* 7.00:1 ✅ */
+    color: var(--vs-wcag-grey) !important; /* 7.00:1 ✅ */
 }
 
 /* item-meta (Kategoriezeile unter Gegenstandsname) */
 .item-meta {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* Zuletzt hinzugefügt — Datumszeile */
 .recent-date,
 .item-date {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* ── 8. INDEX.PHP ZÄHLER UND SPALTENHEADER ───────────────────────────────
@@ -240,13 +240,13 @@ small,
 [style*="color:#667eea"],
 .data-table th,
 .data-table th.sortable {
-    color: #4f46e5 !important; /* 5.96:1 auf #f8f9fa ✅ */
+    color: var(--vs-wcag-link) !important; /* 5.96:1 auf #f8f9fa ✅ */
 }
 
 /* stats-bar strong (Zähler "38") */
 .stats-bar strong,
 .filter-stats strong {
-    color: #4f46e5 !important;
+    color: var(--vs-wcag-link) !important;
 }
 
 /* ── 9. BUTTON HINTERGRUNDFARBEN ─────────────────────────────────────────
@@ -283,13 +283,13 @@ form small[style],
 input + small,
 textarea + small,
 select + small {
-    color: #595959 !important; /* 7.00:1 ✅ */
+    color: var(--vs-wcag-grey) !important; /* 7.00:1 ✅ */
 }
 
 /* Radio-Button Labels "Feldtyp" */
 .form-group label[style],
 .form-group small label {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* ── 11. BILD-UPLOAD PRIMARY-BADGE ───────────────────────────────────────
@@ -325,7 +325,7 @@ select + small {
 .multi-upload-zone-hint,
 .upload-zone-hint,
 .upload-hint {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* ── 14. MULTI-UPLOAD-ZONE-HINT INLINE STYLE OVERRIDE ────────────────────
@@ -339,7 +339,7 @@ div.multi-upload-zone-hint[style],
 [style*="color:rgb(118,118,118)"],
 [style*="color: rgb(119, 119, 119)"],
 [style*="color:rgb(119,119,119)"] {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* ── 15. DRAG-HANDLE + TABELLEN-SPEZIFISCH ───────────────────────────────
@@ -347,7 +347,7 @@ div.multi-upload-zone-hint[style],
    item-checkbox: keine aria-label → in index.php bereits mit aria-label versehen
    ──────────────────────────────────────────────────────────────────────── */
 .drag-handle {
-    color: #595959 !important; /* 7.00:1 ✅ */
+    color: var(--vs-wcag-grey) !important; /* 7.00:1 ✅ */
 }
 
 /* Thumbnail-Placeholder in Tabelle */
@@ -356,7 +356,7 @@ div.multi-upload-zone-hint[style],
 [style*="color:rgb(156,163,175)"],
 [style*="color: #9ca3af"],
 [style*="color:#9ca3af"] {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* ── 16. NAV BTN-PRIMARY ACTIVE STATE ────────────────────────────────────
@@ -384,7 +384,7 @@ nav .btn.btn-primary {
 [style*="color:#666666"],
 [style*="color: #666"],
 [style*="color:#666"] {
-    color: #595959 !important; /* 5.31:1 auf #e0e0e0 ✅ */
+    color: var(--vs-wcag-grey) !important; /* 5.31:1 auf #e0e0e0 ✅ */
 }
 
 /* ── 18. PAGINATION ACTIVE STATE ─────────────────────────────────────────
@@ -950,7 +950,11 @@ input[type="checkbox"].bulk-checkbox {
    nicht für Fließtext. cloud: 3.00:1, navy: 3.69:1 → beide ❌.
    Fix: nur den <p>-Text abfangen, das Icon bleibt unverändert. */
 .vs-detail-empty p {
-    color: #2c5578 !important; /* 7.84:1 auf weißem Detail-Pane-Hintergrund ✅ */
+    /* Token statt fester Farbe: #2c5578 stand in Midnight dunkel auf dunkel
+       (1.9:1, WAVE 13.10.2026) - die Midnight-Regel darunter griff nie, weil
+       keine Seite body.midnight-theme setzt. --vs-text-muted: cloud 5.98:1,
+       midnight 5.53:1. */
+    color: var(--vs-text-muted) !important;
 }
 body.midnight-theme .vs-detail-empty p,
 body.dark-theme .vs-detail-empty p {
@@ -960,7 +964,7 @@ body.dark-theme .vs-detail-empty p {
 /* Formular-Feldlabels in der Detail-Pane (.vs-dp-label) — selbes Problem
    wie oben, ebenfalls über --vs-text-subtle gesetzt. */
 .vs-dp-label {
-    color: #2c5578 !important;
+    color: var(--vs-text-muted) !important; /* wie oben, auch fuer Midnight */
 }
 body.midnight-theme .vs-dp-label,
 body.dark-theme .vs-dp-label {
@@ -971,26 +975,28 @@ body.dark-theme .vs-dp-label {
    --vs-muted ist kein definiertes Token, der Fallback greift immer.
    4.16:1 auf #e6f1fb → knapp unter AA. */
 .vsm-sidebar-title {
-    color: #334155 !important; /* 9.04:1 auf #e6f1fb ✅ */
+    /* war #334155 fest - in Midnight dunkel auf dunkel. cloud 5.57:1 auf
+       --vs-bg, midnight 6.16:1 */
+    color: var(--vs-text-muted) !important;
 }
 
 /* Mini-Statistik-Labels in den Einstellungen (.stat-mini-label: color:#888,
    klassenbasiert — wird von Abschnitt 1 oben nicht erfasst). */
 .stat-mini-label {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* Spalten-Manager: Drag-Handle-Icon (.column-drag-handle: color:#999,
    klassenbasiert, 2.70:1 auf #f8f9fa). */
 .column-drag-handle {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* Dashboard Versicherungs-Bereitschaft-Widget: Kriterien-Label und Tipp-Text
    (.bereit-criterion-label, .bereit-tip: color:#888, klassenbasiert). */
 .bereit-criterion-label,
 .bereit-tip {
-    color: #595959 !important;
+    color: var(--vs-wcag-grey) !important;
 }
 
 /* Dashboard Bereitschaft-Widget: Prozentwerte/Score werden per PHP als
@@ -998,7 +1004,7 @@ body.dark-theme .vs-dp-label {
    Rohfarben auf #f8f9fa/weiß: grün 2.7–2.9:1, orange 2.08:1, rot 3.62:1 — alle ❌. */
 [style*="color:#27ae60"],
 [style*="color: #27ae60"] {
-    color: #166534 !important; /* 7.13:1 ✅ */
+    color: var(--vs-wcag-success) !important; /* 7.13:1 ✅ */
 }
 [style*="color:#f39c12"],
 [style*="color: #f39c12"] {
@@ -1014,7 +1020,7 @@ body.dark-theme .vs-dp-label {
    (#e6f1fb) nur 4.48:1 — knapp unter AA. */
 [style*="color:var(--vs-success)"],
 [style*="color: var(--vs-success)"] {
-    color: #166534 !important; /* 6.23:1 auf #e6f1fb ✅ */
+    color: var(--vs-wcag-success) !important; /* 6.23:1 auf #e6f1fb ✅ */
 }
 
 /* "Abbrechen"-Button in add.php: weißer Text auf background:#e74c3c
@@ -1027,3 +1033,38 @@ body.dark-theme .vs-dp-label {
 /* Kategorie-Unterzeile in der Versicherungsübersicht (z.B. "15 Gegenstände"):
    Inline-Style color:#999 auf #e6f1fb = 2.49:1. Bereits durch Abschnitt 1
    erfasst (jetzt mit !important), hier nur zur Dokumentation. */
+
+/* ── Eingabefelder: erkennbarer Rahmen (4.4.1, WCAG 1.4.11) ──────────────
+   --vs-border (Kartenrahmen) liegt bei etwa 1,3:1 und ist um Felder kaum
+   zu sehen. Felder bekommen --vs-border-strong (je Theme mind. 3:1).
+   Nur die Rahmenfarbe: Felder mit border:none bleiben rahmenlos, Fokus-
+   und Fehlerzustand behalten ihre eigene Farbe.
+   ──────────────────────────────────────────────────────────────────────── */
+:is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="hidden"],
+             [type="submit"], [type="button"], [type="reset"], [type="image"], [type="color"]),
+    select, textarea):not(:focus):not(.is-invalid):not([aria-invalid="true"]),
+.vs-search:not(:focus-within) {
+    border-color: var(--vs-border-strong);
+}
+
+/* ── Feste Inline-Farben #333/#666 und Standard-Linkfarbe (4.4.1) ────────
+   Viele Seiten setzen color:#333 bzw. #666 direkt im Markup. Auf hellen
+   Themes reicht das, in Midnight stand es dunkel auf dunkel (1,3:1). Die
+   Regeln dafuer in Abschnitt 30 greifen nie (keine Seite setzt
+   body.midnight-theme), deshalb hier ueber die Theme-Variablen.
+   Links ohne eigene Farbe hatten das Browser-Blau #0000ee (Midnight 1,8:1);
+   :where() hat keine Spezifitaet - jede eigene Linkfarbe gewinnt.
+   ──────────────────────────────────────────────────────────────────────── */
+[style*="color: #333"],
+[style*="color:#333"] {
+    color: var(--vs-wcag-text) !important;
+}
+[style*="color: #666"],
+[style*="color:#666"],
+[style*="color: #595959"],
+[style*="color:#595959"] {
+    color: var(--vs-wcag-grey) !important;
+}
+:where(a:link, a:visited) {
+    color: var(--vs-wcag-link);
+}

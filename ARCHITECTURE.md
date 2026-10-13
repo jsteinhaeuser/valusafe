@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 12 October 2026 · Version 4.4 (all sections checked against the source before publication)
+**As of:** 13 October 2026 · Version 4.4.1 (all sections checked against the source before publication)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -31,7 +31,7 @@ Roughly 48,000 lines of application code, counted in the published repository on
 
 That is a constraint rather than an oversight: the application has to run on plain shared hosting, without Composer, without Node, without shell access. Installing it means "upload the files, create `config.php`, import the schema".
 
-**No external CDNs.** Chart.js, ZXing, the QR library and Tabler Icons are all served locally. The Content Security Policy permits no foreign hosts. This was a deliberate choice against third-party tracking and in favour of offline capability.
+**No external CDNs.** Chart.js, ZXing, the QR library, Cropper.js and Tabler Icons are all served locally. The Content Security Policy permits no foreign hosts. This was a deliberate choice against third-party tracking and in favour of offline capability.
 
 **What this means for a reader:** there is no router, no controller layer, no DI container. Every `.php` file in the web root is an entry point the web server executes directly.
 
@@ -270,4 +270,4 @@ For a critical eye, the most rewarding read is `helpers.php` (1,516 lines, grown
 
 ---
 
-*This document describes the state as of 12 October 2026, version 4.4. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 13 October 2026, version 4.4.1. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

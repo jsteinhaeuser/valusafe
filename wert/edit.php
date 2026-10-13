@@ -223,6 +223,8 @@ include 'header_next_page.php';
 <?php endif; ?>
 
 <link rel="stylesheet" href="css/multi_image_upload.css">
+<link rel="stylesheet" href="css/cropper.min.css">
+<link rel="stylesheet" href="css/bild_zuschnitt.css">
 <style>
 
 /* Label-Abstand zu Feldern */
@@ -1069,6 +1071,8 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 </script>
 <script>window.VS_I18N = { confirm_delete_image: <?php echo json_encode(t('confirm_delete_image')); ?> };</script>
+<script src="js/cropper.min.js"></script>
+<script src="js/bild_zuschnitt.js"></script>
 <script src="js/multi_image_upload.js"></script>
 <script>
 // Sicherheitsnetz: Form-Submit blockieren wenn Lightbox offen ist

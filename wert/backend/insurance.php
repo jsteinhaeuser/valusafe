@@ -333,62 +333,62 @@ include 'layout/header_next_page.php';
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; position:relative; z-index:10;">
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('field_name'); ?> *</label>
-                    <input type="text" name="name" required
+                    <label for="f_name" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('field_name'); ?> *</label>
+                    <input id="f_name" type="text" name="name" required
                            value="<?php echo htmlspecialchars($editData['name'] ?? ''); ?>"
                            placeholder="<?php echo esc(t('bi_ph_name')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_provider'); ?></label>
-                    <input type="text" name="anbieter"
+                    <label for="f_anbieter" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_provider'); ?></label>
+                    <input id="f_anbieter" type="text" name="anbieter"
                            value="<?php echo htmlspecialchars($editData['anbieter'] ?? ''); ?>"
                            placeholder="<?php echo esc(t('bi_ph_provider')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_contract_number'); ?></label>
-                    <input type="text" name="vertragsnummer"
+                    <label for="f_vertragsnummer" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_contract_number'); ?></label>
+                    <input id="f_vertragsnummer" type="text" name="vertragsnummer"
                            value="<?php echo htmlspecialchars($editData['vertragsnummer'] ?? ''); ?>"
                            placeholder="<?php echo esc(sprintf(t('be_eg'), 'HH-123456-78')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_annual_premium'); ?></label>
-                    <input type="text" name="praemie"
+                    <label for="f_praemie" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_annual_premium'); ?></label>
+                    <input id="f_praemie" type="text" name="praemie"
                            value="<?php echo $editData['praemie'] ?? ''; ?>"
                            placeholder="<?php echo esc(sprintf(t('be_eg'), '249.50')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_contract_start'); ?></label>
-                    <input type="date" name="vertragsbeginn"
+                    <label for="f_vertragsbeginn" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_contract_start'); ?></label>
+                    <input id="f_vertragsbeginn" type="date" name="vertragsbeginn"
                            value="<?php echo $editData['vertragsbeginn'] ?? ''; ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_term_until'); ?></label>
-                    <input type="date" name="laufzeit_bis"
+                    <label for="f_laufzeit_bis" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_term_until'); ?></label>
+                    <input id="f_laufzeit_bis" type="date" name="laufzeit_bis"
                            value="<?php echo $editData['laufzeit_bis'] ?? ''; ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_sum_eur'); ?></label>
-                    <input type="text" name="versicherungssumme"
+                    <label for="f_versicherungssumme" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_sum_eur'); ?></label>
+                    <input id="f_versicherungssumme" type="text" name="versicherungssumme"
                            value="<?php echo $editData['versicherungssumme'] ?? ''; ?>"
                            placeholder="<?php echo esc(sprintf(t('be_eg'), '50000')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_deductible_eur'); ?></label>
-                    <input type="text" name="selbstbeteiligung"
+                    <label for="f_selbstbeteiligung" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_deductible_eur'); ?></label>
+                    <input id="f_selbstbeteiligung" type="text" name="selbstbeteiligung"
                            value="<?php echo $editData['selbstbeteiligung'] ?? ''; ?>"
                            placeholder="<?php echo esc(sprintf(t('be_eg'), '150')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_payment_mode'); ?></label>
-                    <select name="zahlungsweise" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
+                    <label for="f_zahlungsweise" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_payment_mode'); ?></label>
+                    <select id="f_zahlungsweise" name="zahlungsweise" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                         <option value=""><?php echo t('be_choose'); ?></option>
                         <?php // Gespeichert wird weiter der deutsche Wert, nur die Anzeige folgt der Sprache ?>
                         <?php foreach (['monatlich','vierteljaehrlich','halbjaehrlich','jaehrlich'] as $zw): ?>
@@ -399,15 +399,15 @@ include 'layout/header_next_page.php';
                     </select>
                 </div>
                 <div>
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_notice_period'); ?></label>
-                    <input type="text" name="kuendigungsfrist"
+                    <label for="f_kuendigungsfrist" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_notice_period'); ?></label>
+                    <input id="f_kuendigungsfrist" type="text" name="kuendigungsfrist"
                            value="<?php echo htmlspecialchars($editData['kuendigungsfrist'] ?? ''); ?>"
                            placeholder="<?php echo esc(t('bi_ph_notice')); ?>"
                            style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                 </div>
                 <div style="grid-column:1/-1;">
-                    <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_note'); ?></label>
-                    <textarea name="notiz" rows="2"
+                    <label for="f_notiz" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_note'); ?></label>
+                    <textarea id="f_notiz" name="notiz" rows="2"
                               placeholder="<?php echo esc(t('bi_ph_note')); ?>"
                               style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px; resize:vertical;"><?php echo htmlspecialchars($editData['notiz'] ?? ''); ?></textarea>
                 </div>
@@ -420,30 +420,30 @@ include 'layout/header_next_page.php';
                 </summary>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:16px; padding:16px; background:#f8f9ff; border-radius:8px; border:1px solid #e0e8ff;">
                     <div style="grid-column:1/-1;">
-                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_street'); ?></label>
-                        <input type="text" name="adresse"
+                        <label for="f_adresse" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_street'); ?></label>
+                        <input id="f_adresse" type="text" name="adresse"
                                value="<?php echo htmlspecialchars($editData['adresse'] ?? ''); ?>"
                                placeholder="<?php echo esc(t('bi_ph_street')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_zip'); ?></label>
-                        <input type="text" name="plz"
+                        <label for="f_plz" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_zip'); ?></label>
+                        <input id="f_plz" type="text" name="plz"
                                value="<?php echo htmlspecialchars($editData['plz'] ?? ''); ?>"
                                placeholder="<?php echo esc(sprintf(t('be_eg'), '50181')); ?>"
                                maxlength="10"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_city'); ?></label>
-                        <input type="text" name="wohnort"
+                        <label for="f_wohnort" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_city'); ?></label>
+                        <input id="f_wohnort" type="text" name="wohnort"
                                value="<?php echo htmlspecialchars($editData['wohnort'] ?? ''); ?>"
                                placeholder="<?php echo esc(t('bi_ph_city')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_building_type'); ?></label>
-                        <select name="gebaeudeart" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
+                        <label for="f_gebaeudeart" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_building_type'); ?></label>
+                        <select id="f_gebaeudeart" name="gebaeudeart" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                             <option value=""><?php echo t('be_choose'); ?></option>
                             <?php foreach (['Wohnung','Haus','Gewerbe','Sonstiges'] as $ga): ?>
                             <option value="<?php echo $ga; ?>" <?php echo ($editData['gebaeudeart'] ?? '') === $ga ? 'selected' : ''; ?>>
@@ -453,22 +453,22 @@ include 'layout/header_next_page.php';
                         </select>
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_living_area_m2'); ?></label>
-                        <input type="text" name="wohnflaeche_qm"
+                        <label for="f_wohnflaeche_qm" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_living_area_m2'); ?></label>
+                        <input id="f_wohnflaeche_qm" type="text" name="wohnflaeche_qm"
                                value="<?php echo $editData['wohnflaeche_qm'] ?? ''; ?>"
                                placeholder="<?php echo esc(sprintf(t('be_eg'), '85')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_rooms_count'); ?></label>
-                        <input type="number" name="anzahl_zimmer" min="1" max="20"
+                        <label for="f_anzahl_zimmer" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('bi_rooms_count'); ?></label>
+                        <input id="f_anzahl_zimmer" type="number" name="anzahl_zimmer" min="1" max="20"
                                value="<?php echo $editData['anzahl_zimmer'] ?? ''; ?>"
                                placeholder="<?php echo esc(sprintf(t('be_eg'), '4')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
                     </div>
                     <div>
-                        <label style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_floor'); ?></label>
-                        <input type="number" name="etage" min="0" max="50"
+                        <label for="f_etage" style="display:block; margin-bottom:6px; font-weight:600;"><?php echo t('ins_floor'); ?></label>
+                        <input id="f_etage" type="number" name="etage" min="0" max="50"
                                value="<?php echo $editData['etage'] ?? ''; ?>"
                                placeholder="<?php echo esc(t('bi_ph_floor')); ?>"
                                style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; box-sizing:border-box; background:var(--vs-surface); color:#333; font-size:14px;">
@@ -613,7 +613,7 @@ include 'layout/header_next_page.php';
                         <?php foreach ($unassignedItems as $item): ?>
                             <tr class="item-row" style="cursor:pointer;" onclick="toggleCheck(this)">
                                 <td onclick="event.stopPropagation()">
-                                    <input type="checkbox" name="item_ids[]" value="<?php echo $item['id']; ?>"
+                                    <input type="checkbox" name="item_ids[]" value="<?php echo $item['id']; ?>" aria-label="<?php echo htmlspecialchars(sprintf(t('idx_select_item'), $item['name']), ENT_QUOTES, 'UTF-8'); ?>"
                                            class="item-checkbox" style="width:16px; height:16px; cursor:pointer;">
                                 </td>
                                 <td><?php echo htmlspecialchars($item['name']); ?></td>

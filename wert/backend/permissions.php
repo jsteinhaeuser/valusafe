@@ -293,8 +293,10 @@ $csrfToken = Security::generateCSRFToken();
                 </td>
                 <!-- Admin: immer gesetzt, immer disabled -->
                 <td>
+                    <?php $permName = $lk ? t($lk) : $p['label']; ?>
                     <input type="checkbox" class="perm-check locked" checked disabled
-                           title="<?php echo t('perm_admin_full_access'); ?>">
+                           title="<?php echo t('perm_admin_full_access'); ?>"
+                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_admin'), ENT_QUOTES, 'UTF-8'); ?>">
                 </td>
                 <!-- Editor -->
                 <td>
@@ -302,6 +304,7 @@ $csrfToken = Security::generateCSRFToken();
                            class="perm-check <?php echo $editLocked ? 'locked' : 'editable'; ?>"
                            data-key="<?php echo htmlspecialchars($p['action_key']); ?>"
                            data-role="edit"
+                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_editor'), ENT_QUOTES, 'UTF-8'); ?>"
                            <?php echo $p['edit_can'] ? 'checked' : ''; ?>
                            <?php echo $editLocked ? 'disabled title="Diese Berechtigung ist fest"' : ''; ?>>
                 </td>
@@ -311,6 +314,7 @@ $csrfToken = Security::generateCSRFToken();
                            class="perm-check <?php echo $readLocked ? 'locked' : 'editable'; ?>"
                            data-key="<?php echo htmlspecialchars($p['action_key']); ?>"
                            data-role="read"
+                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_reader'), ENT_QUOTES, 'UTF-8'); ?>"
                            <?php echo $p['read_can'] ? 'checked' : ''; ?>
                            <?php echo $readLocked ? 'disabled title="Diese Berechtigung ist fest"' : ''; ?>>
                 </td>

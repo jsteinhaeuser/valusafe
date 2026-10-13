@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 12. Oktober 2026 · Version 4.4 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 13. Oktober 2026 · Version 4.4.1 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -31,7 +31,7 @@ Rund 48.000 Zeilen Anwendungscode, gezählt im veröffentlichten Repository am 2
 
 Das ist keine Nachlässigkeit, sondern eine Randbedingung: Die Anwendung muss auf einfachem Shared Hosting laufen, ohne Composer, ohne Node, ohne Shell-Zugang. Ein Installationsvorgang besteht aus „Dateien hochladen, `config.php` anlegen, Schema einspielen".
 
-**Keine externen CDNs.** Chart.js, ZXing, die QR-Bibliothek und Tabler Icons liegen lokal. Die Content-Security-Policy erlaubt keine fremden Hosts. Das war eine bewusste Entscheidung gegen Drittanbieter-Tracking und für Offline-Fähigkeit.
+**Keine externen CDNs.** Chart.js, ZXing, die QR-Bibliothek, Cropper.js und Tabler Icons liegen lokal. Die Content-Security-Policy erlaubt keine fremden Hosts. Das war eine bewusste Entscheidung gegen Drittanbieter-Tracking und für Offline-Fähigkeit.
 
 **Konsequenz für Leser:** Es gibt keinen Router, keinen Controller, keinen DI-Container. Jede `.php`-Datei im Wurzelverzeichnis ist ein Einstiegspunkt, den der Webserver direkt ausführt.
 
@@ -267,4 +267,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 12. Oktober 2026, Version 4.4. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 13. Oktober 2026, Version 4.4.1. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

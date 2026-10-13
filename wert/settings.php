@@ -347,8 +347,11 @@ include 'header_next_page.php';
 }
 
 .settings-card {
-    background: rgba(255,255,255,0.6);
-    border: 1px solid rgba(0,0,0,0.08);
+    /* Farben aus dem Theme: halbweiss (rgba 255/.6) wurde in Midnight grau,
+       die helle Midnight-Schrift darauf 2,02:1 (WAVE 13.10.2026) */
+    background: var(--vs-surface);
+    color: var(--vs-text);
+    border: 1px solid var(--vs-border);
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
@@ -386,7 +389,7 @@ include 'header_next_page.php';
     width: 76px; height: 76px;
     border-radius: 50%;
     background: var(--vs-accent, #185fa5);
-    color: #fff;
+    color: var(--vs-accent-text);
     font-size: 32px;
     display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -465,19 +468,19 @@ include 'header_next_page.php';
 .theme-tile__row { height: 7px; border-radius: 2px; width: 100%; }
 .theme-tile__label { padding: 5px 6px 7px; display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.95); border-top: 1px solid rgba(0,0,0,0.06); }
 .theme-tile__emoji { font-size: 12px; }
-.theme-tile__name { font-size: 11px; font-weight: 600; color: var(--text); }
+.theme-tile__name { font-size: 11px; font-weight: 600; color: #1f2937; } /* Streifen ist immer weiss - --text der Midnight-Kachel war hell */
 .theme-tile__check { position: absolute; top: 4px; right: 4px; background: #3D3833; color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
 
 /* ── Stat Kacheln ──────────────────────────────────────────── */
 .stat-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.stat-mini { background: rgba(0,0,0,0.03); border-radius: 10px; padding: 12px; text-align: center; }
+.stat-mini { background: var(--vs-surface-2); border-radius: 10px; padding: 12px; text-align: center; }
 .stat-mini-value { font-size: 22px; font-weight: 700; }
-.stat-mini-label { font-size: 11px; color: #888; margin-top: 2px; }
+.stat-mini-label { font-size: 11px; color: var(--vs-text-muted); margin-top: 2px; }
 
 /* ── Role Switch ───────────────────────────────────────────── */
 .role-buttons { display: flex; flex-direction: column; gap: 8px; }
-.role-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; border: 1.5px solid rgba(0,0,0,0.10); background: rgba(255,255,255,0.5); cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; transition: all 0.18s; text-decoration: none; color: inherit; }
-.role-btn:hover { background: rgba(255,255,255,0.9); border-color: rgba(0,0,0,0.20); transform: translateX(3px); }
+.role-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--vs-border); background: var(--vs-surface-2); cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; transition: all 0.18s; text-decoration: none; color: inherit; }
+.role-btn:hover { background: var(--vs-surface); border-color: var(--vs-border-strong); transform: translateX(3px); }
 .role-btn--active { background: rgba(109,40,217,0.08); border-color: rgba(109,40,217,0.30); }
 
 @media (max-width: 700px) {
@@ -514,15 +517,22 @@ include 'header_next_page.php';
     <!-- Theme-Kachel: 2 Spalten breit -->
     <div class="settings-card" style="grid-column:1 / 3; grid-row:1;">
         <h3><i class="ti ti-palette"></i> <?php echo t('settings_theme_title'); ?></h3>
-        <div id="theme-status" style="font-size:13px; color:var(--vs-success); min-height:20px; margin-bottom:8px;"></div>
+        <div id="theme-status" role="status" aria-live="polite" style="font-size:13px; color:var(--vs-success); min-height:20px; margin-bottom:8px;"></div>
         <form method="POST" action="" id="theme-form">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="theme" id="theme-hidden" value="<?php echo esc($current_theme); ?>">
-            <div class="theme-grid">
+            <?php // Kacheln als Auswahlgruppe: per Tab erreichbar, Pfeiltasten wechseln,
+                  // Enter/Leertaste waehlen (WCAG 2.1.1, 4.1.2; bis 4.4 nur per Maus). ?>
+            <div class="theme-grid" role="radiogroup" aria-label="<?php echo esc(t('settings_theme_title')); ?>">
+                <?php $_tileAktivDa = array_key_exists($current_theme, $theme_tiles); $_tileErste = true; ?>
                 <?php foreach ($theme_tiles as $value => [$label, $emoji, $bg1, $bg2, $text, $accent]): ?>
-                    <?php $active = ($current_theme === $value); ?>
+                    <?php $active = ($current_theme === $value);
+                          // Per Tab erreichbar: die gewaehlte Kachel, oder - wenn das gespeicherte
+                          // Schema keine Kachel hat (Altbestand, z. B. light) - die erste.
+                          $_tabbar = $active || (!$_tileAktivDa && $_tileErste); $_tileErste = false; ?>
                     <label class="theme-tile <?php echo $active ? 'theme-tile--active' : ''; ?>"
                            data-theme="<?php echo $value; ?>"
+                           role="radio" aria-checked="<?php echo $active ? 'true' : 'false'; ?>" tabindex="<?php echo $_tabbar ? '0' : '-1'; ?>"
                            style="--bg1:<?php echo $bg1; ?>; --bg2:<?php echo $bg2; ?>; --text:<?php echo $text; ?>; --accent:<?php echo $accent; ?>; cursor:pointer;">
                         <div class="theme-tile__preview" aria-hidden="true">
                             <div class="theme-tile__header" style="background:<?php echo $accent; ?>;"></div>
@@ -546,6 +556,18 @@ include 'header_next_page.php';
             </div>
         </form>
         <script>
+        (function () {
+            var tiles = Array.prototype.slice.call(document.querySelectorAll('.theme-tile'));
+            tiles.forEach(function (tile, i) {
+                tile.addEventListener('keydown', function (e) {
+                    var ziel = null;
+                    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') ziel = tiles[(i + 1) % tiles.length];
+                    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') ziel = tiles[(i - 1 + tiles.length) % tiles.length];
+                    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tile.click(); return; }
+                    if (ziel) { e.preventDefault(); ziel.focus(); ziel.click(); }
+                });
+            });
+        })();
         document.querySelectorAll('.theme-tile').forEach(function(tile) {
             tile.addEventListener('click', function() {
                 var theme = this.dataset.theme;
@@ -555,11 +577,15 @@ include 'header_next_page.php';
                 // Sofort visuell umschalten
                 document.querySelectorAll('.theme-tile').forEach(function(t) {
                     t.classList.remove('theme-tile--active');
+                    t.setAttribute('aria-checked', 'false');
+                    t.setAttribute('tabindex', '-1');
                     document.getElementById('check-' + t.dataset.theme).style.display = 'none';
                 });
                 this.classList.add('theme-tile--active');
+                this.setAttribute('aria-checked', 'true');
+                this.setAttribute('tabindex', '0');
                 var checkEl = document.getElementById('check-' + theme); checkEl.style.display = 'flex'; checkEl.style.background = '#3D3833';
-                status.textContent = '⏳ Speichere…';
+                status.textContent = '⏳ ' + <?php echo json_encode(t('settings_theme_saving')); ?>;
 
                 // AJAX-Save
                 var fd = new FormData();
@@ -570,14 +596,14 @@ include 'header_next_page.php';
                     .then(function(r) { return r.json(); })
                     .then(function(data) {
                         if (data.success) {
-                            status.textContent = '✅ Gespeichert (rows:' + data.rows + ' user:' + data.user + ')';
+                            status.textContent = '✅ ' + <?php echo json_encode(t('settings_theme_saved_reload')); ?>;
                             var link = document.getElementById('theme-css');
                             if (link) {
                                 link.href = link.href.replace(/\/css\/[^?]+\.css(\?.*)?$/, '/css/' + theme + '.css?v=' + Date.now());
                             }
                             setTimeout(function() { window.location.reload(); }, 2000);
                         } else {
-                            status.textContent = '❌ Fehler: ' + (data.error || 'unbekannt') + ' user:' + (data.user || '?');
+                            status.textContent = '❌ ' + <?php echo json_encode(t('settings_theme_error')); ?>;
                         }
                     })
                     .catch(function() {
@@ -612,7 +638,7 @@ include 'header_next_page.php';
             <button class="lang-btn" data-lang="<?php echo $code; ?>"
                     style="display:flex; align-items:center; gap:10px; padding:9px 14px;
                            border-radius:8px; cursor:pointer; font-size:13px; width:100%;
-                           text-align:left; font-family:inherit; transition:all .15s;
+                           text-align:left; font-family:inherit; transition:all .15s; color:var(--vs-text);
                            <?php if ($active): ?>
                                border:2px solid var(--vs-accent,#185fa5);
                                background:var(--vs-bg,#e6f1fb); font-weight:600;
@@ -662,7 +688,7 @@ include 'header_next_page.php';
     <!-- Standard-Ersteller -->
     <div class="settings-card">
         <h3><i class="ti ti-pencil"></i> <?php echo t('settings_default_creator_title'); ?></h3>
-        <p style="font-size:13px; color:#888; margin-bottom:14px;"><?php echo t('settings_default_creator_description'); ?></p>
+        <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:14px;"><?php echo t('settings_default_creator_description'); ?></p>
         <form method="POST" action="">
             <?php echo Security::getCSRFInput(); ?>
             <div class="form-group">
@@ -698,7 +724,7 @@ include 'header_next_page.php';
         <form method="POST" enctype="multipart/form-data" id="avatarForm">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="upload_avatar">
-            <input type="file" name="avatar" id="avatarInput"
+            <input type="file" name="avatar" id="avatarInput" aria-label="<?php echo htmlspecialchars(t('profile_avatar_change'), ENT_QUOTES, 'UTF-8'); ?>"
                    accept="image/jpeg,image/png,image/gif,image/webp,.heic,.heif"
                    style="display:none;"
                    onchange="document.getElementById('avatarForm').submit();">
@@ -729,7 +755,7 @@ include 'header_next_page.php';
             </form>
             <?php endif; ?>
         </div>
-        <p style="font-size:12px; color:#aaa; text-align:center; margin:0 0 18px;">
+        <p style="font-size:12px; color:var(--vs-text-muted); text-align:center; margin:0 0 18px;">
             <?php echo t('profile_avatar_hint'); ?>
         </p>
 
@@ -756,7 +782,7 @@ include 'header_next_page.php';
                        placeholder="••••••••" autocomplete="current-password" required>
             </div>
             <div class="form-group">
-                <label for="new_password"><?php echo t('profile_pw_new'); ?> <small style="color:#999;font-weight:400;"><?php echo t('profile_pw_min'); ?></small></label>
+                <label for="new_password"><?php echo t('profile_pw_new'); ?> <small style="color:var(--vs-text-muted);font-weight:400;"><?php echo t('profile_pw_min'); ?></small></label>
                 <input type="password" name="new_password" id="new_password"
                        placeholder="••••••••" autocomplete="new-password" required minlength="8">
             </div>
@@ -811,14 +837,14 @@ include 'header_next_page.php';
             </div>
         </div>
         <?php else: ?>
-            <p style="color:#888;"><?php echo t('error_loading'); ?></p>
+            <p style="color:var(--vs-text-muted);"><?php echo t('error_loading'); ?></p>
         <?php endif; ?>
     </div>
 
     <!-- Backup -->
     <div class="settings-card">
         <h3><i class="ti ti-device-floppy"></i> Backup</h3>
-        <p style="font-size:13px; color:#888; margin-bottom:16px;"><?php echo t('settings_backup_description'); ?></p>
+        <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:16px;"><?php echo t('settings_backup_description'); ?></p>
         <a href="backend/backup.php" class="vs-btn vs-btn-secondary"><?php echo t('settings_backup_link'); ?></a>
     </div>
 
@@ -854,7 +880,7 @@ include 'header_next_page.php';
         </div>
         <?php else: ?>
         <div>
-            <strong style="font-size:14px; color:var(--vs-danger);"><i class="ti ti-trash"></i> <?php echo t('settings_delete_account_title'); ?></strong>
+            <strong style="font-size:14px; color:var(--vs-wcag-danger);"><i class="ti ti-trash"></i> <?php echo t('settings_delete_account_title'); ?></strong>
             <p style="font-size:13px; color:var(--vs-text-muted); margin:6px 0 12px;">
                 <?php echo t('settings_delete_account_desc'); ?>
             </p>
@@ -871,8 +897,8 @@ include 'header_next_page.php';
     <?php if ($darfKontoLoeschen): ?>
     <div id="deleteAccountModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:20px;">
         <div style="background:var(--vs-surface); border-radius:16px; padding:32px; max-width:460px; width:100%; box-shadow:0 16px 48px rgba(0,0,0,0.2);">
-            <h3 style="margin:0 0 12px; color:var(--vs-danger);"><i class="ti ti-alert-triangle"></i> <?php echo t('settings_delete_confirm_title'); ?></h3>
-            <p style="font-size:14px; color:#555; margin-bottom:20px;">
+            <h3 style="margin:0 0 12px; color:var(--vs-wcag-danger);"><i class="ti ti-alert-triangle"></i> <?php echo t('settings_delete_confirm_title'); ?></h3>
+            <p style="font-size:14px; color:var(--vs-text-muted); margin-bottom:20px;">
                 <?php echo t('settings_delete_confirm_desc'); ?>
                 <strong><?php echo esc($_SESSION['username']); ?></strong>
             </p>
@@ -905,7 +931,7 @@ include 'header_next_page.php';
     <?php if (isAdmin() && !isset($_SESSION['original_role'])): ?>
     <div class="settings-card">
         <h3><i class="ti ti-tool"></i> <?php echo t('settings_role_switch'); ?></h3>
-        <p style="font-size:13px; color:#888; margin-bottom:14px;"><?php echo t('settings_role_switch_desc'); ?></p>
+        <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:14px;"><?php echo t('settings_role_switch_desc'); ?></p>
         <div class="role-buttons">
             <form method="POST" action="switch_role.php" style="margin:0;">
                 <?php echo Security::getCSRFInput(); ?>

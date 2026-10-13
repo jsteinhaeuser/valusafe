@@ -556,7 +556,7 @@ include 'layout/header_next_page.php';
 
 .badge-secondary {
     background: var(--vs-border);
-    color: #666;
+    color: var(--vs-wcag-grey);
 }
 
 /* Button Styles */

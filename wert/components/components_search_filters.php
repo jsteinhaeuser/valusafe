@@ -230,7 +230,10 @@ $hasFilters = hasActiveFilters($currentFilters);
    ============================================ */
 
 .search-filters-card {
-    background: white;
+    background: var(--vs-surface);
+    /* Farben aus dem Theme (4.4.1): die Karte war fest weiss, die Statistik-
+       leiste #f8f9fa - in Midnight standen helle Texte darauf (WAVE 13.10.2026) */
+    color: var(--vs-text);
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     margin-bottom: 12px;
@@ -326,13 +329,15 @@ $hasFilters = hasActiveFilters($currentFilters);
 .filter-label {
     font-size: 13px;
     font-weight: 600;
-    color: #222;
+    color: var(--vs-text);
 }
 
 .filter-input,
 .filter-select {
     padding: 10px 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--vs-border-strong);
+    background: var(--vs-surface);
+    color: var(--vs-text);
     border-radius: 6px;
     font-size: 14px;
     transition: all 0.2s;
@@ -365,7 +370,7 @@ $hasFilters = hasActiveFilters($currentFilters);
 }
 
 .range-separator {
-    color: #595959; /* 7.00:1 ✅ war #999 = 2.85:1 */
+    color: var(--vs-wcag-grey); /* 7.00:1 ✅ war #999 = 2.85:1 */
     font-weight: 500;
 }
 
@@ -392,7 +397,7 @@ $hasFilters = hasActiveFilters($currentFilters);
 
 .checkbox-label {
     font-size: 14px;
-    color: #333;
+    color: var(--vs-text);
 }
 
 /* Action Buttons */
@@ -401,7 +406,7 @@ $hasFilters = hasActiveFilters($currentFilters);
     gap: 12px;
     flex-wrap: wrap;
     padding-top: 16px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--vs-border);
 }
 
 .btn {
@@ -450,8 +455,8 @@ $hasFilters = hasActiveFilters($currentFilters);
 /* Statistik */
 .search-stats {
     padding: 10px 20px;
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
+    background: var(--vs-surface-2);
+    border-top: 1px solid var(--vs-border);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -471,15 +476,15 @@ $hasFilters = hasActiveFilters($currentFilters);
 }
 
 .stats-label {
-    color: #595959; /* 7.00:1 ✅ war #6c757d = 4.48:1 */
+    color: var(--vs-wcag-grey); /* 7.00:1 ✅ war #6c757d = 4.48:1 */
 }
 
 .stats-divider {
-    color: #767676; /* 4.54:1 ✅ */
+    color: var(--vs-wcag-grey); /* 4.54:1 ✅ */
 }
 
 .search-stats strong {
-    color: #1a6fb5; /* 5.27:1 ✅ war #667eea = 3.15:1 */
+    color: var(--vs-wcag-value); /* 5.27:1 ✅ war #667eea = 3.15:1 */
     font-weight: 700;
 }
 

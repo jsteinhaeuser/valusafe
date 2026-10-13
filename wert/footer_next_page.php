@@ -33,7 +33,7 @@ if (!function_exists('tn')) {
     display:flex; flex-direction:column; overflow:hidden;
 }
 .vsm-header {
-    background:var(--vs-accent,#185fa5); color:#fff; padding:14px 20px;
+    background:var(--vs-accent,#185fa5); color: var(--vs-accent-text,#fff); padding:14px 20px;
     display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
 }
 .vsm-header h2 { margin:0; font-size:15pt; font-weight:600; }
@@ -58,7 +58,7 @@ if (!function_exists('tn')) {
     color:var(--vs-text,#0c1f3d); text-align:left; transition:background .12s;
 }
 .vsm-file-btn:hover  { background:var(--vs-border,#e2e8f0); }
-.vsm-file-btn.active { background:var(--vs-accent,#185fa5); color:#fff; font-weight:600; }
+.vsm-file-btn.active { background:var(--vs-accent,#185fa5); color: var(--vs-accent-text,#fff); font-weight:600; }
 .vsm-content {
     flex:1; overflow-y:auto; padding:24px 28px;
     font-size:13.5px; line-height:1.7; color:var(--vs-text,#0c1f3d);

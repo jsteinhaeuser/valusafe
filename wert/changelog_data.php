@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 12.10.2026 09:36 von bin/changelog_export.php.
+ * Erzeugt am 13.10.2026 17:02 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,42 @@
  */
 
 return [
+    [
+        'version' => '4.4.1',
+        'date' => '2026-10-13',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Barrierefreiheit: Alle Formularfelder sind jetzt mit ihrer Beschriftung verbunden – Bildschirmleser nennen bei jedem Feld, wofür es ist (vor allem im Verwaltungsbereich: Versicherungen, Räume, Benutzer, Rechteverwaltung). Die Farbschemata in den Einstellungen lassen sich per Tastatur auswählen (Tab, Pfeiltasten).',
+                'text_en' => 'Accessibility: all form fields are now linked to their labels – screen readers announce what each field is for (especially in the admin area: insurance, rooms, users, permissions). The themes in the settings can be chosen with the keyboard (Tab, arrow keys).'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Barrierefreiheit: Bessere Kontraste in den Farbschemata Cloud, Ocean, Midnight, Mint, Glass, Navy und Emerald – Hinweistexte und Akzentfarben sind besser lesbar, Eingabefelder haben einen deutlich sichtbaren Rahmen.',
+                'text_en' => 'Accessibility: better contrast in the Cloud, Ocean, Midnight, Mint, Glass, Navy and Emerald themes – hint texts and accent colours are easier to read, input fields have a clearly visible border.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Bilder zuschneiden und drehen: Beim Anlegen, in der Schnellerfassung und beim Bearbeiten gibt es unter dem Foto den Knopf „Zuschneiden / drehen“. Rahmen frei oder im Format 1:1 bzw. 4:3 setzen, in 90-Grad-Schritten drehen – auch per Tastatur. Beim Bearbeiten lassen sich so auch schon gespeicherte Bilder nachträglich gerade rücken.',
+                'text_en' => 'Crop and rotate images: when adding, in quick add and when editing there is a "Crop / rotate" button below the photo. Set the frame freely or as 1:1 or 4:3 and rotate in 90-degree steps – also with the keyboard. When editing, images that are already saved can be straightened afterwards, too.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Schadensfall: Neuer Knopf „Fotos und Belege (ZIP)“ in der Zusammenfassung. Er lädt alle Fotos und Rechnungen der betroffenen Gegenstände in einer Datei herunter – ein Ordner je Gegenstand, dazu eine Übersicht als Text und als Tabelle für die Versicherung.',
+                'text_en' => 'Damage claim: new "Photos and receipts (ZIP)" button in the summary. It downloads all photos and receipts of the affected items in one file – one folder per item, plus an overview as text and as a spreadsheet for the insurer.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Schadensfall löschen: Die Rückfrage erschien in manchen Browsern nicht, der Fall ließ sich dann nicht löschen. Sie kommt jetzt als eigenes Fenster der App.',
+                'text_en' => 'Delete damage claim: in some browsers the confirmation did not appear and the claim could not be deleted. It now shows as the app\'s own dialog.'
+            ]
+        ]
+    ],
     [
         'version' => '4.4',
         'date' => '2026-10-12',
@@ -219,18 +255,6 @@ return [
                 'public' => true,
                 'text' => 'Die Auswahl "Aktion" in der Uebersicht (Verbergen, Wieder anzeigen, Loeschen) zeigte in manchen Browsern, etwa Edge unter Windows, nur einen Eintrag - die uebrigen standen weiss auf weiss. Gefunden beim Windows-Test von Valu-Basic.',
                 'text_en' => 'In some browsers, such as Edge on Windows, the "Action" drop-down in the overview (Hide, Show again, Delete) showed only one option - the others were white on white. Found while testing Valu-Basic on Windows.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.31',
-        'date' => '2026-10-01',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Die Uebersicht im Verwaltungsbereich, die Einstellungen und die Statistikseite zeigen die Zahl der Raeume jetzt als "Raeume" an. Bisher stand dort "Orte", und die kleinere Zahl daneben hiess "Raeume", obwohl sie die Standorte zaehlte - etwa "6 Orte · 1 Raeume · 1 Pos." bei sechs Raeumen und einem Standort. Jetzt: "6 Raeume · Standorte: 1 · Pos.: 1". Die Zahlen selbst waren immer richtig, nur falsch beschriftet. Zu tun ist nichts.',
-                'text_en' => 'The admin overview, the settings and the statistics page now label the number of rooms as "Rooms". Previously it said "Locations", and the smaller number next to it was called "Rooms" although it counted the locations within rooms - for example "6 Locations · 1 Rooms · 1 Pos." for six rooms and one location. Now: "6 Rooms · Locations: 1 · Pos.: 1". The numbers themselves were always right, only the labels were wrong. No action needed.'
             ],
             [
                 'type' => 'feature',

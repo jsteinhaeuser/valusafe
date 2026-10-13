@@ -142,7 +142,7 @@ include 'layout/header_next_page.php';
                     <!-- URL-Block -->
                     <div style="flex:1; min-width:200px;">
                         <div class="ps-url-row" style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:8px;">
-                            <input type="text" id="publicUrlInput"
+                            <input type="text" id="publicUrlInput" aria-label="<?php echo htmlspecialchars(t('dash_public_link'), ENT_QUOTES, 'UTF-8'); ?>"
                                    value="<?php echo htmlspecialchars($public_url); ?>"
                                    readonly
                                    style="flex:1; min-width:200px; padding:8px 12px; border:1px solid var(--vs-border); border-radius:6px; font-size:13px; background:var(--vs-surface); font-family:monospace;">
@@ -210,16 +210,16 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="save_settings">
 
             <div class="form-group" style="margin-bottom:16px;">
-                <label style="font-weight:600; display:block; margin-bottom:6px;"><?php echo t('pub_page_title_label'); ?></label>
-                <input type="text" name="page_title" maxlength="100"
+                <label for="f_page_title" style="font-weight:600; display:block; margin-bottom:6px;"><?php echo t('pub_page_title_label'); ?></label>
+                <input id="f_page_title" type="text" name="page_title" maxlength="100"
                        value="<?php echo htmlspecialchars($pub_title); ?>"
                        placeholder="<?php echo t('pub_placeholder_title'); ?>"
                        style="width:100%; padding:8px 12px; border:1px solid var(--vs-border); border-radius:6px;">
             </div>
 
             <div class="form-group" style="margin-bottom:16px;">
-                <label style="font-weight:600; display:block; margin-bottom:6px;"><?php echo t('pub_description_label'); ?></label>
-                <textarea name="page_description" rows="3" maxlength="500"
+                <label for="f_page_description" style="font-weight:600; display:block; margin-bottom:6px;"><?php echo t('pub_description_label'); ?></label>
+                <textarea id="f_page_description" name="page_description" rows="3" maxlength="500"
                           placeholder="<?php echo t('pub_placeholder_desc'); ?>"
                           style="width:100%; padding:8px 12px; border:1px solid var(--vs-border); border-radius:6px; resize:vertical;"
                 ><?php echo htmlspecialchars($pub_desc); ?></textarea>

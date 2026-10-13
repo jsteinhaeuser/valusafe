@@ -418,8 +418,8 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="add_raum">
             <input type="hidden" name="tab" value="raeume">
             <div class="form-group">
-                <label><?php echo t('loc_room_name'); ?> *</label>
-                <input type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_room_ph')); ?>">
+                <label for="f_name"><?php echo t('loc_room_name'); ?> *</label>
+                <input id="f_name" type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_room_ph')); ?>">
             </div>
 
             <!-- Optionaler Standort -->
@@ -430,16 +430,16 @@ include 'layout/header_next_page.php';
                 </button>
                 <div id="optionalFields" style="display:none; margin-top:14px;">
                     <div class="form-group">
-                        <label><?php echo t('loc_location_name'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label>
-                        <input type="text" name="standort_name" class="form-control" placeholder="<?php echo esc(t('lc_loc_ph')); ?>">
+                        <label for="f_standort_name"><?php echo t('loc_location_name'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label>
+                        <input id="f_standort_name" type="text" name="standort_name" class="form-control" placeholder="<?php echo esc(t('lc_loc_ph')); ?>">
                     </div>
                     <div class="form-group">
-                        <label><?php echo t('loc_position_name'); ?> <span style="color:#999;"><?php echo t('lc_optional_with_loc'); ?></span></label>
-                        <input type="text" name="position_name" class="form-control" placeholder="<?php echo esc(t('lc_pos_ph')); ?>">
+                        <label for="f_position_name"><?php echo t('loc_position_name'); ?> <span style="color:#999;"><?php echo t('lc_optional_with_loc'); ?></span></label>
+                        <input id="f_position_name" type="text" name="position_name" class="form-control" placeholder="<?php echo esc(t('lc_pos_ph')); ?>">
                     </div>
                     <div class="form-group">
-                        <label><?php echo t('lc_pos_desc_label'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label>
-                        <input type="text" name="position_beschreibung" class="form-control" placeholder="<?php echo esc(t('lc_pos_desc_ph')); ?>">
+                        <label for="f_position_beschreibung"><?php echo t('lc_pos_desc_label'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label>
+                        <input id="f_position_beschreibung" type="text" name="position_beschreibung" class="form-control" placeholder="<?php echo esc(t('lc_pos_desc_ph')); ?>">
                     </div>
                 </div>
             </div>
@@ -458,7 +458,7 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="edit_raum">
             <input type="hidden" name="tab" value="raeume">
             <input type="hidden" name="id" id="edit_raum_id">
-            <div class="form-group"><label><?php echo t('loc_room_name'); ?> *</label><input type="text" name="name" id="edit_raum_name" required class="form-control"></div>
+            <div class="form-group"><label for="edit_raum_name"><?php echo t('loc_room_name'); ?> *</label><input type="text" name="name" id="edit_raum_name" required class="form-control"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('editRaumModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_save'); ?></button></div>
         </form>
     </div>
@@ -472,7 +472,7 @@ include 'layout/header_next_page.php';
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="add_standort">
             <input type="hidden" name="tab" value="standorte">
-            <div class="form-group"><label><?php echo t('loc_location_name'); ?> *</label><input type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_loc_ph2')); ?>"></div>
+            <div class="form-group"><label for="f_name_2"><?php echo t('loc_location_name'); ?> *</label><input id="f_name_2" type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_loc_ph2')); ?>"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('addStandortModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_create'); ?></button></div>
         </form>
     </div>
@@ -487,7 +487,7 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="edit_standort">
             <input type="hidden" name="tab" value="standorte">
             <input type="hidden" name="id" id="edit_standort_id">
-            <div class="form-group"><label><?php echo t('loc_location_name'); ?> *</label><input type="text" name="name" id="edit_standort_name" required class="form-control"></div>
+            <div class="form-group"><label for="edit_standort_name"><?php echo t('loc_location_name'); ?> *</label><input type="text" name="name" id="edit_standort_name" required class="form-control"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('editStandortModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_save'); ?></button></div>
         </form>
     </div>
@@ -502,16 +502,16 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="add_position">
             <input type="hidden" name="tab" value="positionen">
             <div class="form-group">
-                <label><?php echo t('loc_location'); ?> *</label>
-                <select name="standort_id" required class="form-control">
+                <label for="f_standort_id"><?php echo t('loc_location'); ?> *</label>
+                <select id="f_standort_id" name="standort_id" required class="form-control">
                     <option value=""><?php echo t('lc_choose_loc'); ?></option>
                     <?php foreach ($alle_standorte as $s): ?>
                         <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['name']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="form-group"><label><?php echo t('loc_position_name'); ?> *</label><input type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_pos_ph')); ?>"></div>
-            <div class="form-group"><label><?php echo t('be_description'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label><input type="text" name="beschreibung" class="form-control" placeholder="<?php echo esc(t('lc_pos_desc_ph2')); ?>"></div>
+            <div class="form-group"><label for="f_name_3"><?php echo t('loc_position_name'); ?> *</label><input id="f_name_3" type="text" name="name" required class="form-control" placeholder="<?php echo esc(t('lc_pos_ph')); ?>"></div>
+            <div class="form-group"><label for="f_beschreibung"><?php echo t('be_description'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label><input id="f_beschreibung" type="text" name="beschreibung" class="form-control" placeholder="<?php echo esc(t('lc_pos_desc_ph2')); ?>"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('addPositionModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_create'); ?></button></div>
         </form>
     </div>
@@ -527,15 +527,15 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="tab" value="positionen">
             <input type="hidden" name="id" id="edit_pos_id">
             <div class="form-group">
-                <label><?php echo t('loc_location'); ?> *</label>
+                <label for="edit_pos_standort_id"><?php echo t('loc_location'); ?> *</label>
                 <select name="standort_id" id="edit_pos_standort_id" required class="form-control">
                     <?php foreach ($alle_standorte as $s): ?>
                         <option value="<?php echo $s['id']; ?>"><?php echo htmlspecialchars($s['name']); ?></option>
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="form-group"><label><?php echo t('loc_position_name'); ?> *</label><input type="text" name="name" id="edit_pos_name" required class="form-control"></div>
-            <div class="form-group"><label><?php echo t('be_description'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label><input type="text" name="beschreibung" id="edit_pos_beschreibung" class="form-control"></div>
+            <div class="form-group"><label for="edit_pos_name"><?php echo t('loc_position_name'); ?> *</label><input type="text" name="name" id="edit_pos_name" required class="form-control"></div>
+            <div class="form-group"><label for="edit_pos_beschreibung"><?php echo t('be_description'); ?> <span style="color:#999;"><?php echo t('be_optional'); ?></span></label><input type="text" name="beschreibung" id="edit_pos_beschreibung" class="form-control"></div>
             <div class="modal-footer"><button type="button" onclick="closeModal('editPositionModal')" class="vs-btn vs-btn-secondary"><?php echo t('btn_cancel'); ?></button><button type="submit" class="vs-btn vs-btn-primary"><?php echo t('btn_save'); ?></button></div>
         </form>
     </div>

@@ -408,8 +408,8 @@ include 'header_next_page.php';
     </div>
 
     <div class="qr-controls">
-        <label style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo t('col_kategorie'); ?>:</label>
-        <select class="form-control" style="max-width:220px; margin:0;"
+        <label for="qr_kategorie" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo t('col_kategorie'); ?>:</label>
+        <select id="qr_kategorie" class="form-control" style="max-width:220px; margin:0;"
                 onchange="window.location.href='qr_generator.php'+(this.value>0?'?kategorie='+this.value:'')">
             <option value="0"><?php echo t('placeholder_all_categories'); ?></option>
             <?php foreach ($categories as $cat): ?>
@@ -422,8 +422,8 @@ include 'header_next_page.php';
             <a href="qr_generator.php" class="btn btn-secondary">✕ <?php echo t('qr_clear_filter'); ?></a>
         <?php endif; ?>
         <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
-            <label style="font-size:13px; color:#64748b; margin:0;"><?php echo t('qr_size'); ?>:</label>
-            <select class="form-control" style="max-width:110px; margin:0;" onchange="changeSize(this.value)">
+            <label for="qr_groesse" style="font-size:13px; color:#595959; margin:0;"><?php echo t('qr_size'); ?>:</label>
+            <select id="qr_groesse" class="form-control" style="max-width:110px; margin:0;" onchange="changeSize(this.value)">
                 <option value="120"><?php echo t('qr_size_small'); ?></option>
                 <option value="160" selected><?php echo t('qr_size_medium'); ?></option>
                 <option value="200"><?php echo t('qr_size_large'); ?></option>

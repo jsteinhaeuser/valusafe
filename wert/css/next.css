@@ -122,13 +122,13 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
 .vs-stat-pill b { color: var(--vs-text); font-weight: 600; }
 
 .vs-add-btn {
-    background: var(--vs-accent); color: #fff;
+    background: var(--vs-accent); color: var(--vs-accent-text);
     border: none; border-radius: var(--vs-rsm);
     padding: 8px 14px; font-size: 13px; font-weight: 600;
     text-decoration: none; display: flex; align-items: center; gap: 6px;
     transition: background 0.15s;
 }
-.vs-add-btn:hover { background: var(--vs-accent-hover); color: #fff; transform: none; }
+.vs-add-btn:hover { background: var(--vs-accent-hover); color: var(--vs-accent-text); transform: none; }
 
 /* ── Workspace ────────────────────────────────────────────────── */
 .vs-workspace { flex: 1; display: flex; overflow: hidden; }
@@ -157,7 +157,7 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     overflow: hidden;
     display: inline-flex; align-items: center; justify-content: center;
     background: var(--vs-accent, #185fa5);
-    color: #fff; font-size: 13px; font-weight: 600; line-height: 1;
+    color: var(--vs-accent-text); font-size: 13px; font-weight: 600; line-height: 1;
     text-decoration: none;
     border: 1px solid var(--vs-border, #e2e8f0);
 }
@@ -169,10 +169,12 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     font-size: 12px; font-weight: 500; color: var(--vs-text-muted);
     text-decoration: none; transition: all 0.15s; white-space: nowrap;
 }
+/* Anzahl im Chip: normal statt halbtransparent (opacity .7 = 3.41:1 in Midnight) */
+.vs-chip-count { font-weight: 400; }
 .vs-chip:hover { border-color: var(--vs-accent); color: var(--vs-accent); transform: none; }
 .vs-chip.vs-chip-on {
     background: var(--vs-accent-light); border-color: var(--vs-accent);
-    color: var(--vs-accent); font-weight: 600;
+    color: var(--vs-accent-on-light); font-weight: 600;
 }
 
 /* ── Gallery-Toolbar ──────────────────────────────────────────── */
@@ -196,10 +198,10 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     background: var(--vs-surface);
 }
 .vs-vbtn.vs-vbtn-on {
-    background: var(--vs-accent-light); color: var(--vs-accent);
+    background: var(--vs-accent-light); color: var(--vs-accent-on-light);
     border-color: var(--vs-border-strong); font-weight: 600;
 }
-.vs-vbtn:hover { color: var(--vs-accent); background: var(--vs-accent-light); border-color: var(--vs-border-strong); transform: none; }
+.vs-vbtn:hover { color: var(--vs-accent-on-light); background: var(--vs-accent-light); border-color: var(--vs-border-strong); transform: none; }
 
 /* ── Masonry Grid ─────────────────────────────────────────────── */
 .vs-masonry {
@@ -332,8 +334,8 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     background: var(--vs-surface); transition: all 0.15s;
 }
 .vs-dp-btn:hover         { border-color: var(--vs-accent); color: var(--vs-accent); transform: none; }
-.vs-dp-btn-primary       { background: var(--vs-accent); color: #fff; border-color: var(--vs-accent); }
-.vs-dp-btn-primary:hover { background: var(--vs-accent-hover); color: #fff; }
+.vs-dp-btn-primary       { background: var(--vs-accent); color: var(--vs-accent-text); border-color: var(--vs-accent); }
+.vs-dp-btn-primary:hover { background: var(--vs-accent-hover); color: var(--vs-accent-text); }
 
 /* ── FAB ─────────────────────────────────────────────────────── */
 .vs-fab {
@@ -344,11 +346,11 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     background: var(--vs-accent);
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    color: #fff; text-decoration: none;
+    color: var(--vs-accent-text); text-decoration: none;
     font-size: 26px; font-weight: 300; line-height: 1;
     z-index: 200; transition: background 0.15s;
 }
-.vs-fab:hover { background: var(--vs-accent-hover); color: #fff; transform: none; }
+.vs-fab:hover { background: var(--vs-accent-hover); color: var(--vs-accent-text); transform: none; }
 /* Handy: Schnellerfassung statt vollem Formular (4.3.33), siehe @media unten */
 .vs-fab-quick { display: none; }
 
@@ -696,7 +698,7 @@ body.vs-next .pagination-container { background: transparent; padding: 12px 0; }
     font-weight: var(--vs-weight-medium);
 }
 .activity-badge--action-create { background: var(--vs-success-light); color: var(--vs-success-text); }
-.activity-badge--action-update { background: var(--vs-accent-light);  color: var(--vs-accent); }
+.activity-badge--action-update { background: var(--vs-accent-light);  color: var(--vs-accent-on-light); }
 .activity-badge--action-delete { background: var(--vs-danger-light);  color: var(--vs-danger-text); }
 .activity-badge--action-login  { background: var(--vs-surface-2);     color: var(--vs-text-muted); }
 .activity-badge--action-other  { background: var(--vs-surface-2);     color: var(--vs-text-muted); }

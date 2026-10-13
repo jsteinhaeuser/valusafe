@@ -180,7 +180,7 @@ include 'layout/header_next_page.php';
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2><?php echo $activeTab === 'security' ? '<i class="ti ti-lock"></i> ' . t('syslog_tab_security') : '<i class="ti ti-chart-bar"></i> ' . t('syslog_tab_activity'); ?></h2>
             <div>
-                <select id="limitSelect" onchange="changeLimit()" class="form-control" style="width: auto; display: inline-block;">
+                <select id="limitSelect" onchange="changeLimit()" aria-label="<?php echo htmlspecialchars(t('per_page'), ENT_QUOTES, 'UTF-8'); ?>" class="form-control" style="width: auto; display: inline-block;">
                     <?php foreach ([25, 50, 100, 250] as $_n): ?>
                         <option value="<?php echo $_n; ?>" <?php echo $limit == $_n ? 'selected' : ''; ?>><?php echo sprintf(t('syslog_entries_n'), $_n); ?></option>
                     <?php endforeach; ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * image_manager.php - AJAX Handler für Multi-Image Management
- * Aktionen: upload, delete, set_primary, reorder, get_images
+ * Aktionen: upload, delete, set_primary, reorder, get_images, replace (4.4.1)
  */
 require_once 'db.php';
 require_once 'helpers.php';
@@ -53,8 +53,11 @@ $rechtJeAktion = [
     'delete'      => 'media_delete',
     'set_primary' => 'items_edit',
     'reorder'     => 'items_edit',
+    // Zuschneiden ersetzt die Datei: braucht Hochladen UND Loeschen
+    'replace'     => 'media_upload',
 ];
-if (isset($rechtJeAktion[$action]) && !hasPermission($rechtJeAktion[$action])) {
+if ((isset($rechtJeAktion[$action]) && !hasPermission($rechtJeAktion[$action]))
+    || ($action === 'replace' && !hasPermission('media_delete'))) {
     http_response_code(403);
     echo json_encode(['success' => false, 'error' => t('user_no_permission')]);
     exit;
@@ -179,6 +182,75 @@ switch ($action) {
         ]);
         break;
     
+    // =============================================
+    // POST: Bild ersetzen (Zuschnitt aus js/bild_zuschnitt.js, 4.4.1)
+    // Gleiche Pruefung wie beim Hochladen (uploadSingleImage: Groesse, MIME,
+    // Neuaufbau als JPG). Der Eintrag behaelt id, Reihenfolge und Hauptbild-
+    // Markierung, nur der Dateiname wechselt; die alte Datei wird erst nach
+    // erfolgreichem Umschreiben geloescht.
+    // =============================================
+    case 'replace':
+        $imageId = filter_var($_POST['image_id'] ?? 0, FILTER_VALIDATE_INT);
+        if (!$imageId) {
+            echo json_encode(['success' => false, 'error' => t('error_invalid_id')]);
+            exit;
+        }
+        $image = $db->selectOne(
+            "SELECT * FROM item_images WHERE id = ? AND item_id = ?",
+            [$imageId, $itemId]
+        );
+        if (!$image) {
+            echo json_encode(['success' => false, 'error' => 'Bild nicht gefunden']);
+            exit;
+        }
+        $file = $_FILES['image'] ?? null;
+        if (!$file || is_array($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(['success' => false, 'error' => 'Keine Datei']);
+            exit;
+        }
+
+        $result = uploadSingleImage($file['tmp_name'], 'zuschnitt.jpg', $file['size']);
+        if (!$result['success']) {
+            echo json_encode(['success' => false, 'error' => $result['error']]);
+            exit;
+        }
+
+        try {
+            $db->execute(
+                "UPDATE item_images SET filename = ? WHERE id = ? AND item_id = ?",
+                [$result['filename'], $imageId, $itemId]
+            );
+            if (!empty($image['is_primary'])) {
+                $db->execute(
+                    "UPDATE wertsachen SET bild = ? WHERE id = ?",
+                    [$result['filename'], $itemId]
+                );
+            }
+        } catch (Throwable $e) {
+            // Neue Datei wieder weg, die alte bleibt gueltig
+            @unlink(UPLOAD_DIR . $result['filename']);
+            throw $e;
+        }
+
+        $alt = UPLOAD_DIR . basename($image['filename']);
+        if ($image['filename'] !== '' && is_file($alt)) {
+            @unlink($alt);
+        }
+
+        $imageList = [];
+        foreach (getItemImages($itemId) as $img) {
+            $exists = file_exists(UPLOAD_DIR . $img['filename']);
+            $imageList[] = [
+                'id'         => $img['id'],
+                'filename'   => $img['filename'],
+                'url'        => $exists ? UPLOAD_URL . $img['filename'] : '',
+                'is_primary' => (bool)$img['is_primary'],
+                'sort_order' => $img['sort_order'],
+            ];
+        }
+        echo json_encode(['success' => true, 'images' => $imageList]);
+        break;
+
     // =============================================
     // POST: Bild löschen
     // =============================================

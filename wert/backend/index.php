@@ -606,7 +606,7 @@ include 'layout/header_next_page.php';
                           onsubmit="return vsConfirmForm(event, <?php echo htmlspecialchars(json_encode(t('log_confirm_delete_range')), ENT_QUOTES, 'UTF-8'); ?>);">
                         <?php echo Security::getCSRFInput(); ?>
                         <input type="hidden" name="action" value="cleanup">
-                        <select name="cleanup_days" class="vs-select-sm">
+                        <select name="cleanup_days" class="vs-select-sm" aria-label="<?php echo htmlspecialchars(t('log_cleanup_link'), ENT_QUOTES, 'UTF-8'); ?>">
                             <option value="7"><?php echo sprintf(t('act_older_than_days'), 7); ?></option>
                             <option value="30" selected><?php echo sprintf(t('act_older_than_days'), 30); ?></option>
                             <option value="90"><?php echo sprintf(t('act_older_than_days'), 90); ?></option>
@@ -754,7 +754,7 @@ include 'layout/header_next_page.php';
     margin: 0;
     font-size: 15px;
     font-weight: 600;
-    color: #333;
+    color: var(--vs-text);
 }
 
 .widget-link-small {
@@ -841,7 +841,7 @@ include 'layout/header_next_page.php';
 .upload-name {
     font-weight: 600;
     font-size: 13px;
-    color: #333;
+    color: var(--vs-text);
     margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
@@ -868,12 +868,12 @@ include 'layout/header_next_page.php';
 .upload-price {
     font-weight: 600;
     font-size: 12px;
-    color: var(--vs-success);
+    color: var(--vs-wcag-success);
 }
 
 .upload-date {
     font-size: 11px;
-    color: #999;
+    color: var(--vs-wcag-grey);
 }
 
 /* ============================================
@@ -950,7 +950,7 @@ include 'layout/header_next_page.php';
 .top-name {
     font-weight: 600;
     font-size: 13px;
-    color: #333;
+    color: var(--vs-text);
     text-decoration: none;
     display: block;
     margin-bottom: 4px;
@@ -972,7 +972,7 @@ include 'layout/header_next_page.php';
 .top-price {
     font-size: 14px;
     font-weight: 700;
-    color: var(--vs-success);
+    color: var(--vs-wcag-success);
     white-space: nowrap;
 }
 
@@ -996,14 +996,14 @@ include 'layout/header_next_page.php';
 
 .backup-label {
     font-size: 11px;
-    color: #999;
+    color: var(--vs-wcag-grey);
     margin-bottom: 3px;
 }
 
 .backup-value {
     font-size: 13px;
     font-weight: 600;
-    color: #333;
+    color: var(--vs-text);
 }
 
 /* ============================================
@@ -1034,7 +1034,7 @@ include 'layout/header_next_page.php';
 }
 
 .storage-bar-text {
-    color: white;
+    color: var(--vs-accent-text);
     font-weight: 600;
     font-size: 12px;
 }
@@ -1067,13 +1067,13 @@ include 'layout/header_next_page.php';
 .storage-item-label {
     font-size: 12px;
     font-weight: 600;
-    color: #333;
+    color: var(--vs-text);
     margin-bottom: 2px;
 }
 
 .storage-item-value {
     font-size: 11px;
-    color: #999;
+    color: var(--vs-wcag-grey);
 }
 
 .storage-summary {
@@ -1081,7 +1081,7 @@ include 'layout/header_next_page.php';
     padding-top: 12px;
     border-top: 2px solid #f0f0f0;
     font-size: 13px;
-    color: #333;
+    color: var(--vs-text);
 }
 
 /* ============================================
@@ -1125,13 +1125,13 @@ include 'layout/header_next_page.php';
 .quick-access-name {
     font-weight: 600;
     font-size: 13px;
-    color: #333;
+    color: var(--vs-text);
     margin-bottom: 2px;
 }
 
 .quick-access-meta {
     font-size: 11px;
-    color: #999;
+    color: var(--vs-wcag-grey);
 }
 
 .quick-access-arrow {

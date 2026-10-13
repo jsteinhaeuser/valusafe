@@ -155,10 +155,10 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="add">
             
             <div style="flex: 1;">
-                <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
+                <label for="f_name" style="display: block; margin-bottom: 8px; font-weight: 600; color: #555;">
                     <?php echo t('cat_name_label') ?: 'Kategorie-Name:'; ?>
                 </label>
-                <input type="text" 
+                <input id="f_name" type="text" 
                        name="name" 
                        required 
                        placeholder="<?php echo t('cat_placeholder') ?: 'z.B. Elektronik, Möbel, ...'; ?>"
@@ -242,7 +242,7 @@ include 'layout/header_next_page.php';
                 <input type="hidden" name="id" id="editId">
                 
                 <div style="margin-bottom: 20px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;"><?php echo t('cat_name_label') ?: 'Name:'; ?></label>
+                    <label for="editName" style="display: block; margin-bottom: 8px; font-weight: 600;"><?php echo t('cat_name_label') ?: 'Name:'; ?></label>
                     <input type="text" 
                            name="name" 
                            id="editName" 

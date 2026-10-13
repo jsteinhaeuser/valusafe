@@ -149,6 +149,8 @@ try {
 
 include 'header_next_page.php';
 ?>
+<link rel="stylesheet" href="css/cropper.min.css">
+<link rel="stylesheet" href="css/bild_zuschnitt.css">
 
 <style>
 /* Mobile-First Optimierungen */
@@ -308,7 +310,7 @@ include 'header_next_page.php';
     font-size: 14px;
     transition: all 0.3s;
     background: var(--vs-accent);
-    color: white;
+    color: var(--vs-accent-text);
 }
 
 .camera-options button:hover {
@@ -401,10 +403,10 @@ include 'header_next_page.php';
     align-items: center;
     gap: 8px;
 }
-.form-section-header.blue   { background: var(--vs-accent); }
+.form-section-header.blue   { background: var(--vs-accent); color: var(--vs-accent-text); }
 .form-section-header.green  { background: var(--vs-success); }
-.form-section-header.purple { background: var(--vs-purple); }
-.form-section-header.gray   { background: var(--vs-text); }
+.form-section-header.purple { background: var(--vs-purple, #6d28d9); } /* --vs-purple ist nirgends definiert - war weiss auf weiss */
+.form-section-header.gray   { background: var(--vs-text); color: var(--vs-surface); } /* umgekehrt: in Midnight ist --vs-text hell, weisse Schrift darauf 1,3:1 */
 .form-section-body {
     padding: 20px;
 }
@@ -647,6 +649,9 @@ include 'header_next_page.php';
         <div class="image-preview-container" id="imagePreviewContainer">
             <img id="imagePreview" src="" alt="<?php echo t('form_image'); ?>" class="image-preview">
             <div class="image-preview-actions">
+                <button type="button" class="vs-crop-open" id="cropOpen" onclick="bildZuschneiden()" hidden>
+                    <i class="ti ti-crop" aria-hidden="true"></i> <?php echo t('js_crop_button'); ?>
+                </button>
                 <button type="button" class="btn-remove-image" onclick="removeImage()">
                     <i class="ti ti-trash" aria-hidden="true"></i> <?php echo t('upload_remove_image'); ?>
                 </button>
@@ -808,7 +813,31 @@ function injectCompressedFile(blob, originalName, format) {
     } catch(e) { console.warn('DataTransfer nicht unterstützt:', e); }
 }
 
-function handleFileSelect(file) {
+// Zuschnitt (4.4.1): rohBild ist die zuletzt AUSGEWAEHLTE Datei - jeder neue
+// Zuschnitt beginnt beim Original, nicht beim schon zugeschnittenen Ergebnis.
+let rohBild = null;
+
+function bildZuschneiden() {
+    if (!rohBild || !window.vsBildZuschnitt) { return; }
+    vsBildZuschnitt.oeffnen(rohBild).then(function (blob) {
+        if (!blob) { return; }
+        const name = (rohBild.name || 'bild').replace(/\.[^/.]+$/, '') + '.jpg';
+        const neu  = new File([blob], name, { type: 'image/jpeg' });
+        // Ins Formularfeld legen - handleFileSelect tut das nur, wenn es komprimiert
+        try {
+            const dt = new DataTransfer();
+            dt.items.add(neu);
+            fileInput.files = dt.files;
+        } catch (e) { console.warn('DataTransfer nicht unterstützt:', e); }
+        handleFileSelect(neu, true);
+    }).catch(function (err) {
+        const errDiv = document.getElementById('uploadError');
+        errDiv.textContent   = vsT('js_crop_failed', 'Zuschnitt fehlgeschlagen: %s', err.message);
+        errDiv.style.display = 'block';
+    });
+}
+
+function handleFileSelect(file, ausZuschnitt) {
     const allowedTypes      = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/heic', 'image/heif'];
     const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif'];
     const errDiv            = document.getElementById('uploadError');
@@ -825,6 +854,10 @@ function handleFileSelect(file) {
         errDiv.style.display = 'block';
         return;
     }
+
+    if (!ausZuschnitt) { rohBild = file; }
+    document.getElementById('cropOpen').hidden =
+        !(window.vsBildZuschnitt && vsBildZuschnitt.moeglich(rohBild));
 
     // HEIC: kein Browser-Preview
     if (extension === 'heic' || extension === 'heif') {
@@ -892,6 +925,8 @@ function handleFileSelect(file) {
 
 // Bild entfernen
 function removeImage() {
+    rohBild = null;
+    document.getElementById('cropOpen').hidden = true;
     fileInput.value = '';
     imagePreview.src = '';
     imagePreviewContainer.classList.remove('active');
@@ -992,6 +1027,9 @@ document.addEventListener('keydown', (e) => {
     });
 })();
 </script>
+
+<script src="js/cropper.min.js"></script>
+<script src="js/bild_zuschnitt.js"></script>
 
 <!-- Barcode Scanner: Native BarcodeDetector + ZXing Fallback (iOS/Safari) -->
 <script src="js/zxing-browser.min.js"></script>

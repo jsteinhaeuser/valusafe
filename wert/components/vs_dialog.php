@@ -38,10 +38,10 @@ define('VS_DIALOG_EINGEBUNDEN', true);
     <div class="vs-dialog" role="dialog" aria-modal="true" aria-labelledby="vsDialogText">
         <h3 class="vs-dialog-title" id="vsDialogTitle" hidden></h3>
         <p class="vs-dialog-text" id="vsDialogText"></p>
-        <input type="text" class="vs-dialog-input" id="vsDialogInput" hidden>
+        <input type="text" class="vs-dialog-input" id="vsDialogInput" aria-labelledby="vsDialogText" hidden>
         <div class="vs-dialog-actions">
-            <button type="button" class="vs-dialog-btn vs-dialog-btn-secondary" id="vsDialogCancel" hidden></button>
-            <button type="button" class="vs-dialog-btn vs-dialog-btn-primary" id="vsDialogOk"></button>
+            <button type="button" class="vs-dialog-btn vs-dialog-btn-secondary" id="vsDialogCancel" hidden><?php echo htmlspecialchars(t('btn_cancel') ?: 'Abbrechen'); ?></button>
+            <button type="button" class="vs-dialog-btn vs-dialog-btn-primary" id="vsDialogOk"><?php echo htmlspecialchars(t('btn_close') ?: 'Schliessen'); ?></button>
         </div>
     </div>
 </div>

@@ -477,7 +477,7 @@ unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
     <a href="index.php?<?php echo http_build_query($chipBaseParams); ?>"
        class="vs-chip <?php echo empty($activeKatIds) ? 'vs-chip-on' : ''; ?>">
         <?php echo tn('filter_all', 'Alle'); ?>
-        <span style="opacity:.7">(<?php echo $total_items; ?>)</span>
+        <span class="vs-chip-count">(<?php echo $total_items; ?>)</span>
     </a>
     <?php foreach ($kategorien as $kat):
         $cnt = $kategorie_counts[$kat['id']] ?? 0;
@@ -488,7 +488,7 @@ unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
     <a href="index.php?<?php echo http_build_query($params); ?>"
        class="vs-chip <?php echo $isOn ? 'vs-chip-on' : ''; ?>">
         <?php echo htmlspecialchars($kat['name']); ?>
-        <span style="opacity:.7">(<?php echo $cnt; ?>)</span>
+        <span class="vs-chip-count">(<?php echo $cnt; ?>)</span>
     </a>
     <?php endforeach; ?>
 </div>
@@ -569,7 +569,7 @@ unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
                 else: ?>
                     <input type="hidden" name="<?php echo htmlspecialchars($k); ?>" value="<?php echo htmlspecialchars($v); ?>">
             <?php endif; endforeach; ?>
-            <select name="filter_raum" onchange="this.form.submit()"
+            <select name="filter_raum" onchange="this.form.submit()" aria-label="<?php echo htmlspecialchars(t('loc_all_rooms'), ENT_QUOTES, 'UTF-8'); ?>"
                     style="padding:6px 10px; border-radius:6px; border:1px solid var(--vs-border,#e2e8f0); font-size:13px; background:white;">
                 <option value=""><?php echo t('alle_raeume') ?: 'Alle Räume'; ?></option>
                 <?php foreach ($raeume_filter as $r): ?>
@@ -850,7 +850,7 @@ if ($view_mode === 'room'):
 <style>
 .room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
 .room-block { background: white; border: 1px solid var(--vs-border,#e2e8f0); border-radius: 14px; overflow: hidden; }
-.room-block-header { background: var(--vs-accent,#185fa5); color: white; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+.room-block-header { background: var(--vs-accent,#185fa5); color: var(--vs-accent-text,#fff); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
 .room-block-title { font-size: 15px; font-weight: 700; }
 .room-block-count { font-size: 12px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; }
 .room-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; }

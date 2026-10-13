@@ -4,8 +4,8 @@
  * Ladereihenfolge: tokens.css → next.css → ocean.css → wcag_global.css
  */
 :root {
-  --vs-accent:          #00acc1;
-  --vs-accent-hover:    #00838f;
+  --vs-accent:          #007a89;
+  --vs-accent-hover:    #00636f;
   --vs-accent-light:    #e0f7fa;
   --vs-accent-text:     #ffffff;
 
@@ -15,10 +15,10 @@
 
   --vs-text:            #263238;
   --vs-text-muted:      #546e7a;
-  --vs-text-subtle:     #80a0a8;
+  --vs-text-subtle:     #55747c;
 
   --vs-border:          #b2ebf2;
-  --vs-border-strong:   #7ecfd8;
+  --vs-border-strong:   #35a2ae;
 
   --vs-rail-bg:         #1a3a40;
   --vs-rail-text:       #00838f;

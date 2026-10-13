@@ -115,7 +115,7 @@ h1 { text-align:center; font-size:1.4rem; margin-bottom:.25rem; color:var(--vs-t
 label { display:block; font-size:.85rem; color:var(--vs-text-muted); margin-bottom:.4rem; }
 .code-input { width:100%; padding:.75rem 1rem; font-size:2rem; letter-spacing:.4em; text-align:center; border:2px solid var(--vs-border); border-radius:10px; background:var(--vs-bg); color:var(--vs-text); outline:none; transition:border-color .2s; }
 .code-input:focus { border-color:var(--vs-accent); }
-.btn-primary { width:100%; padding:.75rem; font-size:1rem; background:var(--vs-accent); color:#fff; border:none; border-radius:10px; cursor:pointer; font-weight:600; margin-top:.5rem; }
+.btn-primary { width:100%; padding:.75rem; font-size:1rem; background:var(--vs-accent); color: var(--vs-accent-text,#fff); border:none; border-radius:10px; cursor:pointer; font-weight:600; margin-top:.5rem; }
 .btn-primary:hover { background:var(--vs-accent-hover); }
 .alert-danger { background:rgba(239,68,68,.1); border:1px solid rgba(239,68,68,.3); color:#f87171; padding:.75rem 1rem; border-radius:8px; margin-bottom:1rem; font-size:.9rem; }
 .back { text-align:center; margin-top:1.5rem; }
@@ -138,8 +138,8 @@ label { display:block; font-size:.85rem; color:var(--vs-text-muted); margin-bott
         <form method="POST">
             <?= Security::getCSRFInput() ?>
             <div class="form-group">
-                <label>Code aus der Authenticator-App</label>
-                <input type="text" name="totp_code" class="code-input"
+                <label for="f_totp_code">Code aus der Authenticator-App</label>
+                <input id="f_totp_code" type="text" name="totp_code" class="code-input"
                        inputmode="text" maxlength="8"
                        placeholder="000000" autofocus autocomplete="one-time-code" required>
             </div>

@@ -17,12 +17,12 @@ Insurers ask three questions after a loss: what did you own, what was it worth, 
 ## Features
 
 - **Items** with photo, purchase date, purchase price, current value, location, notes and two free-form fields
-- **Multiple images and documents** per item — receipts, certificates, appraisals
+- **Multiple images and documents** per item — receipts, certificates, appraisals; photos can be cropped and rotated in the browser before saving
 - **Value history** — the current value is kept over time, not overwritten
 - **Locations** as rooms, places and positions, so "where is it" has an answer
 - **Insurance policies** with items assigned to them
 - **Barcode scanning** in the browser, with lookup for books and media
-- **Damage claim assistant**: after a burglary, fire or water damage, select the affected items and print a list for the police and a claim report for your insurer
+- **Damage claim assistant**: after a burglary, fire or water damage, select the affected items and print a list for the police and a claim report for your insurer, plus all photos and receipts as one ZIP file
 - **Exports**: PDF (including an insurance report and a handover report), CSV, HTML, printable QR code labels
 - **Dashboard** with charts by category, room and value
 - **Users and roles** (admin, edit, read) plus a fine-grained permission matrix
@@ -72,7 +72,7 @@ The ready-made package from [palindrom.de/valusafe](https://palindrom.de/valusaf
 
 ## Your data stays yours
 
-ValuSafe has no telemetry, no phone-home and no analytics. Chart.js, the barcode library and the icon font are served from your own server, never from a CDN.
+ValuSafe has no telemetry, no phone-home and no analytics. Chart.js, the barcode library, the image cropper and the icon font are served from your own server, never from a CDN.
 
 There is exactly one outward-facing feature, and it is optional: when you look up a barcode or an ISBN, the server queries public product databases — Open Library, Google Books, UPCitemdb, Open Food Facts, Open Beauty Facts — with the code you scanned. Nothing else about your inventory is sent, and if you never use that button, none of your inventory data leaves your server. Scanning itself happens in the browser. The only other traffic is e-mail, if you use the features that send it: password reset, the contact form of the public view, backup notifications. Everything else works on a machine with no internet connection at all.
 

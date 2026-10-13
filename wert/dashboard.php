@@ -152,7 +152,7 @@ include 'header_next_page.php';
 
 .dashboard-header {
     background: var(--vs-accent);
-    color: white;
+    color: var(--vs-accent-text);
     padding: 30px;
     border-radius: 12px;
     margin-bottom: 30px;
@@ -165,8 +165,7 @@ include 'header_next_page.php';
 }
 
 .dashboard-header p {
-    margin: 0;
-    opacity: 0.9;
+    margin: 0; /* ohne opacity .9: Ocean weiss auf Akzent sonst 4,42:1 */
 }
 
 .stats-grid {
@@ -177,7 +176,7 @@ include 'header_next_page.php';
 }
 
 .stat-card {
-    background: white;
+    background: var(--vs-surface);
     padding: 25px;
     border-radius: 12px;
     box-shadow: var(--vs-shadow-resting);
@@ -202,28 +201,28 @@ include 'header_next_page.php';
 }
 
 .stat-label {
-    color: #666;
+    color: var(--vs-wcag-grey);
     font-size: 0.9em;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .stat-sublabel {
-    color: #999;
+    color: var(--vs-wcag-grey);
     font-size: 0.85em;
     margin-top: 5px;
 }
-.bereit-card { background: white; border-radius: 12px; padding: 22px 25px; box-shadow: var(--vs-shadow-resting); margin-bottom: 30px; }
+.bereit-card { background: var(--vs-surface); border-radius: 12px; padding: 22px 25px; box-shadow: var(--vs-shadow-resting); margin-bottom: 30px; }
 .bereit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
-.bereit-title { font-size: 15px; font-weight: 700; color: #333; }
+.bereit-title { font-size: 15px; font-weight: 700; color: var(--vs-text); }
 .bereit-score { font-size: 28px; font-weight: 800; }
-.bereit-bar-outer { height: 14px; background: #f0f0f0; border-radius: 7px; overflow: hidden; margin-bottom: 16px; }
+.bereit-bar-outer { height: 14px; background: var(--vs-surface-2); border-radius: 7px; overflow: hidden; margin-bottom: 16px; }
 .bereit-bar-inner { height: 100%; border-radius: 7px; }
 .bereit-criteria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.bereit-criterion { background: #f8f9fa; border-radius: 8px; padding: 10px 12px; text-align: center; }
+.bereit-criterion { background: var(--vs-surface-2); border-radius: 8px; padding: 10px 12px; text-align: center; }
 .bereit-criterion-pct { font-size: 18px; font-weight: 700; margin-bottom: 2px; }
-.bereit-criterion-label { font-size: 11px; color: #888; text-transform: uppercase; }
-.bereit-tip { margin-top: 12px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 10px; }
+.bereit-criterion-label { font-size: 11px; color: var(--vs-wcag-grey); text-transform: uppercase; }
+.bereit-tip { margin-top: 12px; font-size: 12px; color: var(--vs-wcag-grey); border-top: 1px solid var(--vs-border); padding-top: 10px; }
 
 .content-grid {
     display: grid;
@@ -233,7 +232,7 @@ include 'header_next_page.php';
 }
 
 .dashboard-card {
-    background: white;
+    background: var(--vs-surface);
     border-radius: 12px;
     padding: 25px;
     box-shadow: var(--vs-shadow-resting);
@@ -241,7 +240,7 @@ include 'header_next_page.php';
 
 .dashboard-card h3 {
     margin: 0 0 20px 0;
-    color: #333;
+    color: var(--vs-text);
     display: flex;
     align-items: center;
     gap: 10px;
@@ -255,7 +254,7 @@ include 'header_next_page.php';
 
 .item-list li {
     padding: 12px 0;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--vs-border);
     display: flex;
     align-items: center;
     gap: 15px;
@@ -277,11 +276,11 @@ include 'header_next_page.php';
     width: 60px;
     height: 60px;
     border-radius: 8px;
-    background: #f0f0f0;
+    background: var(--vs-surface-2);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #999;
+    color: var(--vs-wcag-grey);
     font-size: 24px;
     flex-shrink: 0;
 }
@@ -292,13 +291,13 @@ include 'header_next_page.php';
 
 .item-name {
     font-weight: 600;
-    color: #333;
+    color: var(--vs-text);
     margin-bottom: 4px;
 }
 
 .item-meta {
     font-size: 0.85em;
-    color: #666;
+    color: var(--vs-wcag-grey);
 }
 
 .item-price {
@@ -324,7 +323,7 @@ include 'header_next_page.php';
 }
 
 .chart-bar-bg {
-    background: #f0f0f0;
+    background: var(--vs-surface-2);
     border-radius: 8px;
     height: 30px;
     position: relative;
@@ -340,7 +339,7 @@ include 'header_next_page.php';
     align-items: center;
     justify-content: flex-end;
     padding-right: 10px;
-    color: white;
+    color: var(--vs-accent-text);
     font-weight: 600;
     font-size: 0.85em;
 }
@@ -353,12 +352,12 @@ include 'header_next_page.php';
 }
 
 .action-card {
-    background: white;
+    background: var(--vs-surface);
     padding: 20px;
     border-radius: 10px;
     text-align: center;
     text-decoration: none;
-    color: #333;
+    color: var(--vs-text);
     box-shadow: var(--vs-shadow-resting);
     transition: all 0.3s;
 }
@@ -381,7 +380,7 @@ include 'header_next_page.php';
 .empty-state {
     text-align: center;
     padding: 40px;
-    color: #999;
+    color: var(--vs-wcag-grey);
 }
 
 .empty-state-icon {

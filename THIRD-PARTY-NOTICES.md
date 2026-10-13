@@ -25,6 +25,13 @@ required copyright notices are reproduced here.
 - Lizenz: MIT
 - Copyright (c) 2020-2026 Paweł Kuna
 
+## Cropper.js 1.6.2
+
+- Dateien: `wert/js/cropper.min.js` und `wert/css/cropper.min.css`
+- https://github.com/fengyuanchen/cropperjs
+- Lizenz: MIT
+- Copyright (c) 2015-present Chen Fengyuan
+
 ## QRCode.js
 
 - Datei: `wert/js/qrcode.min.js`

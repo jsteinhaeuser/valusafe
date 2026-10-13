@@ -1,8 +1,16 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-12.
+All changes that affect users. Generated from the project history on 2026-10-13.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.4.1 — 2026-10-13
+
+- **Fixed:** Accessibility: all form fields are now linked to their labels – screen readers announce what each field is for (especially in the admin area: insurance, rooms, users, permissions). The themes in the settings can be chosen with the keyboard (Tab, arrow keys).
+- **Fixed:** Accessibility: better contrast in the Cloud, Ocean, Midnight, Mint, Glass, Navy and Emerald themes – hint texts and accent colours are easier to read, input fields have a clearly visible border.
+- **New:** Crop and rotate images: when adding, in quick add and when editing there is a "Crop / rotate" button below the photo. Set the frame freely or as 1:1 or 4:3 and rotate in 90-degree steps – also with the keyboard. When editing, images that are already saved can be straightened afterwards, too.
+- **New:** Damage claim: new "Photos and receipts (ZIP)" button in the summary. It downloads all photos and receipts of the affected items in one file – one folder per item, plus an overview as text and as a spreadsheet for the insurer.
+- **Fixed:** Delete damage claim: in some browsers the confirmation did not appear and the claim could not be deleted. It now shows as the app's own dialog.
 
 ## 4.4 — 2026-10-12
 

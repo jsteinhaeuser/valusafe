@@ -79,7 +79,8 @@
     transition: opacity 0.2s;
 }
 
-.image-gallery-item:hover .image-actions {
+.image-gallery-item:hover .image-actions,
+.image-gallery-item:focus-within .image-actions {   /* auch per Tastatur sichtbar (4.4.1) */
     opacity: 1;
 }
 
@@ -101,6 +102,10 @@
 
 .image-action-btn.delete-btn:hover {
     background: rgba(231,76,60,0.8);
+}
+
+.image-action-btn.crop-btn:hover {
+    background: rgba(24,95,165,0.85);
 }
 
 .image-action-btn.primary-btn:hover {

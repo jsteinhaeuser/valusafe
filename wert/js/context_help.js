@@ -366,7 +366,7 @@ const helpStyles = `
         height: 42px;
         border-radius: 50%;
         background: var(--vs-accent, #185fa5);
-        color: #fff;
+        color: var(--vs-accent-text, #fff);
         border: none;
         font-size: 18px;
         cursor: pointer;

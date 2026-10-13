@@ -12,7 +12,7 @@
 // laufen ueber Cache First, bestehende Nutzer bekamen deshalb seit Monaten die
 // Dateien von v4.1 — auch das neue js/multi_image_upload.js haette sie nie
 // erreicht.
-const CACHE_VERSION = 'valusafe-v4.4';
+const CACHE_VERSION = 'valusafe-v4.4.1';
 
 // RELATIVE Pfade: sie gelten ab dem Ort dieser Datei. Bis 4.3.28 standen hier
 // "/css/..." usw. - das setzte eine Installation im Wurzelverzeichnis der
@@ -35,7 +35,18 @@ const STATIC_ASSETS = [
     'css/tokens.css',
     'css/backend.css',
     'css/tabler-icons.min.css',
+    // 4.4.1: alles, was sich mit dem Release aendert, gehoert hierher - nur
+    // diese Dateien holt der Install-Schritt an der HTTP-Ablage vorbei
+    // (cache: 'reload'). Fehlte wcag_global.css, blieb es bis zu 30 Tage alt
+    // (css max-age 1 Monat, Links ohne ?v=; aufgefallen auf einer Testinstanz 13.10.2026).
+    'css/wcag_global.css',
+    'css/multi_image_upload.css',
+    'css/cropper.min.css',
+    'css/bild_zuschnitt.css',
     'js/context_help.js',
+    'js/multi_image_upload.js',
+    'js/cropper.min.js',
+    'js/bild_zuschnitt.js',
     'icon-192.png',
     'icon-512.png',
     'apple-touch-icon.png',

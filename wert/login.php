@@ -220,7 +220,7 @@ $loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['
 
         .login-right .subtitle {
             font-size: 12px;
-            color: #888780;
+            color: #5f5e5a;
             margin-bottom: 1.75rem;
         }
 
@@ -305,7 +305,7 @@ $loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['
             border-left: 1px solid #e8e7e3;
             cursor: pointer;
             padding: 0 10px;
-            color: #888780;
+            color: #5f5e5a;
             display: flex;
             align-items: center;
             align-self: stretch;
@@ -356,9 +356,9 @@ $loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['
         .login-lang {
             margin-top: 18px;
             display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 10px;
-            font-size: 12px; color: #888780;
+            font-size: 12px; color: #5f5e5a;
         }
-        .login-lang a { color: #888780; text-decoration: none; padding: 2px 0; }
+        .login-lang a { color: #5f5e5a; text-decoration: none; padding: 2px 0; }
         .login-lang a:hover, .login-lang a:focus { text-decoration: underline; }
         .login-lang strong { color: #444441; }
 
@@ -449,7 +449,7 @@ $loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['
         </form>
 
         <p style="margin-top:14px; text-align:center;">
-            <a href="forgot_password.php" style="color:#888780; font-size:12px; text-decoration:underline;"><?php echo htmlspecialchars(t('login_forgot')); ?></a>
+            <a href="forgot_password.php" style="color:#5f5e5a; font-size:12px; text-decoration:underline;"><?php echo htmlspecialchars(t('login_forgot')); ?></a>
         </p>
 
         <?php // Sprachwahl vor der Anmeldung (4.3.33) ?>

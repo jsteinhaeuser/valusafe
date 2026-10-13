@@ -18,6 +18,19 @@
   --vs-accent-hover:    #0e4a82;
   --vs-accent-light:    #e6f1fb;
   --vs-accent-text:     #ffffff;
+  /* Akzent als Schrift auf --vs-accent-light (aktiver Chip, Badges) */
+  --vs-accent-on-light: var(--vs-accent);
+
+  /* Ersatzfarben aus wcag_global.css (4.4.1): Standard = die bisher fest
+     eingetragenen Werte fuer helle Themes, dunkle Themes setzen eigene.
+     Vorher standen sie fest drin und waren in Midnight dunkel auf dunkel. */
+  --vs-wcag-grey:       #595959;   /* graue Hinweistexte (#999/#888/#666 ...) */
+  --vs-wcag-text:       #374151;   /* dunkler Text (#333, Brotkrumen) */
+  --vs-wcag-link:       #4f46e5;   /* Links und Zaehler in Indigo */
+  --vs-wcag-value:      #1a6fb5;   /* Werte/Preise in Blau */
+  --vs-wcag-info:       #1e3a8a;   /* Info-Badge */
+  --vs-wcag-success:    #166534;   /* Betraege in Gruen */
+  --vs-wcag-danger:     #c0392b;   /* Warntext in Rot (= --vs-danger) */
 
   /* Oberflächen */
   --vs-bg:              #f4f7fb;
@@ -27,11 +40,11 @@
   /* Text */
   --vs-text:            #14181d;
   --vs-text-muted:      #5a6474;
-  --vs-text-subtle:     #8c96a3;
+  --vs-text-subtle:     #677281;
 
   /* Rahmen */
   --vs-border:          #d1dae8;
-  --vs-border-strong:   #a8b6c8;
+  --vs-border-strong:   #8195af;
 
   /* Semantisch */
   --vs-danger:          #c0392b;

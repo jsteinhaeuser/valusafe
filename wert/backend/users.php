@@ -391,23 +391,23 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="action" value="add">
             
             <div class="form-group">
-                <label><?php echo t('field_username') ?: 'Benutzername'; ?> *</label>
-                <input type="text" name="username" required class="form-control" autocomplete="off">
+                <label for="f_username"><?php echo t('field_username') ?: 'Benutzername'; ?> *</label>
+                <input id="f_username" type="text" name="username" required class="form-control" autocomplete="off">
             </div>
             
             <div class="form-group">
-                <label><?php echo t('field_password') ?: 'Passwort'; ?> *</label>
-                <input type="password" name="password" required class="form-control" autocomplete="new-password">
+                <label for="f_password"><?php echo t('field_password') ?: 'Passwort'; ?> *</label>
+                <input id="f_password" type="password" name="password" required class="form-control" autocomplete="new-password">
             </div>
 
             <div class="form-group">
-                <label><?php echo t('usr_email_label'); ?></label>
-                <input type="email" name="email" class="form-control" placeholder="name@beispiel.de">
+                <label for="f_email"><?php echo t('usr_email_label'); ?></label>
+                <input id="f_email" type="email" name="email" class="form-control" placeholder="name@beispiel.de">
             </div>
 
             <div class="form-group">
-                <label><?php echo t('users_permission') ?: 'Berechtigung'; ?></label>
-                <select name="role" class="form-control">
+                <label for="f_role"><?php echo t('users_permission') ?: 'Berechtigung'; ?></label>
+                <select id="f_role" name="role" class="form-control">
                     <option value="read">👁️ <?php echo t('role_viewer') ?: 'Viewer (Nur Lesen)'; ?></option>
                     <option value="edit"><i class="ti ti-pencil"></i> <?php echo t('role_editor') ?: 'Editor (Lesen & Schreiben)'; ?></option>
                     <option value="admin">🔥 <?php echo t('role_admin') ?: 'Admin (Voller Zugriff)'; ?></option>
@@ -435,26 +435,26 @@ include 'layout/header_next_page.php';
             <input type="hidden" name="id" id="edit_user_id">
             
             <div class="form-group">
-                <label><?php echo t('field_username') ?: 'Benutzername'; ?> *</label>
+                <label for="edit_username"><?php echo t('field_username') ?: 'Benutzername'; ?> *</label>
                 <input type="text" name="username" id="edit_username" required class="form-control" autocomplete="off">
             </div>
             
             <div class="form-group">
-                <label><?php echo t('users_new_password') ?: 'Neues Passwort (optional)'; ?></label>
+                <label for="f_edit_new_password"><?php echo t('users_new_password') ?: 'Neues Passwort (optional)'; ?></label>
                 <?php // autocomplete=new-password: sonst fuellt die Passwortverwaltung des Browsers
                       // hier das gespeicherte Passwort ein, und "Speichern" setzt es still als
                       // neues Passwort des bearbeiteten Kontos (Test 2ix 11.10.). ?>
-                <input type="password" name="new_password" class="form-control" autocomplete="new-password" placeholder="<?php echo t('users_password_placeholder') ?: 'Nur ausfüllen wenn ändern'; ?>">
+                <input type="password" name="new_password" id="f_edit_new_password" class="form-control" autocomplete="new-password" placeholder="<?php echo t('users_password_placeholder') ?: 'Nur ausfüllen wenn ändern'; ?>">
                 <small style="color: #999;"><?php echo t('users_password_hint') ?: 'Leer lassen um Passwort beizubehalten'; ?></small>
             </div>
 
             <div class="form-group">
-                <label><?php echo t('usr_email_label'); ?></label>
+                <label for="edit_email"><?php echo t('usr_email_label'); ?></label>
                 <input type="email" name="email" id="edit_email" class="form-control" placeholder="name@beispiel.de">
             </div>
 
             <div class="form-group">
-                <label><?php echo t('users_permission') ?: 'Berechtigung'; ?></label>
+                <label for="edit_role"><?php echo t('users_permission') ?: 'Berechtigung'; ?></label>
                 <select name="role" id="edit_role" class="form-control" onchange="updateSiehtAlleVisibility()">
                     <option value="read">👁️ <?php echo t('role_viewer') ?: 'Viewer (Nur Lesen)'; ?></option>
                     <option value="edit"><i class="ti ti-pencil"></i> <?php echo t('role_editor') ?: 'Editor (Lesen & Schreiben)'; ?></option>

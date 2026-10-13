@@ -193,7 +193,7 @@ if (!$printMode) {
             <a href="insurance.php?print=1<?php echo $versId ? '&v='.$versId : ''; ?>" target="_blank"
                style="padding:9px 18px; background:var(--vs-danger); color:white; border-radius:6px; text-decoration:none; font-weight:600;"><i class="ti ti-file-type-pdf" aria-hidden="true"></i> <?php echo t('btn_export_pdf'); ?></a>
             <?php if (hasPermission('admin')): ?>
-            <a href="backend/insurance.php" style="padding:9px 18px; background:var(--vs-accent); color:white; border-radius:6px; text-decoration:none; font-weight:600;"><i class="ti ti-settings" aria-hidden="true"></i> <?php echo t('btn_manage'); ?></a>
+            <a href="backend/insurance.php" style="padding:9px 18px; background:var(--vs-accent); color: var(--vs-accent-text,#fff); border-radius:6px; text-decoration:none; font-weight:600;"><i class="ti ti-settings" aria-hidden="true"></i> <?php echo t('btn_manage'); ?></a>
             <?php endif; ?>
         </div>
     </div>

@@ -86,8 +86,12 @@ try {
 
 include 'header_next_page.php';
 ?>
+<link rel="stylesheet" href="css/cropper.min.css">
+<link rel="stylesheet" href="css/bild_zuschnitt.css">
 
 <style>
+.qa-crop-row { display: flex; justify-content: center; margin: -6px 0 14px; }
+.qa-crop-row:has(> [hidden]) { display: none; }
 .qa-wrap {
     max-width: 480px;
     margin: 0 auto;
@@ -146,7 +150,7 @@ include 'header_next_page.php';
     aspect-ratio: 4/3;
     border-radius: 16px;
     border: 3px dashed var(--border-color, #d1d5db);
-    background: var(--input-bg, #f9fafb);
+    background: var(--vs-surface-2, #f9fafb); /* --input-bg gibt es nicht - in Midnight stand hier Hellgrau */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -159,7 +163,7 @@ include 'header_next_page.php';
 .qa-photo-zone:hover { border-color: var(--primary-color, #3498db); }
 .qa-photo-zone input[type=file] { display: none; }
 .qa-photo-icon { font-size: 48px; margin-bottom: 8px; }
-.qa-photo-hint { font-size: 14px; color: var(--text-muted, #888); }
+.qa-photo-hint { font-size: 14px; color: var(--vs-text-muted, #5a6474); }
 .qa-photo-preview {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
@@ -187,7 +191,7 @@ include 'header_next_page.php';
     color: var(--text-color, #374151);
     margin-bottom: 5px;
 }
-.qa-label .req { color: #e53e3e; }
+.qa-label .req { color: inherit; font-weight: 700; } /* #e53e3e 3,70:1 auf Ocean, in Midnight noch weniger */
 
 .qa-input, .qa-select {
     width: 100%;
@@ -196,7 +200,7 @@ include 'header_next_page.php';
     border-radius: 10px;
     font-size: 16px; /* verhindert iOS zoom */
     font-family: inherit;
-    background: var(--input-bg, white);
+    background: var(--vs-surface, white); /* --input-bg gibt es nicht: weisses Feld mit heller Midnight-Schrift */
     color: var(--text-color, #222);
     outline: none;
     transition: border-color 0.15s;
@@ -218,7 +222,7 @@ include 'header_next_page.php';
     width: 100%;
     padding: 16px;
     background: var(--primary-color, #2c7be5);
-    color: white;
+    color: var(--vs-accent-text, #fff);
     border: none;
     border-radius: 12px;
     font-size: 17px;
@@ -264,13 +268,19 @@ include 'header_next_page.php';
 
         <!-- Foto -->
         <div class="qa-photo-zone" id="qaPhotoZone" onclick="document.getElementById('bild').click()">
-            <input type="file" name="bild" id="bild" accept="image/*,.heic,.heif" capture="environment">
+            <input type="file" name="bild" id="bild" accept="image/*,.heic,.heif" capture="environment" aria-label="<?php echo htmlspecialchars(tn('quick_photo_hint', 'Foto aufnehmen oder wählen'), ENT_QUOTES, 'UTF-8'); ?>">
             <img class="qa-photo-preview" id="qaPreview" alt="">
-            <button type="button" class="qa-photo-remove" id="qaRemove" onclick="removePhoto(event)">✕</button>
+            <button type="button" class="qa-photo-remove" id="qaRemove" onclick="removePhoto(event)" aria-label="<?php echo htmlspecialchars(t('upload_remove_image'), ENT_QUOTES, 'UTF-8'); ?>">✕</button>
             <div id="qaPlaceholder">
                 <div class="qa-photo-icon">📷</div>
                 <div class="qa-photo-hint"><?php echo tn('quick_photo_hint', 'Klicken, um ein Foto zu wählen'); ?></div>
             </div>
+        </div>
+        <!-- Ausserhalb der Fotozone: ein Klick dort oeffnet sonst die Dateiauswahl -->
+        <div class="qa-crop-row">
+            <button type="button" class="vs-crop-open" id="qaCrop" onclick="qaZuschneiden()" hidden>
+                <i class="ti ti-crop" aria-hidden="true"></i> <?php echo t('js_crop_button'); ?>
+            </button>
         </div>
 
         <!-- Name -->
@@ -324,7 +334,7 @@ include 'header_next_page.php';
                 📝 <?php echo tn('quick_add_note', 'Notiz hinzufügen (optional)'); ?>
             </summary>
             <div style="margin-top:8px;">
-                <textarea name="notizen" id="notizen" class="qa-input"
+                <textarea name="notizen" id="notizen" class="qa-input" aria-label="<?php echo htmlspecialchars(t('form_notes'), ENT_QUOTES, 'UTF-8'); ?>"
                           rows="3" placeholder="<?php echo t('placeholder_notes'); ?>"
                           style="resize:vertical;"><?php echo htmlspecialchars($_POST['notizen'] ?? ''); ?></textarea>
             </div>
@@ -347,6 +357,8 @@ include 'header_next_page.php';
     </div>
 </div>
 
+<script src="js/cropper.min.js"></script>
+<script src="js/bild_zuschnitt.js"></script>
 <script>
 // Foto-Vorschau
 // Seit ValuSafe 4.3.33 / Valu-Basic 2.0.4: Kann der Browser das Bild nicht darstellen (HEIC vom iPhone in
@@ -371,9 +383,41 @@ function qaPlatzhalterZuruecksetzen() {
     placeholder.querySelector('.qa-photo-hint').textContent = QA_HINT_DEFAULT;
 }
 
+// Zuschnitt (4.4.1): qaRohBild ist die zuletzt ausgewaehlte Datei; jeder
+// Zuschnitt beginnt beim Original.
+let qaRohBild = null;
+
+function qaCropKnopf() {
+    document.getElementById('qaCrop').hidden =
+        !(qaRohBild && window.vsBildZuschnitt && vsBildZuschnitt.moeglich(qaRohBild));
+}
+
+function qaZuschneiden() {
+    if (!qaRohBild || !window.vsBildZuschnitt) { return; }
+    vsBildZuschnitt.oeffnen(qaRohBild).then(function (blob) {
+        if (!blob) { return; }
+        const name = (qaRohBild.name || 'foto').replace(/\.[^/.]+$/, '') + '.jpg';
+        const neu  = new File([blob], name, { type: 'image/jpeg' });
+        try {
+            const dt = new DataTransfer();
+            dt.items.add(neu);
+            document.getElementById('bild').files = dt.files;
+        } catch (e) { console.warn('DataTransfer nicht unterstützt:', e); }
+        qaVorschau(neu);
+    }).catch(function (err) {
+        vsAlert(vsT('js_crop_failed', 'Zuschnitt fehlgeschlagen: %s', err.message));
+    });
+}
+
 document.getElementById('bild').addEventListener('change', function() {
     const file = this.files[0];
     if (!file) return;
+    qaRohBild = file;
+    qaCropKnopf();
+    qaVorschau(file);
+});
+
+function qaVorschau(file) {
     if (/\.(heic|heif)$/i.test(file.name) && !/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
         qaKeineVorschau(file);
         return;
@@ -392,10 +436,12 @@ document.getElementById('bild').addEventListener('change', function() {
         preview.src = e.target.result;
     };
     reader.readAsDataURL(file);
-});
+}
 
 function removePhoto(e) {
     e.stopPropagation();
+    qaRohBild = null;
+    qaCropKnopf();
     document.getElementById('bild').value = '';
     document.getElementById('qaPreview').style.display = 'none';
     qaPlatzhalterZuruecksetzen();
@@ -412,6 +458,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('qaPreview').style.display = 'none';
     document.getElementById('qaPlaceholder').style.display = '';
     document.getElementById('qaRemove').style.display = 'none';
+    qaRohBild = null;
+    qaCropKnopf();
     // Preis zurücksetzen
     document.getElementById('preis').value = '';
 });

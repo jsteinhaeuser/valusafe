@@ -17,12 +17,12 @@ Nach einem Schaden stellt die Versicherung drei Fragen: Was hatten Sie, was war 
 ## Was es kann
 
 - **Gegenstände** mit Foto, Kaufdatum, Kaufpreis, aktuellem Wert, Standort, Notizen und zwei freien Feldern
-- **Mehrere Bilder und Dokumente** je Gegenstand — Rechnungen, Zertifikate, Gutachten
+- **Mehrere Bilder und Dokumente** je Gegenstand — Rechnungen, Zertifikate, Gutachten; Fotos lassen sich vor dem Speichern im Browser zuschneiden und drehen
 - **Wertverlauf** — der aktuelle Wert wird über die Zeit geführt, nicht überschrieben
 - **Standorte** als Räume, Orte und Positionen, damit „wo ist es" eine Antwort hat
 - **Versicherungen** mit zugeordneten Gegenständen
 - **Barcode-Scan** im Browser, mit Nachschlagen für Bücher und Medien
-- **Schadensfall-Assistent**: nach Einbruch, Brand oder Wasserschaden betroffene Gegenstände auswählen und daraus eine Liste für die Polizei und eine Schadensmeldung für die Versicherung drucken
+- **Schadensfall-Assistent**: nach Einbruch, Brand oder Wasserschaden betroffene Gegenstände auswählen und daraus eine Liste für die Polizei und eine Schadensmeldung für die Versicherung drucken, dazu alle Fotos und Belege als eine ZIP-Datei
 - **Exporte**: PDF (darunter ein Versicherungsbericht und ein Übergabeprotokoll), CSV, HTML, QR-Codes zum Aufkleben
 - **Übersichtsseite** mit Auswertungen nach Kategorie, Raum und Wert
 - **Benutzer und Rollen** (admin, edit, read) samt feiner Rechtematrix
@@ -72,7 +72,7 @@ Das fertige Paket von [palindrom.de/valusafe](https://palindrom.de/valusafe/) is
 
 ## Ihre Daten bleiben bei Ihnen
 
-ValuSafe hat keine Telemetrie, meldet nichts nach Hause und zählt keine Zugriffe. Chart.js, die Barcode-Bibliothek und die Symbolschrift liegen auf Ihrem eigenen Server, nicht bei einem Anbieter.
+ValuSafe hat keine Telemetrie, meldet nichts nach Hause und zählt keine Zugriffe. Chart.js, die Barcode-Bibliothek, das Zuschneide-Werkzeug und die Symbolschrift liegen auf Ihrem eigenen Server, nicht bei einem Anbieter.
 
 Es gibt genau eine Funktion, die nach außen geht, und sie ist freiwillig: Wenn Sie einen Barcode oder eine ISBN nachschlagen lassen, fragt der Server öffentliche Produktdatenbanken ab — Open Library, Google Books, UPCitemdb, Open Food Facts, Open Beauty Facts — und zwar mit dem Code, den Sie gescannt haben. Mehr wird nicht übermittelt, und wer diesen Knopf nie benutzt, bei dem verlassen keine Inventardaten den eigenen Server. Das Scannen selbst geschieht im Browser. Sonst geht nur E-Mail hinaus, und nur, wenn Sie die Funktionen benutzen, die sie verschicken: Passwort zurücksetzen, das Kontaktformular der öffentlichen Ansicht, Hinweise zur Sicherung. Alles andere funktioniert auch auf einem Rechner ganz ohne Internetverbindung.
 

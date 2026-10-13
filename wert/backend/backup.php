@@ -677,8 +677,8 @@ setTimeout(() => {
         <form method="POST">
             <?php echo Security::getCSRFInput(); ?>
             <div class="form-group">
-                <label><?php echo t('bk_email_label'); ?></label>
-                <input type="email" name="admin_email" value="<?php echo esc($savedEmail); ?>" placeholder="admin@example.com">
+                <label for="f_admin_email"><?php echo t('bk_email_label'); ?></label>
+                <input id="f_admin_email" type="email" name="admin_email" value="<?php echo esc($savedEmail); ?>" placeholder="admin@example.com">
                 <small><?php echo t('bk_email_hint'); ?></small>
             </div>
             <div class="form-actions">

@@ -229,6 +229,11 @@ class MultiImageUpload {
                             onclick="multiImageUpload.setPrimary(${img.id})"
                             title="${_miuE(_miuT('js_img_set_primary', 'Als Hauptbild setzen'))}" aria-label="${_miuE(_miuT('js_img_set_primary', 'Als Hauptbild setzen'))}">★</button>
                     ` : ''}
+                    ${window.vsBildZuschnitt ? `
+                    <button type="button" class="image-action-btn crop-btn"
+                            onclick="multiImageUpload.cropImage(${img.id})"
+                            title="${_miuE(_miuT('js_crop_button', 'Zuschneiden / drehen'))}" aria-label="${_miuE(_miuT('js_crop_button', 'Zuschneiden / drehen'))}"><i class="ti ti-crop" aria-hidden="true"></i></button>
+                    ` : ''}
                     <button type="button" class="image-action-btn delete-btn" 
                             onclick="multiImageUpload.deleteImage(${img.id})"
                             title="${_miuE(_miuT('js_img_delete', 'Bild löschen'))}" aria-label="${_miuE(_miuT('js_img_delete', 'Bild löschen'))}">🗑️</button>
@@ -376,6 +381,54 @@ class MultiImageUpload {
         }
     }
 
+
+    // =============================================
+    // ZUSCHNEIDEN (4.4.1): gespeichertes Bild zuschneiden/drehen und auf dem
+    // Server ersetzen (image_manager.php action=replace). Reihenfolge und
+    // Hauptbild bleiben, die Datei bekommt einen neuen Namen.
+    // =============================================
+    async cropImage(imageId) {
+        imageId = parseInt(imageId, 10);
+        const img = this.images.find(i => parseInt(i.id, 10) === imageId);
+        if (!img || !img.url || !window.vsBildZuschnitt) return;
+
+        let blob;
+        try {
+            blob = await window.vsBildZuschnitt.oeffnen(img.url);
+        } catch (err) {
+            this.showError(_miuE(_miuT('js_crop_failed', 'Zuschnitt fehlgeschlagen: %s', err.message)));
+            return;
+        }
+        if (!blob) return;   // abgebrochen
+
+        this.hideError();
+        this.showProgress(40, _miuT('js_crop_saving', 'Speichere Zuschnitt …'));
+        const formData = new FormData();
+        formData.append('csrf_token', this.csrfToken);
+        formData.append('action', 'replace');
+        formData.append('item_id', this.itemId);
+        formData.append('image_id', imageId);
+        formData.append('image', new File([blob], 'zuschnitt.jpg', { type: 'image/jpeg' }));
+
+        try {
+            const response = await fetch('image_manager.php', { method: 'POST', body: formData });
+            const data = await response.json();
+            if (data.success && data.images) {
+                this.images = data.images.map(i => ({ ...i, id: parseInt(i.id, 10) }));
+                this.renderGallery();
+                this.showProgress(100, _miuT('js_img_done', 'Fertig!'));
+                // Fokus zurueck auf den Knopf des ersetzten Bildes (die Galerie wurde neu gebaut)
+                const knopf = document.querySelector('.image-gallery-item[data-id="' + imageId + '"] .crop-btn');
+                if (knopf) knopf.focus();
+            } else {
+                this.showError(_miuE(data.error || _miuT('js_crop_failed', 'Zuschnitt fehlgeschlagen: %s', '')));
+            }
+        } catch (err) {
+            this.showError(_miuE(_miuT('js_crop_failed', 'Zuschnitt fehlgeschlagen: %s', err.message)));
+        } finally {
+            setTimeout(() => this.hideProgress(), 1200);
+        }
+    }
 
     // =============================================
     // SET PRIMARY

@@ -130,6 +130,11 @@ if ($migrationDa && $_SERVER['REQUEST_METHOD'] === 'POST') {
 // ── Anzeige vorbereiten ─────────────────────────────────────────────────────
 $id      = (int)($_GET['id'] ?? 0);
 $schritt = (int)($_GET['schritt'] ?? 0);
+// Rueckmeldung von schadenfall_belege.php (ZIP)
+$zipFehler = ['empty' => 'claims_zip_empty', 'too_large' => 'claims_zip_too_large', 'failed' => 'claims_zip_failed'];
+if (isset($_GET['zipfehler'], $zipFehler[$_GET['zipfehler']])) {
+    $fehler = $_GET['zipfehler'] === 'too_large' ? sprintf(t('claims_zip_too_large'), 200) : t($zipFehler[$_GET['zipfehler']]);
+}
 $neu     = isset($_GET['neu']);
 $fall    = null;
 $faelle  = [];
@@ -176,13 +181,20 @@ if ($fall && $schritt === 2) {
     $sql .= " ORDER BY r.name, w.name";
     $gegenstaende = $db->select($sql, $par);
 }
-$summen = ['anzahl' => 0, 'preis' => 0.0, 'zeitwert' => 0.0, 'ohne_beleg' => 0, 'ohne_foto' => 0];
+$summen = ['anzahl' => 0, 'preis' => 0.0, 'zeitwert' => 0.0, 'ohne_beleg' => 0, 'ohne_foto' => 0, 'dateien' => 0];
+// Belege kommen nur mit Recht und eingeschalteter Dokumente-Funktion in die ZIP
+$zipMitBelegen = false;
 $fallVers = null;
 if ($fall && $schritt === 3) {
     $zeilen = $db->select("SELECT w.id, w.name, w.bild, w.preis, w.aktueller_wert, w.erstellt_von, g.zustand,
-                                  (SELECT COUNT(*) FROM dokumente d WHERE d.wertsache_id = w.id) AS belege
+                                  (SELECT COUNT(*) FROM dokumente d WHERE d.wertsache_id = w.id) AS belege,
+                                  (SELECT COUNT(*) FROM item_images i WHERE i.item_id = w.id) AS fotos
                            FROM schadensfall_gegenstaende g JOIN wertsachen w ON w.id = g.wertsache_id
                            WHERE g.fall_id = ? ORDER BY w.name", [$fall['id']]);
+    if (hasPermission('docs_view')) {
+        $feature = $db->selectOne("SELECT dokumente_aktiv FROM users WHERE username = ?", [$ich]);
+        $zipMitBelegen = !empty($feature['dokumente_aktiv']);
+    }
     foreach ($zeilen as $z) {
         if (!darfGegenstand($z)) continue;
         $gegenstaende[] = $z;
@@ -191,6 +203,8 @@ if ($fall && $schritt === 3) {
         $summen['zeitwert'] += (float)($z['aktueller_wert'] ?: $z['preis']);
         if ((int)$z['belege'] === 0) $summen['ohne_beleg']++;
         if (empty($z['bild'])) $summen['ohne_foto']++;
+        $summen['dateien'] += max((int)$z['fotos'], empty($z['bild']) ? 0 : 1)
+                            + ($zipMitBelegen ? (int)$z['belege'] : 0);
     }
     foreach ($versicherungen as $v) if ((int)$v['id'] === (int)$fall['versicherung_id']) $fallVers = $v;
 }
@@ -458,6 +472,9 @@ include __DIR__ . '/header_next_page.php';
             <?php if ($gegenstaende): ?>
             <a class="btn btn-primary" href="schadenfall_dokument.php?id=<?php echo (int)$fall['id']; ?>&amp;art=polizei" target="_blank" rel="noopener"><i class="ti ti-file-text" aria-hidden="true"></i> <?php echo $e(t('claims_doc_police')); ?></a>
             <a class="btn btn-primary" href="schadenfall_dokument.php?id=<?php echo (int)$fall['id']; ?>&amp;art=versicherung" target="_blank" rel="noopener"><i class="ti ti-shield-check" aria-hidden="true"></i> <?php echo $e(t('claims_doc_insurance')); ?></a>
+            <?php if ($summen['dateien'] > 0): ?>
+            <a class="btn btn-primary" href="schadenfall_belege.php?id=<?php echo (int)$fall['id']; ?>" aria-describedby="zipHinweis"><i class="ti ti-file-zip" aria-hidden="true"></i> <?php echo $e(t('claims_zip')); ?> (<?php echo $e(sprintf(t('claims_zip_files'), $summen['dateien'])); ?>)</a>
+            <?php endif; ?>
             <?php endif; ?>
             <?php if ($darfVerwalten): ?>
             <a class="btn btn-secondary" href="schadenfall.php?id=<?php echo (int)$fall['id']; ?>&amp;schritt=2"><?php echo $e(t('claims_edit_items')); ?></a>
@@ -465,6 +482,9 @@ include __DIR__ . '/header_next_page.php';
             <?php endif; ?>
             <a class="btn btn-secondary" href="schadenfall.php"><?php echo $e(t('claims_all_cases')); ?></a>
         </div>
+        <?php if ($gegenstaende && $summen['dateien'] > 0): ?>
+        <p class="hinweis" id="zipHinweis"><?php echo $e(t('claims_zip_hint')); ?><?php if (!$zipMitBelegen): ?> <?php echo $e(t('claims_zip_no_docs')); ?><?php endif; ?></p>
+        <?php endif; ?>
     </div>
 
     <?php if ($darfVerwalten): ?>
@@ -483,7 +503,7 @@ include __DIR__ . '/header_next_page.php';
             </div>
             <button type="submit" class="btn btn-secondary"><?php echo $e(t('claims_status_save')); ?></button>
         </form>
-        <form method="POST" style="margin-top:14px;" onsubmit="return confirm(<?php echo $e(json_encode(t('claims_delete_confirm'))); ?>);">
+        <form method="POST" style="margin-top:14px;" onsubmit="return vsConfirmForm(event, <?php echo $e(json_encode(t('claims_delete_confirm'))); ?>);">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="aktion" value="loeschen">
             <input type="hidden" name="id" value="<?php echo (int)$fall['id']; ?>">

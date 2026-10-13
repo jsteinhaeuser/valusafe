@@ -517,24 +517,24 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbo
             <input type="hidden" name="anfrage_item_id" id="anfrageItemId" value="">
 
             <div style="margin-bottom:14px;">
-                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:5px; color:#374151;"><?php echo t('public_name_label'); ?></label>
-                <input type="text" name="anfrage_name" required maxlength="100"
+                <label for="f_anfrage_name" style="display:block; font-size:13px; font-weight:600; margin-bottom:5px; color:#374151;"><?php echo t('public_name_label'); ?></label>
+                <input id="f_anfrage_name" type="text" name="anfrage_name" required maxlength="100"
                        style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box;"
                        placeholder="<?php echo t('public_ph_name'); ?>">
             </div>
 
             <div style="margin-bottom:14px;">
-                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:5px; color:#374151;"><?php echo t('public_email_label'); ?></label>
-                <input type="email" name="anfrage_email" required maxlength="150"
+                <label for="f_anfrage_email" style="display:block; font-size:13px; font-weight:600; margin-bottom:5px; color:#374151;"><?php echo t('public_email_label'); ?></label>
+                <input id="f_anfrage_email" type="email" name="anfrage_email" required maxlength="150"
                        style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box;"
                        placeholder="<?php echo t('public_ph_email'); ?>">
             </div>
 
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:13px; font-weight:600; margin-bottom:5px; color:#374151;">
+                <label for="f_anfrage_nachricht" style="display:block; font-size:13px; font-weight:600; margin-bottom:5px; color:#374151;">
                     <?php echo t('public_message_label'); ?> <span style="font-weight:400; color:#9ca3af;"><?php echo t('public_message_hint'); ?></span>
                 </label>
-                <textarea name="anfrage_nachricht" maxlength="200" rows="3"
+                <textarea id="f_anfrage_nachricht" name="anfrage_nachricht" maxlength="200" rows="3"
                           style="width:100%; padding:10px 12px; border:1px solid #d1d5db; border-radius:8px; font-size:14px; box-sizing:border-box; resize:vertical;"
                           placeholder="<?php echo t('public_ph_message'); ?>"
                           oninput="document.getElementById('charCount').textContent = this.value.length"></textarea>
