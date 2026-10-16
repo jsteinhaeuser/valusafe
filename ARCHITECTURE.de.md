@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 13. Oktober 2026 · Version 4.4.1 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 15. Oktober 2026 · Version 4.5 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -19,7 +19,7 @@ Es ist **kein SaaS**. Jede Installation läuft auf dem Webspace ihres Betreibers
 | Frontend-Wurzel | 72 | 20.111 |
 | Backend (Admin) | 25 | 10.687 |
 | Komponenten | 6 | 2.642 |
-| Sprachdateien (9 Sprachen) | 10 | 10.371 |
+| Sprachdateien (10 Sprachen) | 11 | 15.507 |
 | JavaScript (eigenes; dazu drei mitgelieferte Bibliotheken) | 2 | 1.065 |
 | CSS (13 Theme-Dateien, davon 7 auswählbar) | 17 | 3.030 |
 
@@ -83,7 +83,7 @@ wert/                       Anwendungswurzel, jede .php ist ein Einstiegspunkt
 │   ├── backup.php          Sicherung (DB, Bilder, PHP-Dateien)
 │   └── restore.php         Wiederherstellung
 ├── components/             wiederverwendete UI-Blöcke
-├── lang/                   9 Sprachdateien, je ~1.150 Schlüssel
+├── lang/                   10 Sprachdateien, je ~1.350 Schlüssel
 ├── css/                    13 Theme-Dateien (7 auswählbar) plus Tokens und WCAG-Regeln
 ├── js/                     eigenes JS plus lokal gehostete Bibliotheken
 ├── upload/                 Nutzerfotos       [durch .htaccess geschützt]
@@ -210,7 +210,7 @@ Serverseitig gerendertes HTML, ergänzt um punktuelles JavaScript. Kein Build-Sc
 
 **Zwei Oberflächen-Generationen.** Die ältere („klassisch") und die neuere („Next Interface" — 52-Pixel-Icon-Leiste, Masonry-Raster, geteilte Detailansicht, mobile Bottom-Navigation). Erkennbar an den eingebundenen Rahmen: 37 Dateien nutzen `header_next_page.php`, nur noch eine — `index.php` — den alten `header_next.php`. Im Backend nutzen alle 21 Seiten `layout/header_next_page.php`.
 
-**Internationalisierung.** Neun Sprachen (DE, EN, FR, TR, ES, IT, NL, PL, PT), je etwa 1.150 Schlüssel. Zugriff über `t('schluessel')`; Texte für JavaScript gelangen als `window.VS_T` in den Browser (`components/js_texte.php`, Abruf über `vsT()`), damit auch Skript-Meldungen der Sprache des Benutzers folgen. Fehlt ein Schlüssel, gibt `t()` den Schlüssel selbst zurück — fehlende Übersetzungen erscheinen also als roher Bezeichner im UI statt als leerer Text. Stand 10. Oktober 2026 fehlt in keiner Sprache ein Schlüssel; `bin/check_lang.py` im Entwicklungs-Repository prüft das.
+**Internationalisierung.** Zehn Sprachen (DE, EN, FR, TR, ES, IT, NL, PL, PT, GA), je etwa 1.350 Schlüssel. Zugriff über `t('schluessel')`; Texte für JavaScript gelangen als `window.VS_T` in den Browser (`components/js_texte.php`, Abruf über `vsT()`), damit auch Skript-Meldungen der Sprache des Benutzers folgen. Fehlt ein Schlüssel, gibt `t()` den Schlüssel selbst zurück — fehlende Übersetzungen erscheinen also als roher Bezeichner im UI statt als leerer Text. Stand 10. Oktober 2026 fehlt in keiner Sprache ein Schlüssel; `bin/check_lang.py` im Entwicklungs-Repository prüft das.
 
 **PWA.** Manifest, Offline-Seite, Service Worker mit Cache-First für statische Dateien und ohne Caching für PHP.
 
@@ -267,4 +267,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 13. Oktober 2026, Version 4.4.1. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 15. Oktober 2026, Version 4.5. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

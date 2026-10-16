@@ -102,7 +102,8 @@ if (!function_exists('tn')) {
     // ev: Klick-Ereignis. ev.detail === 0 heisst Tastatur (Enter/Leertaste auf
     // dem Knopf in der Karte) - dann springt der Fokus in die Detailansicht.
     window.vsOpenDetail = function(card, ev) {
-        document.querySelectorAll('.vs-mcard').forEach(function(c) {
+        // card = Karte oder (seit 4.5) Tabellenzeile tr.vs-trow
+        document.querySelectorAll('.vs-mcard, .vs-trow').forEach(function(c) {
             c.classList.remove('vs-mcard-on');
         });
         card.classList.add('vs-mcard-on');
@@ -180,8 +181,8 @@ if (!function_exists('tn')) {
         empty.style.display   = 'none';
         content.style.display = 'flex';
 
-        document.querySelectorAll('.vs-mcard-open').forEach(function (b) {
-            b.setAttribute('aria-expanded', b.closest('.vs-mcard') === card ? 'true' : 'false');
+        document.querySelectorAll('.vs-mcard-open, .vs-trow-open').forEach(function (b) {
+            b.setAttribute('aria-expanded', b.closest('.vs-mcard, .vs-trow') === card ? 'true' : 'false');
         });
         if (ev && ev.detail === 0) {
             var t = document.getElementById('vsDetailTitle');
@@ -191,8 +192,8 @@ if (!function_exists('tn')) {
 
     // Detail schließen bei Klick außerhalb der Masonry-Karten
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.vs-mcard') && !e.target.closest('.vs-detail') && !e.target.closest('tr[data-id]')) {
-            document.querySelectorAll('.vs-mcard').forEach(function(c) {
+        if (!e.target.closest('.vs-mcard') && !e.target.closest('.vs-detail') && !e.target.closest('tr[data-id]') && !e.target.closest('.vs-trow')) {
+            document.querySelectorAll('.vs-mcard, .vs-trow').forEach(function(c) {
                 c.classList.remove('vs-mcard-on');
             });
             var content = document.getElementById('vsDetailContent');

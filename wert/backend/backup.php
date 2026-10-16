@@ -94,7 +94,13 @@ if (isset($_POST['create_backup'])) {
             $filepath = BACKUP_DIR . $filename;
             $f = fopen($filepath, 'w');
             if (!$f) throw new Exception("Kann Datei nicht erstellen: $filepath");
-            fwrite($f, "-- Backup " . date('Y-m-d H:i:s') . "\nSET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS=0;\n\n");
+            // Versionszeile: die Datenuebernahme (datenuebernahme.php) zeigt
+            // sie in der Vorschau an. Entscheidend fuer die Pruefung ist aber
+            // schema_migrations - Sicherungen bis 4.4.1 haben die Zeile nicht.
+            $vsVersion = json_decode((string)@file_get_contents(__DIR__ . '/../wert-update/version.json'), true)['version'] ?? '';
+            fwrite($f, "-- Backup " . date('Y-m-d H:i:s') . "\n"
+                . ($vsVersion !== '' ? "-- ValuSafe-Version: " . preg_replace('/[^0-9A-Za-z.\-]/', '', $vsVersion) . "\n" : '')
+                . "SET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS=0;\n\n");
             // Alle Tabellen der Datenbank sichern statt einer gepflegten Liste.
             //
             // Bis zum 06.09.2026 stand hier eine feste Aufzaehlung von sechs
@@ -151,6 +157,10 @@ if (isset($_POST['create_backup'])) {
             if (is_dir(UPLOAD_DIR)) {
                 foreach (glob(UPLOAD_DIR . '*') as $uf) {
                     if (is_file($uf)) { $zip->addFile($uf, 'upload/' . basename($uf)); $cnt++; }
+                }
+                // Profilbilder (4.5) - bis 4.4.1 fehlten sie, glob liest nur flach
+                foreach (glob(UPLOAD_DIR . 'avatars/*') ?: [] as $uf) {
+                    if (is_file($uf)) { $zip->addFile($uf, 'upload/avatars/' . basename($uf)); $cnt++; }
                 }
             }
             $docsDir = __DIR__ . '/../documents/';

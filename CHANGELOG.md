@@ -1,8 +1,18 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-13.
+All changes that affect users. Generated from the project history on 2026-10-16.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.5 — 2026-10-16
+
+- **New:** New language: Irish (Gaeilge), for now as a beta – native speakers are currently reviewing the translation. ValuSafe now speaks ten languages – selectable on the sign-in page and in the settings.
+- **New:** Settings: you now choose the language from a drop-down list in the "Appearance" card, together with the colour scheme. The separate language card with ten buttons is gone, which makes the page considerably more compact. Each language is listed in its own spelling; click "Apply" to switch.
+- **New:** Settings reorganised into four sections with headings: Appearance, My account, My data and Administration. Profile picture, default creator and session are in the "Profile" card, password and two-factor sign-in in "Sign-in". The colour schemes sit in one row, and cards in a row have the same height.
+- **Fixed:** Table view: clicking a row or the name now shows the item in the detail panel on the right, as in the card view. Until now it only said "Select item". Also works with the keyboard (focus the name, press Enter).
+- **New:** Import data from an earlier ValuSafe version: new menu item under Restore. Select or upload the backup of the old version (database and optionally photos/receipts), have it checked, look at the preview and import it with one click. The database is then brought up to date automatically. Works with backups from ValuSafe 4.4 onwards.
+- **Fixed:** Restore: records with an apostrophe in the text (e.g. "Children's bike") were silently lost when restoring a database backup. Everything is now restored completely, errors are shown, and database updates run afterwards.
+- **Fixed:** Backup: the files backup now also contains the users' profile pictures. Until now they were missing and got lost when restoring or moving.
 
 ## 4.4.1 — 2026-10-13
 

@@ -20,7 +20,7 @@ if (!Security::validateCSRFToken($token)) {
     exit;
 }
 
-$allowed = ['de', 'en', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'tr'];
+$allowed = ['de', 'en', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'tr', 'ga'];
 $lang    = $_POST['lang'] ?? '';
 
 if (!in_array($lang, $allowed, true)) {

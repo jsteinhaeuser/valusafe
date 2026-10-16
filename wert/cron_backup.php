@@ -79,7 +79,13 @@ function createDatabaseBackup() {
         if (!$file) throw new Exception("Kann Backup-Datei nicht erstellen: $filepath");
 
         fwrite($file, "-- Wertsachen-Inventar Datenbank-Backup\n");
-        fwrite($file, "-- Erstellt am: " . date('Y-m-d H:i:s') . "\n\n");
+        fwrite($file, "-- Erstellt am: " . date('Y-m-d H:i:s') . "\n");
+        // Fuer die Vorschau der Datenuebernahme (backend/datenuebernahme.php)
+        $vsVersion = json_decode((string)@file_get_contents(__DIR__ . '/wert-update/version.json'), true)['version'] ?? '';
+        if ($vsVersion !== '') {
+            fwrite($file, "-- ValuSafe-Version: " . preg_replace('/[^0-9A-Za-z.\-]/', '', $vsVersion) . "\n");
+        }
+        fwrite($file, "\n");
         fwrite($file, "SET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS = 0;\n\n");
 
         // Tabellen dynamisch ermitteln — keine Hardcodierung mehr nötig
@@ -156,6 +162,10 @@ function createFilesBackup() {
         if (is_dir(UPLOAD_DIR)) {
             foreach (glob(UPLOAD_DIR . '*') as $file) {
                 if (is_file($file)) { $zip->addFile($file, 'upload/' . basename($file)); $fileCount++; }
+            }
+            // Profilbilder (4.5) - bis 4.4.1 fehlten sie, glob liest nur flach
+            foreach (glob(UPLOAD_DIR . 'avatars/*') ?: [] as $file) {
+                if (is_file($file)) { $zip->addFile($file, 'upload/avatars/' . basename($file)); $fileCount++; }
             }
         }
 

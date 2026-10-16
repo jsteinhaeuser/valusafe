@@ -368,8 +368,8 @@ if (file_exists(__DIR__ . '/lang/language.php')) {
     require_once __DIR__ . '/lang/language.php';
 }
 
-// Die neun Sprachen der Anwendung (wert/lang/*.php)
-const VS_SPRACHEN = ['de', 'en', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'tr'];
+// Die zehn Sprachen der Anwendung (wert/lang/*.php; ga = Irisch seit 4.5)
+const VS_SPRACHEN = ['de', 'en', 'fr', 'es', 'it', 'nl', 'pl', 'pt', 'tr', 'ga'];
 
 /** Sprache ohne Sitzung: Cookie user_language, dann Accept-Language, dann 'de'. */
 function vsErkannteSprache(): string {

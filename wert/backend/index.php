@@ -579,6 +579,9 @@ include 'layout/header_next_page.php';
             <a href="restore.php" class="widget-card vs-system-link">
                 <div class="widget-label"><i class="ti ti-restore"></i> <?php echo t('sys_restore'); ?></div>
             </a>
+            <a href="datenuebernahme.php" class="widget-card vs-system-link">
+                <div class="widget-label"><i class="ti ti-database-import"></i> <?php echo t('takeover_title'); ?></div>
+            </a>
             <?php if (function_exists('isSuperAdmin') && isSuperAdmin()): ?>
             <a href="logs_extended.php" class="widget-card vs-system-link">
                 <div class="widget-label"><i class="ti ti-list-details"></i> <?php echo t('sys_extended_logs'); ?></div>

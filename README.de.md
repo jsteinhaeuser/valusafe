@@ -27,8 +27,8 @@ Nach einem Schaden stellt die Versicherung drei Fragen: Was hatten Sie, was war 
 - **Übersichtsseite** mit Auswertungen nach Kategorie, Raum und Wert
 - **Benutzer und Rollen** (admin, edit, read) samt feiner Rechtematrix
 - **Zwei-Faktor-Anmeldung** (TOTP nach RFC 6238) für alle Konten
-- **Datensicherung** von Datenbank, Bildern und Programmdateien, mit Wiederherstellung
-- **Neun Sprachen**: Deutsch, Englisch, Französisch, Spanisch, Italienisch, Niederländisch, Polnisch, Portugiesisch, Türkisch
+- **Datensicherung** von Datenbank, Bildern und Programmdateien, mit Wiederherstellung — auch zum Umzug in eine neue Installation (Sicherungen ab Version 4.4)
+- **Zehn Sprachen**: Deutsch, Englisch, Französisch, Spanisch, Italienisch, Niederländisch, Polnisch, Portugiesisch, Türkisch, Irisch (Beta)
 - **Sieben Farbschemata** zur Auswahl, darunter ein dunkles
 - **Bedienung per Tastatur**: Sprunglink zum Inhalt, sichtbarer Fokus, Karten mit Enter öffnen; vollständige WCAG-2.1-AA-Konformität ist für Version 5.0 geplant
 - **Änderungsverlauf** — wer hat was wann geändert

@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 13.10.2026 17:47 von bin/changelog_export.php.
+ * Erzeugt am 16.10.2026 11:17 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,54 @@
  */
 
 return [
+    [
+        'version' => '4.5',
+        'date' => '2026-10-16',
+        'entries' => [
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Neue Sprache: Irisch (Gaeilge), vorerst als Beta – die Übersetzung wird gerade von Muttersprachlern gegengelesen. ValuSafe spricht jetzt zehn Sprachen – auswählbar auf der Anmeldeseite und in den Einstellungen.',
+                'text_en' => 'New language: Irish (Gaeilge), for now as a beta – native speakers are currently reviewing the translation. ValuSafe now speaks ten languages – selectable on the sign-in page and in the settings.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Einstellungen: Die Sprache wählen Sie jetzt in einer Auswahlliste in der Kachel „Darstellung“ zusammen mit dem Farbschema. Die eigene Sprachkachel mit zehn Knöpfen entfällt, die Seite ist dadurch deutlich kompakter. Jede Sprache steht in ihrer eigenen Schreibweise in der Liste; gewechselt wird mit „Anwenden“.',
+                'text_en' => 'Settings: you now choose the language from a drop-down list in the "Appearance" card, together with the colour scheme. The separate language card with ten buttons is gone, which makes the page considerably more compact. Each language is listed in its own spelling; click "Apply" to switch.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Einstellungen neu geordnet: vier Abschnitte mit Überschrift – Darstellung, Mein Konto, Meine Daten und Administration. Profilbild, Standard-Ersteller und Sitzung stehen in der Kachel „Profil“, Passwort und Zwei-Faktor-Anmeldung in „Anmeldung“. Die Farbschemata stehen in einer Reihe, Kacheln einer Reihe sind gleich hoch.',
+                'text_en' => 'Settings reorganised into four sections with headings: Appearance, My account, My data and Administration. Profile picture, default creator and session are in the "Profile" card, password and two-factor sign-in in "Sign-in". The colour schemes sit in one row, and cards in a row have the same height.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Tabellenansicht: Ein Klick auf eine Zeile oder den Namen zeigt den Gegenstand jetzt rechts im Detailbereich, wie in der Kartenansicht. Bisher stand dort nur „Gegenstand auswählen“. Auch per Tastatur (Name anwählen, Enter).',
+                'text_en' => 'Table view: clicking a row or the name now shows the item in the detail panel on the right, as in the card view. Until now it only said "Select item". Also works with the keyboard (focus the name, press Enter).'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Daten aus einer früheren ValuSafe-Version übernehmen: Neuer Menüpunkt unter Restore. Sicherung der alten Version (Datenbank und optional Bilder/Belege) auswählen oder hochladen, prüfen lassen, Vorschau ansehen, mit einem Klick übernehmen. Danach wird die Datenbank automatisch auf den neuen Stand gebracht. Möglich mit Sicherungen ab ValuSafe 4.4.',
+                'text_en' => 'Import data from an earlier ValuSafe version: new menu item under Restore. Select or upload the backup of the old version (database and optionally photos/receipts), have it checked, look at the preview and import it with one click. The database is then brought up to date automatically. Works with backups from ValuSafe 4.4 onwards.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Wiederherstellen: Datensätze mit Hochkomma im Text (z. B. „Kinder\'s Rad“) gingen beim Einspielen einer Datenbanksicherung still verloren. Jetzt wird alles vollständig eingespielt, Fehler werden angezeigt, und nach dem Einspielen laufen die Datenbank-Aktualisierungen.',
+                'text_en' => 'Restore: records with an apostrophe in the text (e.g. "Children\'s bike") were silently lost when restoring a database backup. Everything is now restored completely, errors are shown, and database updates run afterwards.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherung: Die Dateien-Sicherung enthält jetzt auch die Profilbilder der Benutzer. Bisher fehlten sie und gingen beim Wiederherstellen oder Umziehen verloren.',
+                'text_en' => 'Backup: the files backup now also contains the users\' profile pictures. Until now they were missing and got lost when restoring or moving.'
+            ]
+        ]
+    ],
     [
         'version' => '4.4.1',
         'date' => '2026-10-13',
@@ -225,36 +273,6 @@ return [
                 'public' => true,
                 'text' => 'Wer eine andere Sprache als Deutsch eingestellt hat, sah an mehreren Stellen trotzdem deutsche Texte: im Export-Menue (CSV-Datei, PDF Detailliert, Uebergabeprotokoll ...), in den Hinweisen der Seitenleiste, in der unteren Leiste auf dem Handy, im Detailbereich rechts neben der Liste, im Fenster "Hilfe & Informationen" und in den Einstellungen bei Profilbild und Passwort samt allen Meldungen. Diese Texte folgen jetzt der eingestellten Sprache (alle neun). Ausserdem fuehrte "Einstellungen" in der unteren Leiste auf dem Handy auf eine Seite, die es nicht gibt; der Knopf oeffnet jetzt die Einstellungen.',
                 'text_en' => 'If you use a language other than German, several places still showed German text: the export menu (CSV file, PDF detailed, handover report ...), the tooltips of the sidebar, the bottom bar on phones, the detail panel next to the list, the "Help & information" window and, in the settings, everything around profile picture and password including all messages. These texts now follow the selected language (all nine). In addition, "Settings" in the bottom bar on phones led to a page that does not exist; the button now opens the settings.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.32',
-        'date' => '2026-10-03',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Im persoenlichen Profil liessen sich die Farbthemen "Navy" und "Emerald" zwar anklicken, gespeichert wurde aber "Cloud". Die Pruefung der erlaubten Themen kannte die beiden juengsten nicht. In den Einstellungen war es schon immer richtig.',
-                'text_en' => 'In the personal profile, the colour themes "Navy" and "Emerald" could be selected, but "Cloud" was saved instead. The check for allowed themes did not know the two newest ones. The settings page had always handled them correctly.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Die automatische Sicherung (cron_backup.php) nimmt Aufrufe ueber das Web nur noch mit dem BACKUP_TOKEN aus der config.php an. Fehlte er, galt bisher ein fest eingebauter Ersatzwert, der im Quellcode nachzulesen war. Der Setup-Assistent legt den Token immer an; wer seine config.php von Hand gebaut hat, sollte nachsehen, ob BACKUP_TOKEN darin steht.',
-                'text_en' => 'The automatic backup (cron_backup.php) now accepts web requests only with the BACKUP_TOKEN from config.php. If the token was missing, a built-in fallback value applied that could be read in the source code. The setup wizard always creates the token; if you wrote your config.php by hand, check that it contains BACKUP_TOKEN.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Der Menuepunkt "Diagnose-Tools" im Verwaltungsbereich erscheint nur noch, wenn der Ordner Tools vorhanden ist. Das Installationspaket liefert ihn bewusst nicht aus, der Punkt fuehrte dort ins Leere.',
-                'text_en' => 'The menu item "Diagnostic tools" in the admin area now appears only if the Tools folder exists. The installation package deliberately does not include it, so the item led nowhere.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Die Auswahl "Aktion" in der Uebersicht (Verbergen, Wieder anzeigen, Loeschen) zeigte in manchen Browsern, etwa Edge unter Windows, nur einen Eintrag - die uebrigen standen weiss auf weiss. Gefunden beim Windows-Test von Valu-Basic.',
-                'text_en' => 'In some browsers, such as Edge on Windows, the "Action" drop-down in the overview (Hide, Show again, Delete) showed only one option - the others were white on white. Found while testing Valu-Basic on Windows.'
             ],
             [
                 'type' => 'feature',

@@ -123,7 +123,7 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
             <i class="ti ti-crown" aria-hidden="true"></i>
         </a>
         <?php endif; ?>
-        <a class="vs-rail-btn <?php echo in_array($_currentPage, ['index.php','users.php','categories.php','locations.php','backup.php','restore.php','logs.php','system.php','permissions.php']) ? 'vs-rail-on' : ''; ?>"
+        <a class="vs-rail-btn <?php echo in_array($_currentPage, ['index.php','users.php','categories.php','locations.php','backup.php','restore.php','datenuebernahme.php','logs.php','system.php','permissions.php']) ? 'vs-rail-on' : ''; ?>"
            href="index.php" title="<?php echo tn('nav_admin', 'Admin'); ?>">
             <i class="ti ti-settings-2" aria-hidden="true"></i>
         </a>

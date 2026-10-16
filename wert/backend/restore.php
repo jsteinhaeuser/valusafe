@@ -20,6 +20,8 @@ requireBackendAccess();
 if (!function_exists('esc')) {
     require_once __DIR__ . '/../helpers.php';
 }
+require_once __DIR__ . '/../helpers_datenuebernahme.php';
+require_once __DIR__ . '/migration_runner.php';
 
 // Restore nur wenn SuperAdmin-Einstellung erlaubt
 if (!isSuperAdmin() && !getSuperAdminSetting('sa_restore_allowed', true)) {
@@ -71,41 +73,22 @@ if (isset($_POST['do_restore'])) {
             $sql = file_get_contents($filepath);
             if ($sql === false) throw new Exception('SQL-Datei konnte nicht gelesen werden.');
 
-            // Einzelne Statements aufteilen (einfacher Splitter für mysqldump-Output)
-            // Trennzeichen: Semikolon am Zeilenende (außer in Strings)
             $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
             $pdo->exec('SET NAMES utf8mb4');
 
-            // SQL in Statements aufteilen
-            $statements = [];
-            $current    = '';
-            $inString   = false;
-            $stringChar = '';
-
-            foreach (str_split($sql) as $char) {
-                if (!$inString && ($char === "'" || $char === '"')) {
-                    $inString   = true;
-                    $stringChar = $char;
-                } elseif ($inString && $char === $stringChar) {
-                    $inString = false;
-                }
-
-                $current .= $char;
-
-                if (!$inString && $char === ';') {
-                    $stmt = trim($current);
-                    if ($stmt !== '' && $stmt !== ';') {
-                        $statements[] = $stmt;
-                    }
-                    $current = '';
-                }
-            }
+            // Zerlegen mit helpers_datenuebernahme.php. Der fruehere Zerleger
+            // hier kannte kein \' (so quotet PDO ein Hochkomma): Ein Wert wie
+            // "Kinder's Rad" verschob alle folgenden Grenzen, mehrere INSERTs
+            // scheiterten, der Fehler stand nur im Log (bis 4.4.1).
+            $statements = array_column(vsSqlZerlegen($sql), 'sql');
 
             $executed = 0;
             $skipped  = 0;
+            $failed   = 0;
             foreach ($statements as $stmt) {
-                // Kommentare und SET-Zeilen überspringen die nichts ändern
-                if (preg_match('/^(--|\/\*|SET NAMES|SET FOREIGN)/', $stmt)) {
+                // SET-Zeilen setzt die Seite selbst; /*!...*/ aus fremden
+                // mysqldump-Dateien blieb schon immer aussen vor
+                if (preg_match('/^(SET NAMES|SET FOREIGN|\/\*)/i', $stmt)) {
                     $skipped++;
                     continue;
                 }
@@ -113,19 +96,26 @@ if (isset($_POST['do_restore'])) {
                     $pdo->exec($stmt);
                     $executed++;
                 } catch (PDOException $e) {
-                    // Einzelfehler loggen aber weitermachen
+                    // Einzelfehler loggen aber weitermachen - und melden
+                    $failed++;
                     error_log('Restore SQL Fehler: ' . $e->getMessage() . ' → ' . substr($stmt, 0, 80));
                 }
             }
 
             $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
 
+            // Eine Sicherung von vor dem letzten Update hat das alte Schema.
+            // Die Migrationen bringen es auf den Stand dieser Version; was die
+            // Sicherung schon hatte, steht in ihrer schema_migrations.
+            $lauf = vsMigrationenAusfuehren($pdo, __DIR__ . '/migrations', false);
+            $migriert = count(array_filter($lauf['report'], fn($m) => $m['status'] === 'applied'));
+
             Security::logSecurityEvent('db_restored', [
                 'file'     => $filename,
                 'executed' => $executed,
             ]);
 
-            $message = "<i class='ti ti-circle-check' style='color:var(--vs-success);'></i> Datenbank wiederhergestellt aus <strong>" . esc($filename) . "</strong> — $executed Statements ausgeführt.";
+            $message = "<i class='ti ti-circle-check' style='color:var(--vs-success);'></i> Datenbank wiederhergestellt aus <strong>" . esc($filename) . "</strong> — $executed Statements ausgeführt" . ($failed ? ", <strong>$failed fehlgeschlagen (siehe Fehlerlog)</strong>" : '') . ($migriert ? ", $migriert Migration(en) nachgeholt" : '') . '.';
             $step    = 'done';
 
         } catch (Exception $e) {
@@ -146,20 +136,18 @@ if (isset($_POST['do_restore'])) {
             for ($i = 0; $i < $zip->numFiles; $i++) {
                 $name = $zip->getNameIndex($i);
 
-                // Nur upload/ und documents/ erlaubt — kein Path-Traversal
-                if (!preg_match('#^(upload|documents)/#', $name)) {
-                    $skipped++;
+                // Nur flach unter upload/, upload/avatars/ und documents/, nur
+                // Bild- und Belegendungen. Bis 4.4.1 liess die Pruefung
+                // "upload/../../x" durch, wenn der Zielordner noch nicht
+                // existierte (realpath war dann false).
+                $relativ = vsUebernahmeZipZiel((string)$name);
+                if ($relativ === null) {
+                    if (!str_ends_with((string)$name, '/')) $skipped++;
                     continue;
                 }
 
-                $target = $baseDir . '/' . $name;
+                $target = $baseDir . '/' . $relativ;
                 $targetDir = dirname($target);
-
-                // Sicherheitscheck: Ziel muss innerhalb des Projekts liegen
-                if (strpos(realpath($targetDir) ?: $targetDir, $baseDir) !== 0) {
-                    $skipped++;
-                    continue;
-                }
 
                 if (!is_dir($targetDir)) mkdir($targetDir, 0755, true);
 
@@ -319,6 +307,16 @@ include 'layout/header_next_page.php';
 </div>
 
 <?php elseif ($step === 'select'): ?>
+
+<!-- ── Daten aus einer frueheren Version (4.5) ────────────────────────────── -->
+<a href="datenuebernahme.php" class="vs-uebernahme-link"
+   style="display:flex; gap:14px; align-items:center; text-decoration:none; background:var(--vs-surface); border:1px solid var(--vs-border-strong); border-radius:16px; padding:18px 22px; margin-bottom:24px; color:var(--vs-text);">
+    <i class="ti ti-database-import" aria-hidden="true" style="font-size:28px; color:var(--vs-accent);"></i>
+    <span>
+        <strong style="display:block; font-size:16px;"><?php echo t('takeover_title'); ?></strong>
+        <span style="font-size:14px; color:var(--vs-text-muted);"><?php echo t('takeover_menu_hint'); ?></span>
+    </span>
+</a>
 
 <!-- ── Warnhinweis ────────────────────────────────────────────────────────── -->
 <div class="warning-box">

@@ -27,8 +27,8 @@ Insurers ask three questions after a loss: what did you own, what was it worth, 
 - **Dashboard** with charts by category, room and value
 - **Users and roles** (admin, edit, read) plus a fine-grained permission matrix
 - **Two-factor authentication** (TOTP, RFC 6238) for every account
-- **Backups** of database, images and application files, with restore
-- **Nine languages**: German, English, French, Spanish, Italian, Dutch, Polish, Portuguese, Turkish
+- **Backups** of database, images and application files, with restore — also for moving to a new installation (backups from version 4.4 on)
+- **Ten languages**: German, English, French, Spanish, Italian, Dutch, Polish, Portuguese, Turkish, Irish (beta)
 - **Seven themes** to choose from, one of them dark
 - **Keyboard use**: skip-to-content link, visible focus, cards open with Enter; full WCAG 2.1 AA conformance is planned for version 5.0
 - **Activity log** — who changed what, and when

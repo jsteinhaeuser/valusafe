@@ -454,11 +454,11 @@ $loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['
 
         <?php // Sprachwahl vor der Anmeldung (4.3.33) ?>
         <nav class="login-lang" aria-label="<?php echo htmlspecialchars(t('login_language')); ?>">
-            <?php foreach (['de' => 'DE', 'en' => 'EN', 'fr' => 'FR', 'es' => 'ES', 'it' => 'IT', 'nl' => 'NL', 'pl' => 'PL', 'pt' => 'PT', 'tr' => 'TR'] as $code => $kurz): ?>
+            <?php foreach (['de' => 'DE', 'en' => 'EN', 'fr' => 'FR', 'es' => 'ES', 'it' => 'IT', 'nl' => 'NL', 'pl' => 'PL', 'pt' => 'PT', 'tr' => 'TR', 'ga' => 'GA'] as $code => $kurz): ?>
                 <?php if ($code === $loginLang): ?>
                     <strong aria-current="true"><?php echo $kurz; ?></strong>
                 <?php else: ?>
-                    <a href="login.php?lang=<?php echo $code; ?><?php echo isset($_GET['timeout']) ? '&amp;timeout=1' : ''; ?>" lang="<?php echo $code; ?>" hreflang="<?php echo $code; ?>"><?php echo $kurz; ?></a>
+                    <a href="login.php?lang=<?php echo $code; ?><?php echo isset($_GET['timeout']) ? '&amp;timeout=1' : ''; ?>" lang="<?php echo $code; ?>" hreflang="<?php echo $code; ?>"<?php echo $code === 'ga' ? ' title="Gaeilge (beta)"' : ''; ?>><?php echo $kurz; ?></a>
                 <?php endif; ?>
             <?php endforeach; ?>
         </nav>

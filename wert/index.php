@@ -593,6 +593,30 @@ unset($chipBaseParams['kategorie'], $chipBaseParams['page']);
 // ══════════════════════════════════════════════════════════════════════
 // MASONRY-ANSICHT
 // ══════════════════════════════════════════════════════════════════════
+/**
+ * Daten fuer den Detailbereich rechts (vsOpenDetail in footer_next.php), als
+ * HTML-Attributwert. Karten und seit 4.5 auch Tabellenzeilen benutzen dieselbe
+ * Fassung - bis dahin blieb der Detailbereich in der Tabellenansicht leer.
+ */
+if (!function_exists('vsDetailJson')) {
+    function vsDetailJson(array $item): string {
+        $hasPhoto = !empty($item['bild']) && file_exists(UPLOAD_DIR . $item['bild']);
+        return htmlspecialchars(json_encode([
+            'id'          => (int)$item['id'],
+            'name'        => $item['name'],
+            'preis'       => (float)($item['preis'] ?? 0),
+            'kategorie'   => $item['kategorie_name'] ?? '',
+            'raum'        => $item['raum_name'] ?? '',
+            'kaufdatum'   => $item['kaufdatum'] ?? '',
+            'seriennummer'=> $item['seriennummer'] ?? '',
+            'notizen'     => mb_substr($item['notizen'] ?? '', 0, 300),
+            'bild'        => $hasPhoto ? 'upload/' . rawurlencode($item['bild']) : null,
+            'catIcon'     => getCategoryIcon($item['kategorie_name'] ?? ''),
+            'docCount'    => (int)($item['dokumente_anzahl'] ?? 0),
+            'photoCount'  => (int)($item['bilder_anzahl'] ?? 0),
+        ], JSON_UNESCAPED_UNICODE), ENT_QUOTES);
+    }
+}
 if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room')):
 ?>
 <?php if (empty($wertsachen)): ?>
@@ -629,20 +653,7 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
 <?php foreach ($wertsachen as $item):
     $hasPhoto   = !empty($item['bild']) && file_exists(UPLOAD_DIR . $item['bild']);
     $photoH     = 160; // Einheitliche Höhe für alle Karten
-    $itemJson   = htmlspecialchars(json_encode([
-        'id'          => (int)$item['id'],
-        'name'        => $item['name'],
-        'preis'       => (float)($item['preis'] ?? 0),
-        'kategorie'   => $item['kategorie_name'] ?? '',
-        'raum'        => $item['raum_name'] ?? '',
-        'kaufdatum'   => $item['kaufdatum'] ?? '',
-        'seriennummer'=> $item['seriennummer'] ?? '',
-        'notizen'     => mb_substr($item['notizen'] ?? '', 0, 300),
-        'bild'        => $hasPhoto ? 'upload/' . rawurlencode($item['bild']) : null,
-        'catIcon'     => getCategoryIcon($item['kategorie_name'] ?? ''),
-        'docCount'    => (int)($item['dokumente_anzahl'] ?? 0),
-        'photoCount'  => (int)($item['bilder_anzahl'] ?? 0),
-    ], JSON_UNESCAPED_UNICODE), ENT_QUOTES);
+    $itemJson   = vsDetailJson($item);
 
     $catIcon = getCategoryIcon($item['kategorie_name'] ?? '');
     $docCount = (int)($item['dokumente_anzahl'] ?? 0);
@@ -723,6 +734,15 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
 // ══════════════════════════════════════════════════════════════════════
 if ($view_mode === 'table'):
 ?>
+<style>
+/* Tabellenzeile oeffnet den Detailbereich (4.5) - hier statt in next.css,
+   damit es nicht an einer zwischengespeicherten next.css haengt */
+.data-table tr.vs-trow { cursor: pointer; }
+.data-table tr.vs-trow.vs-mcard-on td { background: var(--vs-accent-light); }
+.vs-trow-open { all: unset; cursor: pointer; font: inherit; color: inherit; font-weight: 600; }
+.vs-trow-open:hover { text-decoration: underline; }
+.vs-trow-open:focus-visible { outline: 3px solid var(--vs-accent); outline-offset: 2px; text-decoration: underline; }
+</style>
 <div class="table-responsive">
   <form id="tableForm">
     <?php if (canEdit()): ?>
@@ -780,7 +800,12 @@ if ($view_mode === 'table'):
         <tr><td colspan="99" class="text-center"><?php echo tn('index_no_entries', 'Keine Einträge gefunden.'); ?></td></tr>
         <?php else: ?>
         <?php foreach ($wertsachen as $item): ?>
-        <tr <?php echo $is_manual_sort && canEdit() ? 'draggable="true" data-id="' . $item['id'] . '" class="drag-row"' : ''; ?>>
+        <?php // Klick auf Zeile oder Name oeffnet rechts den Detailbereich (4.5, wie die
+              // Karten); Checkbox, Ziehgriff und Aktionen behalten ihre eigene Wirkung. ?>
+        <tr class="vs-trow<?php echo $is_manual_sort && canEdit() ? ' drag-row' : ''; ?>"
+            <?php echo $is_manual_sort && canEdit() ? 'draggable="true" data-id="' . $item['id'] . '"' : ''; ?>
+            data-item='<?php echo vsDetailJson($item); ?>'
+            onclick="if (!event.target.closest('a, input, label, select, .drag-handle, .lightbox-trigger')) vsOpenDetail(this, event)">
           <?php if (canEdit()): ?>
           <td class="checkbox-cell">
             <?php if ($is_manual_sort): ?><span class="drag-handle" title="<?php echo htmlspecialchars(tn('idx_drag_sort', 'Ziehen zum Sortieren')); ?>">⠿</span><?php endif; ?>
@@ -790,8 +815,8 @@ if ($view_mode === 'table'):
           </td>
           <?php endif; ?>
           <td><?php
-            if (isset($item['hidden']) && $item['hidden'] == 1) echo '<span style="opacity:.5">👁️</span> ';
-            echo htmlspecialchars($item['name']);
+            if (isset($item['hidden']) && $item['hidden'] == 1) echo '<span style="opacity:.5">👁️</span> '; ?>
+            <button type="button" class="vs-trow-open" aria-controls="vsDetail" aria-expanded="false"><?php echo htmlspecialchars($item['name']); ?></button><?php
             if (!empty($item['standort_name'])): ?>
               <br><small style="color:#888;font-size:11px;">📍 <?php echo htmlspecialchars($item['standort_name']);
                 if (!empty($item['standort_position_name'])) echo ' › ' . htmlspecialchars($item['standort_position_name']); ?></small>

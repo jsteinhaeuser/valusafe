@@ -2,7 +2,43 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 13.10.2026 aus der Projektchronik.
+Erzeugt am 16.10.2026 aus der Projektchronik.
+
+Version 4.5   16.10.2026
+------------------------
+  [Neu] Neue Sprache: Irisch (Gaeilge), vorerst als Beta – die Übersetzung
+        wird gerade von Muttersprachlern gegengelesen. ValuSafe spricht jetzt
+        zehn Sprachen – auswählbar auf der Anmeldeseite und in den
+        Einstellungen.
+  [Neu] Einstellungen: Die Sprache wählen Sie jetzt in einer Auswahlliste in
+        der Kachel „Darstellung“ zusammen mit dem Farbschema. Die eigene
+        Sprachkachel mit zehn Knöpfen entfällt, die Seite ist dadurch
+        deutlich kompakter. Jede Sprache steht in ihrer eigenen Schreibweise
+        in der Liste; gewechselt wird mit „Anwenden“.
+  [Neu] Einstellungen neu geordnet: vier Abschnitte mit Überschrift –
+        Darstellung, Mein Konto, Meine Daten und Administration. Profilbild,
+        Standard-Ersteller und Sitzung stehen in der Kachel „Profil“,
+        Passwort und Zwei-Faktor-Anmeldung in „Anmeldung“. Die
+        Farbschemata stehen in einer Reihe, Kacheln einer Reihe sind gleich
+        hoch.
+  [Fix] Tabellenansicht: Ein Klick auf eine Zeile oder den Namen zeigt den
+        Gegenstand jetzt rechts im Detailbereich, wie in der Kartenansicht.
+        Bisher stand dort nur „Gegenstand auswählen“. Auch per Tastatur
+        (Name anwählen, Enter).
+  [Neu] Daten aus einer früheren ValuSafe-Version übernehmen: Neuer
+        Menüpunkt unter Restore. Sicherung der alten Version (Datenbank und
+        optional Bilder/Belege) auswählen oder hochladen, prüfen lassen,
+        Vorschau ansehen, mit einem Klick übernehmen. Danach wird die
+        Datenbank automatisch auf den neuen Stand gebracht. Möglich mit
+        Sicherungen ab ValuSafe 4.4.
+  [Fix] Wiederherstellen: Datensätze mit Hochkomma im Text (z. B. „Kinder's
+        Rad“) gingen beim Einspielen einer Datenbanksicherung still
+        verloren. Jetzt wird alles vollständig eingespielt, Fehler werden
+        angezeigt, und nach dem Einspielen laufen die
+        Datenbank-Aktualisierungen.
+  [Fix] Sicherung: Die Dateien-Sicherung enthält jetzt auch die Profilbilder
+        der Benutzer. Bisher fehlten sie und gingen beim Wiederherstellen oder
+        Umziehen verloren.
 
 Version 4.4.1   13.10.2026
 --------------------------

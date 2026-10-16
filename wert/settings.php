@@ -17,7 +17,7 @@ define('PAGE_TITLE', t('nav_settings') . ' - ' . t('app_title'));
 // Eigenes Konto (4.3.33): auf einer oeffentlichen Demo teilen sich alle
 // Besucher ein Konto - Passwort aendern oder Konto loeschen sperrte dort alle
 // anderen aus. Beides ist jetzt ein Recht (backend/permissions.php), Standard
-// wie bisher erlaubt. Gilt auch fuer profil.php.
+// wie bisher erlaubt.
 $darfPasswort      = hasPermission('settings_password');
 $darfKontoLoeschen = hasPermission('settings_delete_account');
 
@@ -26,7 +26,7 @@ $error = '';
 
 $allowed_themes = ['cloud', 'ocean', 'forest', 'sunset', 'midnight', 'cherry', 'lavender', 'mint', 'sand', 'glass', 'navy', 'emerald'];
 
-// ── Avatar-Upload-Funktion (aus profil.php übernommen) ─────────────────────
+// ── Avatar-Upload-Funktion ─────────────────────────────────────────────────
 if (!function_exists('handleAvatarUpload')) {
     function handleAvatarUpload(array $file, ?string $oldAvatar, int $userId): array {
         $avatarDir = UPLOAD_DIR . 'avatars/';
@@ -263,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($newPw !== $newPw2) {
             $error = t('profile_pw_mismatch');
         } else {
-            // Siehe profil.php: bis 4.3.17 wurde der Erfolg gemeldet und
+            // Bis 4.3.17 wurde der Erfolg gemeldet und
             // protokolliert, ohne dass feststand, ob das UPDATE durchging.
             try {
                 $hash = password_hash($newPw, PASSWORD_ARGON2ID);
@@ -377,6 +377,21 @@ include 'header_next_page.php';
     grid-column: 1 / -1;
 }
 
+/* ── Abschnitte (4.5) ──────────────────────────────────────── */
+.settings-grid { grid-template-columns: 1fr; gap: 28px; }
+.settings-section { min-width: 0; }
+.settings-section-title { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: 600; margin: 0 0 12px; padding: 0 0 8px; border-bottom: 1px solid var(--vs-border); color: var(--vs-text); }
+.settings-section__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch; } /* gleich hohe Kacheln je Reihe */
+.settings-card h4.card-title { margin: 0 0 16px; font-size: 1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.settings-part { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--vs-border); }
+h5.settings-subtitle { margin: 0 0 8px; }
+.privacy-split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.role-buttons--row { flex-direction: row; flex-wrap: wrap; }
+.role-buttons--row form { flex: 1 1 220px; }
+@media (max-width: 900px) {
+    .settings-section__grid, .privacy-split { grid-template-columns: 1fr; }
+}
+
 /* ── Profil-Kachel: Avatar ─────────────────────────────────── */
 .profil-avatar-wrap {
     position: relative;
@@ -427,16 +442,13 @@ include 'header_next_page.php';
 }
 .profil-avatar-delete:hover { background: #c0392b; }
 
-@media (max-width: 900px) {
-    .settings-grid > div[style*="grid-template-columns:1fr 1fr 1fr"] {
-        grid-template-columns: 1fr !important;
-    }
-}
 
 /* ── Theme Kacheln ─────────────────────────────────────────── */
 .theme-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    /* sieben Themes in einer Reihe - mit auto-fill rutschte Emerald bei
+       900 px allein in eine zweite Reihe (Testinstanz 15.10.) */
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     gap: 10px;
     margin-bottom: 16px;
 }
@@ -471,6 +483,14 @@ include 'header_next_page.php';
 .theme-tile__name { font-size: 11px; font-weight: 600; color: #1f2937; } /* Streifen ist immer weiss - --text der Midnight-Kachel war hell */
 .theme-tile__check { position: absolute; top: 4px; right: 4px; background: #3D3833; color: white; width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
 
+/* ── Darstellung: Unterueberschriften + Sprachauswahl ─────── */
+.settings-subtitle { display: block; font-size: 13px; font-weight: 600; color: var(--vs-text-muted); margin: 0 0 8px; }
+.lang-form { border-top: 1px solid var(--vs-border); padding-top: 14px; }
+.lang-form__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.lang-form__row select { min-width: 200px; max-width: 100%; padding: 8px 10px; font-size: 14px; font-family: inherit; color: var(--vs-text); background: var(--vs-surface); border: 1px solid var(--vs-border-strong); border-radius: 8px; }
+.lang-form__row select:focus-visible { outline: 3px solid var(--vs-accent); outline-offset: 2px; } /* globale Regel in next.css erfasst select nicht */
+.lang-form__status { font-size: 13px; color: var(--vs-success); }
+
 /* ── Stat Kacheln ──────────────────────────────────────────── */
 .stat-mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .stat-mini { background: var(--vs-surface-2); border-radius: 10px; padding: 12px; text-align: center; }
@@ -483,9 +503,8 @@ include 'header_next_page.php';
 .role-btn:hover { background: var(--vs-surface); border-color: var(--vs-border-strong); transform: translateX(3px); }
 .role-btn--active { background: rgba(109,40,217,0.08); border-color: rgba(109,40,217,0.30); }
 
-@media (max-width: 700px) {
-    .settings-grid { grid-template-columns: 1fr; }
-    .theme-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 760px) {
+    .theme-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 </style>
 
@@ -511,12 +530,13 @@ include 'header_next_page.php';
 
 <div class="settings-grid">
 
-    <!-- Theme + Sprache nebeneinander -->
-    <div style="grid-column:1 / -1; display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:auto auto; gap:20px; align-items:start;">
-
-    <!-- Theme-Kachel: 2 Spalten breit -->
-    <div class="settings-card" style="grid-column:1 / 3; grid-row:1;">
-        <h3><i class="ti ti-palette"></i> <?php echo t('settings_theme_title'); ?></h3>
+    <?php /* Aufbau seit 4.5 (Joerg 15.10.): vier Abschnitte mit Ueberschrift
+             (Darstellung, Mein Konto, Meine Daten, Administration) statt
+             eines Rasters ungleich hoher Kacheln. Abschnitte = h3, Kacheln = h4. */ ?>
+    <section class="settings-section" aria-labelledby="sec-darstellung">
+    <h3 class="settings-section-title" id="sec-darstellung"><i class="ti ti-palette" aria-hidden="true"></i> <?php echo t('settings_appearance_title'); ?></h3>
+    <div class="settings-card">
+        <h4 class="settings-subtitle" id="theme-subtitle"><?php echo t('settings_theme_title'); ?></h4>
         <div id="theme-status" role="status" aria-live="polite" style="font-size:13px; color:var(--vs-success); min-height:20px; margin-bottom:8px;"></div>
         <form method="POST" action="" id="theme-form">
             <?php echo Security::getCSRFInput(); ?>
@@ -607,118 +627,88 @@ include 'header_next_page.php';
                         }
                     })
                     .catch(function() {
-                        status.textContent = '❌ Netzwerkfehler';
+                        status.textContent = '❌ ' + <?php echo json_encode(t('error_network')); ?>;
                     });
             });
         });
         </script>
-    </div>
 
-    <!-- Sprach-Karte -->
-    <?php
-    $currentLang = $_SESSION['lang'] ?? 'de';
-    $langOptions = [
-        'de' => ['flag' => '🇩🇪', 'label' => 'Deutsch'],
-        'en' => ['flag' => '🇬🇧', 'label' => 'English'],
-        'fr' => ['flag' => '🇫🇷', 'label' => 'Français'],
-        'es' => ['flag' => '🇪🇸', 'label' => 'Español'],
-        'it' => ['flag' => '🇮🇹', 'label' => 'Italiano'],
-        'nl' => ['flag' => '🇳🇱', 'label' => 'Nederlands'],
-        'pl' => ['flag' => '🇵🇱', 'label' => 'Polski'],
-        'pt' => ['flag' => '🇵🇹', 'label' => 'Português'],
-        'tr' => ['flag' => '🇹🇷', 'label' => 'Türkçe'],
-    ];
-    ?>
-    <div class="settings-card" style="grid-column:3; grid-row:1 / 3; align-self:start;">
-        <h3><i class="ti ti-world"></i> <?php echo tn('settings_language_title', 'Sprache'); ?></h3>
-        <div id="lang-status" style="font-size:13px; color:var(--vs-success); min-height:20px; margin-bottom:10px;"></div>
-        <div style="display:flex; flex-direction:column; gap:6px;">
-            <?php foreach ($langOptions as $code => $opt):
-                $active = ($currentLang === $code); ?>
-            <button class="lang-btn" data-lang="<?php echo $code; ?>"
-                    style="display:flex; align-items:center; gap:10px; padding:9px 14px;
-                           border-radius:8px; cursor:pointer; font-size:13px; width:100%;
-                           text-align:left; font-family:inherit; transition:all .15s; color:var(--vs-text);
-                           <?php if ($active): ?>
-                               border:2px solid var(--vs-accent,#185fa5);
-                               background:var(--vs-bg,#e6f1fb); font-weight:600;
-                           <?php else: ?>
-                               border:2px solid var(--vs-border,#e2e8f0);
-                               background:var(--vs-surface);
-                           <?php endif; ?>">
-                <span style="font-size:18px"><?php echo $opt['flag']; ?></span>
-                <?php echo $opt['label']; ?>
-                <?php if ($active): ?><span style="margin-left:auto">✓</span><?php endif; ?>
-            </button>
-            <?php endforeach; ?>
-        </div>
+        <?php
+        // Sprachauswahl: natives Auswahlfeld statt zehn Knoepfen. Jede Sprache in
+        // ihrer eigenen Schreibweise (mit lang-Attribut fuer Screenreader), ohne
+        // Flaggen (Windows zeigt keine Flaggen-Emoji; Flagge = Land, nicht Sprache).
+        // Wechsel erst per Knopf, nicht beim Auswaehlen - die Seite laedt danach
+        // neu, und das darf nicht schon beim Blättern mit den Pfeiltasten
+        // passieren (WCAG 3.2.2).
+        $currentLang = $_SESSION['lang'] ?? 'de';
+        $langOptions = [
+            'de' => 'Deutsch',
+            'en' => 'English',
+            'fr' => 'Français',
+            'es' => 'Español',
+            'it' => 'Italiano',
+            'nl' => 'Nederlands',
+            'pl' => 'Polski',
+            'pt' => 'Português',
+            'tr' => 'Türkçe',
+            'ga' => 'Gaeilge (beta)',   // bis die Gegenlesung aus Irland eingearbeitet ist
+        ];
+        ?>
+        <form id="lang-form" class="lang-form" action="" method="post">
+            <label for="lang-select" class="settings-subtitle"><?php echo t('settings_language_title'); ?></label>
+            <div class="lang-form__row">
+                <select id="lang-select" name="lang">
+                    <?php foreach ($langOptions as $code => $label): ?>
+                    <option value="<?php echo $code; ?>" lang="<?php echo $code; ?>"<?php echo $currentLang === $code ? ' selected' : ''; ?>><?php echo $label; ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <button type="submit" class="btn btn-primary"><?php echo t('btn_apply'); ?></button>
+                <span id="lang-status" role="status" aria-live="polite" class="lang-form__status"></span>
+            </div>
+        </form>
         <script>
         (function() {
-            var csrf = document.querySelector('#theme-form input[name=csrf_token]').value;
-            document.querySelectorAll('.lang-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var lang = this.dataset.lang;
-                    var status = document.getElementById('lang-status');
-                    status.textContent = '⏳ Speichere…';
-
-                    var fd = new FormData();
-                    fd.append('lang', lang);
-                    fd.append('csrf_token', csrf);
-
-                    fetch('set_language.php', { method: 'POST', body: fd })
-                        .then(function(r) { return r.json(); })
-                        .then(function(data) {
-                            if (data.success) {
-                                status.textContent = '✅ Sprache gespeichert';
-                                setTimeout(function() { window.location.reload(); }, 800);
-                            } else {
-                                status.textContent = '❌ ' + (data.error || 'Fehler');
-                            }
-                        })
-                        .catch(function() { status.textContent = '❌ Netzwerkfehler'; });
-                });
+            var form   = document.getElementById('lang-form');
+            var select = document.getElementById('lang-select');
+            var status = document.getElementById('lang-status');
+            var aktuell = <?php echo json_encode($currentLang); ?>;
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                var lang = select.value;
+                if (lang === aktuell) return;
+                status.style.color = '';
+                status.textContent = '⏳ ' + <?php echo json_encode(t('settings_theme_saving')); ?>;
+                var fd = new FormData();
+                fd.append('lang', lang);
+                fd.append('csrf_token', document.querySelector('#theme-form input[name=csrf_token]').value);
+                fetch('set_language.php', { method: 'POST', body: fd })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data.success) {
+                            status.textContent = '✅ ' + <?php echo json_encode(t('settings_theme_saved_reload')); ?>;
+                            setTimeout(function() { window.location.reload(); }, 800);
+                        } else {
+                            status.style.color = 'var(--vs-wcag-danger, #b91c1c)';
+                            status.textContent = '❌ ' + <?php echo json_encode(t('settings_language_error')); ?>;
+                        }
+                    })
+                    .catch(function() {
+                        status.style.color = 'var(--vs-wcag-danger, #b91c1c)';
+                        status.textContent = '❌ ' + <?php echo json_encode(t('error_network')); ?>;
+                    });
             });
         })();
         </script>
     </div>
+    </section>
 
-    <!-- Zeile 2: Standard-Ersteller, Sicherheit & Session, Profil — 3 schmalere Kacheln nebeneinander -->
-    <div style="grid-column:1 / 3; grid-row:2; display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; align-items:start;">
+    <section class="settings-section" aria-labelledby="sec-konto">
+    <h3 class="settings-section-title" id="sec-konto"><i class="ti ti-user" aria-hidden="true"></i> <?php echo t('settings_section_account'); ?></h3>
+    <div class="settings-section__grid">
 
-    <!-- Standard-Ersteller -->
+    <!-- Profil: Avatar, Standard-Ersteller, Sitzung -->
     <div class="settings-card">
-        <h3><i class="ti ti-pencil"></i> <?php echo t('settings_default_creator_title'); ?></h3>
-        <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:14px;"><?php echo t('settings_default_creator_description'); ?></p>
-        <form method="POST" action="">
-            <?php echo Security::getCSRFInput(); ?>
-            <div class="form-group">
-                <label for="standard_ersteller"><?php echo t('field_name'); ?>:</label>
-                <input type="text" id="standard_ersteller" name="standard_ersteller"
-                       value="<?php echo esc($user['standard_ersteller'] ?? $_SESSION['username']); ?>"
-                       required maxlength="100">
-            </div>
-            <button type="submit" class="btn btn-primary"><?php echo t('btn_save'); ?></button>
-        </form>
-    </div>
-
-    <!-- Sicherheit & Session -->
-    <div class="settings-card">
-        <h3><i class="ti ti-lock"></i> <?php echo t('settings_security_session'); ?></h3>
-        <div style="font-size:14px; line-height:2;">
-            <div><i class="ti ti-user"></i> <strong><?php echo esc($_SESSION['username']); ?></strong>
-                <?php echo getRoleBadge(getUserRole()); ?>
-            </div>
-            <div><i class="ti ti-clock"></i> <?php echo t('settings_last_activity'); ?>: <?php echo date('H:i:s', $_SESSION['last_activity']); ?></div>
-            <div><i class="ti ti-clock"></i> <?php echo t('settings_expires_in'); ?>: <?php echo ceil((SESSION_LIFETIME - (time() - $_SESSION['last_activity'])) / 60); ?> Min.</div>
-        </div>
-        <div style="margin-top:16px;">
-            <a href="logout.php" class="btn btn-danger"><?php echo t('nav_logout'); ?></a>
-        </div>
-    </div>
-
-    <!-- Profil: Avatar + Passwort ändern -->
-    <div class="settings-card">
-        <h3><i class="ti ti-user-circle"></i> <?php echo t('nav_profile'); ?></h3>
+        <h4 class="card-title"><i class="ti ti-user-circle" aria-hidden="true"></i> <?php echo t('nav_profile'); ?></h4>
 
         <!-- Avatar-Upload (unsichtbares Input, per Klick auf Avatar aktiviert) -->
         <form method="POST" enctype="multipart/form-data" id="avatarForm">
@@ -759,6 +749,38 @@ include 'header_next_page.php';
             <?php echo t('profile_avatar_hint'); ?>
         </p>
 
+        <div class="settings-part">
+        <h5 class="settings-subtitle"><?php echo t('settings_default_creator_title'); ?></h5>
+        <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:14px;"><?php echo t('settings_default_creator_description'); ?></p>
+        <form method="POST" action="">
+            <?php echo Security::getCSRFInput(); ?>
+            <div class="form-group">
+                <label for="standard_ersteller"><?php echo t('field_name'); ?>:</label>
+                <input type="text" id="standard_ersteller" name="standard_ersteller"
+                       value="<?php echo esc($user['standard_ersteller'] ?? $_SESSION['username']); ?>"
+                       required maxlength="100">
+            </div>
+            <button type="submit" class="btn btn-primary"><?php echo t('btn_save'); ?></button>
+        </form>
+        </div>
+        <div class="settings-part">
+        <h5 class="settings-subtitle"><?php echo t('settings_security_session'); ?></h5>
+        <div style="font-size:14px; line-height:2;">
+            <div><i class="ti ti-user"></i> <strong><?php echo esc($_SESSION['username']); ?></strong>
+                <?php echo getRoleBadge(getUserRole()); ?>
+            </div>
+            <div><i class="ti ti-clock"></i> <?php echo t('settings_last_activity'); ?>: <?php echo date('H:i:s', $_SESSION['last_activity']); ?></div>
+            <div><i class="ti ti-clock"></i> <?php echo t('settings_expires_in'); ?>: <?php echo ceil((SESSION_LIFETIME - (time() - $_SESSION['last_activity'])) / 60); ?> Min.</div>
+        </div>
+        <div style="margin-top:16px;">
+            <a href="logout.php" class="btn btn-danger"><?php echo t('nav_logout'); ?></a>
+        </div>
+        </div>
+    </div>
+
+    <!-- Anmeldung: Passwort + Zwei-Faktor -->
+    <div class="settings-card">
+        <h4 class="card-title"><i class="ti ti-lock" aria-hidden="true"></i> <?php echo t('settings_signin_title'); ?></h4>
         <!-- Passwort ändern -->
         <?php if (!$darfPasswort): ?>
         <p style="font-size:13px; color:var(--vs-text-muted); margin:0;">
@@ -801,7 +823,7 @@ include 'header_next_page.php';
         $_2faAn  = !empty($_2faRow['totp_enabled']);
         ?>
         <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--vs-border);">
-            <h4 style="font-size:14px; margin:0 0 6px;"><i class="ti ti-shield-check" aria-hidden="true"></i> <?php echo t('2fa_page_title'); ?></h4>
+            <h5 style="font-size:14px; margin:0 0 6px;"><i class="ti ti-shield-check" aria-hidden="true"></i> <?php echo t('2fa_page_title'); ?></h5>
             <p style="font-size:13px; color:var(--vs-text-muted); margin:0 0 10px;">
                 <?php echo $_2faAn ? t('2fa_status_active') : t('2fa_status_inactive'); ?>
             </p>
@@ -810,12 +832,15 @@ include 'header_next_page.php';
         <?php unset($_2faRow, $_2faAn); ?>
     </div>
 
-    </div><!-- Ende Zeile-2-Wrapper -->
+    </div>
+    </section>
 
-    </div><!-- Ende 3-Spalten Wrapper -->
+    <section class="settings-section" aria-labelledby="sec-daten">
+    <h3 class="settings-section-title" id="sec-daten"><i class="ti ti-database" aria-hidden="true"></i> <?php echo t('settings_section_data'); ?></h3>
+    <div class="settings-section__grid">
     <!-- Statistiken -->
     <div class="settings-card">
-        <h3><i class="ti ti-chart-bar"></i> <?php echo t('nav_stats'); ?></h3>
+        <h4 class="card-title"><i class="ti ti-chart-bar"></i> <?php echo t('nav_stats'); ?></h4>
         <?php if ($stats): ?>
         <div class="stat-mini-grid">
             <div class="stat-mini">
@@ -843,20 +868,21 @@ include 'header_next_page.php';
 
     <!-- Backup -->
     <div class="settings-card">
-        <h3><i class="ti ti-device-floppy"></i> Backup</h3>
+        <h4 class="card-title"><i class="ti ti-device-floppy"></i> Backup</h4>
         <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:16px;"><?php echo t('settings_backup_description'); ?></p>
         <a href="backend/backup.php" class="vs-btn vs-btn-secondary"><?php echo t('settings_backup_link'); ?></a>
     </div>
 
     <!-- DSGVO: Datenschutz & Meine Daten -->
-    <div class="settings-card">
-        <h3><i class="ti ti-shield-lock"></i> <?php echo t('settings_privacy_title'); ?></h3>
+    <div class="settings-card settings-card--wide">
+        <h4 class="card-title"><i class="ti ti-shield-lock"></i> <?php echo t('settings_privacy_title'); ?></h4>
         <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:20px;">
             <?php echo t('settings_privacy_desc'); ?>
         </p>
 
+        <div class="privacy-split">
         <!-- Datenexport -->
-        <div style="margin-bottom:20px; padding-bottom:20px; border-bottom:1px solid rgba(0,0,0,0.08);">
+        <div class="privacy-part">
             <strong style="font-size:14px;"><i class="ti ti-package"></i> <?php echo t('settings_export_title'); ?></strong>
             <p style="font-size:13px; color:var(--vs-text-muted); margin:6px 0 12px;">
                 <?php echo t('settings_export_desc'); ?>
@@ -870,6 +896,7 @@ include 'header_next_page.php';
             </form>
         </div>
 
+        <div class="privacy-part">
         <!-- Account-Löschung -->
         <?php if (!$darfKontoLoeschen): ?>
         <div>
@@ -890,7 +917,11 @@ include 'header_next_page.php';
             </button>
         </div>
         <?php endif; ?>
+        </div>
+        </div>
     </div>
+    </div>
+    </section>
 
     <!-- Modal: Account löschen (nur mit Recht - sonst stand es bis 4.3.33
          ohne Ausloeser im HTML) -->
@@ -929,10 +960,12 @@ include 'header_next_page.php';
     <?php endif; ?>
 
     <?php if (isAdmin() && !isset($_SESSION['original_role'])): ?>
+    <section class="settings-section" aria-labelledby="sec-admin">
+    <h3 class="settings-section-title" id="sec-admin"><i class="ti ti-tool" aria-hidden="true"></i> <?php echo t('settings_section_admin'); ?></h3>
     <div class="settings-card">
-        <h3><i class="ti ti-tool"></i> <?php echo t('settings_role_switch'); ?></h3>
+        <h4 class="card-title"><i class="ti ti-tool"></i> <?php echo t('settings_role_switch'); ?></h4>
         <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:14px;"><?php echo t('settings_role_switch_desc'); ?></p>
-        <div class="role-buttons">
+        <div class="role-buttons role-buttons--row">
             <form method="POST" action="switch_role.php" style="margin:0;">
                 <?php echo Security::getCSRFInput(); ?>
                 <input type="hidden" name="role" value="editor">
@@ -949,6 +982,7 @@ include 'header_next_page.php';
             </form>
         </div>
     </div>
+    </section>
     <?php endif; ?>
 
 </div>
