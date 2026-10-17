@@ -2,7 +2,17 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 16.10.2026 aus der Projektchronik.
+Erzeugt am 17.10.2026 aus der Projektchronik.
+
+Version 4.5.1   17.10.2026
+--------------------------
+  [Fix] Vorsorge für Sprachen mit Apostroph (z. B. Französisch, Italienisch,
+        Irisch): Ein Apostroph in einer Übersetzung konnte einzelne Knöpfe
+        und Rückfragen außer Kraft setzen – beim Löschen von
+        Gegenständen, Dokumenten, Benutzern und Sicherungen, beim Hochladen
+        von Bildern und in der Statistik. Die Texte werden jetzt so
+        eingebunden, dass jedes Zeichen sicher ist. In den derzeitigen
+        Übersetzungen trat der Fehler noch nicht auf.
 
 Version 4.5   16.10.2026
 ------------------------

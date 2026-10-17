@@ -833,7 +833,7 @@ if ($view_mode === 'table'):
                aria-label="<?php echo tn('index_edit', 'Bearbeiten') . ': ' . htmlspecialchars($item['name']); ?>">✏️</a>
             <a href="index.php?delete_id=<?php echo $item['id']; ?>&<?php echo http_build_query($paginationParams); ?>"
                class="icon-action-btn icon-action-delete"
-               onclick="return vsConfirmLink(event, '<?php echo tn('index_confirm_delete', 'Wirklich löschen?'); ?>')"
+               onclick="return vsConfirmLink(event, <?php echo htmlspecialchars(json_encode(tn('index_confirm_delete', 'Wirklich löschen?')), ENT_QUOTES, 'UTF-8'); ?>)"
                aria-label="<?php echo tn('index_delete', 'Löschen') . ': ' . htmlspecialchars($item['name']); ?>">🗑️</a>
             <?php endif; ?>
           </td>

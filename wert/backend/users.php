@@ -779,7 +779,7 @@ function reset2fa(id, username) {
 }
 
 function deleteUser(id, username) {
-    vsConfirm('<?php echo t("users_confirm_delete") ?: "Benutzer"; ?> "' + username + '" <?php echo t("users_confirm_delete_text") ?: "wirklich löschen?\\n\\nDiese Aktion kann nicht rückgängig gemacht werden!"; ?>').then(function (ja) {
+    vsConfirm(<?php echo json_encode((t("users_confirm_delete") ?: "Benutzer") . ' "'); ?> + username + <?php echo json_encode('" ' . str_replace('\n', "\n", t("users_confirm_delete_text") ?: 'wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden!')); ?>).then(function (ja) {
         if (!ja) return;
         document.getElementById('delete_user_id').value = id;
         document.getElementById('deleteUserForm').submit();

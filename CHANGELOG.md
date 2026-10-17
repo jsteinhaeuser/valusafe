@@ -1,8 +1,12 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-16.
+All changes that affect users. Generated from the project history on 2026-10-17.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.5.1 — 2026-10-17
+
+- **Fixed:** Safeguard for languages with apostrophes (e.g. French, Italian, Irish): an apostrophe in a translation could disable individual buttons and confirmation prompts – when deleting items, documents, users and backups, when uploading images and in the statistics. The texts are now embedded so that every character is safe. The current translations were not yet affected.
 
 ## 4.5 — 2026-10-16
 

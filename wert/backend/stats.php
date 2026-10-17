@@ -419,7 +419,7 @@ include 'layout/header_next_page.php';
         data: {
             labels: labels,
             datasets: [{
-                label: '<?php echo t("stats_total_wealth") ?: "Gesamtvermögen"; ?>',
+                label: <?php echo json_encode(t("stats_total_wealth") ?: "Gesamtvermögen"); ?>,
                 data: values,
                 borderColor: '#667eea',
                 backgroundColor: function(context) {

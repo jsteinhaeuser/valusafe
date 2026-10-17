@@ -666,7 +666,7 @@ setTimeout(() => {
                         <button type="submit" name="delete_backup" value="1"
                                 title="<?php echo esc(t('btn_delete')); ?>" class="icon-btn icon-btn-danger"
                                 style="border:none; margin-left:5px;"
-                                onclick="setSingleDelete('<?php echo esc($b['filename']); ?>'); return vsConfirmSubmit(event, '<?php echo t('backup_confirm_delete') ?: 'Backup löschen?'; ?>')">🗑</button>
+                                onclick="setSingleDelete('<?php echo esc($b['filename']); ?>'); return vsConfirmSubmit(event, <?php echo htmlspecialchars(json_encode(t('backup_confirm_delete') ?: 'Backup löschen?'), ENT_QUOTES, 'UTF-8'); ?>)">🗑</button>
                     </td>
                 </tr>
                 <?php endforeach; ?>
@@ -730,7 +730,7 @@ function updateBulkBar() {
     const countEl = document.getElementById('bulkCount');
     const allCb = document.getElementById('selectAllCb');
 
-    if (countEl) countEl.textContent = checked.length + ' <?php echo t("backup_selected") ?: "ausgewählt"; ?>';
+    if (countEl) countEl.textContent = checked.length + <?php echo json_encode(' ' . (t("backup_selected") ?: "ausgewählt")); ?>;
     if (bar) bar.classList.toggle('visible', checked.length > 0);
     if (allCb) allCb.indeterminate = checked.length > 0 && checked.length < cbs.length;
     if (allCb) allCb.checked = cbs.length > 0 && checked.length === cbs.length;
@@ -752,7 +752,7 @@ function setSingleDelete(filename) {
 function confirmBulkDelete(ereignis) {
     const count = document.querySelectorAll('.row-cb:checked').length;
     if (count === 0) { vsAlert(<?php echo json_encode(t('backup_select_at_least_one')); ?>); return false; }
-    return vsConfirmSubmit(ereignis, count + ' <?php echo t('backup_confirm_bulk_delete') ?: 'Backup(s) unwiderruflich löschen?'; ?>');
+    return vsConfirmSubmit(ereignis, count + <?php echo json_encode(' ' . (t('backup_confirm_bulk_delete') ?: 'Backup(s) unwiderruflich löschen?')); ?>);
 }
 </script>
 

@@ -369,7 +369,7 @@ $has_formatDate = function_exists('formatDateLocalized');
                     <?php if (function_exists('canShare') || true): ?>
                     <button type="button"
                             class="mobile-card-action share"
-                            onclick="shareItem(<?php echo intval($item['id'] ?? 0); ?>, '<?php echo addslashes(htmlspecialchars($item['name'] ?? '')); ?>', '<?php echo addslashes(htmlspecialchars($item['notizen'] ?? '')); ?>')"
+                            onclick="shareItem(<?php echo intval($item['id'] ?? 0); ?>, <?php echo htmlspecialchars(json_encode($item['name'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>, <?php echo htmlspecialchars(json_encode($item['notizen'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>)"
                             style="background:none;border:none;cursor:pointer;padding:0;">
                         <span class="icon">🔗</span>
                         <span class="label"><?php echo t('btn_share'); ?></span>
@@ -377,7 +377,7 @@ $has_formatDate = function_exists('formatDateLocalized');
                     <?php endif; ?>
                     <a href="delete.php?id=<?php echo intval($item['id'] ?? 0); ?>" 
                        class="mobile-card-action delete"
-                       onclick="return vsConfirmLink(event, '<?php echo t('bulk_confirm_delete'); ?>')">
+                       onclick="return vsConfirmLink(event, <?php echo htmlspecialchars(json_encode(t('bulk_confirm_delete')), ENT_QUOTES, 'UTF-8'); ?>)">
                         <span class="icon">🗑️</span>
                         <span class="label"><?php echo t('btn_delete'); ?></span>
                     </a>
@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Rechts geswiped → Löschen
                 inner.style.transform = `translateX(${SWIPE_MAX}px)`;
                 setTimeout(() => {
-                    vsConfirm(document.querySelector('[data-confirm-delete]')?.dataset.confirmDelete || '<?php echo t('bulk_confirm_delete'); ?>').then(function (ja) {
+                    vsConfirm(document.querySelector('[data-confirm-delete]')?.dataset.confirmDelete || <?php echo json_encode(t('bulk_confirm_delete')); ?>).then(function (ja) {
                         if (ja) {
                             window.location.href = card.dataset.deleteUrl;
                         } else {

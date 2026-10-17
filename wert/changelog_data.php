@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 16.10.2026 11:17 von bin/changelog_export.php.
+ * Erzeugt am 17.10.2026 09:59 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,18 @@
  */
 
 return [
+    [
+        'version' => '4.5.1',
+        'date' => '2026-10-17',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Vorsorge für Sprachen mit Apostroph (z. B. Französisch, Italienisch, Irisch): Ein Apostroph in einer Übersetzung konnte einzelne Knöpfe und Rückfragen außer Kraft setzen – beim Löschen von Gegenständen, Dokumenten, Benutzern und Sicherungen, beim Hochladen von Bildern und in der Statistik. Die Texte werden jetzt so eingebunden, dass jedes Zeichen sicher ist. In den derzeitigen Übersetzungen trat der Fehler noch nicht auf.',
+                'text_en' => 'Safeguard for languages with apostrophes (e.g. French, Italian, Irish): an apostrophe in a translation could disable individual buttons and confirmation prompts – when deleting items, documents, users and backups, when uploading images and in the statistics. The texts are now embedded so that every character is safe. The current translations were not yet affected.'
+            ]
+        ]
+    ],
     [
         'version' => '4.5',
         'date' => '2026-10-16',
@@ -207,72 +219,6 @@ return [
                 'public' => true,
                 'text' => 'Bedienung per Tastatur: Die Karten der Übersicht ließen sich nur mit der Maus öffnen. Jetzt erreicht man sie mit der Tabulatortaste und öffnet die Detailansicht mit Enter; der Fokus springt dabei in die Detailansicht.',
                 'text_en' => 'Keyboard use: the cards in the overview could only be opened with the mouse. They can now be reached with the Tab key and opened with Enter; focus then moves to the detail view.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.33',
-        'date' => '2026-10-09',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Die Schnellerfassung ist wieder erreichbar: Auf dem Handy öffnet der runde Plus-Knopf jetzt die Schnellerfassung (Foto, Name, Speichern - Raum und Kategorie bleiben für den nächsten Gegenstand stehen), am Rechner weiter das vollständige Formular. Wer ValuSafe als App installiert hat, findet sie außerdem beim langen Druck auf das App-Symbol. Die Schnellerfassung setzte bisher heimlich das heutige Datum als Kaufdatum - das Feld bleibt jetzt leer. Bei iPhone-Fotos (HEIC), die der Browser nicht anzeigen kann, erscheint statt einer leeren Vorschau ein Hinweis; umgewandelt wird beim Speichern. Alle Texte der Seite sind übersetzt.',
-                'text_en' => 'Quick entry is reachable again: on phones the round plus button now opens quick entry (photo, name, save - room and category stay selected for the next item), on computers it still opens the full form. If you installed ValuSafe as an app, you also find it by long-pressing the app icon. Quick entry used to set today\'s date as purchase date without asking - the field now stays empty. For iPhone photos (HEIC) the browser cannot display, a note appears instead of an empty preview; the photo is converted when saved. All texts on the page are translated.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Leser (Rolle "Nur lesen") konnten Gegenstände über die direkte Adresse der Seiten "Hinzufügen", "Schnellerfassung" und "Bearbeiten" anlegen und ändern - die Seiten prüften nur die Anmeldung, nicht die Rechte. Jetzt gelten die Rechte "Neuen Gegenstand anlegen" bzw. "Gegenstand bearbeiten" aus der Rechteverwaltung; die Meldung "Zugriff verweigert" ist übersetzt.',
-                'text_en' => 'Viewers (role "read only") could create and change items through the direct address of the pages "Add", "Quick entry" and "Edit" - the pages only checked the login, not the permissions. Now the permissions "Create new item" and "Edit item" from the permissions settings apply; the "Access denied" message is translated.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Die Einstellung "Benutzer sehen nur eigene Gegenstände" wirkte bisher nur in der Listenansicht. Über die direkte Adresse konnten betroffene Benutzer fremde Gegenstände trotzdem öffnen, bearbeiten, löschen und deren Bilder verwalten, und Exporte, QR-Codes, Raumansicht, Dashboard und Versicherungsübersicht enthielten alle Gegenstände. Jetzt gilt die Einstellung überall. Wer nur eigene Gegenstände sieht, legt Gegenstände außerdem immer unter dem eigenen Namen an.',
-                'text_en' => 'The setting "Users see only their own items" only applied to the list view so far. Through the direct address, affected users could still open, edit and delete other people\'s items and manage their images, and exports, QR codes, the room view, the dashboard and the insurance overview contained all items. The setting now applies everywhere. Users who only see their own items also always create items under their own name.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Einige Rechte aus der Rechteverwaltung wurden nicht beachtet: "Mehrere Gegenstände löschen" (Löschen über die Auswahl ging mit dem Recht zum Bearbeiten), die Export-Rechte (PDF, Excel/CSV, HTML, Versicherungsexport, QR-Codes) und die Bilder-Rechte (Hochladen, Löschen). Jetzt gelten sie; das Export-Menü zeigt nur noch erlaubte Exporte.',
-                'text_en' => 'Some permissions from the permissions settings were not enforced: "Delete multiple items" (deleting via the selection only required the edit permission), the export permissions (PDF, Excel/CSV, HTML, insurance export, QR codes) and the image permissions (upload, delete). They now apply; the export menu only shows permitted exports.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Weitere Stellen folgen jetzt der eingestellten Sprache statt fest Deutsch: QR-Codes, Dokumentverwaltung eines Gegenstands, Tabellenspalte im Aktivitätsprotokoll, Feld "Aktueller Wert" beim Bearbeiten, Vorlesetexte des Suchfilters und die Abschnitte der Rechteverwaltung (nach einer Neuinstallation waren sie deutsch). Versicherungs-Export und Übergabeprotokoll sind weiterhin deutsch.',
-                'text_en' => 'More places now follow the selected language instead of always German: QR codes, an item\'s document management, the table column in the activity log, the "Current value" field when editing, screen reader texts of the search filter and the sections of the permissions settings (after a fresh install they were German). The insurance export and the handover report are still German.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Spaltennamen sind jetzt überall gleich und übersetzt: Tabellenkopf, Spalten-Manager und Formular verwenden dieselben Namen. Bisher zeigte der Tabellenkopf für einige Spalten Rohnamen wie "Custom1", und Spalten, die man im Spalten-Manager umbenannt hatte, erschienen im Tabellenkopf weiter unter dem alten Namen. Der Spalten-Manager selbst, die Auswahlleiste für mehrere Gegenstände und die Vorlesetexte der Übersicht folgen jetzt ebenfalls der eingestellten Sprache.',
-                'text_en' => 'Column names are now consistent and translated everywhere: table header, column manager and form use the same names. Previously the table header showed raw names such as "Custom1" for some columns, and columns renamed in the column manager kept their old name in the table header. The column manager itself, the selection bar for several items and the screen reader texts of the overview now also follow the selected language.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Die Anmeldeseite war fest deutsch. Sie erscheint jetzt in der Sprache des Browsers (eine der neun Sprachen, sonst Deutsch) und hat unten eine Sprachwahl. Außerdem merkt sich ValuSafe die in den Einstellungen gewählte Sprache jetzt wirklich: Sie wurde zwar gespeichert, beim nächsten Anmelden aber nicht geladen - jede neue Sitzung begann auf Deutsch.',
-                'text_en' => 'The login page was German only. It now appears in the browser\'s language (one of the nine languages, otherwise German) and has a language choice at the bottom. In addition, ValuSafe now really remembers the language chosen in the settings: it was saved, but not loaded at the next login - every new session started in German.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Auch der Verwaltungsbereich folgt jetzt der eingestellten Sprache an Stellen, die bisher fest deutsch waren: Sicherung (Kacheln, Liste, Meldungen), Versicherungsverwaltung (Übersicht, Formular, Zuordnen von Gegenständen), Räume/Standorte/Positionen, Benutzerverwaltung, Übersichtskacheln, Seitenleiste und Hilfe-Fenster. Der Verwaltungsbereich ist wie bisher auf Deutsch und Englisch übersetzt. Datenbankfehler zeigen dort keinen technischen Text mehr an, sondern verweisen auf das Fehlerprotokoll. Außerdem führte "Versicherungen" in der unteren Leiste auf dem Handy für Editoren und Leser auf eine gesperrte Seite; der Knopf öffnet jetzt dieselbe Seite wie in der Seitenleiste. "Statistiken" und "Galerie" erscheinen in den Leisten nur noch für Administratoren - für alle anderen endeten sie bisher ebenfalls bei "Zugriff verweigert".',
-                'text_en' => 'The admin area now also follows the selected language in places that were German only: backup (tiles, list, messages), insurance management (overview, form, assigning items), rooms/locations/positions, user management, overview tiles, sidebar and help window. As before, the admin area is translated into German and English. Database errors there no longer show technical text but point to the error log. In addition, "Insurance" in the bottom bar on phones led editors and viewers to a locked page; the button now opens the same page as in the sidebar. "Statistics" and "Gallery" now appear in the bars for administrators only - for everyone else they also ended at "access denied".'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'In der Rechteverwaltung lassen sich jetzt "Eigenes Passwort aendern" und das neue Recht "Eigenes Konto loeschen" fuer Editoren und Leser abschalten. Gedacht fuer Konten, die sich mehrere Personen teilen, etwa eine oeffentliche Demo: Bisher konnte dort jeder das gemeinsame Passwort aendern oder das Konto ueber "Account loeschen" ganz entfernen und damit alle anderen aussperren. Ist ein Recht abgeschaltet, zeigt die Einstellungsseite statt des Formulars einen Hinweis. Voreingestellt bleibt beides erlaubt - wer nichts umstellt, merkt keinen Unterschied. Nach dem Update einmal migrate.php aufrufen.',
-                'text_en' => 'In the permissions settings, "Change own password" and the new permission "Delete own account" can now be switched off for editors and viewers. This is meant for accounts shared by several people, such as a public demo: until now anyone could change the shared password there, or remove the account entirely via "Delete account", and lock everyone else out. If a permission is switched off, the settings page shows a note instead of the form. By default both stay allowed - if you change nothing, nothing changes. Run migrate.php once after the update.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Wer eine andere Sprache als Deutsch eingestellt hat, sah an mehreren Stellen trotzdem deutsche Texte: im Export-Menue (CSV-Datei, PDF Detailliert, Uebergabeprotokoll ...), in den Hinweisen der Seitenleiste, in der unteren Leiste auf dem Handy, im Detailbereich rechts neben der Liste, im Fenster "Hilfe & Informationen" und in den Einstellungen bei Profilbild und Passwort samt allen Meldungen. Diese Texte folgen jetzt der eingestellten Sprache (alle neun). Ausserdem fuehrte "Einstellungen" in der unteren Leiste auf dem Handy auf eine Seite, die es nicht gibt; der Knopf oeffnet jetzt die Einstellungen.',
-                'text_en' => 'If you use a language other than German, several places still showed German text: the export menu (CSV file, PDF detailed, handover report ...), the tooltips of the sidebar, the bottom bar on phones, the detail panel next to the list, the "Help & information" window and, in the settings, everything around profile picture and password including all messages. These texts now follow the selected language (all nine). In addition, "Settings" in the bottom bar on phones led to a page that does not exist; the button now opens the settings.'
             ],
             [
                 'type' => 'feature',

@@ -670,9 +670,9 @@ include 'header_next_page.php';
 <script>
 // Übersetzungen für JavaScript
 const translations = {
-    errorSize: '<?php echo sprintf(t("upload_error_size"), (MAX_FILE_SIZE / 1024 / 1024)); ?>',
-    errorType: '<?php echo t("upload_error_type"); ?>',
-    confirmCancel: '<?php echo t("confirm_cancel_unsaved"); ?>'
+    errorSize: <?php echo json_encode(sprintf(t("upload_error_size"), (MAX_FILE_SIZE / 1024 / 1024))); ?>,
+    errorType: <?php echo json_encode(t("upload_error_type")); ?>,
+    confirmCancel: <?php echo json_encode(t("confirm_cancel_unsaved")); ?>
 };
 
 // Mobile Detection

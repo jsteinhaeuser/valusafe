@@ -233,7 +233,7 @@ include 'header_next_page.php';
                                title="<?php echo t('doc_download_title'); ?>">⬇️ <?php echo t('btn_download'); ?></a>
                             <a href="?id=<?php echo $wertsache_id; ?>&delete=<?php echo $doc['id']; ?>&<?php echo http_build_query(['csrf_token' => $_SESSION['csrf_token']]); ?>" 
                                class="vs-btn vs-btn-sm vs-btn-danger"
-                               onclick="return vsConfirmLink(event, '<?php echo t('doc_confirm_delete'); ?>')">🗑️ <?php echo t('btn_delete'); ?></a>
+                               onclick="return vsConfirmLink(event, <?php echo htmlspecialchars(json_encode(t('doc_confirm_delete')), ENT_QUOTES, 'UTF-8'); ?>)">🗑️ <?php echo t('btn_delete'); ?></a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
