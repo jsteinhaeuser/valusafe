@@ -38,8 +38,12 @@ wert/service/Rueckmeldung.md
 # ── Sicherungen und Protokolle ───────────────────────────────────────────────
 wert/backups/*
 !wert/backups/.gitkeep
+# Sperrdateien (seit 4.5.2) gehoeren zur Anwendung: ohne sie waeren
+# Sicherungen und Protokolle per Browser abrufbar.
+!wert/backups/.htaccess
 wert/logs/*
 !wert/logs/.gitkeep
+!wert/logs/.htaccess
 *.log
 *.sql
 !install/schema.sql

@@ -186,7 +186,7 @@ async function _loadVsm(idx,btn){
         c.innerHTML='<div style="text-align:center;padding:60px 20px;color:'+mu+'">'
             +'<div style="font-size:48px;margin-bottom:16px">📕</div>'
             +'<div style="font-size:14pt;font-weight:600;margin-bottom:6px;color:'+tx+'">'+f.label+'</div>'
-            +'<div style="margin-bottom:24px">PDF-Dokument</div>'
+            +'<div style="margin-bottom:24px">'+vsEsc(vsT('js_pdf_document','PDF-Dokument'))+'</div>'
             +'<a href="'+_vsmBase+'service_doc.php?file='+encodeURIComponent(f.file)+'" target="_blank"'
             +' style="background:'+ac+';color:#fff;padding:10px 24px;border-radius:6px;text-decoration:none">📕 '+vsEsc(vsT('js_pdf_open','PDF öffnen'))+'</a>'
             +'<div style="margin-top:10px;font-size:9pt;color:'+mu+'">'+vsEsc(vsT('js_opens_new_tab','Öffnet in einem neuen Tab'))+'</div></div>';
@@ -249,9 +249,9 @@ try {
             ];
         }
     }
-    $json = json_encode($files);
+    $json = json_encode($files, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     if ($json === false) $json = '[]';
-    echo '<script>_vsmFiles=' . $json . ';_vsmBase="' . addslashes($vsmBase) . '";</script>';
+    echo '<script>_vsmFiles=' . $json . ';_vsmBase=' . json_encode((string)$vsmBase, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';</script>';
 } catch (Exception $e) {
     // Kein Output — _vsmFiles bleibt []
 }

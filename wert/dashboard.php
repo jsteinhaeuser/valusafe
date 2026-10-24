@@ -479,9 +479,9 @@ include 'header_next_page.php';
         </div>
         <div class="bereit-tip">
             <?php if ($b_score >= 75): ?><?php echo t('readiness_perfect_msg'); ?>
-            <?php elseif ($b_score >= 50): ?>Mittel — einige Felder fehlen noch.
-            <?php else: ?>Bitte Fotos, Preise und Kaufdaten ergaenzen.<?php endif; ?>
-            <?php if ($b_score < 100): ?> &nbsp;&#183;&nbsp;<a href="index.php" style="color:#3498db;">Inventar vervollstaendigen</a><?php endif; ?>
+            <?php elseif ($b_score >= 50): ?><?php echo t('readiness_medium_msg'); ?>
+            <?php else: ?><?php echo t('readiness_low_msg'); ?><?php endif; ?>
+            <?php if ($b_score < 100): ?> &nbsp;&#183;&nbsp;<a href="index.php" style="color:var(--vs-accent);"><?php echo t('readiness_complete_link'); ?></a><?php endif; ?>
         </div>
     </div>
 

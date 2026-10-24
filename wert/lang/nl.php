@@ -28,7 +28,7 @@ return [
     'nav_stats' => 'Statistieken',
 
     // ALGEMEEN
-    'app_title' => 'Wertsachen-Inventarverwaltung',
+    'app_title' => 'ValuSafe',
     'app_description' => 'Beheer uw waardevolle objecten eenvoudig',
     'logged_in_as' => 'Ingelogd als',
     'session_expires_in' => 'Sessie verloopt over',
@@ -245,7 +245,7 @@ return [
 
     // LOGIN
     'login_title' => 'Inloggen',
-    'login_app_name' => 'Wertsachen-Inventarverwaltung',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Gebruikersnaam',
     'login_password' => 'Wachtwoord',
     'login_button' => 'Inloggen',
@@ -417,7 +417,7 @@ return [
     'export_notes' => 'Notities',
     'export_total_value' => 'Totale waarde van alle objecten',
     'export_based_on' => 'Gebaseerd op',
-    'export_footer' => 'Erstellt mit Wertsachen-Inventarverwaltung',
+    'export_footer' => 'Gemaakt met ValuSafe',
     'export_page' => 'Pagina',
     'export_of' => 'van',
     'csv_header_id' => 'ID',
@@ -446,7 +446,7 @@ return [
     'html_footer_created' => 'Gemaakt met ValuSafe',
 
     // HEADER
-    'header_app_title' => 'Wertsachen-Inventarverwaltung',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'Mijn Spullen',
 
     'header_keyboard_shortcuts' => 'Sneltoetsen',
@@ -732,6 +732,9 @@ return [
     'readiness_price' => 'Prijs',
     'readiness_purchase_date' => 'Aankoopdatum',
     'readiness_perfect_msg' => 'Goed gedocumenteerd — perfect voorbereid op schade!',
+    'readiness_medium_msg' => 'Redelijk — er ontbreken nog enkele velden.',
+    'readiness_low_msg' => 'Vul foto\'s, prijzen en aankoopdata aan.',
+    'readiness_complete_link' => 'Inventaris aanvullen',
     'col_aktueller_wert' => 'Huidige waarde',
     'col_anzahl' => 'Aantal',
     'col_aufbewahrungsort' => 'Opslaglocatie',
@@ -1015,6 +1018,8 @@ return [
     '2fa_error_generic' => 'Code ongeldig.',
     '2fa_btn_manage' => 'Tweestapsverificatie beheren',
     '2fa_change_disabled' => 'Tweestapsverificatie kan voor dit account niet worden gewijzigd. Neem contact op met een beheerder.',
+    '2fa_locked' => 'Te veel onjuiste codes. Probeer het over %d minuten opnieuw.',
+    'pwreset_not_configured' => 'Herstellen via e-mail is op deze installatie niet ingesteld. Neem contact op met je beheerder.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Concept van %s gevonden.',
     'js_draft_unsaved' => 'Niet-opgeslagen concept van %s',
@@ -1061,6 +1066,7 @@ return [
     'js_pdf_open' => 'PDF openen',
     'js_opens_new_tab' => 'Opent in een nieuw tabblad',
     'js_doc_open' => '%s openen',
+    'js_pdf_document' => 'PDF-document',
     'js_crop_button' => 'Bijsnijden / draaien',
     'js_crop_title' => 'Afbeelding bijsnijden en draaien',
     'js_crop_help' => 'Verplaats het kader met de muis of de pijltjestoetsen, + en − om te zoomen, R om te draaien.',

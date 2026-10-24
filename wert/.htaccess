@@ -31,7 +31,8 @@ Options -Indexes
 </FilesMatch>
 
 # Schutz von Backup-, Log- und ini-Dateien (.user.ini u. a. - seit 4.3.29 nicht mehr ausgeliefert, aber ein Rest waere sonst lesbar)
-<FilesMatch "\.(sql|log|bak|backup|ini)$">
+# (\.\d+)? seit 4.5.2: auch rotierte Reste wie php_errors.log.1 (OWASP-A01-004)
+<FilesMatch "\.(sql|log|bak|backup|ini)(\.\d+)?$">
     Order allow,deny
     Deny from all
 </FilesMatch>

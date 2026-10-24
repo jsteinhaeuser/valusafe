@@ -508,6 +508,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // zentral verwaltete Aufstellung mehrerer Installationen. Diese
             // hier steht fuer sich; was sie nicht kennt, kann sie auch nicht
             // preisgeben.
+            // Adresse, unter der der Admin den Assistenten gerade aufruft
+            // (setup.php liegt im Hauptverzeichnis der Anwendung). Hier ist
+            // der Host-Header vertrauenswuerdig: es ist der eigene Browser.
+            $setupPfad   = rtrim(str_replace('\\', '/', dirname(parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/')), '/');
+            $setupHost   = preg_replace('/[^A-Za-z0-9.:\[\]-]/', '', $_SERVER['HTTP_HOST'] ?? 'localhost');
+            $setupAppUrl = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http')
+                . '://' . $setupHost . $setupPfad;
+
             $configContent = "<?php\n" .
                 "/**\n" .
                 " * config.php — angelegt vom Setup-Assistenten am " . date('d.m.Y H:i') . "\n" .
@@ -522,7 +530,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "define('DB_CHARSET', 'utf8mb4');\n\n" .
                 "define('APP_NAME', " . var_export($instName, true) . ");\n" .
                 "define('APP_TAGLINE', 'Inventarverwaltung für Wertgegenstände');\n" .
-                "define('APP_LANG', " . var_export($lang, true) . ");\n\n" .
+                "define('APP_LANG', " . var_export($lang, true) . ");\n" .
+                "// Feste Adresse fuer Links in Mails (Passwort-Reset), seit 4.5.2.\n" .
+                "// Nie aus dem Host-Header der Anfrage nehmen (OWASP-A07-002).\n" .
+                "define('APP_URL', " . var_export($setupAppUrl, true) . ");\n\n" .
                 "define('SESSION_LIFETIME', 3600);\n" .
                 "define('SESSION_NAME', 'valusafe_session');\n" .
                 "define('CSRF_TOKEN_NAME', 'csrf_token');\n\n" .

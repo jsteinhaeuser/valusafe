@@ -28,7 +28,7 @@ return [
     'nav_stats' => 'Statistiche',
 
     // GENERALE
-    'app_title' => 'Wertsachen-Inventarverwaltung',
+    'app_title' => 'ValuSafe',
     'app_description' => 'Gestite i vostri oggetti di valore con facilità',
     'logged_in_as' => 'Connesso come',
     'session_expires_in' => 'La sessione scade tra',
@@ -245,7 +245,7 @@ return [
 
     // LOGIN
     'login_title' => 'Accesso',
-    'login_app_name' => 'Wertsachen-Inventarverwaltung',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Nome utente',
     'login_password' => 'Password',
     'login_button' => 'Accedi',
@@ -417,7 +417,7 @@ return [
     'export_notes' => 'Note',
     'export_total_value' => 'Valore totale di tutti gli oggetti',
     'export_based_on' => 'Basato su',
-    'export_footer' => 'Erstellt mit Wertsachen-Inventarverwaltung',
+    'export_footer' => 'Creato con ValuSafe',
     'export_page' => 'Pagina',
     'export_of' => 'di',
     'csv_header_id' => 'ID',
@@ -446,7 +446,7 @@ return [
     'html_footer_created' => 'Creato con ValuSafe',
 
     // INTESTAZIONE
-    'header_app_title' => 'Wertsachen-Inventarverwaltung',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'I Miei Oggetti',
 
     'header_keyboard_shortcuts' => 'Scorciatoie da tastiera',
@@ -732,6 +732,9 @@ return [
     'readiness_price' => 'Prezzo',
     'readiness_purchase_date' => 'Data di acquisto',
     'readiness_perfect_msg' => 'Ben documentato — perfettamente preparato per un sinistro!',
+    'readiness_medium_msg' => 'Discreto — mancano ancora alcuni campi.',
+    'readiness_low_msg' => 'Aggiungete foto, prezzi e date di acquisto.',
+    'readiness_complete_link' => 'Completa l\'inventario',
     'col_aktueller_wert' => 'Valore attuale',
     'col_anzahl' => 'Quantità',
     'col_aufbewahrungsort' => 'Luogo di conservazione',
@@ -1015,6 +1018,8 @@ return [
     '2fa_error_generic' => 'Codice non valido.',
     '2fa_btn_manage' => 'Gestisci autenticazione a due fattori',
     '2fa_change_disabled' => 'L\'autenticazione a due fattori non può essere modificata per questo account. Contatta un amministratore.',
+    '2fa_locked' => 'Troppi codici errati. Riprova tra %d minuti.',
+    'pwreset_not_configured' => 'Il ripristino via e-mail non è configurato su questa installazione. Contatta il tuo amministratore.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Bozza del %s trovata.',
     'js_draft_unsaved' => 'Bozza non salvata del %s',
@@ -1061,6 +1066,7 @@ return [
     'js_pdf_open' => 'Apri PDF',
     'js_opens_new_tab' => 'Si apre in una nuova scheda',
     'js_doc_open' => 'Apri %s',
+    'js_pdf_document' => 'Documento PDF',
     'js_crop_button' => 'Ritaglia / ruota',
     'js_crop_title' => 'Ritaglia e ruota l’immagine',
     'js_crop_help' => 'Sposta la cornice con il mouse o le frecce, + e − per lo zoom, R per ruotare.',

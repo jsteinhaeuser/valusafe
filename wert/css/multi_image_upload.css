@@ -140,13 +140,13 @@
    UPLOAD ZONE (Multi)
    ============================================= */
 .multi-upload-zone {
-    border: 2px dashed #ddd;
+    border: 2px dashed var(--vs-border-strong, #ddd);
     border-radius: 12px;
     padding: 24px;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
-    background: #ffffff;
+    background: var(--vs-surface, #ffffff); /* war fest weiss - in Midnight helle Schrift auf weiss (VB 2.4 / VS 4.5.2) */
     position: relative;
 }
 
@@ -173,7 +173,7 @@
 .multi-upload-zone-text {
     font-size: 15px;
     font-weight: 600;
-    color: #333;
+    color: var(--vs-text, #333);
     margin-bottom: 4px;
 }
 

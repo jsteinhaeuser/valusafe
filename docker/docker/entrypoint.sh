@@ -91,6 +91,22 @@ if [ -f /var/www/html/SecurityHeaders.php ]; then
     echo "[Entrypoint] SecurityHeaders.php X-Forwarded-Proto deaktiviert."
 fi
 
+# ── APP_URL (seit 4.5.2) ──────────────────────────────────────────────────────
+# Feste Adresse fuer Links in Mails. Ohne sie bleibt der Passwort-Reset per
+# Mail aus - der Link kaeme sonst aus dem Host-Header (OWASP-A07-002).
+APP_URL_ZEILE=""
+if [ -n "${APP_URL:-}" ]; then
+    case "$APP_URL" in
+        http://*|https://*)
+            APP_URL_SAUBER="$(printf '%s' "$APP_URL" | tr -cd 'A-Za-z0-9.:/_~-' | sed 's:/*$::')"
+            APP_URL_ZEILE="define('APP_URL', '${APP_URL_SAUBER}');"
+            echo "[Entrypoint] APP_URL: ${APP_URL_SAUBER}" ;;
+        *)  echo "[Entrypoint] WARNUNG: APP_URL muss mit http:// oder https:// beginnen - ignoriert." ;;
+    esac
+else
+    echo "[Entrypoint] APP_URL leer - Passwort-Reset per Mail abgeschaltet."
+fi
+
 # ── config.php generieren ─────────────────────────────────────────────────────
 echo "[Entrypoint] Erstelle config.php..."
 cat > /var/www/html/config.php << EOF
@@ -128,6 +144,7 @@ define('ALLOWED_IMAGE_TYPES', [
 define('ALLOWED_EXTENSIONS', ['jpg','jpeg','png','gif','webp','heic','heif']);
 
 define('BACKUP_TOKEN', '${BACKUP_TOKEN}');
+${APP_URL_ZEILE}
 
 ini_set('session.cookie_httponly', 1);
 ini_set('session.cookie_secure',   isset(\$_SERVER['HTTPS']) ? 1 : 0);
@@ -180,7 +197,7 @@ if ($pass === "" || $pass === false) {
     $generiert = true;
 }
 
-// Die Anwendung hasht mit PASSWORD_ARGON2ID (backend/users.php, profil.php).
+// Die Anwendung hasht mit PASSWORD_ARGON2ID (backend/users.php, settings.php).
 // Fehlt Argon2 in dieser PHP-Fassung, faellt password_hash sonst mit einem
 // Fehler aus — deshalb der ausdrueckliche Rueckfall auf das Standardverfahren.
 $algo = defined("PASSWORD_ARGON2ID") ? PASSWORD_ARGON2ID : PASSWORD_DEFAULT;
@@ -246,6 +263,25 @@ case "$ADMIN_RESULT" in
         exit 1
         ;;
 esac
+
+# ── backups/ und logs/ fuer das Web sperren ───────────────────────────────────
+# Beide sind Volumes und verdecken, was im Image laege; deshalb bei jedem Start
+# schreiben. Ohne Sperre waeren die Sicherungs-ZIPs (mit config.php), die
+# Protokolle und backups/.backup_token direkt abrufbar (OWASP-A01-001/-004).
+for d in /var/www/html/backups /var/www/html/logs; do
+    mkdir -p "$d"
+    cat > "$d/.htaccess" << 'HTACCESS'
+# Kein Abruf ueber das Web (OWASP-A01-001/-004). Gelesen wird nur ueber PHP.
+<IfModule mod_authz_core.c>
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+</IfModule>
+HTACCESS
+done
+echo "[Entrypoint] backups/ und logs/ fuer das Web gesperrt."
 
 # ── Verzeichnis-Berechtigungen ────────────────────────────────────────────────
 chown -R www-data:www-data \

@@ -14,7 +14,7 @@
 require_once 'db.php';
 
 // Nur für eingeloggte Benutzer
-if (!isset($_SESSION['user_id'])) {
+if (!isLoggedIn()) {  // volle Anmeldung inkl. Fingerabdruck (OWASP-A07-005)
     http_response_code(401);
     exit('Nicht angemeldet');
 }
@@ -172,22 +172,20 @@ if ($data === false || strlen($data) < 100) {
     exit('Bild konnte nicht geladen werden');
 }
 
-// Content-Type aus den HTTP-Headern ermitteln
-$contentType = 'image/jpeg';
-foreach ($http_response_header ?? [] as $h) {
-    if (stripos($h, 'content-type:') === 0) {
-        $contentType = trim(explode(':', $h, 2)[1]);
-        break;
-    }
-}
-
-// Nur Bilder durchleiten
-if (!str_starts_with($contentType, 'image/')) {
+// Nur Rasterbilder durchleiten (OWASP-A05-002, 4.5.2). Der Typ kommt aus dem
+// Inhalt, nicht aus dem Header des fremden Servers: bis 4.5.1 ging alles mit
+// image/* durch, auch image/svg+xml - eine SVG mit <script> von archive.org
+// (hostet Dateien beliebiger Nutzer) lief dann unter der Adresse der Instanz.
+$rasterTypen = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
+$contentType = (new finfo(FILEINFO_MIME_TYPE))->buffer($data) ?: '';
+if (!isset($rasterTypen[$contentType])) {
     http_response_code(415);
     exit('Kein Bild');
 }
 
 header('Content-Type: ' . $contentType);
+header('Content-Disposition: inline; filename="cover.' . $rasterTypen[$contentType] . '"');
+header("Content-Security-Policy: default-src 'none'; sandbox");
 header('Cache-Control: public, max-age=86400');
 header('X-Content-Type-Options: nosniff');
 echo $data;

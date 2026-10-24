@@ -33,7 +33,7 @@ return [
     // ============================================================================
     // GÉNÉRAL
     // ============================================================================
-    'app_title' => 'Gestion d\'inventaire',
+    'app_title' => 'ValuSafe',
     'logged_in_as' => 'Connecté en tant que',
     'session_expires_in' => 'Session expire dans',
 
@@ -375,7 +375,7 @@ return [
     // CONNEXION
     // ============================================================================
     'login_title' => 'Connexion',
-    'login_app_name' => 'Gestion d\'inventaire',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Nom d\'utilisateur',
     'login_password' => 'Mot de passe',
     'login_button' => 'Se connecter',
@@ -413,7 +413,7 @@ return [
     'export_notes' => 'Notes',
     'export_total_value' => 'Valeur totale de tous les objets',
     'export_based_on' => 'Basé sur',
-    'export_footer' => 'Créé avec Gestion d\'inventaire',
+    'export_footer' => 'Créé avec ValuSafe',
 
     // Export CSV
     'csv_header_id' => 'ID',
@@ -449,7 +449,7 @@ return [
     // ============================================================================
     // EN-TÊTE & NAVIGATION
     // ============================================================================
-    'header_app_title' => 'Gestion d\'inventaire',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'Mes Objets',
 
     'header_keyboard_shortcuts' => 'Raccourcis clavier',
@@ -840,6 +840,9 @@ return [
     'readiness_price' => 'Prix',
     'readiness_purchase_date' => 'Date d\'achat',
     'readiness_perfect_msg' => 'Bien documenté — parfaitement préparé pour un sinistre !',
+    'readiness_medium_msg' => 'Moyen — il manque encore quelques champs.',
+    'readiness_low_msg' => 'Veuillez ajouter des photos, des prix et des dates d\'achat.',
+    'readiness_complete_link' => 'Compléter l\'inventaire',
     'col_aktueller_wert' => 'Valeur actuelle',
     'col_anzahl' => 'Quantité',
     'col_aufbewahrungsort' => 'Lieu de stockage',
@@ -1114,6 +1117,8 @@ return [
     '2fa_error_generic' => 'Code invalide.',
     '2fa_btn_manage' => 'Gérer la double authentification',
     '2fa_change_disabled' => 'La double authentification ne peut pas être modifiée pour ce compte. Contactez un administrateur.',
+    '2fa_locked' => 'Trop de codes incorrects. Veuillez réessayer dans %d minutes.',
+    'pwreset_not_configured' => 'La réinitialisation par e-mail n\'est pas configurée sur cette installation. Veuillez contacter votre administrateur.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Brouillon du %s trouvé.',
     'js_draft_unsaved' => 'Brouillon non enregistré du %s',
@@ -1160,6 +1165,7 @@ return [
     'js_pdf_open' => 'Ouvrir le PDF',
     'js_opens_new_tab' => 'S\'ouvre dans un nouvel onglet',
     'js_doc_open' => 'Ouvrir %s',
+    'js_pdf_document' => 'Document PDF',
     'js_crop_button' => 'Recadrer / pivoter',
     'js_crop_title' => 'Recadrer et pivoter l’image',
     'js_crop_help' => 'Déplacez le cadre avec la souris ou les flèches, + et − pour zoomer, R pour pivoter.',

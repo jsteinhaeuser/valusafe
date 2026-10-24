@@ -25,7 +25,7 @@ header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
 // Nur für eingeloggte Benutzer
-if (!isset($_SESSION['user_id'])) {
+if (!isLoggedIn()) {  // volle Anmeldung inkl. Fingerabdruck (OWASP-A07-005)
     http_response_code(401);
     echo json_encode(['found' => false, 'error' => 'Nicht angemeldet']);
     exit;

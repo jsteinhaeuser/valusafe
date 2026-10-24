@@ -28,7 +28,7 @@ return [
     'nav_stats' => 'Estatísticas',
 
     // GERAL
-    'app_title' => 'Wertsachen-Inventarverwaltung',
+    'app_title' => 'ValuSafe',
     'app_description' => 'Gerencie seus objetos de valor com facilidade',
     'logged_in_as' => 'Conectado como',
     'session_expires_in' => 'Sessão expira em',
@@ -245,7 +245,7 @@ return [
 
     // LOGIN
     'login_title' => 'Iniciar sessão',
-    'login_app_name' => 'Wertsachen-Inventarverwaltung',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Nome de utilizador',
     'login_password' => 'Palavra-passe',
     'login_button' => 'Iniciar sessão',
@@ -417,7 +417,7 @@ return [
     'export_notes' => 'Notas',
     'export_total_value' => 'Valor total de todos os objetos',
     'export_based_on' => 'Com base em',
-    'export_footer' => 'Erstellt mit Wertsachen-Inventarverwaltung',
+    'export_footer' => 'Criado com ValuSafe',
     'export_page' => 'Página',
     'export_of' => 'de',
     'csv_header_id' => 'ID',
@@ -446,7 +446,7 @@ return [
     'html_footer_created' => 'Criado com ValuSafe',
 
     // CABEÇALHO
-    'header_app_title' => 'Wertsachen-Inventarverwaltung',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'Meus Objetos',
 
     'header_keyboard_shortcuts' => 'Atalhos de teclado',
@@ -732,6 +732,9 @@ return [
     'readiness_price' => 'Preço',
     'readiness_purchase_date' => 'Data de compra',
     'readiness_perfect_msg' => 'Bem documentado — perfeitamente preparado para um sinistro!',
+    'readiness_medium_msg' => 'Razoável — ainda faltam alguns campos.',
+    'readiness_low_msg' => 'Adicione fotos, preços e datas de compra.',
+    'readiness_complete_link' => 'Completar o inventário',
     'col_aktueller_wert' => 'Valor atual',
     'col_anzahl' => 'Quantidade',
     'col_aufbewahrungsort' => 'Local de armazenamento',
@@ -1015,6 +1018,8 @@ return [
     '2fa_error_generic' => 'Código inválido.',
     '2fa_btn_manage' => 'Gerir autenticação de dois fatores',
     '2fa_change_disabled' => 'A autenticação de dois fatores não pode ser alterada para esta conta. Contacte um administrador.',
+    '2fa_locked' => 'Demasiados códigos incorretos. Tente novamente dentro de %d minutos.',
+    'pwreset_not_configured' => 'A reposição por e-mail não está configurada nesta instalação. Contacte o seu administrador.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Rascunho de %s encontrado.',
     'js_draft_unsaved' => 'Rascunho não guardado de %s',
@@ -1061,6 +1066,7 @@ return [
     'js_pdf_open' => 'Abrir PDF',
     'js_opens_new_tab' => 'Abre num novo separador',
     'js_doc_open' => 'Abrir %s',
+    'js_pdf_document' => 'Documento PDF',
     'js_crop_button' => 'Recortar / rodar',
     'js_crop_title' => 'Recortar e rodar a imagem',
     'js_crop_help' => 'Mova a moldura com o rato ou as setas, + e − para ampliar, R para rodar.',

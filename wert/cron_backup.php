@@ -21,7 +21,9 @@ if (php_sapi_name() !== 'cli') {
     // Kein Ersatzwert: fehlt BACKUP_TOKEN, wird jede HTTP-Anfrage abgewiesen.
     // Bis 4.3.31 galt dann 'changeme_set_in_config' - oeffentlich im Quellcode.
     $backupToken    = defined('BACKUP_TOKEN') ? (string)BACKUP_TOKEN : '';
-    $providedToken  = (string)($_GET['token'] ?? '');
+    // Kopfzeile bevorzugt (OWASP-A01-003, 4.5.2); ?token= bleibt fuer
+    // Cron-Dienste, die keine eigenen Kopfzeilen senden koennen.
+    $providedToken  = (string)($_SERVER['HTTP_X_VALUSAFE_TOKEN'] ?? $_GET['token'] ?? '');
     if ($backupToken === '' || !hash_equals($backupToken, $providedToken)) {
         header('HTTP/1.1 403 Forbidden');
         die('Access Denied');

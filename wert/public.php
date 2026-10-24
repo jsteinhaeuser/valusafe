@@ -468,7 +468,7 @@ try {
 
 <!-- FOOTER -->
 <footer class="pub-footer">
-    Erstellt mit <a href="https://palindrom.de/valusafe/" target="_blank" rel="noopener">Wertsachen-Inventarverwaltung</a>
+    Erstellt mit <a href="https://palindrom.de/valusafe/" target="_blank" rel="noopener">ValuSafe</a>
 </footer>
 
 <!-- LIGHTBOX -->

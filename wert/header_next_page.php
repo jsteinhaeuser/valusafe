@@ -43,6 +43,15 @@ if (!function_exists('esc')) {
 
 $_appName   = defined('APP_NAME') ? APP_NAME : 'ValuSafe';
 $_pageTitle = defined('PAGE_TITLE') ? PAGE_TITLE : ($_pageTitle ?? $_appName);
+// Die Seiten haengen den Programmnamen selbst an (" - " . t('app_title')), der
+// <title> unten nochmals - und die Kopfzeile zeigte ihn mit. Einmal abschneiden
+// (Valu-Basic 2.3 / ValuSafe 4.5.2; vorher stand dort der alte Name
+// "Wertsachen-Inventarverwaltung" und fiel nicht als doppelt auf).
+// Auch t('app_title'): eine Instanz mit eigenem APP_NAME hat sonst
+// "Dashboard - ValuSafe — Eigener Name".
+foreach (array_unique([$_appName, function_exists('t') ? t('app_title') : $_appName]) as $_vsName) {
+    $_pageTitle = preg_replace('/\s+-\s+' . preg_quote($_vsName, '/') . '$/u', '', $_pageTitle);
+}
 $_username  = $_SESSION['username'] ?? '';
 
 // Theme laden — wie klassisches header.php

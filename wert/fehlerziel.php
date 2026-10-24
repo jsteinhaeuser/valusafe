@@ -55,7 +55,8 @@ if (!function_exists('fehlerzielEinrichten')) {
 
         // Nicht unbegrenzt wachsen lassen: eine Vorgaengerdatei genuegt.
         if (is_file($datei) && filesize($datei) > $maxBytes) {
-            $stand['rotiert'] = @rename($datei, $datei . '.1');
+            // .1.log statt .log.1 (OWASP-A01-004): sonst greift die .log-Sperre nicht
+            $stand['rotiert'] = @rename($datei, preg_replace('/\.log$/', '.1.log', $datei));
         }
 
         $schreibbar = is_file($datei) ? is_writable($datei) : is_writable($verz);

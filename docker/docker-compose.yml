@@ -23,6 +23,9 @@ services:
       # APP_NAME stand bisher in der .env.example, wurde aber nie
       # durchgereicht — die Einstellung war wirkungslos.
       APP_NAME: ${APP_NAME:-ValuSafe}
+      # Adresse fuer Links in Mails (Passwort-Reset). Leer: Reset abgeschaltet,
+      # weil der Link sonst aus dem Host-Header der Anfrage kaeme.
+      APP_URL: ${APP_URL:-}
       # Administratorkonto. Wird nur beim ersten Start angelegt, wenn die
       # users-Tabelle leer ist. Bleibt ADMIN_PASS leer, erzeugt der Entrypoint
       # ein Zufallspasswort und schreibt es einmalig ins Container-Log.

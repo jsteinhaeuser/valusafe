@@ -29,7 +29,7 @@ if (!isSuperAdmin() && !getSuperAdminSetting('sa_restore_allowed', true)) {
     exit;
 }
 
-define('PAGE_TITLE', 'Restore - Wertsachen-Inventar');
+define('PAGE_TITLE', 'Restore - ValuSafe');
 
 $message = '';
 $error   = '';

@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 17. Oktober 2026 · Version 4.5.1 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 24. Oktober 2026 · Version 4.5.2 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -192,7 +192,7 @@ Der eigentlich interessante Teil. Elf produktive Installationen bei drei verschi
 
 **`version_agent.php`** liefert MD5, Größe und mtime aller Dateien mit einer von neun Endungen (`.php`, `.js`, `.css`, `.html`, `.md`, `.json`, `.xml`, `.svg`, `.pdf`) als JSON; Inhaltsverzeichnisse wie `upload/` und `vendor/` bleiben außen vor. Dateien, die auf einer Instanz bewusst abweichen, stehen in `VERSION_OVERRIDES` in deren `config.php`. Er ist die einzige Flottendatei im veröffentlichten Repository; Sync-Agent und Hub gehören nicht dazu.
 
-**`sync_agent.php`** ist der Arbeitspferd-Endpunkt: `ping`, `list_files`, `read_file`, `write_file`, `delete_file` für den Code-Sync, dazu `status`, `export`, `import` für die Datenbank und `image`/`upload` für Bilder. Er kennt zwei getrennte Tokens — eines für Datei-, eines für Datenbankoperationen.
+**`sync_agent.php`** ist der Arbeitspferd-Endpunkt: `ping`, `list_files`, `read_file`, `write_file`, `delete_file` für den Code-Sync, dazu `status`, `export`, `import` für die Datenbank und `image`/`upload` für Bilder. Er kennt zwei getrennte Tokens — eines für Datei-, eines für Datenbankoperationen. Seit 4.5.2 nimmt jede Aktion nur noch ihr eigenes Token an (vorher genügte jedes der beiden für alles), die Datei-Aktionen lassen `upload/`, `documents/`, `backups/` und `logs/` unberührt, und schreibende Vorgänge sowie Abweisungen werden in `logs/sync_agent.log` festgehalten.
 
 **Ablauf einer Code-Verteilung:** `file_sync.php` holt die Dateiliste des Masters, vergleicht sie mit der Zielinstanz, holt geänderte Dateien per `read_file` vom Master und schreibt sie per `write_file` auf das Ziel. Nach dem Schreiben wird die MD5 gegengeprüft — eine Datei gilt nur als übertragen, wenn sie übereinstimmt.
 
@@ -267,4 +267,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 17. Oktober 2026, Version 4.5.1. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 24. Oktober 2026, Version 4.5.2. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

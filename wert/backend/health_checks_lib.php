@@ -381,20 +381,24 @@ function hc_run_check_roh(string $checkId, string $baseUrl): array {
                 'detail' => $ok ? 'Security-Header vorhanden ✓' : '⚠️ Fehlt: ' . implode(', ', $missing)];
 
         case 'backup_files_exposed':
+            // Seit 4.5.2 (OWASP-A01-001/-004): Die echten Sicherungen heissen
+            // files_/php_<Zeitstempel>.zip und lassen sich nicht erraten - die
+            // alte Suche nach backup.sql u. a. haette den Fund nie bemerkt.
+            // Geprueft wird deshalb die Sperre selbst: eine nicht vorhandene
+            // Datei muss 403 liefern (Sperre greift), nicht 404 (Ordner offen).
             $rDir = hc_do_curl($baseUrl . '/backups/');
             $dirListing = $rDir['code'] === 200 && stripos($rDir['body'], 'Index of') !== false;
-            $guessPaths = ['/backups/backup.sql', '/backups/database.sql', '/backups/dump.sql', '/backup.sql', '/db_backup.sql'];
-            $foundFile = null;
             $msSum = $rDir['ms'];
-            foreach ($guessPaths as $p) {
-                $rg = hc_do_curl($baseUrl . $p);
-                $msSum += $rg['ms'];
-                if ($rg['code'] === 200 && strlen($rg['body']) > 0) { $foundFile = $p; break; }
+            $offen = [];
+            foreach (['/backups/', '/logs/'] as $ordner) {
+                $rp = hc_do_curl($baseUrl . $ordner . 'hc_sperrprobe_' . bin2hex(random_bytes(4)) . '.zip');
+                $msSum += $rp['ms'];
+                if ($rp['code'] !== 403) { $offen[] = $ordner . ' (HTTP ' . $rp['code'] . ')'; }
             }
-            $ok = !$dirListing && !$foundFile;
+            $ok = !$dirListing && empty($offen);
             return ['ok' => $ok, 'ms' => $msSum,
-                'detail' => $ok ? 'Backup-Verzeichnis geschützt ✓'
-                    : ($dirListing ? '⚠️ /backups/ listet Dateien öffentlich auf!' : '⚠️ Backup-Datei öffentlich erreichbar: ' . $foundFile)];
+                'detail' => $ok ? 'backups/ und logs/ gesperrt ✓'
+                    : ($dirListing ? '⚠️ /backups/ listet Dateien öffentlich auf!' : '⚠️ Nicht gesperrt: ' . implode(', ', $offen))];
 
         case 'diagnostic_files_exposed':
             $paths = ['/phpinfo.php', '/info.php', '/test.php', '/diagnose.php'];

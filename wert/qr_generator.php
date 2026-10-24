@@ -311,7 +311,12 @@ if (!empty($selectedIds)) {
 }
 
 $categories = $pdo->query("SELECT id, name FROM kategorien ORDER BY name")->fetchAll(PDO::FETCH_ASSOC);
-$baseUrl = 'https://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
+// Feste Adresse aus config.php bevorzugt (seit 4.5.2, OWASP-A07-002);
+// ohne APP_URL wie bisher aus der Anfrage - die Etiketten druckt der
+// angemeldete Benutzer fuer sich selbst.
+$baseUrl = defined('APP_URL')
+    ? rtrim((string)APP_URL, '/')
+    : 'https://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 
 // QR-Codes vorberechnen (serverseitig)
 $qrData = [];

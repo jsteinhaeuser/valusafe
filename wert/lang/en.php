@@ -33,7 +33,7 @@ return [
     // ============================================================================
     // GENERAL
     // ============================================================================
-    'app_title' => 'Valuables Inventory Management',
+    'app_title' => 'ValuSafe',
     'logged_in_as' => 'Logged in as',
     'session_expires_in' => 'Session expires in',
     
@@ -376,7 +376,7 @@ return [
     // LOGIN
     // ============================================================================
     'login_title' => 'Login',
-    'login_app_name' => 'Valuables Inventory Management',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Username',
     'login_password' => 'Password',
     'login_button' => 'Sign In',
@@ -414,7 +414,7 @@ return [
     'export_notes' => 'Notes',
     'export_total_value' => 'Total value of all items',
     'export_based_on' => 'Based on',
-    'export_footer' => 'Created with Valuables Inventory Management',
+    'export_footer' => 'Created with ValuSafe',
     
     // CSV Export
     'csv_header_id' => 'ID',
@@ -450,7 +450,7 @@ return [
     // ============================================================================
     // HEADER & NAVIGATION
     // ============================================================================
-    'header_app_title' => 'Valuables Inventory Management',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'My Valuables',
     'header_keyboard_shortcuts' => 'Keyboard Shortcuts',
     'header_shortcuts_new' => 'New Entry',
@@ -871,6 +871,9 @@ return [
     'readiness_price'           => 'Price',
     'readiness_purchase_date'   => 'Purchase date',
     'readiness_perfect_msg'     => 'Fully documented — perfectly prepared for a claim!',
+    'readiness_medium_msg' => 'Fair — some fields are still missing.',
+    'readiness_low_msg' => 'Please add photos, prices and purchase dates.',
+    'readiness_complete_link' => 'Complete your inventory',
 
     // Next-Interface — Bild 3: Versicherungsübersicht
     'insurance_overview'        => 'Insurance overview',
@@ -1175,6 +1178,8 @@ return [
     '2fa_error_generic' => 'Code invalid.',
     '2fa_btn_manage' => 'Manage two-factor',
     '2fa_change_disabled' => 'Two-factor authentication cannot be changed for this account. Please contact an administrator.',
+    '2fa_locked' => 'Too many incorrect codes. Please try again in %d minutes.',
+    'pwreset_not_configured' => 'Resetting by e-mail is not set up on this installation. Please contact your administrator.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Draft from %s found.',
     'js_draft_unsaved' => 'Unsaved draft from %s',
@@ -1221,6 +1226,7 @@ return [
     'js_pdf_open' => 'Open PDF',
     'js_opens_new_tab' => 'Opens in a new tab',
     'js_doc_open' => 'Open %s',
+    'js_pdf_document' => 'PDF document',
     'js_crop_button' => 'Crop / rotate',
     'js_crop_title' => 'Crop and rotate image',
     'js_crop_help' => 'Move the frame with the mouse or the arrow keys, + and − to zoom, R to rotate.',

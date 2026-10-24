@@ -58,6 +58,7 @@ $konstanten = [
     'APP_LANG'              => 'Vorgabesprache',
     'BACKUP_RETENTION_DAYS' => 'Aufbewahrung der Sicherungen',
     'SUPERADMIN_USERNAME'   => 'Name des Superadministrators',
+    'APP_URL'               => 'Adresse fuer Links in Mails (Passwort-Reset); fehlt sie, ist der Reset aus',
     'BACKUP_TOKEN'          => 'fuer cron_backup.php (Wert bleibt verborgen)',
     'TOOLS_TOKEN'           => 'fuer version_agent und schema_agent (Wert bleibt verborgen)',
     'FILE_SYNC_TOKEN'       => 'fuer sync_agent.php (Wert bleibt verborgen)',

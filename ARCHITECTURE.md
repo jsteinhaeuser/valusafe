@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 17 October 2026 · Version 4.5.1 (all sections checked against the source before publication)
+**As of:** 24 October 2026 · Version 4.5.2 (all sections checked against the source before publication)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -192,7 +192,7 @@ The genuinely interesting part. Eleven production installations across three hos
 
 **`version_agent.php`** returns MD5, size and mtime of every file with one of nine extensions (`.php`, `.js`, `.css`, `.html`, `.md`, `.json`, `.xml`, `.svg`, `.pdf`) as JSON; content directories such as `upload/` and `vendor/` are skipped. Files meant to differ on one instance are listed in `VERSION_OVERRIDES` in that instance's `config.php`. It is the only fleet file in the published repository; the sync agent and the hub are not.
 
-**`sync_agent.php`** is the workhorse endpoint: `ping`, `list_files`, `read_file`, `write_file`, `delete_file` for code sync, plus `status`, `export`, `import` for the database and `image`/`upload` for pictures. It recognises two separate tokens — one for file operations, one for database operations.
+**`sync_agent.php`** is the workhorse endpoint: `ping`, `list_files`, `read_file`, `write_file`, `delete_file` for code sync, plus `status`, `export`, `import` for the database and `image`/`upload` for pictures. It recognises two separate tokens — one for file operations, one for database operations. Since 4.5.2 each action accepts only its own token (previously either one was enough for everything), the file actions leave `upload/`, `documents/`, `backups/` and `logs/` alone, and write operations and rejections are recorded in `logs/sync_agent.log`.
 
 **How a code deployment runs:** `file_sync.php` fetches the master's file list, compares it against the target instance, pulls changed files from the master via `read_file` and writes them to the target via `write_file`. After writing, the MD5 is verified — a file counts as transferred only if it matches.
 
@@ -270,4 +270,4 @@ For a critical eye, the most rewarding read is `helpers.php` (1,516 lines, grown
 
 ---
 
-*This document describes the state as of 17 October 2026, version 4.5.1. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 24 October 2026, version 4.5.2. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

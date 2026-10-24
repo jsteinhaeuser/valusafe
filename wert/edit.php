@@ -673,7 +673,7 @@ include 'header_next_page.php';
 
         const data = new FormData();
         data.append('item_id',   '<?php echo $id; ?>');
-        data.append('name',      document.getElementById('name')?.value || '<?php echo addslashes($item['name'] ?? ''); ?>');
+        data.append('name',      document.getElementById('name')?.value || <?php echo json_encode((string)($item['name'] ?? ''), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT); ?>);
         data.append('kategorie', document.querySelector('[name="kategorie_id"] option:checked')?.text || '');
         data.append('preis',     document.querySelector('[name="preis"]')?.value || '<?php echo $item['preis'] ?? ''; ?>');
         data.append('barcode',   document.querySelector('[name="barcode"]')?.value || '');

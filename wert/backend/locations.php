@@ -336,8 +336,8 @@ include 'layout/header_next_page.php';
                 <td><?php if ($r['usage_count'] > 0): ?><span class="badge badge-success"><?php echo $r['usage_count']; ?> <?php echo t('loc_items_count'); ?></span><?php else: ?><span class="badge badge-secondary"><?php echo t('loc_not_used'); ?></span><?php endif; ?></td>
                 <td><?php if ($r['total_value'] > 0): ?><strong style="color:var(--vs-success);"><?php echo formatPrice($r['total_value']); ?></strong><?php else: ?><span style="color:#999;">—</span><?php endif; ?></td>
                 <td>
-                    <button onclick='editRaum(<?php echo json_encode(['id'=>$r['id'],'name'=>$r['name']]); ?>)' class="vs-btn vs-btn-sm" style="padding:8px 10px; font-size:16px;"><i class="ti ti-pencil"></i></button>
-                    <button onclick="deleteItem('raum', <?php echo $r['id']; ?>, '<?php echo htmlspecialchars($r['name'], ENT_QUOTES); ?>', <?php echo $r['usage_count']; ?>)" class="vs-btn vs-btn-sm vs-btn-danger" style="padding:8px 10px; font-size:16px;"><i class="ti ti-trash"></i></button>
+                    <button onclick='editRaum(<?php echo json_encode(['id'=>$r['id'],'name'=>$r['name']], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP); ?>)' class="vs-btn vs-btn-sm" aria-label="<?php echo t('btn_edit'); ?>" style="padding:8px 10px; font-size:16px;"><i class="ti ti-pencil"></i></button>
+                    <button onclick="deleteItem('raum', <?php echo $r['id']; ?>, <?php echo htmlspecialchars(json_encode($r['name'], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP), ENT_QUOTES); ?>, <?php echo $r['usage_count']; ?>)" class="vs-btn vs-btn-sm vs-btn-danger" aria-label="<?php echo t('btn_delete'); ?>" style="padding:8px 10px; font-size:16px;"><i class="ti ti-trash"></i></button>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -365,8 +365,8 @@ include 'layout/header_next_page.php';
                 <td><strong><?php echo htmlspecialchars($s['name']); ?></strong></td>
                 <td><?php if ($s['position_count'] > 0): ?><span class="badge badge-success"><?php echo $s['position_count']; ?> <?php echo t('loc_positions_label'); ?></span><?php else: ?><span class="badge badge-secondary"><?php echo t('loc_none'); ?></span><?php endif; ?></td>
                 <td>
-                    <button onclick='editStandort(<?php echo json_encode(['id'=>$s['id'],'name'=>$s['name']]); ?>)' class="vs-btn vs-btn-sm" style="padding:8px 10px; font-size:16px;"><i class="ti ti-pencil"></i></button>
-                    <button onclick="deleteItem('standort', <?php echo $s['id']; ?>, '<?php echo htmlspecialchars($s['name'], ENT_QUOTES); ?>', <?php echo $s['position_count']; ?>)" class="vs-btn vs-btn-sm vs-btn-danger" style="padding:8px 10px; font-size:16px;"><i class="ti ti-trash"></i></button>
+                    <button onclick='editStandort(<?php echo json_encode(['id'=>$s['id'],'name'=>$s['name']], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP); ?>)' class="vs-btn vs-btn-sm" aria-label="<?php echo t('btn_edit'); ?>" style="padding:8px 10px; font-size:16px;"><i class="ti ti-pencil"></i></button>
+                    <button onclick="deleteItem('standort', <?php echo $s['id']; ?>, <?php echo htmlspecialchars(json_encode($s['name'], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP), ENT_QUOTES); ?>, <?php echo $s['position_count']; ?>)" class="vs-btn vs-btn-sm vs-btn-danger" aria-label="<?php echo t('btn_delete'); ?>" style="padding:8px 10px; font-size:16px;"><i class="ti ti-trash"></i></button>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -396,8 +396,8 @@ include 'layout/header_next_page.php';
                 <td style="color:#888; font-size:13px;"><?php echo htmlspecialchars($p['beschreibung'] ?? '—'); ?></td>
                 <td><?php if ($p['usage_count'] > 0): ?><span class="badge badge-success"><?php echo $p['usage_count']; ?> <?php echo t('loc_items_count'); ?></span><?php else: ?><span class="badge badge-secondary"><?php echo t('loc_not_used'); ?></span><?php endif; ?></td>
                 <td>
-                    <button onclick='editPosition(<?php echo json_encode(['id'=>$p['id'],'standort_id'=>$p['raum_id'],'name'=>$p['name'],'beschreibung'=>$p['beschreibung']]); ?>)' class="vs-btn vs-btn-sm" style="padding:8px 10px; font-size:16px;"><i class="ti ti-pencil"></i></button>
-                    <button onclick="deleteItem('position', <?php echo $p['id']; ?>, '<?php echo htmlspecialchars($p['name'], ENT_QUOTES); ?>', <?php echo $p['usage_count']; ?>)" class="vs-btn vs-btn-sm vs-btn-danger" style="padding:8px 10px; font-size:16px;"><i class="ti ti-trash"></i></button>
+                    <button onclick='editPosition(<?php echo json_encode(['id'=>$p['id'],'standort_id'=>$p['raum_id'],'name'=>$p['name'],'beschreibung'=>$p['beschreibung']], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP); ?>)' class="vs-btn vs-btn-sm" aria-label="<?php echo t('btn_edit'); ?>" style="padding:8px 10px; font-size:16px;"><i class="ti ti-pencil"></i></button>
+                    <button onclick="deleteItem('position', <?php echo $p['id']; ?>, <?php echo htmlspecialchars(json_encode($p['name'], JSON_HEX_TAG|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_HEX_AMP), ENT_QUOTES); ?>, <?php echo $p['usage_count']; ?>)" class="vs-btn vs-btn-sm vs-btn-danger" aria-label="<?php echo t('btn_delete'); ?>" style="padding:8px 10px; font-size:16px;"><i class="ti ti-trash"></i></button>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -410,9 +410,9 @@ include 'layout/header_next_page.php';
 </main>
 
 <!-- ── Modal: Neuer Raum ──────────────────────────────────────────────────── -->
-<div id="addRaumModal" class="modal">
+<div id="addRaumModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="addRaumModal_titel">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-plus"></i><?php echo t('loc_new_room'); ?></h3><span class="modal-close" onclick="closeModal('addRaumModal')">&times;</span></div>
+        <div class="modal-header"><h3 id="addRaumModal_titel"><i class="ti ti-plus"></i><?php echo t('loc_new_room'); ?></h3><button type="button" class="modal-close" aria-label="<?php echo t('btn_close'); ?>" onclick="closeModal('addRaumModal')">&times;</button></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="add_raum">
@@ -450,9 +450,9 @@ include 'layout/header_next_page.php';
 </div>
 
 <!-- ── Modal: Raum bearbeiten ─────────────────────────────────────────────── -->
-<div id="editRaumModal" class="modal">
+<div id="editRaumModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editRaumModal_titel">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-pencil"></i> <?php echo t('lc_edit_room'); ?></h3><span class="modal-close" onclick="closeModal('editRaumModal')">&times;</span></div>
+        <div class="modal-header"><h3 id="editRaumModal_titel"><i class="ti ti-pencil"></i> <?php echo t('lc_edit_room'); ?></h3><button type="button" class="modal-close" aria-label="<?php echo t('btn_close'); ?>" onclick="closeModal('editRaumModal')">&times;</button></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="edit_raum">
@@ -465,9 +465,9 @@ include 'layout/header_next_page.php';
 </div>
 
 <!-- ── Modal: Neuer Standort ─────────────────────────────────────────────── -->
-<div id="addStandortModal" class="modal">
+<div id="addStandortModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="addStandortModal_titel">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-plus"></i><?php echo t('loc_new_location'); ?></h3><span class="modal-close" onclick="closeModal('addStandortModal')">&times;</span></div>
+        <div class="modal-header"><h3 id="addStandortModal_titel"><i class="ti ti-plus"></i><?php echo t('loc_new_location'); ?></h3><button type="button" class="modal-close" aria-label="<?php echo t('btn_close'); ?>" onclick="closeModal('addStandortModal')">&times;</button></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="add_standort">
@@ -479,9 +479,9 @@ include 'layout/header_next_page.php';
 </div>
 
 <!-- ── Modal: Standort bearbeiten ────────────────────────────────────────── -->
-<div id="editStandortModal" class="modal">
+<div id="editStandortModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editStandortModal_titel">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-pencil"></i> <?php echo t('lc_edit_loc'); ?></h3><span class="modal-close" onclick="closeModal('editStandortModal')">&times;</span></div>
+        <div class="modal-header"><h3 id="editStandortModal_titel"><i class="ti ti-pencil"></i> <?php echo t('lc_edit_loc'); ?></h3><button type="button" class="modal-close" aria-label="<?php echo t('btn_close'); ?>" onclick="closeModal('editStandortModal')">&times;</button></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="edit_standort">
@@ -494,9 +494,9 @@ include 'layout/header_next_page.php';
 </div>
 
 <!-- ── Modal: Neue Position ───────────────────────────────────────────────── -->
-<div id="addPositionModal" class="modal">
+<div id="addPositionModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="addPositionModal_titel">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-plus"></i><?php echo t('loc_new_position'); ?></h3><span class="modal-close" onclick="closeModal('addPositionModal')">&times;</span></div>
+        <div class="modal-header"><h3 id="addPositionModal_titel"><i class="ti ti-plus"></i><?php echo t('loc_new_position'); ?></h3><button type="button" class="modal-close" aria-label="<?php echo t('btn_close'); ?>" onclick="closeModal('addPositionModal')">&times;</button></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="add_position">
@@ -518,9 +518,9 @@ include 'layout/header_next_page.php';
 </div>
 
 <!-- ── Modal: Position bearbeiten ────────────────────────────────────────── -->
-<div id="editPositionModal" class="modal">
+<div id="editPositionModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editPositionModal_titel">
     <div class="modal-content">
-        <div class="modal-header"><h3><i class="ti ti-pencil"></i> <?php echo t('lc_edit_pos'); ?></h3><span class="modal-close" onclick="closeModal('editPositionModal')">&times;</span></div>
+        <div class="modal-header"><h3 id="editPositionModal_titel"><i class="ti ti-pencil"></i> <?php echo t('lc_edit_pos'); ?></h3><button type="button" class="modal-close" aria-label="<?php echo t('btn_close'); ?>" onclick="closeModal('editPositionModal')">&times;</button></div>
         <form method="POST" class="modal-body">
             <?php echo Security::getCSRFInput(); ?>
             <input type="hidden" name="action" value="edit_position">
@@ -547,7 +547,7 @@ include 'layout/header_next_page.php';
 <form id="deletePositionForm" method="POST" style="display:none;"><?php echo Security::getCSRFInput(); ?><input type="hidden" name="action" value="delete_position"><input type="hidden" name="tab" value="positionen"><input type="hidden" name="id" id="del_position_id"></form>
 
 <!-- ── Bestätigungs-Modal ─────────────────────────────────────────────────── -->
-<div id="confirmModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+<div id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmName" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center; padding:20px;">
     <div style="background:var(--vs-surface); border-radius:16px; padding:28px; max-width:360px; width:100%; box-shadow:0 16px 48px rgba(0,0,0,0.2); text-align:center;">
         <div style="font-size:36px; margin-bottom:12px;"><i class="ti ti-trash"></i></div>
         <h3 style="margin:0 0 8px;" id="confirmTitle"><?php echo t('be_delete_q'); ?></h3>
@@ -580,7 +580,7 @@ include 'layout/header_next_page.php';
 .modal-content { background:var(--vs-surface); border-radius:12px; width:90%; max-width:500px; max-height:90vh; overflow-y:auto; box-shadow:0 10px 40px rgba(0,0,0,0.3); }
 .modal-header { padding:20px 25px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center; }
 .modal-header h3 { margin:0; }
-.modal-close { font-size:28px; cursor:pointer; color:var(--text-muted); line-height:1; }
+.modal-close { font-size:28px; cursor:pointer; color:var(--text-muted); line-height:1; background:none; border:0; padding:0 6px; border-radius:6px; }
 .modal-body { padding:25px; }
 .modal-footer { padding:15px 25px; border-top:1px solid var(--border-color); display:flex; justify-content:flex-end; gap:10px; }
 .form-group { margin-bottom:20px; }
@@ -590,7 +590,15 @@ include 'layout/header_next_page.php';
 </style>
 
 <script>
-function showModal(id)  { document.getElementById(id).classList.add('active'); }
+// Dialoge per Tastatur (4.5.2, wie Valu-Basic 2.4): Fokus hinein, Esc schliesst, Fokus zurueck
+var vsModalAusloeser = null;
+function showModal(id) {
+    var m = document.getElementById(id);
+    vsModalAusloeser = document.activeElement;
+    m.classList.add('active');
+    var ziel = m.querySelector('input:not([type=hidden]), select, textarea') || m.querySelector('button');
+    if (ziel) ziel.focus();
+}
 function toggleOptional(btn) {
     var fields = document.getElementById('optionalFields');
     var icon   = document.getElementById('optionalIcon');
@@ -598,8 +606,18 @@ function toggleOptional(btn) {
     fields.style.display = open ? 'block' : 'none';
     icon.className = open ? 'ti ti-minus' : 'ti ti-plus';
 }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-function closeConfirm() { document.getElementById('confirmModal').style.display = 'none'; }
+function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+    vsFokusZurueck();
+}
+function closeConfirm() {
+    document.getElementById('confirmModal').style.display = 'none';
+    vsFokusZurueck();
+}
+function vsFokusZurueck() {
+    if (vsModalAusloeser && document.body.contains(vsModalAusloeser)) vsModalAusloeser.focus();
+    vsModalAusloeser = null;
+}
 
 function editRaum(r) {
     document.getElementById('edit_raum_id').value   = r.id;
@@ -631,12 +649,20 @@ function deleteItem(type, id, name, count) {
         document.getElementById(ids[type]).value = id;
         document.getElementById(forms[type]).submit();
     };
+    vsModalAusloeser = document.activeElement;
     document.getElementById('confirmModal').style.display = 'flex';
+    document.querySelector('#confirmModal button').focus();
 }
 
 window.addEventListener('click', function(e) {
-    if (e.target.classList.contains('modal')) e.target.classList.remove('active');
+    if (e.target.classList.contains('modal')) closeModal(e.target.id);
     if (e.target.id === 'confirmModal') closeConfirm();
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    var offen = document.querySelector('.modal.active');
+    if (offen) closeModal(offen.id);
+    else if (document.getElementById('confirmModal').style.display === 'flex') closeConfirm();
 });
 </script>
 

@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 17.10.2026 09:59 von bin/changelog_export.php.
+ * Erzeugt am 24.10.2026 17:01 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,78 @@
  */
 
 return [
+    [
+        'version' => '4.5.2',
+        'date' => '2026-10-24',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Zwei-Faktor-Anmeldung: Der Code aus der Authenticator-App lässt sich nicht mehr beliebig oft durchprobieren. Nach 5 falschen Codes von einem Gerät ist die Eingabe 15 Minuten gesperrt, nach 10 falschen Codes für ein Konto innerhalb von 24 Stunden eine Stunde lang – auch von anderen Geräten aus. Ein Code gilt nur noch 30 Sekunden vor und nach seinem Zeitfenster.',
+                'text_en' => 'Security, two-factor sign-in: the code from the authenticator app can no longer be guessed an unlimited number of times. After 5 wrong codes from one device, entry is blocked for 15 minutes; after 10 wrong codes for one account within 24 hours, for one hour – from any device. A code is now only accepted 30 seconds before and after its time step.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Buchcover: Die Cover-Abfrage für Bücher (ISBN) gibt nur noch echte Bilder (JPEG, PNG, GIF, WebP) weiter. Bisher konnte eine präparierte Datei von einer der erlaubten Bildquellen als Seite unter der Adresse von ValuSafe erscheinen.',
+                'text_en' => 'Security, book covers: the cover lookup for books (ISBN) now only passes on real images (JPEG, PNG, GIF, WebP). Previously a crafted file from one of the permitted image sources could appear as a page under the ValuSafe address.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Belege: Ein Beleg lässt sich nur noch über den Löschen-Knopf entfernen. Bisher genügte ein präparierter Link, den ein angemeldeter Benutzer anklickt.',
+                'text_en' => 'Security, receipts: a receipt can now only be removed with the delete button. Previously a crafted link clicked by a signed-in user was enough.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Installationspaket: Die Ordner für Sicherungen (backups) und Protokolle (logs) bringen jetzt eine Sperre mit, die den Abruf über das Web verhindert – auch im Docker-Betrieb. Der Gesundheitscheck prüft diese Sperre direkt.',
+                'text_en' => 'Security, installation package: the folders for backups and logs now ship with a lock that prevents access via the web – in Docker as well. The health check tests this lock directly.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Passwort vergessen: Der Link in der Mail zum Zurücksetzen des Passworts verwendet jetzt eine fest eingestellte Adresse (APP_URL in config.php). Bisher kam sie aus der Anfrage, und ein Angreifer konnte einen Link auf seinen eigenen Server in die echte Mail schmuggeln. Ohne APP_URL bietet die Seite das Zurücksetzen per Mail nicht an. Der Setup-Assistent trägt die Adresse bei neuen Installationen ein; bei Docker steht sie in der .env.',
+                'text_en' => 'Security, forgotten password: the link in the password reset e-mail now uses a fixed address (APP_URL in config.php). Previously it was taken from the request, so an attacker could slip a link to their own server into the genuine e-mail. Without APP_URL the page does not offer resetting by e-mail. The setup wizard enters the address on new installations; with Docker it is set in the .env file.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Raumverwaltung: Räume, Standorte und Positionen mit Apostroph im Namen (z. B. „Kinder\'s Zimmer“) lassen sich wieder löschen – der Papierkorb-Knopf tat bei solchen Namen nichts. Die Fenster lassen sich per Tastatur bedienen: Der Fokus springt beim Öffnen ins erste Feld, Esc schließt, danach steht der Fokus wieder auf dem auslösenden Knopf. Schließen-, Bearbeiten- und Löschen-Knöpfe werden von Bildschirmlesern benannt.',
+                'text_en' => 'Room management: rooms, locations and positions with an apostrophe in their name (e.g. "Children\'s room") can be deleted again – the bin button did nothing for such names. The dialogs can be used with the keyboard: focus moves to the first field on opening, Esc closes, and focus then returns to the button that opened it. Close, edit and delete buttons are named for screen readers.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Rückfragen vor dem Löschen: Der Knopf „Abbrechen“ hat jetzt den Fokus. Ein versehentlich gedrücktes Enter bricht ab, statt einen Gegenstand, Beleg oder eine Sicherung zu löschen.',
+                'text_en' => 'Confirmation before deleting: the Cancel button now has the focus. Pressing Enter by mistake cancels instead of deleting an item, receipt or backup.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Übersetzungen: Die Hinweise zur Schadenfall-Bereitschaft im Dashboard („Inventar vervollständigen“ und zwei weitere) und „PDF-Dokument“ im Hilfefenster waren in jeder Sprache deutsch. Sie erscheinen jetzt in allen zehn Sprachen.',
+                'text_en' => 'Translations: the claim-readiness hints on the dashboard ("Complete your inventory" and two more) and "PDF document" in the help window were German in every language. They now appear in all ten languages.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Programmname: Seitentitel, PDF-Exporte, Versicherungs-Export und die öffentliche Ansicht nennen jetzt „ValuSafe“ statt des alten Namens „Wertsachen-Inventarverwaltung“.',
+                'text_en' => 'Product name: page titles, PDF exports, the insurance export and the public view now say "ValuSafe" instead of the old name "Wertsachen-Inventarverwaltung".'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Handbücher auf Stand 4.5: Benutzerhandbuch, Erweitertes Handbuch und Facts & Features beschreiben jetzt Schadensfall-Assistent, Seriennummer, Zuschneiden und Drehen, Fotos und Belege als ZIP, Zwei-Faktor-Anmeldung für alle, die neu gegliederten Einstellungen, zehn Sprachen und die Datenübernahme aus einer früheren Version. Der Abschnitt Barrierefreiheit beschreibt ehrlich den heutigen Stand – volle WCAG 2.1 AA ist für Version 5.0 geplant.',
+                'text_en' => 'Manuals updated to 4.5: the user manual, the extended manual and Facts & Features now cover the claims assistant, serial numbers, cropping and rotating, photos and receipts as a ZIP, two-factor sign-in for everyone, the reorganised settings, ten languages and data takeover from an earlier version. The accessibility section now describes the current state honestly – full WCAG 2.1 AA is planned for version 5.0.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Farbschema Midnight: Die Fläche zum Hochladen von Bildern beim Bearbeiten war fest weiß, die helle Schrift darauf kaum lesbar. Im Schema Glass sind die blauen Zahlen der Statistikleiste etwas dunkler und damit besser lesbar.',
+                'text_en' => 'Midnight colour scheme: the image upload area when editing was fixed white, so the light text on it was hard to read. In the Glass scheme the blue figures in the statistics bar are slightly darker and easier to read.'
+            ]
+        ]
+    ],
     [
         'version' => '4.5.1',
         'date' => '2026-10-17',
@@ -141,84 +213,6 @@ return [
                 'public' => true,
                 'text' => 'Barrierefreiheit, Grundrahmen: Jede Seite hat einen Link „Zum Inhalt springen“ (erscheint mit der ersten Tab-Taste) und einen gekennzeichneten Hauptbereich. Alle Bedienelemente zeigen einen deutlichen Rahmen, wenn sie per Tastatur den Fokus haben – das Suchfeld oben und die Formularfelder zeigten bisher keinen.',
                 'text_en' => 'Accessibility, basic framework: every page has a "Skip to content" link (appears with the first Tab key) and a marked main area. All controls show a clear outline when they have keyboard focus – the search field at the top and the form fields showed none until now.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.3.34',
-        'date' => '2026-10-11',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Beim Löschen mehrerer Gegenstände über die Auswahl blieben weitere Fotos der Gegenstände auf dem Server liegen. Sie werden jetzt mit gelöscht.',
-                'text_en' => 'When deleting several items via the selection, additional photos of the items stayed on the server. They are now deleted as well.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Schnellerfassung: Der runde Plus-Knopf lag auf dem Smartphone über dem Preisfeld und führte nur wieder zur Schnellerfassung. Auf den Erfassungsseiten selbst erscheint er nicht mehr.',
-                'text_en' => 'Quick entry: on smartphones the round plus button covered the price field and only led back to quick entry. It no longer appears on the entry pages themselves.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Zwei-Faktor-Anmeldung für alle: Jedes Konto kann die Anmeldung mit Authenticator-App jetzt selbst einrichten (Einstellungen → Zwei-Faktor verwalten). Bisher ging das nur für Administratoren. Wer sein Handy und die Backup-Codes verloren hat, dem setzt der Administrator die Zwei-Faktor-Anmeldung in der Benutzerverwaltung zurück. Auf Demo-Konten lässt sich die Einrichtung zusammen mit „Eigenes Passwort ändern“ abschalten.',
-                'text_en' => 'Two-factor sign-in for everyone: every account can now set up sign-in with an authenticator app itself (Settings → Manage two-factor). Until now only administrators could. If someone has lost their phone and backup codes, the administrator resets two-factor sign-in in user management. On demo accounts the setup can be switched off together with "Change own password".'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Benutzerverwaltung: Beim Bearbeiten eines Kontos konnte die Passwortverwaltung des Browsers das Feld „Neues Passwort“ unbemerkt mit dem eigenen gespeicherten Passwort füllen – beim Speichern bekam das bearbeitete Konto dann dieses Passwort und konnte sich nicht mehr anmelden. Das Feld wird jetzt nicht mehr automatisch ausgefüllt.',
-                'text_en' => 'User management: when editing an account, the browser\'s password manager could silently fill the "New password" field with your own saved password – saving then gave the edited account that password and it could no longer sign in. The field is no longer filled automatically.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Benutzerverwaltung: Der Hinweis bei „Alle Gegenstände sehen“ sagt jetzt, dass er nur wirkt, wenn unter „Öffentlicher Link“ die Einstellung „Benutzer sehen nur eigene Gegenstände“ eingeschaltet ist. Bisher klang es, als genüge das Häkchen allein.',
-                'text_en' => 'User management: the hint at "See all items" now says that it only takes effect when "Users see only their own items" is switched on under "Public link". Until now it sounded as if the checkbox alone was enough.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'QR-Codes: Bei manchen Textlängen erschien kein QR-Code – bei der Einrichtung der Zwei-Faktor-Anmeldung je nach Benutzername, beim öffentlichen Link je nach Adresse der Installation. Ursache ist ein Fehler der eingesetzten QR-Bibliothek; sie weicht jetzt bei Bedarf auf eine andere Fehlerkorrekturstufe aus.',
-                'text_en' => 'QR codes: for some text lengths no QR code appeared – when setting up two-factor sign-in depending on the user name, for the public link depending on the installation\'s address. The cause is a bug in the QR library used; it now falls back to another error correction level when needed.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Öffentlicher Link: Der Hinweis „Erstellt mit …“ unten auf der öffentlichen Seite verwies auf eine Instanz des Entwicklers statt auf die Projektseite palindrom.de/valusafe.',
-                'text_en' => 'Public link: the "Created with …" note at the bottom of the public page pointed to one of the developer\'s instances instead of the project page palindrom.de/valusafe.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Benutzerverwaltung: Die Seite enthielt im Quelltext zu jedem Konto den Passwort-Hash und, falls eingerichtet, das Geheimnis der Zwei-Faktor-Anmeldung samt Backup-Codes. Sichtbar war das nur für den Administrator, der die Seite öffnen darf - es gehört trotzdem nicht in den Browser. Jetzt nur noch die Angaben, die das Bearbeiten-Fenster braucht.',
-                'text_en' => 'User management: the page source contained the password hash of every account and, where set up, the two-factor secret and backup codes. Only the administrator allowed to open the page could see it - it still does not belong in the browser. Now only the data the edit dialog needs.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Übersetzungen: Rund 45 Meldungen im Browser waren in jeder Sprache deutsch – die Bildverwaltung beim Bearbeiten, der Hinweis auf einen gespeicherten Entwurf, die Barcode- und ISBN-Suche und das Hilfe-Fenster. Sie erscheinen jetzt in allen neun Sprachen. Die Seite meldet Bildschirmlesern außerdem die gewählte Sprache statt immer der Sprache der Installation, und die Hilfe im Verwaltungsbereich ist auf Englisch nicht mehr deutsch.',
-                'text_en' => 'Translations: about 45 messages in the browser were German in every language – image management when editing, the notice about a saved draft, barcode and ISBN lookup and the help window. They now appear in all nine languages. The page also tells screen readers the chosen language instead of always the installation language, and the help in the admin area is no longer German when English is selected.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Gegenstand bearbeiten: Nach der Barcode-Suche versprach „Bild übernehmen“, das Cover werde nach dem Speichern übernommen – es ging aber verloren. Jetzt wird es sofort zu den Bildern des Gegenstands hochgeladen.',
-                'text_en' => 'Edit item: after a barcode lookup, "Use image" promised the cover would be added after saving – but it was lost. It is now uploaded to the item\'s images straight away.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit: Die Detailansicht neben der Übersicht übernahm Name, Raum, Seriennummer und Notizen eines Gegenstands ungefiltert in die Seite. Ein Benutzer mit Bearbeitungsrecht konnte so Skriptcode in einen Gegenstandsnamen schreiben, der bei jedem ausgeführt wurde, der die Karte anklickte – auch beim Administrator. Die Werte werden jetzt als Text dargestellt.',
-                'text_en' => 'Security: the detail view next to the overview inserted an item\'s name, room, serial number and notes into the page unfiltered. A user with edit rights could put script code into an item name that ran for anyone clicking the card – including the administrator. The values are now shown as plain text.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Bedienung per Tastatur: Die Karten der Übersicht ließen sich nur mit der Maus öffnen. Jetzt erreicht man sie mit der Tabulatortaste und öffnet die Detailansicht mit Enter; der Fokus springt dabei in die Detailansicht.',
-                'text_en' => 'Keyboard use: the cards in the overview could only be opened with the mouse. They can now be reached with the Tab key and opened with Enter; focus then moves to the detail view.'
             ],
             [
                 'type' => 'feature',

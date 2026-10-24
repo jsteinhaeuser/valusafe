@@ -15,7 +15,7 @@ if (!function_exists('esc')) {
 // Permission prüfen: admin_backup
 requirePermission('admin_backup');
 
-define('PAGE_TITLE', 'Backup Management - Wertsachen-Inventar');
+define('PAGE_TITLE', 'Backup Management - ValuSafe');
 
 // formatBytes() bereits in backend/config.php definiert
 

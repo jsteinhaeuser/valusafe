@@ -10,8 +10,15 @@ class RateLimiter {
     private $lockoutTime = 900;      // Sperre-Zeit in Sekunden (15 Minuten)
     private $attemptWindow = 300;    // Zeitfenster für Versuche (5 Minuten)
     
-    public function __construct($database) {
+    /**
+     * Grenzen je Einsatz (seit 4.5.2): login_2fa.php zaehlt je Konto ueber
+     * 24 h statt je IP ueber 5 Minuten. Ohne Angaben gelten die alten Werte.
+     */
+    public function __construct($database, int $maxAttempts = 5, int $lockoutTime = 900, int $attemptWindow = 300) {
         $this->db = $database;
+        $this->maxAttempts   = $maxAttempts;
+        $this->lockoutTime   = $lockoutTime;
+        $this->attemptWindow = $attemptWindow;
         $this->createTableIfNotExists();
     }
     

@@ -1,8 +1,22 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-17.
+All changes that affect users. Generated from the project history on 2026-10-24.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.5.2 — 2026-10-24
+
+- **Fixed:** Security, two-factor sign-in: the code from the authenticator app can no longer be guessed an unlimited number of times. After 5 wrong codes from one device, entry is blocked for 15 minutes; after 10 wrong codes for one account within 24 hours, for one hour – from any device. A code is now only accepted 30 seconds before and after its time step.
+- **Fixed:** Security, book covers: the cover lookup for books (ISBN) now only passes on real images (JPEG, PNG, GIF, WebP). Previously a crafted file from one of the permitted image sources could appear as a page under the ValuSafe address.
+- **Fixed:** Security, receipts: a receipt can now only be removed with the delete button. Previously a crafted link clicked by a signed-in user was enough.
+- **Fixed:** Security, installation package: the folders for backups and logs now ship with a lock that prevents access via the web – in Docker as well. The health check tests this lock directly.
+- **Fixed:** Security, forgotten password: the link in the password reset e-mail now uses a fixed address (APP_URL in config.php). Previously it was taken from the request, so an attacker could slip a link to their own server into the genuine e-mail. Without APP_URL the page does not offer resetting by e-mail. The setup wizard enters the address on new installations; with Docker it is set in the .env file.
+- **Fixed:** Room management: rooms, locations and positions with an apostrophe in their name (e.g. "Children's room") can be deleted again – the bin button did nothing for such names. The dialogs can be used with the keyboard: focus moves to the first field on opening, Esc closes, and focus then returns to the button that opened it. Close, edit and delete buttons are named for screen readers.
+- **Fixed:** Confirmation before deleting: the Cancel button now has the focus. Pressing Enter by mistake cancels instead of deleting an item, receipt or backup.
+- **Fixed:** Translations: the claim-readiness hints on the dashboard ("Complete your inventory" and two more) and "PDF document" in the help window were German in every language. They now appear in all ten languages.
+- **Fixed:** Product name: page titles, PDF exports, the insurance export and the public view now say "ValuSafe" instead of the old name "Wertsachen-Inventarverwaltung".
+- **Fixed:** Manuals updated to 4.5: the user manual, the extended manual and Facts & Features now cover the claims assistant, serial numbers, cropping and rotating, photos and receipts as a ZIP, two-factor sign-in for everyone, the reorganised settings, ten languages and data takeover from an earlier version. The accessibility section now describes the current state honestly – full WCAG 2.1 AA is planned for version 5.0.
+- **Fixed:** Midnight colour scheme: the image upload area when editing was fixed white, so the light text on it was hard to read. In the Glass scheme the blue figures in the statistics bar are slightly darker and easier to read.
 
 ## 4.5.1 — 2026-10-17
 

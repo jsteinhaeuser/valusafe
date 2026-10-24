@@ -39,7 +39,7 @@ return [
     // ============================================================================
     // GENERAL
     // ============================================================================
-    'app_title' => 'Bainistíocht Fardail Earraí Luachmhara',
+    'app_title' => 'ValuSafe',
     'logged_in_as' => 'Logáilte isteach mar',
     'session_expires_in' => 'Rachaidh an seisiún in éag i gceann',
     
@@ -382,7 +382,7 @@ return [
     // LOGIN
     // ============================================================================
     'login_title' => 'Logáil isteach',
-    'login_app_name' => 'Bainistíocht Fardail Earraí Luachmhara',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Ainm úsáideora',
     'login_password' => 'Pasfhocal',
     'login_button' => 'Logáil isteach',
@@ -420,7 +420,7 @@ return [
     'export_notes' => 'Nótaí',
     'export_total_value' => 'Luach iomlán na n-earraí go léir',
     'export_based_on' => 'Bunaithe ar',
-    'export_footer' => 'Cruthaithe le Bainistíocht Fardail Earraí Luachmhara',
+    'export_footer' => 'Cruthaithe le ValuSafe',
     
     // CSV Export
     'csv_header_id' => 'ID',
@@ -456,7 +456,7 @@ return [
     // ============================================================================
     // HEADER & NAVIGATION
     // ============================================================================
-    'header_app_title' => 'Bainistíocht Fardail Earraí Luachmhara',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'M\'Earraí Luachmhara',
     'header_keyboard_shortcuts' => 'Aicearraí Méarchláir',
     'header_shortcuts_new' => 'Iontráil Nua',
@@ -877,6 +877,9 @@ return [
     'readiness_price'           => 'Praghas',
     'readiness_purchase_date'   => 'Dáta ceannaigh',
     'readiness_perfect_msg'     => 'Doiciméadaithe go hiomlán — ullmhaithe go foirfe d\'éileamh!',
+    'readiness_medium_msg' => 'Measartha — tá roinnt réimsí fós in easnamh.',
+    'readiness_low_msg' => 'Cuir grianghraif, praghsanna agus dátaí ceannaigh leis, le do thoil.',
+    'readiness_complete_link' => 'Críochnaigh an fardal',
 
     // Next-Interface — Bild 3: Versicherungsübersicht
     'insurance_overview'        => 'Forbhreathnú ar árachas',
@@ -1181,6 +1184,8 @@ return [
     '2fa_error_generic' => 'Cód neamhbhailí.',
     '2fa_btn_manage' => 'Bainistigh an fíordheimhniú dhá fhachtóir',
     '2fa_change_disabled' => 'Ní féidir an fíordheimhniú dhá fhachtóir a athrú don chuntas seo. Déan teagmháil le riarthóir.',
+    '2fa_locked' => 'An iomarca cód mícheart. Bain triail eile as i gceann %d nóiméad.',
+    'pwreset_not_configured' => 'Níl athshocrú trí ríomhphost socraithe ar an suiteáil seo. Déan teagmháil le do riarthóir.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Aimsíodh dréacht ó %s.',
     'js_draft_unsaved' => 'Dréacht nár sábháladh ó %s',
@@ -1227,6 +1232,7 @@ return [
     'js_pdf_open' => 'Oscail an PDF',
     'js_opens_new_tab' => 'Osclaítear i gcluaisín nua é',
     'js_doc_open' => 'Oscail %s',
+    'js_pdf_document' => 'Doiciméad PDF',
     'js_crop_button' => 'Bearr / rothlaigh',
     'js_crop_title' => 'Bearr agus rothlaigh an íomhá',
     'js_crop_help' => 'Bog an fráma leis an luch nó leis na saigheadeochracha, + agus − chun súmáil, R chun rothlú.',

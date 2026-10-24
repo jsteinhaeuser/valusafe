@@ -78,6 +78,20 @@ if (!function_exists('consumePasswordResetToken')) {
 /**
  * Sendet die Reset-E-Mail. Gibt true/false zurück (Erfolg von PHP mail()).
  */
+/**
+ * Feste Basisadresse fuer Reset-Links aus config.php (APP_URL, seit 4.5.2).
+ * Bis 4.5.1 kam der Link aus dem Host-Header der Anfrage: wer ihn faelscht,
+ * bekommt einen gueltigen Link auf seinen eigenen Server in die echte Mail
+ * des Opfers (OWASP-A07-002). Ohne gueltige APP_URL gibt es keinen Link.
+ */
+if (!function_exists('vsResetBasisAdresse')) {
+    function vsResetBasisAdresse(): ?string {
+        if (!defined('APP_URL')) return null;
+        $url = rtrim((string)APP_URL, '/');
+        return preg_match('#^https?://[A-Za-z0-9.-]+(:\d+)?(/[A-Za-z0-9._~/-]*)?$#', $url) ? $url : null;
+    }
+}
+
 if (!function_exists('sendPasswordResetEmail')) {
     function sendPasswordResetEmail(string $toEmail, string $resetLink, string $appName): bool {
         $subject = $appName . ': Passwort zurücksetzen';
@@ -88,7 +102,9 @@ if (!function_exists('sendPasswordResetEmail')) {
         $body .= $resetLink . "\n\n";
         $body .= "Viele Grüße\n$appName";
 
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        // Absender aus APP_URL, nicht aus dem Host-Header (OWASP-A07-002)
+        $basis = vsResetBasisAdresse();
+        $host  = $basis !== null ? (string)parse_url($basis, PHP_URL_HOST) : 'localhost';
         $headers  = "From: noreply@" . $host . "\r\n";
         $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 

@@ -9,7 +9,7 @@ class TOTP {
     const DIGITS    = 6;
     const PERIOD    = 30;  // Sekunden
     const ALGORITHM = 'sha1';
-    const WINDOW    = 2;   // ±2 Periods akzeptieren (60s Toleranz)
+    const WINDOW    = 1;   // ±1 Periode (30 s Toleranz, RFC 6238); bis 4.5.1 ±2 = 5 gueltige Codes
 
     /**
      * Generiert ein zufälliges Base32-Secret (160 Bit = 32 Zeichen)

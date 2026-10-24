@@ -87,9 +87,14 @@ define('VS_DIALOG_EINGEBUNDEN', true);
 
         // Erst nach dem Sichtbarwerden fokussieren, sonst nimmt Safari den
         // Fokus nicht an.
+        // Rueckfragen (vsConfirm) fragen fast immer vor etwas Unumkehrbarem
+        // (Loeschen, Link abschalten). Dort bekommt seit 4.5.2 Abbrechen den
+        // Fokus - ein versehentliches Enter bricht ab, statt zu loeschen
+        // (WAI-ARIA: Fokus auf die am wenigsten zerstoerende Wahl).
         window.requestAnimationFrame(function () {
-            if (e.eingabe) { elEingabe.focus(); elEingabe.select(); }
-            else           { knopfOk.focus(); }
+            if (e.eingabe)        { elEingabe.focus(); elEingabe.select(); }
+            else if (e.abbrechen) { knopfAb.focus(); }
+            else                  { knopfOk.focus(); }
         });
     }
 

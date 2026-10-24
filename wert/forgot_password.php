@@ -18,7 +18,14 @@ $clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 $message = '';
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Ohne feste Adresse (APP_URL in config.php) kein Reset per Mail - der Link
+// entstand bis 4.5.1 aus dem Host-Header (OWASP-A07-002).
+$resetBasis = vsResetBasisAdresse();
+if ($resetBasis === null) {
+    $error = t('pwreset_not_configured');
+}
+
+if ($resetBasis !== null && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $submitted_token = $_POST['csrf_token'] ?? '';
     if (!Security::validateCSRFToken($submitted_token)) {
         $error = 'Ungültiges Sicherheits-Token. Bitte Seite neu laden.';
@@ -42,9 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if ($user && !empty($user['email'])) {
                     $token = createPasswordResetToken($db, (int)$user['id']);
-                    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-                    $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-                    $resetLink = $scheme . '://' . $host . '/reset_password.php?token=' . $token;
+                    $resetLink = $resetBasis . '/reset_password.php?token=' . $token;
 
                     $appName = defined('APP_NAME') ? APP_NAME : 'ValuSafe';
                     sendPasswordResetEmail($user['email'], $resetLink, $appName);
@@ -102,7 +107,7 @@ button:hover { background: #1a6bbf; }
     <?php if ($message): ?><div class="msg-success"><?php echo htmlspecialchars($message); ?></div><?php endif; ?>
     <?php if ($error): ?><div class="msg-error"><?php echo htmlspecialchars($error); ?></div><?php endif; ?>
 
-    <?php if (!$message): ?>
+    <?php if (!$message && $resetBasis !== null): ?>
     <form method="POST" action="">
         <?php echo Security::getCSRFInput(); ?>
         <label for="username">Benutzername</label>

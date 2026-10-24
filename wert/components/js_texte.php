@@ -27,7 +27,7 @@ $_vsJsSchluessel = [
     'js_img_alt', 'js_img_set_primary', 'js_img_delete', 'js_img_max',
     'js_img_upload_failed', 'js_img_delete_failed', 'js_img_primary_failed',
     'js_img_compressing', 'js_error_prefix', 'js_close', 'js_prev', 'js_next',
-    'js_pdf_open', 'js_opens_new_tab', 'js_doc_open',
+    'js_pdf_open', 'js_opens_new_tab', 'js_doc_open', 'js_pdf_document',
     // Zuschnitt (js/bild_zuschnitt.js, 4.4.1)
     'js_crop_button', 'js_crop_title', 'js_crop_help', 'js_crop_image', 'js_crop_rotate_left', 'js_crop_rotate_right', 'js_crop_ratio',
     'js_crop_ratio_free', 'js_crop_reset', 'js_crop_cancel', 'js_crop_apply', 'js_crop_rotated', 'js_crop_saving', 'js_crop_failed',

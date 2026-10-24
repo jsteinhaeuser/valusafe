@@ -12,6 +12,7 @@
   --vs-bg:              #f0f2f8;
   --vs-surface:         rgba(255,255,255,0.85);
   --vs-surface-2:       #ede9fe;
+  --vs-wcag-value:      #185f9c;   /* Standard #1a6fb5 nur 4.44:1 auf #ede9fe (VB 2.4 / VS 4.5.2) */
 
   --vs-text:            #1e1b2e;
   --vs-text-muted:      #6d28d9;

@@ -110,12 +110,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['dokument'])) {
     }
 }
 
-// Dokument löschen
-if (isset($_GET['delete'])) {
+// Dokument löschen - nur per POST mit Token (OWASP-A01-005, 4.5.2). Bis 4.5.1
+// genuegte ein Link ?delete=<id>: validateRequest() prueft nur POST, das
+// csrf_token in der URL wurde nie geprueft.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_document'])) {
     validateRequest();
     requirePermission('docs_delete');
     
-    $doc_id = filter_var($_GET['delete'], FILTER_VALIDATE_INT);
+    $doc_id = filter_var($_POST['delete_document'], FILTER_VALIDATE_INT);
     if ($doc_id) {
         try {
             $doc = $db->selectOne("SELECT * FROM dokumente WHERE id = ? AND wertsache_id = ?", [$doc_id, $wertsache_id]);
@@ -231,9 +233,12 @@ include 'header_next_page.php';
                             <a href="download_document.php?id=<?php echo $doc['id']; ?>" 
                                class="vs-btn vs-btn-sm vs-btn-secondary" target="_blank" 
                                title="<?php echo t('doc_download_title'); ?>">⬇️ <?php echo t('btn_download'); ?></a>
-                            <a href="?id=<?php echo $wertsache_id; ?>&delete=<?php echo $doc['id']; ?>&<?php echo http_build_query(['csrf_token' => $_SESSION['csrf_token']]); ?>" 
-                               class="vs-btn vs-btn-sm vs-btn-danger"
-                               onclick="return vsConfirmLink(event, <?php echo htmlspecialchars(json_encode(t('doc_confirm_delete')), ENT_QUOTES, 'UTF-8'); ?>)">🗑️ <?php echo t('btn_delete'); ?></a>
+                            <form method="POST" action="?id=<?php echo (int)$wertsache_id; ?>" style="display:inline;"
+                                  onsubmit="return vsConfirmForm(event, <?php echo htmlspecialchars(json_encode(t('doc_confirm_delete')), ENT_QUOTES, 'UTF-8'); ?>);">
+                                <?php echo Security::getCSRFInput(); ?>
+                                <input type="hidden" name="delete_document" value="<?php echo (int)$doc['id']; ?>">
+                                <button type="submit" class="vs-btn vs-btn-sm vs-btn-danger">🗑️ <?php echo t('btn_delete'); ?></button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

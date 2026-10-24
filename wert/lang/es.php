@@ -28,7 +28,7 @@ return [
     'nav_stats' => 'Estadísticas',
 
     // GENERAL
-    'app_title' => 'Wertsachen-Inventarverwaltung',
+    'app_title' => 'ValuSafe',
     'app_description' => 'Gestione sus objetos de valor con facilidad',
     'logged_in_as' => 'Conectado como',
     'session_expires_in' => 'La sesión expira en',
@@ -245,7 +245,7 @@ return [
 
     // LOGIN
     'login_title' => 'Iniciar sesión',
-    'login_app_name' => 'Wertsachen-Inventarverwaltung',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Usuario',
     'login_password' => 'Contraseña',
     'login_button' => 'Iniciar sesión',
@@ -417,7 +417,7 @@ return [
     'export_notes' => 'Notas',
     'export_total_value' => 'Valor total de todos los objetos',
     'export_based_on' => 'Basado en',
-    'export_footer' => 'Erstellt mit Wertsachen-Inventarverwaltung',
+    'export_footer' => 'Creado con ValuSafe',
     'export_page' => 'Página',
     'export_of' => 'de',
     'csv_header_id' => 'ID',
@@ -446,7 +446,7 @@ return [
     'html_footer_created' => 'Creado con ValuSafe',
 
     // ENCABEZADO
-    'header_app_title' => 'Wertsachen-Inventarverwaltung',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'Mis Objetos',
 
     'header_keyboard_shortcuts' => 'Atajos de teclado',
@@ -732,6 +732,9 @@ return [
     'readiness_price' => 'Precio',
     'readiness_purchase_date' => 'Fecha de compra',
     'readiness_perfect_msg' => '¡Bien documentado — perfectamente preparado para un siniestro!',
+    'readiness_medium_msg' => 'Regular — aún faltan algunos campos.',
+    'readiness_low_msg' => 'Añada fotos, precios y fechas de compra.',
+    'readiness_complete_link' => 'Completar el inventario',
     'col_aktueller_wert' => 'Valor actual',
     'col_anzahl' => 'Cantidad',
     'col_aufbewahrungsort' => 'Lugar de almacenamiento',
@@ -1015,6 +1018,8 @@ return [
     '2fa_error_generic' => 'Código inválido.',
     '2fa_btn_manage' => 'Gestionar la verificación en dos pasos',
     '2fa_change_disabled' => 'La verificación en dos pasos no se puede cambiar para esta cuenta. Contacta con un administrador.',
+    '2fa_locked' => 'Demasiados códigos incorrectos. Vuelva a intentarlo dentro de %d minutos.',
+    'pwreset_not_configured' => 'El restablecimiento por correo electrónico no está configurado en esta instalación. Póngase en contacto con su administrador.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Borrador del %s encontrado.',
     'js_draft_unsaved' => 'Borrador sin guardar del %s',
@@ -1061,6 +1066,7 @@ return [
     'js_pdf_open' => 'Abrir PDF',
     'js_opens_new_tab' => 'Se abre en una pestaña nueva',
     'js_doc_open' => 'Abrir %s',
+    'js_pdf_document' => 'Documento PDF',
     'js_crop_button' => 'Recortar / girar',
     'js_crop_title' => 'Recortar y girar la imagen',
     'js_crop_help' => 'Mueve el marco con el ratón o las flechas, + y − para ampliar, R para girar.',

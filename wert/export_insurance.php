@@ -477,7 +477,7 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
 </div>
 
 <div class="doc-footer">
-    Wertsachen-Inventarverwaltung &nbsp;·&nbsp; Vertraulich &nbsp;·&nbsp; Erstellt am <?php echo date('d.m.Y H:i'); ?>
+    ValuSafe &nbsp;·&nbsp; Vertraulich &nbsp;·&nbsp; Erstellt am <?php echo date('d.m.Y H:i'); ?>
 </div>
 
 </body>

@@ -2,7 +2,62 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 17.10.2026 aus der Projektchronik.
+Erzeugt am 24.10.2026 aus der Projektchronik.
+
+Version 4.5.2   24.10.2026
+--------------------------
+  [Fix] Sicherheit, Zwei-Faktor-Anmeldung: Der Code aus der Authenticator-App
+        lässt sich nicht mehr beliebig oft durchprobieren. Nach 5 falschen
+        Codes von einem Gerät ist die Eingabe 15 Minuten gesperrt, nach 10
+        falschen Codes für ein Konto innerhalb von 24 Stunden eine Stunde
+        lang – auch von anderen Geräten aus. Ein Code gilt nur noch 30
+        Sekunden vor und nach seinem Zeitfenster.
+  [Fix] Sicherheit, Buchcover: Die Cover-Abfrage für Bücher (ISBN) gibt nur
+        noch echte Bilder (JPEG, PNG, GIF, WebP) weiter. Bisher konnte eine
+        präparierte Datei von einer der erlaubten Bildquellen als Seite unter
+        der Adresse von ValuSafe erscheinen.
+  [Fix] Sicherheit, Belege: Ein Beleg lässt sich nur noch über den
+        Löschen-Knopf entfernen. Bisher genügte ein präparierter Link, den
+        ein angemeldeter Benutzer anklickt.
+  [Fix] Sicherheit, Installationspaket: Die Ordner für Sicherungen (backups)
+        und Protokolle (logs) bringen jetzt eine Sperre mit, die den Abruf
+        über das Web verhindert – auch im Docker-Betrieb. Der
+        Gesundheitscheck prüft diese Sperre direkt.
+  [Fix] Sicherheit, Passwort vergessen: Der Link in der Mail zum Zurücksetzen
+        des Passworts verwendet jetzt eine fest eingestellte Adresse (APP_URL
+        in config.php). Bisher kam sie aus der Anfrage, und ein Angreifer
+        konnte einen Link auf seinen eigenen Server in die echte Mail
+        schmuggeln. Ohne APP_URL bietet die Seite das Zurücksetzen per Mail
+        nicht an. Der Setup-Assistent trägt die Adresse bei neuen
+        Installationen ein; bei Docker steht sie in der .env.
+  [Fix] Raumverwaltung: Räume, Standorte und Positionen mit Apostroph im
+        Namen (z. B. „Kinder's Zimmer“) lassen sich wieder löschen –
+        der Papierkorb-Knopf tat bei solchen Namen nichts. Die Fenster lassen
+        sich per Tastatur bedienen: Der Fokus springt beim Öffnen ins erste
+        Feld, Esc schließt, danach steht der Fokus wieder auf dem
+        auslösenden Knopf. Schließen-, Bearbeiten- und Löschen-Knöpfe
+        werden von Bildschirmlesern benannt.
+  [Fix] Rückfragen vor dem Löschen: Der Knopf „Abbrechen“ hat jetzt den
+        Fokus. Ein versehentlich gedrücktes Enter bricht ab, statt einen
+        Gegenstand, Beleg oder eine Sicherung zu löschen.
+  [Fix] Übersetzungen: Die Hinweise zur Schadenfall-Bereitschaft im Dashboard
+        („Inventar vervollständigen“ und zwei weitere) und
+        „PDF-Dokument“ im Hilfefenster waren in jeder Sprache deutsch. Sie
+        erscheinen jetzt in allen zehn Sprachen.
+  [Fix] Programmname: Seitentitel, PDF-Exporte, Versicherungs-Export und die
+        öffentliche Ansicht nennen jetzt „ValuSafe“ statt des alten
+        Namens „Wertsachen-Inventarverwaltung“.
+  [Fix] Handbücher auf Stand 4.5: Benutzerhandbuch, Erweitertes Handbuch und
+        Facts & Features beschreiben jetzt Schadensfall-Assistent,
+        Seriennummer, Zuschneiden und Drehen, Fotos und Belege als ZIP,
+        Zwei-Faktor-Anmeldung für alle, die neu gegliederten Einstellungen,
+        zehn Sprachen und die Datenübernahme aus einer früheren Version. Der
+        Abschnitt Barrierefreiheit beschreibt ehrlich den heutigen Stand –
+        volle WCAG 2.1 AA ist für Version 5.0 geplant.
+  [Fix] Farbschema Midnight: Die Fläche zum Hochladen von Bildern beim
+        Bearbeiten war fest weiß, die helle Schrift darauf kaum lesbar. Im
+        Schema Glass sind die blauen Zahlen der Statistikleiste etwas dunkler
+        und damit besser lesbar.
 
 Version 4.5.1   17.10.2026
 --------------------------

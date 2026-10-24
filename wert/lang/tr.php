@@ -33,7 +33,7 @@ return [
     // ============================================================================
     // GENEL
     // ============================================================================
-    'app_title' => 'Eşya Envanter Yönetimi',
+    'app_title' => 'ValuSafe',
     'logged_in_as' => 'Giriş yapıldı:',
     'session_expires_in' => 'Oturum sona eriyor:',
 
@@ -375,7 +375,7 @@ return [
     // GİRİŞ
     // ============================================================================
     'login_title' => 'Giriş',
-    'login_app_name' => 'Eşya Envanter Yönetimi',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Kullanıcı Adı',
     'login_password' => 'Parola',
     'login_button' => 'Giriş Yap',
@@ -413,7 +413,7 @@ return [
     'export_notes' => 'Notlar',
     'export_total_value' => 'Tüm eşyaların toplam değeri',
     'export_based_on' => 'Temel alınan',
-    'export_footer' => 'Eşya Envanter Yönetimi ile oluşturuldu',
+    'export_footer' => 'ValuSafe ile oluşturuldu',
 
     // CSV Dışa Aktarma
     'csv_header_id' => 'ID',
@@ -449,7 +449,7 @@ return [
     // ============================================================================
     // BAŞLIK & NAVİGASYON
     // ============================================================================
-    'header_app_title' => 'Eşya Envanter Yönetimi',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'Eşyalarım',
 
     'header_keyboard_shortcuts' => 'Klavye Kısayolları',
@@ -840,6 +840,9 @@ return [
     'readiness_price' => 'Fiyat',
     'readiness_purchase_date' => 'Satın alma tarihi',
     'readiness_perfect_msg' => 'İyi belgelenmiş — hasar için mükemmel şekilde hazır!',
+    'readiness_medium_msg' => 'Orta — bazı alanlar hâlâ eksik.',
+    'readiness_low_msg' => 'Lütfen fotoğraf, fiyat ve satın alma tarihlerini ekleyin.',
+    'readiness_complete_link' => 'Envanteri tamamla',
     'col_aktueller_wert' => 'Güncel Değer',
     'col_anzahl' => 'Adet',
     'col_aufbewahrungsort' => 'Depolama yeri',
@@ -1114,6 +1117,8 @@ return [
     '2fa_error_generic' => 'Kod geçersiz.',
     '2fa_btn_manage' => 'İki adımlı doğrulamayı yönet',
     '2fa_change_disabled' => 'Bu hesap için iki adımlı doğrulama değiştirilemez. Lütfen bir yöneticiye başvurun.',
+    '2fa_locked' => 'Çok fazla hatalı kod. Lütfen %d dakika sonra tekrar deneyin.',
+    'pwreset_not_configured' => 'E-posta ile sıfırlama bu kurulumda ayarlanmamış. Lütfen yöneticinize başvurun.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => '%s tarihli taslak bulundu.',
     'js_draft_unsaved' => '%s tarihli kaydedilmemiş taslak',
@@ -1160,6 +1165,7 @@ return [
     'js_pdf_open' => 'PDF aç',
     'js_opens_new_tab' => 'Yeni sekmede açılır',
     'js_doc_open' => '%s aç',
+    'js_pdf_document' => 'PDF belgesi',
     'js_crop_button' => 'Kırp / döndür',
     'js_crop_title' => 'Resmi kırp ve döndür',
     'js_crop_help' => 'Çerçeveyi fare veya ok tuşlarıyla taşıyın, yakınlaştırmak için + ve −, döndürmek için R.',

@@ -15,7 +15,7 @@ require_once 'security.php';
 header('Content-Type: application/json; charset=utf-8');
 
 // Auth
-if (!isAdmin()) {
+if (!isLoggedIn() || !isAdmin()) {  // OWASP-A07-005
     ob_end_clean();
     echo json_encode(['ok' => false, 'error' => 'Kein Zugriff']);
     exit;

@@ -3,6 +3,8 @@
  * login_2fa.php — Zweiter Login-Schritt: TOTP-Code eingeben
  */
 require_once 'db.php';
+require_once 'security.php';
+require_once 'RateLimiter.php';
 require_once 'TOTP.php';
 
 // Bereits eingeloggt?
@@ -26,7 +28,32 @@ if (time() - ($_SESSION['totp_pending_time'] ?? 0) > 300) {
 
 $error = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Versuchsgrenzen (OWASP-A07-001, 4.5.2): je IP wie die Anmeldung (5 in
+// 5 Minuten -> 15 Minuten), je Konto 10 in 24 Stunden -> 1 Stunde, danach
+// sperrt jeder weitere Fehlversuch erneut. Der Kontozaehler haelt auch bei
+// neuer Sitzung oder anderer IP - vorher liess sich der 6-stellige Code
+// nach jeder Passwort-Anmeldung beliebig oft durchprobieren.
+$clientIP        = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$kontoSchluessel = 'konto:' . (int)$_SESSION['totp_pending_user_id'];
+$ipLimiter       = new RateLimiter($db);
+$kontoLimiter    = new RateLimiter($db, 10, 3600, 86400);
+
+$vsZweiFaGesperrt = function () use ($ipLimiter, $kontoLimiter, $clientIP, $kontoSchluessel): int {
+    $sekunden = 0;
+    if ($ipLimiter->isLocked($clientIP, '2fa')) {
+        $sekunden = $ipLimiter->getRemainingLockTime($clientIP, '2fa');
+    }
+    if ($kontoLimiter->isLocked($kontoSchluessel, '2fa')) {
+        $sekunden = max($sekunden, $kontoLimiter->getRemainingLockTime($kontoSchluessel, '2fa'));
+    }
+    return $sekunden;
+};
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($sperre = $vsZweiFaGesperrt()) > 0) {
+    validateRequest();
+    $error = sprintf(t('2fa_locked'), max(1, (int)ceil($sperre / 60)));
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    validateRequest();
     $code = trim($_POST['totp_code'] ?? '');
 
     // User laden
@@ -62,6 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($verified) {
+        $ipLimiter->reset($clientIP, '2fa');
+        $kontoLimiter->reset($kontoSchluessel, '2fa');
         // Vollständig einloggen
         $pending_id = $_SESSION['totp_pending_user_id'];
         session_regenerate_id(true);
@@ -88,7 +117,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } else {
         logSecurityEvent($pdo, 'login_failed_2fa', $user['id'], '2FA fehlgeschlagen: ' . $user['username']);
-        $error = 'Ungültiger Code. Bitte nochmal versuchen.';
+        $ipLimiter->recordAttempt($clientIP, '2fa');
+        $kontoLimiter->recordAttempt($kontoSchluessel, '2fa');
+        $sperre = $vsZweiFaGesperrt();
+        $error = $sperre > 0
+            ? sprintf(t('2fa_locked'), max(1, (int)ceil($sperre / 60)))
+            : 'Ungültiger Code. Bitte nochmal versuchen.';
     }
 }
 

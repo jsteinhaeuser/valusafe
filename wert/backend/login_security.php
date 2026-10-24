@@ -17,6 +17,7 @@ $error = '';
 
 // Account entsperren
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unlock_account'])) {
+    validateRequest();  // OWASP-A01-005, 4.5.2
     $username = $_POST['username'] ?? '';
     if (!empty($username)) {
         try {
@@ -151,6 +152,7 @@ include 'layout/header_next_page.php';
                             </td>
                             <td>
                                 <form method="POST" style="display: inline;">
+                                    <?php echo Security::getCSRFInput(); ?>
                                     <input type="hidden" name="username" value="<?php echo htmlspecialchars($account['username']); ?>">
                                     <button type="submit" name="unlock_account" class="vs-btn vs-btn-sm vs-btn-primary">
                                         <i class="ti ti-lock-open"></i> Entsperren

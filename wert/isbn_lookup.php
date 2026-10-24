@@ -38,9 +38,16 @@ if (isset($_GET['cover'])) {
     $data = fetchUrl($url);
     if (!$data) { http_response_code(502); exit; }
 
-    $finfo = new finfo(FILEINFO_MIME_TYPE);
-    $mime  = $finfo->buffer($data) ?: 'image/jpeg';
+    // Nur Rasterbilder (OWASP-A05-002, 4.5.2): bis 4.5.1 ging jede erkannte
+    // Art hinaus, auch text/html oder SVG - die Weiterleitung von
+    // covers.openlibrary.org fuehrt auf archive.org (Nutzerdateien).
+    $rasterTypen = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->buffer($data) ?: '';
+    if (!isset($rasterTypen[$mime])) { http_response_code(415); exit; }
     header('Content-Type: ' . $mime);
+    header('Content-Disposition: inline; filename="cover.' . $rasterTypen[$mime] . '"');
+    header("Content-Security-Policy: default-src 'none'; sandbox");
+    header('X-Content-Type-Options: nosniff');
     header('Cache-Control: max-age=86400');
     echo $data;
     exit;

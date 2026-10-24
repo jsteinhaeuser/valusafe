@@ -62,15 +62,18 @@ if (!defined('BACKEND_TITLE')) {
 // Pruefe Admin-Zugriff
 if (!function_exists('requireBackendAccess')) {
 function requireBackendAccess() {
-    if (!isset($_SESSION['user_id'])) {
+    // Volle Anmeldung inkl. Sitzungs-Fingerabdruck (OWASP-A07-005, 4.5.2):
+    // bis 4.5.1 genuegte hier ein user_id in der Sitzung - ein gestohlenes
+    // Cookie aus fremdem Netz flog in index.php hinaus, das Backend nahm es an.
+    if (!isLoggedIn()) {
         header('Location: ../login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
         exit;
     }
-    
+
     if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
         die('<h1>Zugriff verweigert</h1>
              <p>Dieses Backend ist nur fuer Administratoren zugaenglich.</p>
-             <p>Deine Rolle: ' . ($_SESSION['role'] ?? 'unbekannt') . '</p>
+             <p>Deine Rolle: ' . htmlspecialchars($_SESSION['role'] ?? 'unbekannt') . '</p>
              <p><a href="../index.php">Zurueck zur Anwendung</a></p>');
     }
 }

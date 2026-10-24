@@ -398,7 +398,7 @@ $loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['
     </div>
 
     <!-- Rechte Seite -->
-    <div class="login-right">
+    <div class="login-right" role="main">
         <h1><?php echo htmlspecialchars(t('login_button')); ?></h1>
         <p class="subtitle"><?php echo htmlspecialchars(t('login_subtitle')); ?></p>
 

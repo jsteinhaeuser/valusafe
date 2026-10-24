@@ -33,7 +33,7 @@ return [
     // ============================================================================
     // ALLGEMEIN
     // ============================================================================
-    'app_title' => 'Wertsachen-Inventarverwaltung',
+    'app_title' => 'ValuSafe',
     'logged_in_as' => 'Angemeldet als',
     'session_expires_in' => 'Session läuft ab in',
     
@@ -376,7 +376,7 @@ return [
     // LOGIN
     // ============================================================================
     'login_title' => 'Anmeldung',
-    'login_app_name' => 'Wertsachen-Inventarverwaltung',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Benutzername',
     'login_password' => 'Passwort',
     'login_button' => 'Anmelden',
@@ -414,7 +414,7 @@ return [
     'export_notes' => 'Notizen',
     'export_total_value' => 'Gesamtwert aller Gegenstände',
     'export_based_on' => 'Basierend auf',
-    'export_footer' => 'Erstellt mit Wertsachen-Inventarverwaltung',
+    'export_footer' => 'Erstellt mit ValuSafe',
     
     // CSV Export
     'csv_header_id' => 'ID',
@@ -450,7 +450,7 @@ return [
     // ============================================================================
     // HEADER & NAVIGATION
     // ============================================================================
-    'header_app_title' => 'Wertsachen-Inventarverwaltung',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'Meine Wertsachen',
     'header_keyboard_shortcuts' => 'Tastenkombinationen',
     'header_shortcuts_new' => 'Neuer Eintrag',
@@ -896,6 +896,9 @@ return [
     'readiness_price'               => 'Preis',
     'readiness_purchase_date'       => 'Kaufdatum',
     'readiness_perfect_msg'         => 'Gut dokumentiert — bestens für den Schadenfall vorbereitet!',
+    'readiness_medium_msg' => 'Mittel — einige Felder fehlen noch.',
+    'readiness_low_msg' => 'Bitte Fotos, Preise und Kaufdaten ergänzen.',
+    'readiness_complete_link' => 'Inventar vervollständigen',
 
     // Tabellenspalten
     'col_aktueller_wert'            => 'Aktueller Wert',
@@ -1161,6 +1164,8 @@ return [
     '2fa_error_generic'        => 'Code ungültig.',
     '2fa_btn_manage' => 'Zwei-Faktor verwalten',
     '2fa_change_disabled' => 'Die Zwei-Faktor-Anmeldung kann für dieses Konto nicht geändert werden. Wende dich an einen Administrator.',
+    '2fa_locked' => 'Zu viele falsche Codes. Bitte in %d Minuten erneut versuchen.',
+    'pwreset_not_configured' => 'Das Zurücksetzen per E-Mail ist auf dieser Installation nicht eingerichtet. Bitte wende dich an deinen Administrator.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Entwurf vom %s gefunden.',
     'js_draft_unsaved' => 'Ungespeicherter Entwurf vom %s',
@@ -1207,6 +1212,7 @@ return [
     'js_pdf_open' => 'PDF öffnen',
     'js_opens_new_tab' => 'Öffnet in einem neuen Tab',
     'js_doc_open' => '%s öffnen',
+    'js_pdf_document' => 'PDF-Dokument',
     'js_crop_button' => 'Zuschneiden / drehen',
     'js_crop_title' => 'Bild zuschneiden und drehen',
     'js_crop_help' => 'Rahmen mit der Maus oder den Pfeiltasten verschieben, + und − zum Zoomen, R zum Drehen.',

@@ -12,7 +12,7 @@ require_once '../helpers.php';
 header('Content-Type: application/json; charset=utf-8');
 
 // Session-Check ohne Redirect (AJAX darf keine HTML-Redirects machen)
-if (empty($_SESSION['user_id'])) {
+if (!isLoggedIn()) {  // volle Anmeldung inkl. Fingerabdruck (OWASP-A07-005)
     echo json_encode([]);
     exit;
 }

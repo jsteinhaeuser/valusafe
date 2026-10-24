@@ -28,7 +28,7 @@ return [
     'nav_stats' => 'Statystyki',
 
     // OGÓLNE
-    'app_title' => 'Wertsachen-Inventarverwaltung',
+    'app_title' => 'ValuSafe',
     'app_description' => 'Zarządzaj swoimi cennymi przedmiotami z łatwością',
     'logged_in_as' => 'Zalogowany jako',
     'session_expires_in' => 'Sesja wygasa za',
@@ -245,7 +245,7 @@ return [
 
     // LOGOWANIE
     'login_title' => 'Logowanie',
-    'login_app_name' => 'Wertsachen-Inventarverwaltung',
+    'login_app_name' => 'ValuSafe',
     'login_username' => 'Nazwa użytkownika',
     'login_password' => 'Hasło',
     'login_button' => 'Zaloguj',
@@ -417,7 +417,7 @@ return [
     'export_notes' => 'Notatki',
     'export_total_value' => 'Łączna wartość wszystkich przedmiotów',
     'export_based_on' => 'Na podstawie',
-    'export_footer' => 'Erstellt mit Wertsachen-Inventarverwaltung',
+    'export_footer' => 'Utworzono w ValuSafe',
     'export_page' => 'Strona',
     'export_of' => 'z',
     'csv_header_id' => 'ID',
@@ -446,7 +446,7 @@ return [
     'html_footer_created' => 'Utworzono za pomocą ValuSafe',
 
     // NAGŁÓWEK
-    'header_app_title' => 'Wertsachen-Inventarverwaltung',
+    'header_app_title' => 'ValuSafe',
     'header_app_title_mobile' => 'Moje Przedmioty',
 
     'header_keyboard_shortcuts' => 'Skróty klawiszowe',
@@ -732,6 +732,9 @@ return [
     'readiness_price' => 'Cena',
     'readiness_purchase_date' => 'Data zakupu',
     'readiness_perfect_msg' => 'Dobrze udokumentowane — doskonale przygotowane na szkodę!',
+    'readiness_medium_msg' => 'Średnio — brakuje jeszcze kilku pól.',
+    'readiness_low_msg' => 'Proszę uzupełnić zdjęcia, ceny i daty zakupu.',
+    'readiness_complete_link' => 'Uzupełnij inwentarz',
     'col_aktueller_wert' => 'Aktualna wartość',
     'col_anzahl' => 'Ilość',
     'col_aufbewahrungsort' => 'Miejsce przechowywania',
@@ -1015,6 +1018,8 @@ return [
     '2fa_error_generic' => 'Kod nieprawidłowy.',
     '2fa_btn_manage' => 'Zarządzaj uwierzytelnianiem dwuskładnikowym',
     '2fa_change_disabled' => 'Uwierzytelniania dwuskładnikowego nie można zmienić dla tego konta. Skontaktuj się z administratorem.',
+    '2fa_locked' => 'Zbyt wiele błędnych kodów. Spróbuj ponownie za %d min.',
+    'pwreset_not_configured' => 'Resetowanie przez e-mail nie jest skonfigurowane w tej instalacji. Skontaktuj się z administratorem.',
     // JavaScript-Texte (components/js_texte.php, 4.3.34)
     'js_draft_found' => 'Znaleziono szkic z %s.',
     'js_draft_unsaved' => 'Niezapisany szkic z %s',
@@ -1061,6 +1066,7 @@ return [
     'js_pdf_open' => 'Otwórz PDF',
     'js_opens_new_tab' => 'Otwiera się w nowej karcie',
     'js_doc_open' => 'Otwórz %s',
+    'js_pdf_document' => 'Dokument PDF',
     'js_crop_button' => 'Przytnij / obróć',
     'js_crop_title' => 'Przytnij i obróć zdjęcie',
     'js_crop_help' => 'Przesuń ramkę myszą lub strzałkami, + i − aby powiększyć, R aby obrócić.',
