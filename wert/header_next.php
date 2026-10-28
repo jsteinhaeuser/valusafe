@@ -192,7 +192,14 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
 
     <!-- Top Strip -->
     <div class="vs-topstrip">
-        <span class="vs-context"><?php echo htmlspecialchars($_appName); ?></span>
+        <?php // Versionsnummer klein unter dem Namen (4.6.1, Vorschlag Joerg) ?>
+        <span class="vs-context" style="display:inline-flex; flex-direction:column; line-height:1.15;">
+            <?php echo htmlspecialchars($_appName); ?>
+            <?php $_appVersion = function_exists('vsAppVersion') ? vsAppVersion() : ''; ?>
+            <?php if ($_appVersion !== ''): ?>
+            <small style="font-size:10px; font-weight:400; color:var(--vs-text-muted);">Ver. <?php echo htmlspecialchars($_appVersion); ?></small>
+            <?php endif; ?>
+        </span>
 
         <!-- Schnellsuche -->
         <form method="GET" action="index.php" class="vs-search" role="search" aria-label="<?php echo tn('nav_aria_search', 'Schnellsuche'); ?>">

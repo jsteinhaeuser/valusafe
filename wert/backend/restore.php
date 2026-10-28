@@ -73,25 +73,30 @@ if (isset($_POST['do_restore'])) {
             $sql = file_get_contents($filepath);
             if ($sql === false) throw new Exception('SQL-Datei konnte nicht gelesen werden.');
 
-            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
-            $pdo->exec('SET NAMES utf8mb4');
-
             // Zerlegen mit helpers_datenuebernahme.php. Der fruehere Zerleger
             // hier kannte kein \' (so quotet PDO ein Hochkomma): Ein Wert wie
             // "Kinder's Rad" verschob alle folgenden Grenzen, mehrere INSERTs
             // scheiterten, der Fehler stand nur im Log (bis 4.4.1).
-            $statements = array_column(vsSqlZerlegen($sql), 'sql');
+            // Seit 4.6 vorher pruefen (OWASP-A06-001): nur, was backup.php
+            // schreibt, nur bekannte Tabellen; Benutzer, SuperAdmin-
+            // Einstellungen und Sicherheitsprotokoll nur als SuperAdmin.
+            $pruefung = vsRestorePruefen($sql, isSuperAdmin());
+            if (!$pruefung['ok']) {
+                Security::logSecurityEvent('db_restore_rejected', [
+                    'file'        => $filename,
+                    'unzulaessig' => $pruefung['unzulaessig'],
+                ]);
+                throw new Exception('Die Datei enthält Anweisungen, die keine ValuSafe-Sicherung schreibt. Es wurde nichts eingespielt.'
+                    . ($pruefung['unzulaessig'] ? ' Erste: ' . $pruefung['unzulaessig'][0] : ''));
+            }
+            $statements = $pruefung['ausfuehren'];
+
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+            $pdo->exec('SET NAMES utf8mb4');
 
             $executed = 0;
-            $skipped  = 0;
             $failed   = 0;
             foreach ($statements as $stmt) {
-                // SET-Zeilen setzt die Seite selbst; /*!...*/ aus fremden
-                // mysqldump-Dateien blieb schon immer aussen vor
-                if (preg_match('/^(SET NAMES|SET FOREIGN|\/\*)/i', $stmt)) {
-                    $skipped++;
-                    continue;
-                }
                 try {
                     $pdo->exec($stmt);
                     $executed++;
@@ -113,9 +118,11 @@ if (isset($_POST['do_restore'])) {
             Security::logSecurityEvent('db_restored', [
                 'file'     => $filename,
                 'executed' => $executed,
+                'uebersprungen' => $pruefung['uebersprungen'],
             ]);
 
-            $message = "<i class='ti ti-circle-check' style='color:var(--vs-success);'></i> Datenbank wiederhergestellt aus <strong>" . esc($filename) . "</strong> — $executed Statements ausgeführt" . ($failed ? ", <strong>$failed fehlgeschlagen (siehe Fehlerlog)</strong>" : '') . ($migriert ? ", $migriert Migration(en) nachgeholt" : '') . '.';
+            $message = "<i class='ti ti-circle-check' style='color:var(--vs-success);'></i> Datenbank wiederhergestellt aus <strong>" . esc($filename) . "</strong> — $executed Statements ausgeführt" . ($failed ? ", <strong>$failed fehlgeschlagen (siehe Fehlerlog)</strong>" : '') . ($migriert ? ", $migriert Migration(en) nachgeholt" : '') . '.'
+                     . ($pruefung['uebersprungen'] ? ' Nicht übernommen: ' . esc(implode(', ', $pruefung['uebersprungen'])) . (isSuperAdmin() ? '' : ' (Benutzer, Einstellungen und Sicherheitsprotokoll nur als SuperAdmin).') : '');
             $step    = 'done';
 
         } catch (Exception $e) {

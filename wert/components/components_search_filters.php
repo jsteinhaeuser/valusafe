@@ -12,7 +12,7 @@ $kategorien = $db->select("SELECT id, name FROM kategorien ORDER BY name");
 $raeume = $db->select("SELECT id, name FROM raeume ORDER BY name");
 
 // Statistik berechnen
-$stats = getSearchStats($currentFilters);
+$stats = getSearchStats($currentFilters, $showHidden ?? false, (int)($filter_raum ?? 0), (int)($filter_position ?? 0));
 $hasFilters = hasActiveFilters($currentFilters);
 ?>
 

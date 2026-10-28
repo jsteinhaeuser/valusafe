@@ -120,7 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && empty($_POST) && (int)($_SERVER['CO
 if (isset($_POST['takeover_check'])) {
     validateRequest();
 
-    $dbDatei  = vsUebernahmeUpload('db_upload', 'db', $fehler) ?: basename((string)($_POST['db_datei'] ?? ''));
+    $dbHochgeladen = vsUebernahmeUpload('db_upload', 'db', $fehler);
+    $dbDatei  = $dbHochgeladen ?: basename((string)($_POST['db_datei'] ?? ''));
     $zipDatei = vsUebernahmeUpload('files_upload', 'files', $fehler) ?: basename((string)($_POST['files_datei'] ?? ''));
 
     if (!$fehler) {
@@ -140,6 +141,11 @@ if (isset($_POST['takeover_check'])) {
     }
     if (!$fehler && $analyse) {
         $schritt = 'vorschau';
+    }
+    // Eine gerade hochgeladene Datei, die die Pruefung ablehnt, bleibt nicht
+    // in backups/ liegen (OWASP-A06-001: von dort bot restore.php sie an).
+    if ($dbHochgeladen !== '' && (!$analyse || !$analyse['ok'])) {
+        @unlink(BACKUP_DIR . $dbHochgeladen);
     }
 }
 
@@ -165,12 +171,22 @@ if (isset($_POST['takeover_run'])) {
     } else {
         @set_time_limit(600);
         $bericht = ['anweisungen' => 0, 'fehler' => [], 'migrationen' => 0, 'migration_fehler' => '',
-                    'dateien' => 0, 'dateien_fehler' => 0];
+                    'dateien' => 0, 'dateien_fehler' => 0, 'nur_superadmin' => []];
+
+        // Benutzer, SuperAdmin-Einstellungen und Sicherheitsprotokoll nur als
+        // SuperAdmin (OWASP-A06-001). Sonst bekaeme ein Admin mit einer
+        // selbst geschriebenen Sicherung ein Konto unter dessen Namen.
+        $anweisungen = $analyse['ausfuehren'];
+        if (!isSuperAdmin()) {
+            $gefiltert = vsSqlTabellenFiltern($anweisungen, VS_NUR_SUPERADMIN_TABELLEN);
+            $anweisungen = $gefiltert['behalten'];
+            $bericht['nur_superadmin'] = $gefiltert['uebersprungen'];
+        }
 
         // 1. Datenbank
         $pdo->exec('SET NAMES utf8mb4');
         $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
-        foreach ($analyse['ausfuehren'] as $sql) {
+        foreach ($anweisungen as $sql) {
             try {
                 $pdo->exec($sql);
                 $bericht['anweisungen']++;
@@ -475,6 +491,9 @@ code.ueb-datei { background: var(--vs-surface-2); padding: 2px 6px; border-radiu
     <ul>
         <li><?php echo esc(t('takeover_done_items', [(int)($analyse['zeilen']['wertsachen'] ?? 0)])); ?></li>
         <li><?php echo esc(t('takeover_done_migrations', [$bericht['migrationen']])); ?></li>
+        <?php if ($bericht['nur_superadmin']): ?>
+        <li><?php echo esc(t('takeover_done_sa_skipped', [implode(', ', $bericht['nur_superadmin'])])); ?></li>
+        <?php endif; ?>
         <?php if ($zipDatei !== ''): ?>
         <li><?php echo esc(t('takeover_done_files', [$bericht['dateien']])); ?><?php if ($bericht['dateien_fehler']): ?> · <?php echo esc(t('takeover_done_files_failed', [$bericht['dateien_fehler']])); ?><?php endif; ?></li>
         <?php endif; ?>

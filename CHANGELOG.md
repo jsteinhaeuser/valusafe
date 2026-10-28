@@ -1,8 +1,30 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-24.
+All changes that affect users. Generated from the project history on 2026-10-28.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.6.1 — 2026-10-28
+
+- **Fixed:** Current value: the same rule now applies everywhere - the current value if one above 0 is entered, otherwise the purchase price. Previously a current value of 0 counted as 0 in some places and as “not valued” in others. This affected the dashboard (current value tile, highest current value, most valuable item, top 5, categories), the search bar, insurance, the insurance export and the damage claim with its document and receipts.
+- **Fixed:** Dashboard: the trend now compares today's current value with the current value on the reference date and appears under the current value tile. Previously it compared purchase prices with old current values.
+- **Fixed:** Search bar: hidden items are only counted when the list shows them as well. Previously it could say e.g. “7 entries found” above a list of 6.
+- **New:** Header: the installed version is now shown in small print below “ValuSafe”.
+- **Fixed:** Change history: empty fields (e.g. no purchase date) are shown as empty again instead of producing a warning in the error log.
+
+## 4.6 — 2026-10-28
+
+- **Fixed:** Security, sign-in: when an account is deleted, downgraded or its password is changed, this now applies immediately to sessions that are already signed in. Previously an open session kept working with the old rights. After a password change only the session in which it was made stays signed in. Every sign-in also ends after 12 hours at the latest.
+- **Fixed:** Security, restore: a database backup is checked before it is restored and only accepted if it contains nothing but what ValuSafe itself writes into backups. Users, SuperAdmin settings and the security log can only be restored by the SuperAdmin; for an admin they stay as they are. Rejected uploads from the data import no longer remain in the backups/ folder.
+- **Fixed:** Security, two-factor sign-in: backup codes are now stored only in hashed form and shown once, right after they are created. If you no longer have them, create new ones with a code from your authenticator app; the old ones then stop working. Existing codes keep working.
+- **Fixed:** Security, smaller items: the sign-in cookie now carries HttpOnly, SameSite and, with HTTPS, Secure on every installation. The CSV export guards against formulas in cells (e.g. a name starting with =). Passwords set by the admin need at least 8 characters. The sign-in no longer reveals through its response time whether a user name exists.
+- **Fixed:** Permissions: the switches “View items” and “Advanced search & filters” have been removed - they could be changed but had no effect. “Maintain current value & value history” now takes effect: without this permission the field is read-only when editing. The confirmation when switching shows an icon again instead of HTML text.
+- **Fixed:** User management: users with an apostrophe in their name can be deleted again and their two-factor sign-in reset.
+- **Fixed:** Deleting: when a single item is deleted, all of its photos are now removed from the server as well. Previously the additional photos stayed in the upload folder.
+- **Fixed:** Security, “own items only”: if the setting cannot be read because of a database error, the restriction stays in place instead of showing all items. The statistics above the list now only count the user's own items with this setting.
+- **Fixed:** List: with a room selected, the total at the top and the statistics under “Advanced search” now only cover the items in that room. Previously they showed the count and total of all rooms.
+- **Fixed:** CSV export: a backslash before a quotation mark (e.g. C:\"Receipts") no longer mixes up the columns in Excel and LibreOffice.
+- **Fixed:** User management: the “Who is online” display has been removed. It had not shown anyone for some time. The IP addresses and visited pages stored for it in the past are deleted.
 
 ## 4.5.2 — 2026-10-24
 

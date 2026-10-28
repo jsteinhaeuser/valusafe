@@ -98,6 +98,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $aktueller_wert = trim($_POST['aktueller_wert'] ?? '');
             $aktueller_wert = $aktueller_wert !== '' ? str_replace(',', '.', $aktueller_wert) : null;
             $aktueller_wert_datum = trim($_POST['aktueller_wert_datum'] ?? '') ?: null;
+            // Recht "Aktuellen Wert & Werthistorie pflegen" (OWASP-A01-006, 4.6):
+            // ohne es bleibt der gespeicherte Wert, egal was gesendet wurde.
+            // Vorgabe: Editor ja, Leser nein - wirkt nur, wenn ein Admin es abschaltet.
+            if (!hasPermission('items_value')) {
+                $aktueller_wert       = $item['aktueller_wert'] ?? null;
+                $aktueller_wert_datum = $item['aktueller_wert_datum'] ?? null;
+            }
             $custom1_wert = trim($_POST['custom1_wert'] ?? '') ?: null;
             $custom1_typ  = in_array($_POST['custom1_typ'] ?? '', ['text','zahl']) ? $_POST['custom1_typ'] : 'text';
             $custom2_wert = trim($_POST['custom2_wert'] ?? '') ?: null;
@@ -142,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             // Werthistorie-Eintrag wenn aktueller_wert gesetzt und geändert
-            if ($aktueller_wert !== null) {
+            if ($aktueller_wert !== null && hasPermission('items_value')) {
                 $prevWert = floatval($item['aktueller_wert'] ?? -1);
                 if (floatval($aktueller_wert) !== $prevWert) {
                     try {
@@ -626,7 +633,7 @@ include 'header_next_page.php';
             <input type="text" id="aktueller_wert" name="aktueller_wert"
                    inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*"
                    value="<?php echo htmlspecialchars($item['aktueller_wert'] ?? ''); ?>"
-                   placeholder="0.00">
+                   placeholder="0.00"<?php echo hasPermission('items_value') ? '' : ' readonly aria-readonly="true"'; ?>>
             <?php 
             $kauf = floatval($item['preis'] ?? 0);
             $akt  = isset($item['aktueller_wert']) && $item['aktueller_wert'] !== null ? floatval($item['aktueller_wert']) : null;
@@ -644,7 +651,7 @@ include 'header_next_page.php';
         <div class="form-group">
             <label for="aktueller_wert_datum"><i class="ti ti-calendar" aria-hidden="true"></i> <?php echo t('col_bewertungsdatum'); ?>:</label>
             <input type="date" id="aktueller_wert_datum" name="aktueller_wert_datum"
-                   value="<?php echo htmlspecialchars($item['aktueller_wert_datum'] ?? ''); ?>">
+                   value="<?php echo htmlspecialchars($item['aktueller_wert_datum'] ?? ''); ?>"<?php echo hasPermission('items_value') ? '' : ' readonly aria-readonly="true"'; ?>>
         </div>
     </div>
     

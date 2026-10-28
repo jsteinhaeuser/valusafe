@@ -39,34 +39,30 @@ function hasActiveFilters($filters) {
 /**
  * Berechnet Statistiken basierend auf den aktuellen Filtern
  */
-function getSearchStats($filters) {
+function getSearchStats($filters, bool $showHidden = false, int $filterRaum = 0, int $filterPosition = 0) {
     global $db;
 
-    // Only-own-items prüfen
-    $onlyOwn = false;
-    try {
-        $setting = $db->selectOne("SELECT setting_value FROM app_settings WHERE setting_key = 'only_own_items'");
-        if (($setting['setting_value'] ?? '0') === '1') {
-            // Admins und Benutzer mit sieht_alle=1 ausgenommen
-            $currentUser = $db->selectOne("SELECT role, sieht_alle FROM users WHERE username = ?", [$_SESSION['username'] ?? '']);
-            if ($currentUser && $currentUser['role'] !== 'admin' && !$currentUser['sieht_alle']) {
-                $onlyOwn = true;
-            }
-        }
-    } catch (Exception $e) {}
-
-    // SQL Query mit Filtern aufbauen
+    // SQL Query mit Filtern aufbauen. Zeitwert nach der gemeinsamen Regel
+    // (helpers_werte.php); bis 4.6 ersetzte hier der Kaufpreis nur einen
+    // FEHLENDEN Zeitwert, nicht einen von 0 (TESTFUNDE.md, FUND-02).
     $sql = "SELECT COUNT(*) as count, SUM(preis) as total_value, AVG(preis) as avg_value,
-                   SUM(CASE WHEN aktueller_wert IS NOT NULL THEN aktueller_wert ELSE preis END) as zeitwert
+                   SUM(" . vsZeitwertSql('w') . ") as zeitwert
             FROM wertsachen w
             WHERE 1=1";
-    $params = [];
 
-    // Only-own-items Filter
-    if ($onlyOwn) {
-        $sql .= " AND w.erstellt_von = ?";
-        $params[] = $_SESSION['username'] ?? '';
+    // Verborgene wie in der Liste (index.php?show_hidden=1). Bis 4.6 zaehlte
+    // die Suchleiste sie immer mit: "7 Eintraege gefunden" ueber einer Liste
+    // mit 6 (TESTFUNDE.md, FUND-03).
+    if (!$showHidden) {
+        $sql .= " AND (w.hidden = 0 OR w.hidden IS NULL)";
     }
+
+    // Only-own-items: dieselbe Regel wie Liste und Einzelzugriffe
+    // (nurEigeneSql, helpers.php). Bis 4.6 pruefte diese Funktion selbst und
+    // zaehlte ALLE Gegenstaende, wenn der Benutzer nicht in users stand oder
+    // die Abfrage scheiterte (tests/TESTFUNDE.md, FUND-07).
+    [$ownSql, $params] = nurEigeneSql('w');
+    $sql .= $ownSql;
 
     // Textsuche
     if (!empty($filters['search'])) {
@@ -120,6 +116,17 @@ function getSearchStats($filters) {
     // Nur mit Dokumenten
     if ($filters['has_docs']) {
         $sql .= " AND EXISTS (SELECT 1 FROM dokumente d WHERE d.wertsache_id = w.id)";
+    }
+
+    // Raum- und Positions-Chips der Liste (index.php?filter_raum=, filter_position=).
+    // Bis 4.6 kannte die Suchleiste nur den Suchfilter "ort" (TESTFUNDE.md, HINWEIS-06).
+    if ($filterRaum) {
+        $sql .= " AND w.raum_id = ?";
+        $params[] = $filterRaum;
+    }
+    if ($filterPosition) {
+        $sql .= " AND w.position_id = ?";
+        $params[] = $filterPosition;
     }
     
     try {

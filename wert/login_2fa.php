@@ -74,18 +74,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($sperre = $vsZweiFaGesperrt()) > 0
         $verified = true;
     }
 
-    // Backup-Code prüfen
-    if (!$verified && !empty($user['totp_backup_codes'])) {
-        $backupCodes = json_decode($user['totp_backup_codes'], true);
-        $codeUpper   = strtoupper(trim($code));
-        $key = array_search($codeUpper, $backupCodes);
+    // Backup-Code prüfen - seit 4.6 gehasht gespeichert (OWASP-A06-004);
+    // Listen von vor 4.6 im Klartext werden dabei umgestellt
+    $backupCodes = !empty($user['totp_backup_codes']) ? (json_decode($user['totp_backup_codes'], true) ?: []) : [];
+    if (!$verified && $backupCodes) {
+        $key = TOTP::findBackupCode($backupCodes, $code);
         if ($key !== false) {
             // Backup-Code einmalig verwenden → aus Liste entfernen
             unset($backupCodes[$key]);
             $pdo->prepare("UPDATE users SET totp_backup_codes = ? WHERE id = ?")
-                ->execute([json_encode(array_values($backupCodes)), $user['id']]);
+                ->execute([json_encode(TOTP::backupCodesUmstellen($backupCodes)), $user['id']]);
             $verified = true;
         }
+    } elseif ($verified && TOTP::brauchtUmstellung($backupCodes)) {
+        $pdo->prepare("UPDATE users SET totp_backup_codes = ? WHERE id = ?")
+            ->execute([json_encode(TOTP::backupCodesUmstellen($backupCodes)), $user['id']]);
     }
 
     if ($verified) {
@@ -104,6 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($sperre = $vsZweiFaGesperrt()) > 0
             $_SESSION['lang'] = $user['lang'];
         }
         $_SESSION['login_time']    = time();
+        $_SESSION['pw_kennung']   = vsSitzungKennung((string)$user['password']);   // OWASP-A07-003
         $_SESSION['last_activity'] = time();
         unset($_SESSION['totp_pending_user_id'],
               $_SESSION['totp_pending_username'],

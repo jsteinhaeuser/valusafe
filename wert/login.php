@@ -60,6 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
                 $stmt->execute([$username]);
                 $user = $stmt->fetch();
+                if (!$user) {
+                    // Gleich lange pruefen wie bei einem echten Konto, sonst
+                    // verraet die Antwortzeit, ob es den Namen gibt (OWASP-A07-007).
+                    // Hash eines zufaelligen, verworfenen Passworts.
+                    password_verify($passwort, '$argon2id$v=19$m=65536,t=4,p=1$ZS9vRGJkUzZsaHExZkI5Vg$ce+0EtC23+aLb4EbLNK/uzYS1l/DCsIrB13QF3EQFf0');
+                }
                 if ($user && password_verify($passwort, $user['password'])) {
                     // 2FA prüfen
                     if (!empty($user['totp_enabled']) && $user['totp_enabled'] == 1) {
@@ -85,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['lang'] = $user['lang'];
                     }
                     $_SESSION['login_time']   = time();
+                    $_SESSION['pw_kennung']   = vsSitzungKennung((string)$user['password']);   // OWASP-A07-003
                     $_SESSION['last_activity']= time();
                     $pdo->prepare("UPDATE users SET letzter_login = NOW() WHERE id = ?")->execute([$user['id']]);
                     logSecurityEvent($pdo, 'login_success', $user['id'], 'Benutzer: ' . $username);

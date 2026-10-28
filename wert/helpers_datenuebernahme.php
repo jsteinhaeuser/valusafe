@@ -530,3 +530,104 @@ if (!function_exists('vsUebernahmeBackupDatei')) {
         return $pfad;
     }
 }
+
+if (!defined('VS_NUR_SUPERADMIN_TABELLEN')) {
+    /**
+     * Tabellen, die nur der SuperAdmin aus einer Sicherung zurueckholen darf
+     * (OWASP-A06-001, 4.6). Benutzer verwaltet nur er (backend/users.php),
+     * app_settings traegt seine sa_*-Schalter, security_log ist das Protokoll,
+     * das er liest. Ein Admin, der eine Sicherung einspielt, bekaeme sonst
+     * mit einer selbst geschriebenen Datei ein Konto unter dem Namen des
+     * SuperAdmins.
+     */
+    define('VS_NUR_SUPERADMIN_TABELLEN', ['users', 'app_settings', 'security_log']);
+}
+
+if (!function_exists('vsSqlTabellenFiltern')) {
+    /**
+     * Nimmt aus einer Liste einzelner, bereits gepruefter Anweisungen alle
+     * heraus, die eine der genannten Tabellen betreffen.
+     *
+     * @param  string[] $anweisungen
+     * @param  string[] $tabellen
+     * @return array{behalten: string[], uebersprungen: string[]}
+     */
+    function vsSqlTabellenFiltern(array $anweisungen, array $tabellen): array {
+        $behalten = [];
+        $weg = [];
+        foreach ($anweisungen as $sql) {
+            $teile = vsSqlZerlegen($sql);
+            $e = $teile ? vsUebernahmeAnweisung($teile[0]) : ['art' => 'unzulaessig'];
+            if (isset($e['tabelle']) && in_array($e['tabelle'], $tabellen, true)) {
+                $weg[$e['tabelle']] = true;
+                continue;
+            }
+            $behalten[] = $sql;
+        }
+        $weg = array_keys($weg);
+        sort($weg);
+        return ['behalten' => $behalten, 'uebersprungen' => $weg];
+    }
+}
+
+if (!function_exists('vsRestorePruefen')) {
+    /**
+     * Prueft eine Datenbanksicherung, bevor restore.php sie einspielt
+     * (OWASP-A06-001, 4.6).
+     *
+     * Bis 4.5.2 fuehrte restore.php jede Anweisung jeder database_*.sql aus.
+     * Ueber die Datenuebernahme liess sich eine solche Datei hochladen - auch
+     * wenn deren Pruefung sie ablehnte, blieb sie liegen. Jetzt gilt dieselbe
+     * Formregel wie bei der Uebernahme (nur, was backup.php schreibt), aber
+     * ohne deren Versionsbedingungen: Eine eigene Sicherung von vor 4.4 laesst
+     * sich weiter zurueckspielen, die Migrationen laufen danach.
+     *
+     * Tabellen, die ValuSafe nicht kennt, und die fluechtigen (Sperren,
+     * Passwort-Links) werden uebersprungen. Ohne SuperAdmin auch
+     * VS_NUR_SUPERADMIN_TABELLEN.
+     *
+     * @return array{ok: bool, unzulaessig: string[], ausfuehren: string[], uebersprungen: string[]}
+     */
+    function vsRestorePruefen(string $sqlText, bool $istSuperAdmin): array {
+        $r = ['ok' => false, 'unzulaessig' => [], 'ausfuehren' => [], 'uebersprungen' => []];
+        $gesperrt = $istSuperAdmin ? [] : VS_NUR_SUPERADMIN_TABELLEN;
+        $weg = [];
+        $mitCreate = [];
+        $mitDrop = [];
+        foreach (vsSqlZerlegen($sqlText) as $a) {
+            $e = vsUebernahmeAnweisung($a);
+            if ($e['art'] === 'unzulaessig') {
+                if (count($r['unzulaessig']) < 3) {
+                    $r['unzulaessig'][] = mb_strimwidth($a['sql'], 0, 120, '…', 'UTF-8');
+                }
+                continue;
+            }
+            if ($e['art'] === 'set') {
+                continue;
+            }
+            $t = $e['tabelle'];
+            if (in_array($t, VS_UEBERNAHME_FLUECHTIG, true)) {
+                continue;       // gehoeren zur laufenden Installation, keine Meldung
+            }
+            if (!in_array($t, VS_UEBERNAHME_TABELLEN, true) || in_array($t, $gesperrt, true)) {
+                $weg[$t] = true;
+                continue;
+            }
+            if ($e['art'] === 'create') $mitCreate[$t] = true;
+            if ($e['art'] === 'drop')   $mitDrop[$t] = true;
+            $r['ausfuehren'][] = $a['sql'];
+        }
+        foreach (array_keys(array_diff_key($mitDrop, $mitCreate)) as $t) {
+            if (count($r['unzulaessig']) < 3) {
+                $r['unzulaessig'][] = 'DROP TABLE IF EXISTS `' . $t . '` (ohne CREATE TABLE)';
+            }
+        }
+        $r['uebersprungen'] = array_keys($weg);
+        sort($r['uebersprungen']);
+        $r['ok'] = !$r['unzulaessig'] && $r['ausfuehren'];
+        if (!$r['ok']) {
+            $r['ausfuehren'] = [];
+        }
+        return $r;
+    }
+}

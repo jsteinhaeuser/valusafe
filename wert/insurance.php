@@ -38,14 +38,15 @@ foreach ($versicherungen as &$v) {
         WHERE w.versicherung_id = ?" . $ownSql . "
         ORDER BY w.name ASC
     ", array_merge([$v['id']], $ownParams));
-    $v['gesamtwert'] = array_sum(array_map(fn($i) => $i['aktueller_wert'] ?: $i['preis'], $v['items']));
+    // Zeitwert nach der gemeinsamen Regel (helpers_werte.php, seit 4.6)
+    $v['gesamtwert'] = array_sum(array_map(fn($i) => vsZeitwert($i), $v['items']));
     // Gegenstaende ohne aktueller_wert UND ohne preis gehen mit 0 in die Summe
     // ein. Der erfasste Gesamtwert ist damit eine Untergrenze, und ein gruener
     // Deckungsgrad liest sich sonst als Sicherheit, die die Daten nicht
     // hergeben. Deshalb wird ihre Anzahl mitgefuehrt und angezeigt.
     $v['ohne_wert'] = count(array_filter(
         $v['items'],
-        fn($i) => !($i['aktueller_wert'] ?: $i['preis'])
+        fn($i) => vsZeitwert($i) <= 0
     ));
 }
 unset($v);
@@ -192,7 +193,8 @@ if (!$printMode) {
         <div style="display:flex; gap:10px;">
             <a href="insurance.php?print=1<?php echo $versId ? '&v='.$versId : ''; ?>" target="_blank"
                style="padding:9px 18px; background:var(--vs-danger); color:white; border-radius:6px; text-decoration:none; font-weight:600;"><i class="ti ti-file-type-pdf" aria-hidden="true"></i> <?php echo t('btn_export_pdf'); ?></a>
-            <?php if (hasPermission('admin')): ?>
+            <?php // bis 4.6 das Recht "admin" - gibt es nicht, wirkte wie isAdmin() ?>
+            <?php if (isAdmin()): ?>
             <a href="backend/insurance.php" style="padding:9px 18px; background:var(--vs-accent); color: var(--vs-accent-text,#fff); border-radius:6px; text-decoration:none; font-weight:600;"><i class="ti ti-settings" aria-hidden="true"></i> <?php echo t('btn_manage'); ?></a>
             <?php endif; ?>
         </div>
@@ -304,7 +306,7 @@ foreach ($versicherungen as $v):
                         <td><?php echo htmlspecialchars($item['name']); ?></td>
                         <td><?php echo htmlspecialchars($item['kategorie'] ?? '—'); ?></td>
                         <td><?php echo htmlspecialchars($item['ort'] ?? '—'); ?></td>
-                        <td style="text-align:right;"><?php echo number_format($item['aktueller_wert'] ?: $item['preis'], 2, ',', '.'); ?></td>
+                        <td style="text-align:right;"><?php echo number_format(vsZeitwert($item), 2, ',', '.'); ?></td>
                     </tr>
                     <?php endforeach; ?>
                     <tr class="summe">
@@ -382,7 +384,7 @@ foreach ($versicherungen as $v):
                         <td><strong><?php echo htmlspecialchars($item['name']); ?></strong></td>
                         <td><span class="badge badge-secondary"><?php echo htmlspecialchars($item['kategorie'] ?? '—'); ?></span></td>
                         <td><?php echo htmlspecialchars($item['ort'] ?? '—'); ?></td>
-                        <td><strong style="color:var(--vs-success);"><?php echo formatPrice($item['aktueller_wert'] ?: $item['preis']); ?></strong></td>
+                        <td><strong style="color:var(--vs-success);"><?php echo formatPrice(vsZeitwert($item)); ?></strong></td>
                     </tr>
                     <?php endforeach; ?>
                     <tr style="background:var(--bg-color); font-weight:bold;">

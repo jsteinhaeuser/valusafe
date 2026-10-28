@@ -2,7 +2,78 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 24.10.2026 aus der Projektchronik.
+Erzeugt am 28.10.2026 aus der Projektchronik.
+
+Version 4.6.1   28.10.2026
+--------------------------
+  [Fix] Zeitwert: Überall gilt jetzt dieselbe Regel - der aktuelle Wert, wenn
+        einer über 0 eingetragen ist, sonst der Kaufpreis. Bisher zählte ein
+        Zeitwert von 0 an manchen Stellen als Wert 0, an anderen als „nicht
+        bewertet“. Betroffen waren Dashboard (Zeitwert-Kachel, höchster
+        Zeitwert, wertvollster Gegenstand, Top 5, Kategorien), Suchleiste,
+        Versicherung, Versicherungsexport und Schadensfall mit Dokument und
+        Belegen.
+  [Fix] Dashboard: Der Trend vergleicht jetzt den Zeitwert heute mit dem
+        Zeitwert zum Stichtag und steht unter der Zeitwert-Kachel. Bisher
+        verglich er Kaufpreise mit alten Zeitwerten.
+  [Fix] Suchleiste: Verborgene Gegenstände werden nur noch mitgezählt, wenn
+        die Liste sie auch zeigt. Bisher stand dort z. B. „7 Einträge
+        gefunden“ über einer Liste mit 6.
+  [Neu] Kopfzeile: Unter „ValuSafe“ steht jetzt klein die installierte
+        Version.
+  [Fix] Änderungsverlauf: Leere Felder (z. B. kein Kaufdatum) werden wieder
+        als leer angezeigt, statt eine Warnung im Fehlerprotokoll zu erzeugen.
+
+Version 4.6   28.10.2026
+------------------------
+  [Fix] Sicherheit, Anmeldung: Wird ein Konto gelöscht, herabgestuft oder
+        sein Passwort geändert, gilt das sofort auch für bereits angemeldete
+        Sitzungen. Bisher arbeitete eine offene Sitzung mit den alten Rechten
+        weiter. Nach einem Passwortwechsel bleibt nur die Sitzung angemeldet,
+        in der er geschah. Jede Anmeldung endet außerdem spätestens nach 12
+        Stunden.
+  [Fix] Sicherheit, Wiederherstellen: Eine Datenbanksicherung wird vor dem
+        Einspielen geprüft und nur angenommen, wenn sie ausschließlich
+        enthält, was ValuSafe selbst in Sicherungen schreibt. Benutzer,
+        SuperAdmin-Einstellungen und das Sicherheitsprotokoll holt nur der
+        SuperAdmin aus einer Sicherung zurück; ein Admin erhält sie
+        unverändert. Abgelehnte Uploads der Datenübernahme bleiben nicht
+        mehr im Ordner backups/ liegen.
+  [Fix] Sicherheit, Zwei-Faktor-Anmeldung: Die Backup-Codes werden nur noch
+        verschlüsselt (gehasht) gespeichert und einmal angezeigt, direkt nach
+        dem Erzeugen. Wer sie nicht mehr hat, erzeugt mit einem Code aus der
+        Authenticator-App neue; die alten werden damit ungültig. Vorhandene
+        Codes gelten weiter.
+  [Fix] Sicherheit, kleinere Punkte: Das Anmelde-Cookie trägt jetzt auf jeder
+        Installation HttpOnly, SameSite und bei HTTPS Secure. Der CSV-Export
+        schützt vor Formeln in Zellen (z. B. ein Name, der mit = beginnt).
+        Vom Admin vergebene Passwörter brauchen mindestens 8 Zeichen. Die
+        Anmeldung verrät über die Antwortzeit nicht mehr, ob es einen
+        Benutzernamen gibt.
+  [Fix] Rechteverwaltung: Die Schalter „Gegenstände anzeigen“ und
+        „Erweiterte Suche & Filter“ sind entfallen - sie ließen sich
+        umstellen, wirkten aber nicht. „Aktuellen Wert & Werthistorie
+        pflegen“ wirkt jetzt: Ohne dieses Recht ist das Feld beim Bearbeiten
+        schreibgeschützt. Die Bestätigung beim Umschalten zeigt wieder ein
+        Symbol statt HTML-Text.
+  [Fix] Benutzerverwaltung: Benutzer mit Apostroph im Namen lassen sich wieder
+        löschen, ihre Zwei-Faktor-Anmeldung zurücksetzen.
+  [Fix] Löschen: Wird ein Gegenstand einzeln gelöscht, verschwinden jetzt
+        auch alle seine Fotos vom Server. Bisher blieben die zusätzlichen
+        Fotos im Upload-Ordner liegen.
+  [Fix] Sicherheit, „nur eigene Gegenstände“: Kann die Einstellung wegen
+        eines Datenbankfehlers nicht gelesen werden, bleibt die Einschränkung
+        bestehen, statt alle Gegenstände zu zeigen. Die Statistik über der
+        Liste zählt bei dieser Einstellung nur noch die eigenen Gegenstände.
+  [Fix] Liste: Mit gewähltem Raum zeigen die Gesamtsumme oben und die
+        Statistik unter „Erweiterte Suche“ nur noch die Gegenstände
+        dieses Raums. Bisher standen dort Anzahl und Summe aller Räume.
+  [Fix] CSV-Export: Ein Rückstrich vor einem Anführungszeichen (z. B.
+        C:\"Belege") bringt in Excel und LibreOffice keine Spalten mehr
+        durcheinander.
+  [Fix] Benutzerverwaltung: Die Anzeige „Wer ist online“ ist entfallen.
+        Sie zeigte seit längerem niemanden mehr an. Die dafür früher
+        gespeicherten IP-Adressen und besuchten Seiten werden gelöscht.
 
 Version 4.5.2   24.10.2026
 --------------------------

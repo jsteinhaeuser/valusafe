@@ -832,6 +832,7 @@ return [
     'bk_or'                      => 'or',
     // users.php
     'usr_password_empty'         => 'Password must not be empty',
+    'usr_password_too_short'     => 'The password must be at least 8 characters long.',
     'usr_email_invalid'          => 'Please enter a valid email address (or leave the field empty).',
     'usr_exists'                 => 'This username already exists',
     'usr_save_failed'            => 'Saving failed. Details are in the error log.',

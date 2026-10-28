@@ -12,6 +12,8 @@
  *   01_<Gegenstand>/Belege/<Originalname>       (nur mit Belegrecht)
  */
 
+require_once __DIR__ . '/helpers_csv.php';
+
 if (!function_exists('vsZipTeil')) {
     /**
      * Ein Pfadteil fuer die ZIP: keine Schraegstriche, Steuerzeichen oder
@@ -122,10 +124,7 @@ if (!function_exists('vsSchadenfallCsv')) {
      */
     function vsSchadenfallCsv(array $kopf, array $zeilen): string {
         $feld = function ($v): string {
-            $v = (string)$v;
-            if ($v !== '' && strpbrk($v[0], '=+-@') !== false && !is_numeric($v)) {
-                $v = "'" . $v;
-            }
+            $v = vsCsvFormelSchutz($v);
             if (strpbrk($v, ";\"\r\n") !== false) {
                 $v = '"' . str_replace('"', '""', $v) . '"';
             }

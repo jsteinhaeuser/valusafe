@@ -121,7 +121,7 @@ $csvZeilen = [];
 $sumPreis = 0.0; $sumZeit = 0.0;
 foreach ($gegenstaende as $i => $g) {
     $je = $inhalt['je'][$g['id']];
-    $zeit = (float)($g['aktueller_wert'] ?: $g['preis']);
+    $zeit = vsZeitwert($g);
     $sumPreis += (float)$g['preis'];
     $sumZeit  += $zeit;
     $txt .= ($i + 1) . '. ' . $g['name'] . "\r\n"

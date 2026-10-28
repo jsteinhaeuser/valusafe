@@ -5,6 +5,7 @@ require_once 'db.php';
 require_once 'helpers.php';
 require_once 'helpers_pagination.php';
 require_once 'helpers_search.php';
+require_once __DIR__ . '/helpers_liste.php';
 requireLogin();
 
 
@@ -108,44 +109,12 @@ $editReturnParam = '&return_url=' . urlencode($_returnUrl);
 // Only-own-items prüfen (gleiche Regel wie Einzelzugriffe, helpers.php)
 $onlyOwnItems = userSeesOnlyOwnItems();
 
-$sql = "SELECT w.*, o.name as raum_name, k.name as kategorie_name,
-               sp.name AS standort_position_name, sr.name AS standort_name
-        FROM wertsachen w 
-        LEFT JOIN raeume o ON w.raum_id = o.id 
-        LEFT JOIN kategorien k ON w.kategorie_id = k.id
-        LEFT JOIN positionen sp ON w.position_id = sp.id
-        LEFT JOIN standorte sr ON sr.id = COALESCE(sp.raum_id, w.standort_id)
-        WHERE 1=1";
-
 // Filter für verborgene Items (Standard: nur sichtbare anzeigen)
 $showHidden = isset($_GET['show_hidden']) && $_GET['show_hidden'] === '1';
-if (!$showHidden) {
-    $sql .= " AND (w.hidden = 0 OR w.hidden IS NULL)";
-}
-
-$params = [];
-
-// Only-own-items Filter
-if ($onlyOwnItems) {
-    $sql .= " AND w.erstellt_von = ?";
-    $params[] = $_SESSION['username'] ?? '';
-}
-
-// Erweiterte Filter hinzufügen
-$searchConditions = buildSearchQuery($currentFilters, $params);
-foreach ($searchConditions as $condition) {
-    $sql .= " AND " . $condition;
-}
-
-// Raum-Filter
-if ($filter_raum) {
-    $sql .= " AND w.raum_id = ?";
-    $params[] = $filter_raum;
-}
-if ($filter_position) {
-    $sql .= " AND w.position_id = ?";
-    $params[] = $filter_position;
-}
+// Abfragen der Liste stehen seit 4.6 in helpers_liste.php (testbar, siehe
+// tests/NurEigeneTest.php); Wortlaut unveraendert.
+$_abfragen = vsListeAbfragen($currentFilters, $showHidden, $onlyOwnItems, $_SESSION['username'] ?? '', $filter_raum, $filter_position);
+[$sql, $params] = $_abfragen['liste'];
 
 // Sortierung hinzufügen
 if ($sort_column === 'sort_order') {
@@ -155,39 +124,8 @@ if ($sort_column === 'sort_order') {
 }
 
 try {
-    // ERST: Gesamtzahl für Pagination berechnen (mit erweiterten Filtern)
-    $count_sql = "SELECT COUNT(*) as total FROM wertsachen w
-                  LEFT JOIN positionen sp ON w.position_id = sp.id
-                  LEFT JOIN standorte sr ON sr.id = COALESCE(sp.raum_id, w.standort_id)
-                  WHERE 1=1";
-    
-    // Hidden-Filter auch für Count
-    if (!$showHidden) {
-        $count_sql .= " AND (w.hidden = 0 OR w.hidden IS NULL)";
-    }
-
-    // Only-own Filter auch für Count
-    if ($onlyOwnItems) {
-        $count_sql .= " AND w.erstellt_von = ?";
-    }
-    
-    $count_params = $onlyOwnItems ? [$_SESSION['username'] ?? ''] : [];
-    
-    // Erweiterte Filter auch für Count
-    $countConditions = buildSearchQuery($currentFilters, $count_params);
-    foreach ($countConditions as $condition) {
-        $count_sql .= " AND " . $condition;
-    }
-
-    // Standort-Filter auch für Count
-    if ($filter_raum) {
-        $count_sql .= " AND w.raum_id = ?";
-        $count_params[] = $filter_raum;
-    }
-    if ($filter_position) {
-        $count_sql .= " AND w.position_id = ?";
-        $count_params[] = $filter_position;
-    }
+    // ERST: Gesamtzahl für Pagination (Abfrage aus vsListeAbfragen())
+    [$count_sql, $count_params] = $_abfragen['anzahl'];
     
     $total_items = $db->selectOne($count_sql, $count_params)['total'] ?? 0;
     
@@ -233,33 +171,11 @@ try {
     $max_value = 0;
     
     if ($total_count > 0) {
-        // Für Statistiken ALLE gefilterten Werte holen (ohne LIMIT)
-        $stats_sql = "SELECT preis FROM wertsachen w WHERE 1=1";
-        
-        // Hidden-Filter auch für Stats
-        if (!$showHidden) {
-            $stats_sql .= " AND (w.hidden = 0 OR w.hidden IS NULL)";
-        }
-
-        // Only-own Filter auch für Stats
-        if ($onlyOwnItems) {
-            $stats_sql .= " AND w.erstellt_von = ?";
-        }
-        
-        $stats_params = $onlyOwnItems ? [$_SESSION['username'] ?? ''] : [];
-        
-        // Erweiterte Filter auch für Stats
-        $statsConditions = buildSearchQuery($currentFilters, $stats_params);
-        foreach ($statsConditions as $condition) {
-            $stats_sql .= " AND " . $condition;
-        }
-        
+        // Für Statistiken ALLE gefilterten Werte holen (ohne LIMIT); Abfrage
+        // und Rechnung seit 4.6 in helpers_liste.php
+        [$stats_sql, $stats_params] = $_abfragen['statistik'];
         $all_items = $db->select($stats_sql, $stats_params);
-        foreach ($all_items as $item) {
-            $total_value += floatval($item['preis']);
-        }
-        $avg_value = $total_value / $total_count;
-        $max_value = max(array_column($all_items, 'preis'));
+        [$total_value, $avg_value, $max_value] = vsListenStatistik($all_items, $total_count);
     }
     
     // Dokumente-Anzahl für jeden Gegenstand laden (wenn Feature aktiv)
@@ -355,6 +271,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_action'])) {
                                     }
                                 }
                                 $db->execute("DELETE FROM dokumente WHERE wertsache_id = ?", [$id]);
+                                // Werthistorie und Schadensfall-Zuordnung wie
+                                // in helpers_loeschen.php (FUND-05: der
+                                // Fremdschluessel fehlt auf zwei Instanzen)
+                                $db->execute("DELETE FROM wert_historie WHERE wertsache_id = ?", [$id]);
+                                if (vsMigration014Da()) {
+                                    $db->execute("DELETE FROM schadensfall_gegenstaende WHERE wertsache_id = ?", [$id]);
+                                }
                                 // Eintrag löschen
                                 $db->execute("DELETE FROM wertsachen WHERE id = ?", [$id]);
                                 logActivity('deleted', 'wertsachen', $id, $item['name']);
@@ -851,20 +774,9 @@ if ($view_mode === 'table'):
 // RAUMANSICHT (unverändert aus Original)
 // ══════════════════════════════════════════════════════════════════════
 if ($view_mode === 'room'):
-    $room_sql = "SELECT w.*, o.name as raum_name, k.name as kategorie_name
-                 FROM wertsachen w
-                 LEFT JOIN raeume o ON w.raum_id = o.id
-                 LEFT JOIN kategorien k ON w.kategorie_id = k.id
-                 WHERE (w.hidden = 0 OR w.hidden IS NULL)";
-    $room_params = [];
-    $roomConditions = buildSearchQuery($currentFilters, $room_params);
-    foreach ($roomConditions as $c) { $room_sql .= " AND " . $c; }
-    // "nur eigene" galt bis 4.3.32 in der Raumansicht nicht.
-    if ($onlyOwnItems) {
-        $room_sql .= " AND w.erstellt_von = ?";
-        $room_params[] = $_SESSION['username'] ?? '';
-    }
-    $room_sql .= " ORDER BY o.name ASC, w.name ASC";
+    // Abfrage seit 4.6 in helpers_liste.php ("nur eigene" galt bis 4.3.32
+    // in der Raumansicht nicht - jetzt in tests/NurEigeneTest.php geprueft)
+    [$room_sql, $room_params] = vsRaumansichtAbfrage($currentFilters, $onlyOwnItems, $_SESSION['username'] ?? '');
     $alle_items = $db->select($room_sql, $room_params);
     $raeume = [];
     foreach ($alle_items as $item) {

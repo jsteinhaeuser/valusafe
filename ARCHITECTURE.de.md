@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 24. Oktober 2026 · Version 4.5.2 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 28. Oktober 2026 · Version 4.6.1 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -153,9 +153,9 @@ Zwei Besonderheiten:
 | Passwörter | Argon2id über `password_hash()` |
 | SQL | ausnahmslos Prepared Statements, `EMULATE_PREPARES = false` |
 | CSRF | `Security::getCSRFInput()` im Formular, `validateRequest()` im POST-Zweig |
-| Session | `session_regenerate_id(true)` beim Login, Timeout, Fingerprint aus Netzpräfix und User-Agent |
+| Session | `session_regenerate_id(true)` beim Login, Timeout, Fingerprint aus Netzpräfix und User-Agent; seit 4.6 bei jedem Aufruf Konto, Rolle und Passwortstand aus der Datenbank (`sitzung_helpers.php`), höchstens 12 Stunden |
 | Brute Force | `RateLimiter` — 5 Fehlversuche je IP-Adresse, dann 15 Minuten Sperre |
-| 2FA | eigene `TOTP`-Klasse nach RFC 6238, ohne Fremdbibliothek |
+| 2FA | eigene `TOTP`-Klasse nach RFC 6238, ohne Fremdbibliothek; Backup-Codes seit 4.6 nur als Hash gespeichert |
 | Uploads | MIME-Prüfung über `finfo`, Endungs-Whitelist, Neucodierung als JPEG |
 | HTTP-Header | CSP ohne fremde Hosts (aber mit `'unsafe-inline'` für Skripte und Stile), HSTS, `frame-ancestors 'none'`, `form-action 'self'` |
 | Verzeichnisse | `.htaccess` sperrt `upload/`, `documents/`, Konfigurationsdateien |
@@ -236,11 +236,11 @@ lang bewiesen. Am 27. September 2026 wurde die Liste erneut geprüft.
 
 **Weiterhin offen**
 
-1. **Keine Testabdeckung des Geschäftskerns.** Drei Testdateien decken Migrationshelfer, die Versuchssperre und die Sync-Helfer ab. Gegenstände, Berechtigungen und Exporte sind ungeprüft. Die Tests gehören nicht zum veröffentlichten Repository.
 2. **Keine `.htaccess`-Entsprechung auf der NAS-Instanz** (Nginx). Der Verzeichnisschutz hängt dort an der Serverkonfiguration, nicht an mitgelieferten Dateien.
 
 **Seit der ersten Fassung dieses Dokuments behoben**
 
+1. ~~Keine Testabdeckung des Geschäftskerns.~~ Seit 4.6 prüfen PHPUnit-Tests gegen eine SQLite-Datenbank aus `install/schema.sql` auch „nur eigene Gegenstände“, Berechtigungen, Werte und Zeitwert, Standorte, CSV-Export und Löschen — in 4.6.1 sind es 230 Tests. Was sie fanden, wurde in 4.6 und 4.6.1 behoben. Die Tests gehören weiterhin nicht zum veröffentlichten Repository.
 5. ~~Drei Waisen-Tabellen.~~ `orte`, `standort_raeume` und `standort_positionen` wurden in 4.3.25 entfernt — aus `install/schema.sql` und per Migration aus allen elf Installationen.
 
 6. ~~Drei Standort-Modelle nebeneinander.~~ Seit dem 24.09.2026 lösen alle Lesestellen `wertsachen.raum_id` gegen `raeume` auf. Die Messung davor: Auf keiner der elf Installationen zeigte ein Gegenstand auf einen Raum, den `raeume` nicht kannte.
@@ -257,14 +257,14 @@ lang bewiesen. Am 27. September 2026 wurde die Liste erneut geprüft.
 
 Für einen ersten Überblick in dieser Reihenfolge:
 
-1. **`db.php`** — Bootstrap, Auth, Berechtigungen, DB-Wrapper. Wer diese Datei versteht, versteht 80 Prozent der Konventionen.
+1. **`db.php`** — Bootstrap und Anmeldung; seit 4.6 mit `rechte_helpers.php` (Berechtigungen) und `Database.php` (DB-Wrapper). Wer diese Datei versteht, versteht 80 Prozent der Konventionen.
 2. **`index.php`** — die komplexeste Seite: Filter, Sortierung, Pagination, Massenaktionen, Sichtbarkeitsregeln.
 3. **`migrate.php`** mit **`backend/migration_runner.php`** — wie eine Datenbankänderung angewendet wird, von einer Installation selbst oder über die ganze Flotte.
 4. **`version_agent.php`** — kurz und in sich geschlossen; die Instanzseite des Versionsvergleichs. Sync-Agent und Hub gehören nicht zum veröffentlichten Repository.
 5. **`security.php`** — CSRF, Fingerprint, Upload-Prüfung.
 
-Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.516 Zeilen, gewachsen).
+Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.641 Zeilen, gewachsen).
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 24. Oktober 2026, Version 4.5.2. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 28. Oktober 2026, Version 4.6.1. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

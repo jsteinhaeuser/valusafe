@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 24.10.2026 17:01 von bin/changelog_export.php.
+ * Erzeugt am 28.10.2026 17:06 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,114 @@
  */
 
 return [
+    [
+        'version' => '4.6.1',
+        'date' => '2026-10-28',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Zeitwert: Überall gilt jetzt dieselbe Regel - der aktuelle Wert, wenn einer über 0 eingetragen ist, sonst der Kaufpreis. Bisher zählte ein Zeitwert von 0 an manchen Stellen als Wert 0, an anderen als „nicht bewertet“. Betroffen waren Dashboard (Zeitwert-Kachel, höchster Zeitwert, wertvollster Gegenstand, Top 5, Kategorien), Suchleiste, Versicherung, Versicherungsexport und Schadensfall mit Dokument und Belegen.',
+                'text_en' => 'Current value: the same rule now applies everywhere - the current value if one above 0 is entered, otherwise the purchase price. Previously a current value of 0 counted as 0 in some places and as “not valued” in others. This affected the dashboard (current value tile, highest current value, most valuable item, top 5, categories), the search bar, insurance, the insurance export and the damage claim with its document and receipts.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Dashboard: Der Trend vergleicht jetzt den Zeitwert heute mit dem Zeitwert zum Stichtag und steht unter der Zeitwert-Kachel. Bisher verglich er Kaufpreise mit alten Zeitwerten.',
+                'text_en' => 'Dashboard: the trend now compares today\'s current value with the current value on the reference date and appears under the current value tile. Previously it compared purchase prices with old current values.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Suchleiste: Verborgene Gegenstände werden nur noch mitgezählt, wenn die Liste sie auch zeigt. Bisher stand dort z. B. „7 Einträge gefunden“ über einer Liste mit 6.',
+                'text_en' => 'Search bar: hidden items are only counted when the list shows them as well. Previously it could say e.g. “7 entries found” above a list of 6.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Kopfzeile: Unter „ValuSafe“ steht jetzt klein die installierte Version.',
+                'text_en' => 'Header: the installed version is now shown in small print below “ValuSafe”.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Änderungsverlauf: Leere Felder (z. B. kein Kaufdatum) werden wieder als leer angezeigt, statt eine Warnung im Fehlerprotokoll zu erzeugen.',
+                'text_en' => 'Change history: empty fields (e.g. no purchase date) are shown as empty again instead of producing a warning in the error log.'
+            ]
+        ]
+    ],
+    [
+        'version' => '4.6',
+        'date' => '2026-10-28',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Anmeldung: Wird ein Konto gelöscht, herabgestuft oder sein Passwort geändert, gilt das sofort auch für bereits angemeldete Sitzungen. Bisher arbeitete eine offene Sitzung mit den alten Rechten weiter. Nach einem Passwortwechsel bleibt nur die Sitzung angemeldet, in der er geschah. Jede Anmeldung endet außerdem spätestens nach 12 Stunden.',
+                'text_en' => 'Security, sign-in: when an account is deleted, downgraded or its password is changed, this now applies immediately to sessions that are already signed in. Previously an open session kept working with the old rights. After a password change only the session in which it was made stays signed in. Every sign-in also ends after 12 hours at the latest.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Wiederherstellen: Eine Datenbanksicherung wird vor dem Einspielen geprüft und nur angenommen, wenn sie ausschließlich enthält, was ValuSafe selbst in Sicherungen schreibt. Benutzer, SuperAdmin-Einstellungen und das Sicherheitsprotokoll holt nur der SuperAdmin aus einer Sicherung zurück; ein Admin erhält sie unverändert. Abgelehnte Uploads der Datenübernahme bleiben nicht mehr im Ordner backups/ liegen.',
+                'text_en' => 'Security, restore: a database backup is checked before it is restored and only accepted if it contains nothing but what ValuSafe itself writes into backups. Users, SuperAdmin settings and the security log can only be restored by the SuperAdmin; for an admin they stay as they are. Rejected uploads from the data import no longer remain in the backups/ folder.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, Zwei-Faktor-Anmeldung: Die Backup-Codes werden nur noch verschlüsselt (gehasht) gespeichert und einmal angezeigt, direkt nach dem Erzeugen. Wer sie nicht mehr hat, erzeugt mit einem Code aus der Authenticator-App neue; die alten werden damit ungültig. Vorhandene Codes gelten weiter.',
+                'text_en' => 'Security, two-factor sign-in: backup codes are now stored only in hashed form and shown once, right after they are created. If you no longer have them, create new ones with a code from your authenticator app; the old ones then stop working. Existing codes keep working.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, kleinere Punkte: Das Anmelde-Cookie trägt jetzt auf jeder Installation HttpOnly, SameSite und bei HTTPS Secure. Der CSV-Export schützt vor Formeln in Zellen (z. B. ein Name, der mit = beginnt). Vom Admin vergebene Passwörter brauchen mindestens 8 Zeichen. Die Anmeldung verrät über die Antwortzeit nicht mehr, ob es einen Benutzernamen gibt.',
+                'text_en' => 'Security, smaller items: the sign-in cookie now carries HttpOnly, SameSite and, with HTTPS, Secure on every installation. The CSV export guards against formulas in cells (e.g. a name starting with =). Passwords set by the admin need at least 8 characters. The sign-in no longer reveals through its response time whether a user name exists.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Rechteverwaltung: Die Schalter „Gegenstände anzeigen“ und „Erweiterte Suche & Filter“ sind entfallen - sie ließen sich umstellen, wirkten aber nicht. „Aktuellen Wert & Werthistorie pflegen“ wirkt jetzt: Ohne dieses Recht ist das Feld beim Bearbeiten schreibgeschützt. Die Bestätigung beim Umschalten zeigt wieder ein Symbol statt HTML-Text.',
+                'text_en' => 'Permissions: the switches “View items” and “Advanced search & filters” have been removed - they could be changed but had no effect. “Maintain current value & value history” now takes effect: without this permission the field is read-only when editing. The confirmation when switching shows an icon again instead of HTML text.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Benutzerverwaltung: Benutzer mit Apostroph im Namen lassen sich wieder löschen, ihre Zwei-Faktor-Anmeldung zurücksetzen.',
+                'text_en' => 'User management: users with an apostrophe in their name can be deleted again and their two-factor sign-in reset.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Löschen: Wird ein Gegenstand einzeln gelöscht, verschwinden jetzt auch alle seine Fotos vom Server. Bisher blieben die zusätzlichen Fotos im Upload-Ordner liegen.',
+                'text_en' => 'Deleting: when a single item is deleted, all of its photos are now removed from the server as well. Previously the additional photos stayed in the upload folder.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit, „nur eigene Gegenstände“: Kann die Einstellung wegen eines Datenbankfehlers nicht gelesen werden, bleibt die Einschränkung bestehen, statt alle Gegenstände zu zeigen. Die Statistik über der Liste zählt bei dieser Einstellung nur noch die eigenen Gegenstände.',
+                'text_en' => 'Security, “own items only”: if the setting cannot be read because of a database error, the restriction stays in place instead of showing all items. The statistics above the list now only count the user\'s own items with this setting.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Liste: Mit gewähltem Raum zeigen die Gesamtsumme oben und die Statistik unter „Erweiterte Suche“ nur noch die Gegenstände dieses Raums. Bisher standen dort Anzahl und Summe aller Räume.',
+                'text_en' => 'List: with a room selected, the total at the top and the statistics under “Advanced search” now only cover the items in that room. Previously they showed the count and total of all rooms.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'CSV-Export: Ein Rückstrich vor einem Anführungszeichen (z. B. C:\\"Belege") bringt in Excel und LibreOffice keine Spalten mehr durcheinander.',
+                'text_en' => 'CSV export: a backslash before a quotation mark (e.g. C:\\"Receipts") no longer mixes up the columns in Excel and LibreOffice.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Benutzerverwaltung: Die Anzeige „Wer ist online“ ist entfallen. Sie zeigte seit längerem niemanden mehr an. Die dafür früher gespeicherten IP-Adressen und besuchten Seiten werden gelöscht.',
+                'text_en' => 'User management: the “Who is online” display has been removed. It had not shown anyone for some time. The IP addresses and visited pages stored for it in the past are deleted.'
+            ]
+        ]
+    ],
     [
         'version' => '4.5.2',
         'date' => '2026-10-24',
@@ -141,78 +249,6 @@ return [
                 'public' => true,
                 'text' => 'Sicherung: Die Dateien-Sicherung enthält jetzt auch die Profilbilder der Benutzer. Bisher fehlten sie und gingen beim Wiederherstellen oder Umziehen verloren.',
                 'text_en' => 'Backup: the files backup now also contains the users\' profile pictures. Until now they were missing and got lost when restoring or moving.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.4.1',
-        'date' => '2026-10-13',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Barrierefreiheit: Alle Formularfelder sind jetzt mit ihrer Beschriftung verbunden – Bildschirmleser nennen bei jedem Feld, wofür es ist (vor allem im Verwaltungsbereich: Versicherungen, Räume, Benutzer, Rechteverwaltung). Die Farbschemata in den Einstellungen lassen sich per Tastatur auswählen (Tab, Pfeiltasten).',
-                'text_en' => 'Accessibility: all form fields are now linked to their labels – screen readers announce what each field is for (especially in the admin area: insurance, rooms, users, permissions). The themes in the settings can be chosen with the keyboard (Tab, arrow keys).'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Barrierefreiheit: Bessere Kontraste in den Farbschemata Cloud, Ocean, Midnight, Mint, Glass, Navy und Emerald – Hinweistexte und Akzentfarben sind besser lesbar, Eingabefelder haben einen deutlich sichtbaren Rahmen.',
-                'text_en' => 'Accessibility: better contrast in the Cloud, Ocean, Midnight, Mint, Glass, Navy and Emerald themes – hint texts and accent colours are easier to read, input fields have a clearly visible border.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Bilder zuschneiden und drehen: Beim Anlegen, in der Schnellerfassung und beim Bearbeiten gibt es unter dem Foto den Knopf „Zuschneiden / drehen“. Rahmen frei oder im Format 1:1 bzw. 4:3 setzen, in 90-Grad-Schritten drehen – auch per Tastatur. Beim Bearbeiten lassen sich so auch schon gespeicherte Bilder nachträglich gerade rücken.',
-                'text_en' => 'Crop and rotate images: when adding, in quick add and when editing there is a "Crop / rotate" button below the photo. Set the frame freely or as 1:1 or 4:3 and rotate in 90-degree steps – also with the keyboard. When editing, images that are already saved can be straightened afterwards, too.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Schadensfall: Neuer Knopf „Fotos und Belege (ZIP)“ in der Zusammenfassung. Er lädt alle Fotos und Rechnungen der betroffenen Gegenstände in einer Datei herunter – ein Ordner je Gegenstand, dazu eine Übersicht als Text und als Tabelle für die Versicherung.',
-                'text_en' => 'Damage claim: new "Photos and receipts (ZIP)" button in the summary. It downloads all photos and receipts of the affected items in one file – one folder per item, plus an overview as text and as a spreadsheet for the insurer.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Schadensfall löschen: Die Rückfrage erschien in manchen Browsern nicht, der Fall ließ sich dann nicht löschen. Sie kommt jetzt als eigenes Fenster der App.',
-                'text_en' => 'Delete damage claim: in some browsers the confirmation did not appear and the claim could not be deleted. It now shows as the app\'s own dialog.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.4',
-        'date' => '2026-10-12',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Schadensfall-Assistent: Nach einem Einbruch, Brand oder Wasserschaden legen Sie in drei Schritten einen Schadensfall an – was ist passiert, welche Gegenstände sind betroffen (gestohlen, zerstört, beschädigt), Zusammenfassung mit Kauf- und Zeitwert, Versicherungssumme und Selbstbeteiligung. Daraus entstehen eine Liste für die Polizei (mit Fotos, Seriennummern und Merkmalen) und eine Schadensmeldung für die Versicherung mit anpassbarem Begleitschreiben, beides druckbar oder als PDF. Neues Symbol in der linken Leiste.',
-                'text_en' => 'Damage claim assistant: after a burglary, fire or water damage you create a damage claim in three steps – what happened, which items are affected (stolen, destroyed, damaged), and a summary with purchase and current value, sum insured and deductible. From this you get a list for the police (with photos, serial numbers and features) and a claim report for your insurer with an editable cover letter, both printable or as PDF. New icon in the left sidebar.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Neues Feld „Seriennummer“ beim Anlegen und Bearbeiten – für die Polizei nach einem Diebstahl das wichtigste Merkmal. Die Detailansicht zeigt sie an.',
-                'text_en' => 'New "Serial number" field when adding and editing items – the most important detail for the police after a theft. The detail view shows it.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Gegenstand hinzufügen: Der Barcode wurde beim Anlegen nicht gespeichert (nur beim Bearbeiten).',
-                'text_en' => 'Add item: the barcode was not saved when creating an item (only when editing).'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Datenbank: Nach dem Update bitte migrate.php aufrufen (Migration 014: Schadensfälle, Seriennummer, zwei neue Rechte). Bis dahin bleiben Seriennummer und Schadensfall ausgeblendet, alles andere läuft normal.',
-                'text_en' => 'Database: after updating, please run migrate.php (migration 014: damage claims, serial number, two new permissions). Until then the serial number and damage claims stay hidden; everything else works normally.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Barrierefreiheit, Grundrahmen: Jede Seite hat einen Link „Zum Inhalt springen“ (erscheint mit der ersten Tab-Taste) und einen gekennzeichneten Hauptbereich. Alle Bedienelemente zeigen einen deutlichen Rahmen, wenn sie per Tastatur den Fokus haben – das Suchfeld oben und die Formularfelder zeigten bisher keinen.',
-                'text_en' => 'Accessibility, basic framework: every page has a "Skip to content" link (appears with the first Tab key) and a marked main area. All controls show a clear outline when they have keyboard focus – the search field at the top and the form fields showed none until now.'
             ],
             [
                 'type' => 'feature',

@@ -2,6 +2,7 @@
 // dashboard.php - Hauptseite mit Statistiken und Übersicht (MIT ÜBERSETZUNGEN)
 require_once 'db.php';
 require_once 'helpers.php';
+require_once __DIR__ . '/helpers_dashboard.php';
 requireLogin();
 
 define('PAGE_TITLE', t('dashboard_title') . ' - ' . t('app_title'));
@@ -18,60 +19,30 @@ try {
         return $st;
     };
 
-    // Gesamtwert und Anzahl
-    $stats = $abfrage("
-        SELECT 
-            COUNT(*) as total_items,
-            COALESCE(SUM(preis), 0) as total_value,
-            COALESCE(AVG(preis), 0) as avg_price,
-            COALESCE(SUM(aktueller_wert), 0) as total_zeitwert,
-            COUNT(CASE WHEN aktueller_wert IS NOT NULL AND aktueller_wert > 0 THEN 1 END) as items_bewertet,
-            MAX(aktueller_wert) as max_zeitwert
-        FROM wertsachen
-        WHERE 1=1" . $ownSqlT . "
-    ", $ownParamsT)->fetch();
+    // Gesamtwert und Anzahl (Abfrage seit 4.6 in helpers_dashboard.php)
+    $stats = vsDashboardKennzahlen($pdo, $ownSqlT, $ownParamsT);
     
-    // Name des wertvollsten Gegenstands nach Zeitwert
+    // Name des wertvollsten Gegenstands nach Zeitwert (Regel aus
+    // helpers_werte.php, wie max_zeitwert in den Kennzahlen)
     try {
         $maxZeitwertItem = $db->selectOne(
-            "SELECT name FROM wertsachen WHERE aktueller_wert IS NOT NULL AND aktueller_wert > 0" . $ownSqlT . " ORDER BY aktueller_wert DESC LIMIT 1",
+            "SELECT name FROM wertsachen WHERE " . vsZeitwertSql() . " > 0" . $ownSqlT . " ORDER BY " . vsZeitwertSql() . " DESC, id ASC LIMIT 1",
             $ownParamsT
         );
     } catch (Exception $e) { $maxZeitwertItem = null; }
 
-    // Trend: Gesamtwert vor 30 Tagen (aus wert_historie)
+    // Trend: Zeitwert heute gegen vor 30 Tagen (helpers_dashboard.php).
+    // Bis 4.6 Kaufpreise gegen alte Zeitwerte (TESTFUNDE.md, FUND-09).
     try {
-        $trend = $db->selectOne("
-            SELECT COALESCE(SUM(h.wert), 0) as wert_30d
-            FROM (
-                SELECT wertsache_id, MAX(datum) as max_datum
-                FROM wert_historie
-                WHERE datum <= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-                  AND wertsache_id IN (SELECT id FROM wertsachen WHERE 1=1" . $ownSqlT . ")
-                GROUP BY wertsache_id
-            ) latest
-            JOIN wert_historie h ON h.wertsache_id = latest.wertsache_id
-                                 AND h.datum = latest.max_datum
-        ", $ownParamsT);
-        $wert_30d = floatval($trend['wert_30d'] ?? 0);
-        $trend_diff = floatval($stats['total_value']) - $wert_30d;
-        $trend_pct  = $wert_30d > 0 ? round(($trend_diff / $wert_30d) * 100, 1) : null;
+        [$trend_diff, $trend_pct] = vsDashboardTrend($pdo, $ownSql, $ownParams,
+            date('Y-m-d', strtotime('-30 days')), (float)$stats['total_zeitwert']);
     } catch (Exception $e) {
         $trend_diff = 0;
         $trend_pct  = null;
     }
 
-    // Wert pro Kategorie
-    $categoryStats = $abfrage("
-        SELECT 
-            k.name as kategorie,
-            COUNT(w.id) as anzahl,
-            COALESCE(SUM(COALESCE(w.aktueller_wert, w.preis)), 0) as wert
-        FROM kategorien k
-        LEFT JOIN wertsachen w ON k.id = w.kategorie_id" . $ownSql . "
-        GROUP BY k.id, k.name
-        ORDER BY wert DESC
-    ", $ownParams)->fetchAll();
+    // Wert pro Kategorie (Abfrage seit 4.6 in helpers_dashboard.php)
+    $categoryStats = vsDashboardKategorien($pdo, $ownSql, $ownParams);
     
     // Anzahl pro Ort
     $locationStats = $abfrage("
@@ -99,7 +70,7 @@ try {
         LEFT JOIN kategorien k ON w.kategorie_id = k.id
         LEFT JOIN raeume o ON w.raum_id = o.id
         WHERE 1=1" . $ownSql . "
-        ORDER BY COALESCE(w.aktueller_wert, w.preis) DESC
+        ORDER BY " . vsZeitwertSql('w') . " DESC
         LIMIT 5
     ", $ownParams)->fetchAll();
     
@@ -490,14 +461,7 @@ include 'header_next_page.php';
             <div class="stat-icon"><i class="ti ti-currency-euro"></i></div>
             <div class="stat-value" data-count="<?php echo round($stats['total_value']); ?>" data-type="currency"><?php echo formatPriceLocalized($stats['total_value']); ?></div>
             <div class="stat-label"><?php echo t('dashboard_total_value'); ?></div>
-            <?php if ($trend_pct !== null): ?>
-            <div class="stat-trend <?php echo $trend_diff >= 0 ? 'trend-up' : 'trend-down'; ?>">
-                <?php echo $trend_diff >= 0 ? '↑' : '↓'; ?>
-                <?php echo abs($trend_pct); ?>% <span><?php echo t('dashboard_vs_30days'); ?></span>
-            </div>
-            <?php else: ?>
             <div class="stat-sublabel"><?php echo t('dashboard_total_value_desc'); ?></div>
-            <?php endif; ?>
         </div>
 
         <div class="stat-card">
@@ -512,6 +476,13 @@ include 'header_next_page.php';
             <div class="stat-value" data-count="<?php echo round($stats['total_zeitwert']); ?>" data-type="currency"><?php echo formatPriceLocalized($stats['total_zeitwert']); ?></div>
             <div class="stat-label"><?php echo t('dashboard_zeitwert'); ?></div>
             <div class="stat-sublabel"><?php echo $stats['items_bewertet']; ?> <?php echo t('dashboard_zeitwert_von'); ?> <?php echo $stats['total_items']; ?> <?php echo t('dashboard_zeitwert_bewertet'); ?></div>
+            <?php // Trend seit 4.6 hier statt unter dem Kaufpreis: Kaufpreise haben keinen Verlauf ?>
+            <?php if ($trend_pct !== null): ?>
+            <div class="stat-trend <?php echo $trend_diff >= 0 ? 'trend-up' : 'trend-down'; ?>">
+                <?php echo $trend_diff >= 0 ? '↑' : '↓'; ?>
+                <?php echo abs($trend_pct); ?>% <span><?php echo t('dashboard_vs_30days'); ?></span>
+            </div>
+            <?php endif; ?>
         </div>
 
         <div class="stat-card">
@@ -578,8 +549,8 @@ include 'header_next_page.php';
                             </div>
                             
                             <div class="item-price">
-                                <?php echo formatPriceLocalized(floatval($item["aktueller_wert"] ?? $item["preis"])); ?>
-                                <?php if (!empty($item["aktueller_wert"])): ?>
+                                <?php echo formatPriceLocalized(vsZeitwert($item)); ?>
+                                <?php if (vsHatZeitwert($item)): ?>
                                     <div style="font-size:11px; color:#999; font-weight:400;">EK: <?php echo formatPriceLocalized($item["preis"]); ?></div>
                                 <?php endif; ?>
                             </div>

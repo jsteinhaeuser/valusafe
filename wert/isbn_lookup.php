@@ -2,7 +2,7 @@
 /**
  * isbn_lookup.php – Proxy für Open Library + Google Books API
  * ?isbn=...   → Buchdaten als JSON
- * ?cover=...  → Cover-Bild serverseitig proxyen (umgeht CSP)
+ * ?cover=...  → Weiterleitung auf cover_proxy.php (seit 4.6)
  */
 require_once __DIR__ . '/db.php';
 requireLogin();
@@ -28,28 +28,18 @@ function fetchUrl(string $url): ?string {
     return $out !== false ? $out : null;
 }
 
-// ── Cover-Proxy ────────────────────────────────────────────────────────────
+// ── Cover ──────────────────────────────────────────────────────────────────
+// Seit 4.6 kein eigener Abruf mehr (OWASP-A01-007): fetchUrl() folgte
+// Weiterleitungen ungeprueft, also auch auf interne Adressen. cover_proxy.php
+// macht dieselbe Aufgabe abgesichert (nur HTTPS, Domainliste, private IPs
+// gesperrt, jede Weiterleitung einzeln geprueft, nur Rasterbilder).
+// Die Seite selbst ruft isbn_lookup.php nicht mehr auf (add/edit nutzen
+// barcode_lookup.php); der Zweig bleibt fuer alte Links als Weiterleitung.
+function isbnCoverUeberProxy(string $url): string {
+    return 'cover_proxy.php?url=' . urlencode(preg_replace('#^http://#i', 'https://', $url));
+}
 if (isset($_GET['cover'])) {
-    $url  = $_GET['cover'];
-    $host = parse_url($url, PHP_URL_HOST);
-    $allowed = ['books.google.com', 'covers.openlibrary.org'];
-    if (!in_array($host, $allowed)) { http_response_code(403); exit; }
-
-    $data = fetchUrl($url);
-    if (!$data) { http_response_code(502); exit; }
-
-    // Nur Rasterbilder (OWASP-A05-002, 4.5.2): bis 4.5.1 ging jede erkannte
-    // Art hinaus, auch text/html oder SVG - die Weiterleitung von
-    // covers.openlibrary.org fuehrt auf archive.org (Nutzerdateien).
-    $rasterTypen = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
-    $mime = (new finfo(FILEINFO_MIME_TYPE))->buffer($data) ?: '';
-    if (!isset($rasterTypen[$mime])) { http_response_code(415); exit; }
-    header('Content-Type: ' . $mime);
-    header('Content-Disposition: inline; filename="cover.' . $rasterTypen[$mime] . '"');
-    header("Content-Security-Policy: default-src 'none'; sandbox");
-    header('X-Content-Type-Options: nosniff');
-    header('Cache-Control: max-age=86400');
-    echo $data;
+    header('Location: ' . isbnCoverUeberProxy((string)$_GET['cover']), true, 302);
     exit;
 }
 
@@ -98,7 +88,7 @@ if (!$result['found'] || !$result['authors'] || !$result['year'] || !$result['pu
 
 // Cover-URL durch lokalen Proxy ersetzen damit CSP kein Problem ist
 if ($result['cover']) {
-    $result['cover'] = 'isbn_lookup.php?cover=' . urlencode($result['cover']);
+    $result['cover'] = isbnCoverUeberProxy($result['cover']);
 }
 
 echo json_encode($result);

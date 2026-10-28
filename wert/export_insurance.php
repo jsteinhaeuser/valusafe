@@ -23,15 +23,15 @@ try {
     $gesamtwert = array_sum(array_column($wertsachen, 'preis'));
     $anzahl     = count($wertsachen);
     
-    // Aktuellen Gesamtwert berechnen (aktueller_wert wenn vorhanden, sonst preis)
+    // Aktuellen Gesamtwert berechnen (Regel aus helpers_werte.php: Zeitwert
+    // > 0, sonst Kaufpreis). Bis 4.6 !empty() - "0.00" aus MySQL ist nicht
+    // leer und zaehlte als gepflegter Zeitwert von 0.
     $gesamtwert_aktuell = 0;
     $hat_aktuelle_werte = false;
     foreach ($wertsachen as $item) {
-        if (!empty($item['aktueller_wert'])) {
-            $gesamtwert_aktuell += $item['aktueller_wert'];
+        $gesamtwert_aktuell += vsZeitwert($item);
+        if (vsHatZeitwert($item)) {
             $hat_aktuelle_werte = true;
-        } else {
-            $gesamtwert_aktuell += $item['preis'];
         }
     }
 
@@ -390,7 +390,7 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
                 <td class="cd"><?php echo $item['kaufdatum'] ? date('m/Y', strtotime($item['kaufdatum'])) : '–'; ?></td>
                 <td class="cp"><span class="price"><?php echo number_format($item['preis'], 2, ',', '.'); ?> €</span></td>
                 <td class="cnw\">
-                    <?php if (!empty($item['aktueller_wert'])): ?>
+                    <?php if (vsHatZeitwert($item)): ?>
                         <span class="price"><?php echo number_format($item['aktueller_wert'], 2, ',', '.'); ?> €</span>
                         <?php if (!empty($item['aktueller_wert_datum'])): ?>
                             <br><span style="font-size:7pt; color:#999;"><?php echo date('m/Y', strtotime($item['aktueller_wert_datum'])); ?></span>

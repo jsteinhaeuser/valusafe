@@ -268,6 +268,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $hash = password_hash($newPw, PASSWORD_ARGON2ID);
                 $db->execute("UPDATE users SET password = ? WHERE id = ?", [$hash, $userId]);
+                // Diese Sitzung behalten, alle anderen des Kontos enden (OWASP-A07-003)
+                $_SESSION['pw_kennung'] = vsSitzungKennung($hash);
                 Security::logSecurityEvent('password_changed', ['user_id' => $userId, 'username' => $_SESSION['username']]);
                 $message = t('profile_pw_changed');
             } catch (PDOException $e) {

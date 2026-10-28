@@ -54,7 +54,7 @@ foreach ($zeilen as $z) {
     if (!darfGegenstand($z)) continue;
     $gegenstaende[] = $z;
     $sumPreis += (float)$z['preis'];
-    $sumZeit  += (float)($z['aktueller_wert'] ?: $z['preis']);
+    $sumZeit  += vsZeitwert($z);
 }
 
 $e     = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
@@ -163,7 +163,7 @@ if (!empty($fall['aktenzeichen'])) {
                 <td><?php echo $e($g['seriennummer'] ?? ''); ?><?php echo !empty($g['barcode']) ? '<br><span class="klein">EAN ' . $e($g['barcode']) . '</span>' : ''; ?></td>
                 <td style="white-space:pre-wrap"><?php echo $e(mb_substr((string)$g['notizen'], 0, 400)); ?></td>
                 <td><?php echo $e($datum($g['kaufdatum'])); ?></td>
-                <td class="zahl"><?php echo $preis($g['aktueller_wert'] ?: $g['preis']); ?></td>
+                <td class="zahl"><?php echo $preis(vsZeitwert($g)); ?></td>
             </tr>
         <?php endforeach; ?>
         </tbody>
@@ -221,7 +221,7 @@ if (!empty($fall['aktenzeichen'])) {
                 <td><?php echo $e(t('claims_cond_' . $g['zustand'])); ?></td>
                 <td><?php echo $e($datum($g['kaufdatum'])); ?></td>
                 <td class="zahl"><?php echo $preis($g['preis']); ?></td>
-                <td class="zahl"><?php echo $preis($g['aktueller_wert'] ?: $g['preis']); ?></td>
+                <td class="zahl"><?php echo $preis(vsZeitwert($g)); ?></td>
                 <td><?php echo $e(sprintf(t('claims_evidence_count'), (int)$g['belege'], max((int)$g['fotos'], empty($g['bild']) ? 0 : 1))); ?></td>
             </tr>
         <?php endforeach; ?>

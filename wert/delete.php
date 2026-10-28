@@ -4,6 +4,7 @@
 
 require_once 'db.php';
 require_once 'helpers.php';
+require_once __DIR__ . '/helpers_loeschen.php';
 requireLogin();
 if (!function_exists('canDelete') || !canDelete()) {
     if (function_exists('redirectWithMessage')) {
@@ -87,70 +88,8 @@ try {
     $item = $db->selectOne("SELECT * FROM wertsachen WHERE id = ?", [$id]);
     
     if ($item && darfGegenstand($item)) {
-        // Daten vor Löschung für Activity Log speichern
-        $deletedData = [
-            'name' => $item['name'],
-            'kategorie_id' => $item['kategorie_id'],
-            'raum_id' => $item['raum_id'],
-            'preis' => $item['preis'],
-            'kaufdatum' => $item['kaufdatum']
-        ];
-        
-        // Transaktion starten
-        $db->beginTransaction();
-        
-        try {
-            // Dokumente löschen (falls vorhanden)
-            $docs = $db->select("SELECT dateiname FROM dokumente WHERE wertsache_id = ?", [$id]);
-            foreach ($docs as $doc) {
-                $docPath = __DIR__ . '/documents/' . $doc['dateiname'];
-                if (file_exists($docPath)) {
-                    unlink($docPath);
-                }
-            }
-            $db->execute("DELETE FROM dokumente WHERE wertsache_id = ?", [$id]);
-            
-            // Multi-Images löschen (falls vorhanden)
-            if (function_exists('deleteAllItemImages')) {
-                deleteAllItemImages($id);
-            }
-            
-            // Bild löschen
-            if ($item['bild'] && file_exists(UPLOAD_DIR . $item['bild'])) {
-                if (unlink(UPLOAD_DIR . $item['bild'])) {
-                    Security::logSecurityEvent('file_deleted', [
-                        'filename' => $item['bild'],
-                        'item_id' => $id
-                    ]);
-                }
-            }
-            
-            // Datenbank-Eintrag löschen
-            $db->execute("DELETE FROM wertsachen WHERE id = ?", [$id]);
-            
-            // Activity Log schreiben BEVOR Transaktion bestätigt wird
-            logActivity('deleted', 'wertsachen', $id, $deletedData['name'], $deletedData, null);
-            
-            // Transaktion bestätigen
-            $db->commit();
-            
-            Security::logSecurityEvent('item_deleted', [
-                'item_id' => $id,
-                'item_name' => $item['name']
-            ]);
-            
-        } catch (Exception $e) {
-            // Transaktion rückgängig machen
-            $db->rollback();
-            
-            // Fehler loggen
-            Security::logSecurityEvent('item_delete_error', [
-                'id' => $id,
-                'error' => $e->getMessage()
-            ]);
-            
-            throw $e;
-        }
+        // Loeschen seit 4.6 in helpers_loeschen.php (tests/LoeschenTest.php)
+        vsGegenstandLoeschen($db, $item, $id);
     } elseif (!$item) {
         // Item existiert nicht mehr - trotzdem loggen
         logActivity('deleted', 'wertsachen', $id, 'Unbekannter Gegenstand (ID: ' . $id . ')', ['id' => $id], null);

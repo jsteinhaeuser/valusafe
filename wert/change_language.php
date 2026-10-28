@@ -8,10 +8,10 @@
  * Funktioniert auch ohne Login!
  */
 
-// Session starten falls noch nicht aktiv
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+// Session starten falls noch nicht aktiv - mit denselben Cookie-Merkmalen
+// wie db.php (OWASP-A02-001)
+require_once __DIR__ . '/sitzung_helpers.php';
+vsSitzungStarten();
 
 // Language-System laden
 require_once __DIR__ . '/lang/language.php';

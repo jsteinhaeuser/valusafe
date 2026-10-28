@@ -6,6 +6,8 @@
 
 require_once 'config.php';
 requireBackendAccess();
+// Zeitwert-Regel (vsZeitwert, vsZeitwertSql); backend/ laedt helpers.php nicht
+require_once __DIR__ . '/../helpers_werte.php';
 
 $pageTitle = t('nav_insurance');
 $message = '';
@@ -156,7 +158,7 @@ if ($action === 'delete' && $editId) {
 $versicherungen = $db->select("
     SELECT v.id, v.name, v.anbieter, v.vertragsnummer, v.praemie, v.laufzeit_bis, v.notiz, v.erstellt_am,
            COUNT(w.id) as anzahl_items,
-           COALESCE(SUM(w.aktueller_wert), 0) as gesamtwert
+           COALESCE(SUM(" . vsZeitwertSql('w') . "), 0) as gesamtwert
     FROM versicherungen v
     LEFT JOIN wertsachen w ON w.versicherung_id = v.id
     GROUP BY v.id, v.name, v.anbieter, v.vertragsnummer, v.praemie, v.laufzeit_bis, v.notiz, v.erstellt_am
@@ -542,7 +544,9 @@ include 'layout/header_next_page.php';
             <p style="color:#999; padding:20px 0;"><?php echo t('ins_no_items'); ?></p>
         <?php else: ?>
             <?php
-            $summe = array_sum(array_column($versItems, 'aktueller_wert'));
+            // Bis 4.6 nur gepflegte Zeitwerte, die Zeilen darunter aber mit
+            // Kaufpreis als Ersatz - jetzt beide nach vsZeitwert()
+            $summe = array_sum(array_map('vsZeitwert', $versItems));
             ?>
             <table class="backend-table">
                 <thead>
@@ -558,7 +562,7 @@ include 'layout/header_next_page.php';
                         <tr>
                             <td><strong><?php echo htmlspecialchars($item['name']); ?></strong></td>
                             <td><span class="badge badge-secondary"><?php echo htmlspecialchars($item['kategorie'] ?? '—'); ?></span></td>
-                            <td><strong style="color:var(--vs-success);"><?php echo formatPrice($item['aktueller_wert'] ?: $item['preis']); ?></strong></td>
+                            <td><strong style="color:var(--vs-success);"><?php echo formatPrice(vsZeitwert($item)); ?></strong></td>
                             <td>
                                 <form method="POST" style="display:inline;">
                                     <?php echo Security::getCSRFInput(); ?>
@@ -618,7 +622,7 @@ include 'layout/header_next_page.php';
                                 </td>
                                 <td><?php echo htmlspecialchars($item['name']); ?></td>
                                 <td><span class="badge badge-secondary"><?php echo htmlspecialchars($item['kategorie'] ?? '—'); ?></span></td>
-                                <td><?php echo formatPrice($item['aktueller_wert'] ?: $item['preis']); ?></td>
+                                <td><?php echo formatPrice(vsZeitwert($item)); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

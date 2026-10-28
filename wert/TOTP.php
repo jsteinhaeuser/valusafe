@@ -75,6 +75,53 @@ class TOTP {
         return $codes;
     }
 
+    /**
+     * Ersatzcodes zum Speichern hashen (OWASP-A06-004, 4.6). Bis 4.5.2 lagen
+     * sie im Klartext in users.totp_backup_codes: Wer eine Datenbanksicherung
+     * las, konnte die zweite Stufe umgehen.
+     */
+    public static function hashBackupCodes(array $codes): array {
+        return array_map(static fn($c) => password_hash(strtoupper((string)$c), PASSWORD_DEFAULT), array_values($codes));
+    }
+
+    /**
+     * Sucht einen eingegebenen Ersatzcode in der gespeicherten Liste und gibt
+     * dessen Index zurueck, sonst false. Kennt gehashte Eintraege und - fuer
+     * Listen von vor 4.6 - Klartext.
+     */
+    public static function findBackupCode(array $gespeichert, string $code): int|false {
+        $code = strtoupper(trim($code));
+        if ($code === '' || !preg_match('/^[0-9A-F]{8}$/', $code)) {
+            return false;
+        }
+        foreach (array_values($gespeichert) as $i => $eintrag) {
+            $eintrag = (string)$eintrag;
+            if (self::istGehashterCode($eintrag)) {
+                if (password_verify($code, $eintrag)) return $i;
+            } elseif (hash_equals(strtoupper($eintrag), $code)) {
+                return $i;
+            }
+        }
+        return false;
+    }
+
+    /** Liste mit Klartext-Eintraegen (von vor 4.6) auf Hashes umstellen. */
+    public static function backupCodesUmstellen(array $gespeichert): array {
+        return array_map(static fn($e) => self::istGehashterCode((string)$e)
+            ? (string)$e : password_hash(strtoupper((string)$e), PASSWORD_DEFAULT), array_values($gespeichert));
+    }
+
+    public static function brauchtUmstellung(array $gespeichert): bool {
+        foreach ($gespeichert as $e) {
+            if (!self::istGehashterCode((string)$e)) return true;
+        }
+        return false;
+    }
+
+    private static function istGehashterCode(string $eintrag): bool {
+        return str_starts_with($eintrag, '$');
+    }
+
     // ── Interne Hilfsmethoden ──────────────────────────────────────────────
 
     private static function hotp(string $secret, int $counter): string {

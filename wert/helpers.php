@@ -1,6 +1,10 @@
 <?php
 // helpers.php
 
+// Zeitwert-Regel (vsZeitwert, vsZeitwertSql) seit 4.6 in eigener Datei,
+// damit auch backend/ sie einbinden kann.
+require_once __DIR__ . '/helpers_werte.php';
+
 /**
  * NULL-safe htmlspecialchars für PHP 8.4+
  * Verhindert Deprecated Warnings wenn NULL übergeben wird
@@ -638,7 +642,11 @@ if (!function_exists('formatChanges')) {
             foreach ($data as $key => $value) {
                 if ($key === 'changes') continue;
                 $label = $fieldLabels[$key] ?? ucfirst($key);
-                $html .= '<li><strong>' . htmlspecialchars($label) . ':</strong> ' . htmlspecialchars($value) . '</li>';
+                // null (z. B. kein Kaufdatum) bis 4.6 direkt an htmlspecialchars():
+                // "Deprecated" im Fehlerprotokoll und eine leere Stelle
+                $anzeige = $value === null ? $emptyLabel
+                    : (is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : (string)$value);
+                $html .= '<li><strong>' . htmlspecialchars($label) . ':</strong> ' . htmlspecialchars($anzeige) . '</li>';
             }
             $html .= '</ul></div>';
             return $html;
@@ -1311,9 +1319,18 @@ if (!function_exists('userSeesOnlyOwnItems')) {
 
     function _userSeesOnlyOwnItemsAbfrage($db): bool {
         try {
+            // Die Unterabfrage liefert IMMER eine Zeile (NULL, wenn die
+            // Einstellung fehlt). So bedeutet false nur noch "Abfrage
+            // gescheitert": Database::selectOne() faengt den Fehler selbst ab,
+            // der catch unten wurde deshalb bis 4.6 nie erreicht und "nur
+            // eigene" galt bei einem Datenbankfehler als AUS
+            // (tests/TESTFUNDE.md, FUND-01).
             $setting = $db->selectOne(
-                "SELECT setting_value FROM app_settings WHERE setting_key = 'only_own_items'"
+                "SELECT (SELECT setting_value FROM app_settings WHERE setting_key = 'only_own_items') AS setting_value"
             );
+            if ($setting === false) {
+                return true;
+            }
             if (($setting['setting_value'] ?? '0') !== '1') {
                 return false;
             }
@@ -1626,6 +1643,24 @@ if (!function_exists('standortAusFormular')) {
             $standort_id = null;
         }
         return [$standort_id, $position_id];
+    }
+}
+
+/**
+ * Versionsnummer der Anwendung aus wert-update/version.json (dieselbe Quelle
+ * wie die Anmeldeseite und der Version-Check). Leer, wenn die Datei fehlt
+ * oder unlesbar ist. Seit 4.6.1 auch unter "ValuSafe" in der Kopfzeile der
+ * Liste - Vorschlag Joerg, 28.10.2026.
+ */
+if (!function_exists('vsAppVersion')) {
+    function vsAppVersion(?string $datei = null): string {
+        static $cache = [];
+        $datei = $datei ?? __DIR__ . '/wert-update/version.json';
+        if (!array_key_exists($datei, $cache)) {
+            $daten = is_file($datei) ? json_decode((string)file_get_contents($datei), true) : null;
+            $cache[$datei] = is_array($daten) ? (string)($daten['version'] ?? '') : '';
+        }
+        return $cache[$datei];
     }
 }
 

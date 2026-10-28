@@ -19,6 +19,8 @@ try {
     // id als zweites Kriterium: settings_delete_account (4.3.33) teilt sich
     // sort_order 25 mit settings_password und soll darunter stehen.
     $rows = $pdo->query("SELECT * FROM permissions ORDER BY sort_order ASC, id ASC")->fetchAll();
+    // Wirkungslose Schalter nicht anbieten (OWASP-A01-006, db.php)
+    $rows = array_values(array_filter($rows, fn($r) => !in_array($r['action_key'], VS_RECHTE_AUSGEBLENDET, true)));
     // install/schema.sql legt die Abschnitte mit deutschen Namen an
     // ("Gegenstände", "Admin-Bereich" ...), die Uebersetzung unten kennt nur
     // die Kurzschluessel - bis 4.3.32 erschienen sie dann als "• GEGENSTäNDE".
@@ -330,7 +332,7 @@ $csrfToken = Security::generateCSRFToken();
 </div>
 </main>
 
-<div id="perm-toast"></div>
+<div id="perm-toast" role="status" aria-live="polite"></div>
 
 <script>
 (function() {
@@ -338,9 +340,14 @@ $csrfToken = Security::generateCSRFToken();
     const toast = document.getElementById('perm-toast');
     let toastTimer;
 
+    // Symbol per DOM, Text per textContent: bis 4.5.2 kam das <i>-Symbol als
+    // HTML-Zeichenkette herein und erschien als Klartext in der Meldung.
     function showToast(msg, isError = false) {
         clearTimeout(toastTimer);
-        toast.textContent = msg;
+        const icon = document.createElement('i');
+        icon.className = 'ti ' + (isError ? 'ti-circle-x' : 'ti-circle-check');
+        icon.setAttribute('aria-hidden', 'true');
+        toast.replaceChildren(icon, document.createTextNode(' ' + msg));
         toast.className = 'show' + (isError ? ' error' : '');
         toastTimer = setTimeout(() => { toast.className = ''; }, 2500);
     }
@@ -368,20 +375,20 @@ $csrfToken = Security::generateCSRFToken();
                     this.classList.remove('saving');
                     this.disabled = false;
                     if (data.ok) {
-                        showToast('<i class="ti ti-circle-check" style="color:var(--vs-success);"></i> Berechtigung gespeichert');
+                        showToast(<?php echo json_encode(t('perm_toast_saved')); ?>);
                     } else {
                         // Rollback
                         this.checked = orig;
                         this.classList.add('error');
                         setTimeout(() => this.classList.remove('error'), 1200);
-                        showToast('<i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> ' + (data.error || 'Fehler'), true);
+                        showToast(data.error || <?php echo json_encode(t('perm_toast_error')); ?>, true);
                     }
                 })
                 .catch(() => {
                     this.classList.remove('saving');
                     this.disabled = false;
                     this.checked = orig;
-                    showToast('<i class="ti ti-circle-x" style="color:var(--vs-danger);"></i> Verbindungsfehler', true);
+                    showToast(<?php echo json_encode(t('perm_toast_connection')); ?>, true);
                 });
         });
     });

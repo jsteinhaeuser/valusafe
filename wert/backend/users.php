@@ -35,6 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = t('users_username_empty') ?: 'Benutzername darf nicht leer sein';
         } else if (empty($password)) {
             $error = t('usr_password_empty');
+        } else if (mb_strlen($password) < 8) {
+            // Dieselbe Mindestlaenge wie Einstellungen und Passwort-Reset (OWASP-A07-007)
+            $error = t('usr_password_too_short');
         } else if ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = t('usr_email_invalid');
         } else {
@@ -71,6 +74,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = t('users_username_empty') ?: 'Benutzername darf nicht leer sein';
         } elseif ($id <= 0) {
             $error = t('error_invalid_id') ?: 'Ungültige ID';
+        } elseif ($newPassword !== '' && mb_strlen($newPassword) < 8) {
+            $error = t('usr_password_too_short');
         } elseif ($email !== '' && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = t('usr_email_invalid');
         } else {
@@ -87,6 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         "UPDATE users SET username = ?, password = ?, role = ?, sieht_alle = ?, email = ? WHERE id = ?",
                         [$username, $hashedPassword, $role, $sieht_alle, $emailValue, $id]
                     );
+                    // Eigenes Passwort: diese Sitzung behalten (OWASP-A07-003)
+                    if ((int)$id === (int)($_SESSION['user_id'] ?? 0)) {
+                        $_SESSION['pw_kennung'] = vsSitzungKennung($hashedPassword);
+                    }
                 } else {
                     $db->execute(
                         "UPDATE users SET username = ?, role = ?, sieht_alle = ?, email = ? WHERE id = ?",
@@ -171,20 +180,10 @@ $userStats = [
     'viewers' => count(array_filter($users, fn($u) => $u['role'] === 'read'))
 ];
 
-// Online-User laden (letzte 15 Minuten)
-try {
-    $onlineNow = $db->select("
-        SELECT ua.user_id, ua.last_seen, ua.current_page, ua.ip_address,
-               COALESCE(ua.username, u.username, '–') AS username,
-               COALESCE(ua.role, u.role, 'read') AS role
-        FROM user_activity ua
-        LEFT JOIN users u ON ua.user_id = u.id
-        WHERE ua.last_seen >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)
-    ");
-    $onlineIds = array_column($onlineNow, null, 'user_id');
-} catch (Exception $e) {
-    $onlineIds = [];
-}
+// "Wer ist online" ausgebaut (Entscheidung Joerg, 27.10.2026): Die Anzeige
+// war tot, seit header.php durch header_next*.php ersetzt wurde - niemand
+// band user_activity.php noch ein. Statt sie wiederzubeleben (IP-Adresse
+// und aktuelle Seite bei jedem Aufruf) wird sie entfernt.
 
 // Layout laden
 include 'layout/header_next_page.php';
@@ -269,22 +268,12 @@ include 'layout/header_next_page.php';
                         <th>ID</th>
                         <th><?php echo t('online_col_user'); ?></th>
                         <th><?php echo t('tab_role'); ?></th>
-                        <th style="text-align:center;"><i class="ti ti-circle-check" style="color:var(--vs-success);"></i></th>
                         <th><?php echo t('tab_created'); ?></th>
                         <th style="width: 120px;"><?php echo t('tab_actions'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($users as $user): ?>
-                        <?php
-                            $isOnline  = isset($onlineIds[$user['id']]);
-                            $lastSeen  = $isOnline ? $onlineIds[$user['id']]['last_seen'] : null;
-                            $seenAgo   = $lastSeen ? round((time() - strtotime($lastSeen)) / 60) : null;
-                            $seenLabel = $isOnline
-                                ? ($seenAgo < 1 ? t('online_just_now') : sprintf(t('online_minutes_ago'), $seenAgo))
-                                : '–';
-                            $curPage   = $isOnline ? ($onlineIds[$user['id']]['current_page'] ?? '') : '';
-                        ?>
                         <tr>
                             <td><strong>#<?php echo $user['id']; ?></strong></td>
                             <td>
@@ -303,14 +292,6 @@ include 'layout/header_next_page.php';
                                 echo $badges[$user['role']] ?? htmlspecialchars($user['role']);
                                 ?>
                             </td>
-                            <td style="text-align:center;">
-                                <?php if ($isOnline): ?>
-                                    <span title="<?php echo htmlspecialchars($seenLabel . ($curPage ? ' · ' . $curPage : '')); ?>"
-                                          style="font-size:16px; cursor:default;"><i class="ti ti-circle-check" style="color:var(--vs-success);"></i></span>
-                                <?php else: ?>
-                                    <span style="color:#ddd; font-size:16px;">⚪</span>
-                                <?php endif; ?>
-                            </td>
                             <td><?php echo !empty($user['erstellt_am'] ?? '') ? date('d.m.Y H:i', strtotime($user['erstellt_am'])) : '–'; ?></td>
                             <td>
                                 <?php
@@ -320,11 +301,13 @@ include 'layout/header_next_page.php';
                                 $_editDaten = array_diff_key($user, array_flip(['password', 'totp_secret', 'totp_backup_codes']));
                                 ?>
                                 <button onclick='editUser(<?php echo json_encode($_editDaten, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP); ?>)' class="vs-btn vs-btn-sm" title="<?php echo esc(t('btn_edit')); ?>" aria-label="<?php echo esc(t('btn_edit')); ?>"><i class="ti ti-pencil" aria-hidden="true"></i></button>
+                                <?php // Name per data-name statt in '...' im onclick: ein Apostroph
+                                      // im Namen brach bis 4.5.2 den Knopf (wie die Raumverwaltung) ?>
                                 <?php if ($user['id'] != $_SESSION['user_id'] && !empty($user['totp_enabled'])): ?>
-                                    <button type="button" onclick="reset2fa(<?php echo (int)$user['id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')" class="vs-btn vs-btn-sm" title="<?php echo esc(t('usr_2fa_reset')); ?>" aria-label="<?php echo esc(t('usr_2fa_reset')); ?>"><i class="ti ti-shield-off" aria-hidden="true"></i></button>
+                                    <button type="button" data-name="<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>" onclick="reset2fa(<?php echo (int)$user['id']; ?>, this.dataset.name)" class="vs-btn vs-btn-sm" title="<?php echo esc(t('usr_2fa_reset')); ?>" aria-label="<?php echo esc(t('usr_2fa_reset')); ?>"><i class="ti ti-shield-off" aria-hidden="true"></i></button>
                                 <?php endif; ?>
                                 <?php if ($user['id'] != $_SESSION['user_id']): ?>
-                                    <button onclick="deleteUser(<?php echo $user['id']; ?>, '<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>')" class="vs-btn vs-btn-sm vs-btn-danger" title="<?php echo esc(t('btn_delete')); ?>"><i class="ti ti-trash"></i></button>
+                                    <button data-name="<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>" onclick="deleteUser(<?php echo (int)$user['id']; ?>, this.dataset.name)" class="vs-btn vs-btn-sm vs-btn-danger" title="<?php echo esc(t('btn_delete')); ?>"><i class="ti ti-trash"></i></button>
                                 <?php endif; ?>
                             </td>
                         </tr>
@@ -335,49 +318,6 @@ include 'layout/header_next_page.php';
     </div>
     
 </main>
-
-<!-- Who is online: Detailblock -->
-<div class="activity-timeline" style="margin-top: 30px;">
-    <h2><?php echo t('online_section_title'); ?></h2>
-    <?php if (empty($onlineIds)): ?>
-        <div style="text-align:center; padding:30px; color:#999;">
-            <div style="font-size:36px; margin-bottom:10px;">⚪</div>
-            <p><?php echo t('online_section_none'); ?></p>
-        </div>
-    <?php else: ?>
-        <table class="backend-table">
-            <thead>
-                <tr>
-                    <th><?php echo t('online_col_user'); ?></th>
-                    <th><?php echo t('tab_role'); ?></th>
-                    <th><?php echo t('online_col_page'); ?></th>
-                    <th><?php echo t('online_col_ip'); ?></th>
-                    <th><?php echo t('online_col_seen'); ?></th>
-                </tr>
-            </thead>
-            <tbody>
-            <?php foreach ($onlineNow as $ou):
-                $ago = round((time() - strtotime($ou['last_seen'])) / 60);
-                $lbl = $ago < 1 ? t('online_just_now') : sprintf(t('online_minutes_ago'), $ago);
-                $role = $ou['role'] ?? 'read';
-                $badges2 = [
-                    'admin' => '<span class="badge badge-danger">🔥 Admin</span>',
-                    'edit'  => '<span class="badge badge-warning"><i class="ti ti-pencil"></i> Editor</span>',
-                    'read'  => '<span class="badge badge-info">👁️ Viewer</span>',
-                ];
-            ?>
-                <tr>
-                    <td><strong><i class="ti ti-circle-check" style="color:var(--vs-success);"></i> <?php echo htmlspecialchars($ou['username']); ?></strong></td>
-                    <td><?php echo $badges2[$role] ?? htmlspecialchars($role); ?></td>
-                    <td><code style="font-size:12px;"><?php echo htmlspecialchars($ou['current_page'] ?? '–'); ?></code></td>
-                    <td style="color:#999; font-size:13px;"><?php echo htmlspecialchars($ou['ip_address'] ?? '–'); ?></td>
-                    <td style="color:var(--vs-success); font-size:13px;"><?php echo htmlspecialchars($lbl); ?></td>
-                </tr>
-            <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
-</div>
 
 <!-- Modal: Benutzer hinzufügen -->
 <div id="addUserModal" class="modal">

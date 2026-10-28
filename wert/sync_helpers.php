@@ -87,6 +87,18 @@ function decodeImportPayload(string $raw): ?array {
  * wie im Original.
  */
 function buildInsertSql(string $table, array $columns): string {
+    // Spaltennamen kommen aus dem JSON des Imports. Bis 4.5.2 standen sie
+    // ungeprueft zwischen Backticks - ein Name mit ` haette eigenes SQL
+    // angehaengt (OWASP-A05-004). Erlaubt sind Buchstaben (auch Umlaute:
+    // dokumente.`dateigröße`), Ziffern und Unterstrich.
+    foreach (array_merge([$table], $columns) as $name) {
+        if (!is_string($name) || preg_match('/^\w{1,64}$/u', $name) !== 1) {
+            throw new InvalidArgumentException('Ungueltiger Tabellen- oder Spaltenname im Import');
+        }
+    }
+    if (!$columns) {
+        throw new InvalidArgumentException('Import ohne Spalten');
+    }
     $colList = implode(', ', array_map(fn($c) => "`$c`", $columns));
     $placeholders = implode(', ', array_fill(0, count($columns), '?'));
     return "INSERT INTO `$table` ($colList) VALUES ($placeholders)";

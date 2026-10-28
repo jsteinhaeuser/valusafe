@@ -35,7 +35,8 @@ $value      = (int)($_POST['value']     ?? 0);
 
 // Validierung
 $allowed_roles = ['edit', 'read']; // admin immer 1, nicht änderbar
-if (!preg_match('/^[a-z_]{3,40}$/', $action_key) || !in_array($role, $allowed_roles)) {
+if (!preg_match('/^[a-z_]{3,40}$/', $action_key) || !in_array($role, $allowed_roles)
+    || in_array($action_key, VS_RECHTE_AUSGEBLENDET, true)) {
     ob_end_clean();
     echo json_encode(['ok' => false, 'error' => 'Ungültige Parameter']);
     exit;
@@ -75,6 +76,8 @@ try {
 
 } catch (PDOException $e) {
     ob_end_clean();
-    echo json_encode(['ok' => false, 'error' => 'DB-Fehler: ' . $e->getMessage()]);
+    // Einzelheiten nur ins Protokoll, nicht in die Antwort (OWASP-A10-001)
+    error_log('ajax_permissions: ' . $e->getMessage());
+    echo json_encode(['ok' => false, 'error' => 'DB-Fehler (Einzelheiten im Fehlerprotokoll)']);
 }
 exit;

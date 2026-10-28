@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 24 October 2026 · Version 4.5.2 (all sections checked against the source before publication)
+**As of:** 28 October 2026 · Version 4.6.1 (all sections checked against the source before publication)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -153,9 +153,9 @@ Two specifics:
 | Passwords | Argon2id via `password_hash()` |
 | SQL | prepared statements throughout, `EMULATE_PREPARES = false` |
 | CSRF | `Security::getCSRFInput()` in the form, `validateRequest()` in the POST branch |
-| Session | `session_regenerate_id(true)` on login, timeout, fingerprint from network prefix + user agent |
+| Session | `session_regenerate_id(true)` on login, timeout, fingerprint from network prefix + user agent; since 4.6 account, role and password state are read from the database on every request (`sitzung_helpers.php`), 12 hours at most |
 | Brute force | `RateLimiter` — 5 failed attempts per IP address, then a 15-minute lockout |
-| 2FA | own `TOTP` class per RFC 6238, no third-party library |
+| 2FA | own `TOTP` class per RFC 6238, no third-party library; backup codes stored only as hashes since 4.6 |
 | Uploads | MIME check via `finfo`, extension allow-list, re-encoded as JPEG |
 | HTTP headers | CSP with no foreign hosts (but `'unsafe-inline'` for scripts and styles), HSTS, `frame-ancestors 'none'`, `form-action 'self'` |
 | Directories | `.htaccess` locks `upload/`, `documents/`, config files |
@@ -239,11 +239,11 @@ that, four weeks after it was written down. The list was checked again on
 
 **Still open**
 
-1. **No test coverage of the business core.** Three test files cover migration helpers, the rate limiter and the sync helpers. Nothing covers items, permissions or exports. The tests are not part of the published repository.
 2. **No `.htaccess` equivalent on the NAS instance** (Nginx). Directory protection there rests on the server configuration, not on files shipped with the application.
 
 **Fixed since this document was first written**
 
+1. ~~No test coverage of the business core.~~ Since 4.6, PHPUnit tests against an SQLite database built from `install/schema.sql` also cover “own items only”, permissions, values and current value, locations, CSV export and deletion — 230 tests in 4.6.1. What they found was fixed in 4.6 and 4.6.1. The tests are still not part of the published repository.
 5. ~~Three orphan tables.~~ `orte`, `standort_raeume` and `standort_positionen` were dropped in 4.3.25 — from `install/schema.sql` and, by migration, from all eleven installations.
 
 6. ~~Three coexisting location models.~~ Since 24 September 2026 every read path resolves `wertsachen.raum_id` against `raeume`. The measurement before the change: no item on any of the eleven installations pointed at a room that `raeume` did not know.
@@ -260,14 +260,14 @@ that, four weeks after it was written down. The list was checked again on
 
 For a first pass, in this order:
 
-1. **`db.php`** — bootstrap, auth, permissions, DB wrapper. Understand this file and you understand 80 percent of the conventions.
+1. **`db.php`** — bootstrap and sign-in; since 4.6 together with `rechte_helpers.php` (permissions) and `Database.php` (DB wrapper). Understand this file and you understand 80 percent of the conventions.
 2. **`index.php`** — the most complex page: filters, sorting, pagination, bulk actions, visibility rules.
 3. **`migrate.php`** with **`backend/migration_runner.php`** — how a database change is applied, by one installation itself or across the fleet.
 4. **`version_agent.php`** — short and self-contained; the instance side of the fleet's version comparison. The sync agent and the hub are not part of the published repository.
 5. **`security.php`** — CSRF, fingerprint, upload validation.
 
-For a critical eye, the most rewarding read is `helpers.php` (1,516 lines, grown organically).
+For a critical eye, the most rewarding read is `helpers.php` (1,641 lines, grown organically).
 
 ---
 
-*This document describes the state as of 24 October 2026, version 4.5.2. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 28 October 2026, version 4.6.1. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

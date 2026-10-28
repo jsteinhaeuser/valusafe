@@ -66,10 +66,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $backupCodes = TOTP::generateBackupCodes(8);
             $pdo->prepare("UPDATE users SET totp_secret = ?, totp_enabled = 1, totp_backup_codes = ? WHERE id = ?")
-                ->execute([$secret, json_encode($backupCodes), $_SESSION['user_id']]);
+                ->execute([$secret, json_encode(TOTP::hashBackupCodes($backupCodes)), $_SESSION['user_id']]);
+            // Klartext nur fuer die eine Anzeige danach (OWASP-A06-004)
+            $_SESSION['totp_neue_codes'] = $backupCodes;
             unset($_SESSION['totp_pending_secret']);
             $_SESSION['totp_verified'] = true;
             header('Location: ?step=backup_codes&new=1');
+            exit;
+        }
+
+    // Neue Ersatzcodes (nur mit gueltigem Code) - die alten werden ungueltig.
+    // Seit 4.6 lassen sich gespeicherte Codes nicht mehr anzeigen.
+    } elseif ($action === 'new_backup_codes' && !empty($user['totp_enabled'])) {
+        $code = trim($_POST['totp_code'] ?? '');
+        if (!TOTP::verify((string)$user['totp_secret'], $code)) {
+            $error = t('2fa_error_new_backup');
+            $step  = 'backup_codes';
+        } else {
+            $backupCodes = TOTP::generateBackupCodes(8);
+            $pdo->prepare("UPDATE users SET totp_backup_codes = ? WHERE id = ?")
+                ->execute([json_encode(TOTP::hashBackupCodes($backupCodes)), $_SESSION['user_id']]);
+            $_SESSION['totp_neue_codes'] = $backupCodes;
+            Security::logSecurityEvent('2fa_backup_codes_renewed', ['user_id' => (int)$_SESSION['user_id']]);
+            header('Location: ?step=backup_codes&renewed=1');
             exit;
         }
 
@@ -98,7 +117,16 @@ if ($step === 'backup_codes' && empty($user['totp_enabled'])) {
 $otpauthUrl = $pendingSecret
     ? TOTP::getOtpauthUrl($pendingSecret, $user['username'], defined('APP_NAME') ? APP_NAME : 'ValuSafe')
     : null;
-$backupCodes = !empty($user['totp_backup_codes']) ? (json_decode($user['totp_backup_codes'], true) ?: []) : [];
+// Ersatzcodes zeigt die Seite nur einmal, direkt nach dem Erzeugen
+$neueCodes = $_SESSION['totp_neue_codes'] ?? [];
+unset($_SESSION['totp_neue_codes']);
+$gespeicherteCodes = !empty($user['totp_backup_codes']) ? (json_decode($user['totp_backup_codes'], true) ?: []) : [];
+// Liste von vor 4.6 im Klartext: jetzt umstellen (OWASP-A06-004)
+if ($gespeicherteCodes && TOTP::brauchtUmstellung($gespeicherteCodes)) {
+    $gespeicherteCodes = TOTP::backupCodesUmstellen($gespeicherteCodes);
+    $pdo->prepare("UPDATE users SET totp_backup_codes = ? WHERE id = ?")
+        ->execute([json_encode($gespeicherteCodes), $_SESSION['user_id']]);
+}
 
 include __DIR__ . '/header_next_page.php';
 ?>
@@ -196,15 +224,17 @@ include __DIR__ . '/header_next_page.php';
 <div class="card">
     <div class="card-header"><h2 style="font-size:1.1rem;margin:0"><?php echo t('2fa_backup_title'); ?></h2></div>
     <div class="card-body" style="padding:2rem">
+        <?php if ($neueCodes): ?>
         <?php if (isset($_GET['new'])): ?>
             <div class="alert alert-success" role="status"><?php echo t('2fa_backup_success'); ?></div>
         <?php endif; ?>
         <p style="margin-bottom:1rem">
             <?php echo t('2fa_backup_desc'); ?><br>
-            <strong><?php echo t('2fa_backup_once'); ?></strong>
+            <strong><?php echo t('2fa_backup_once'); ?></strong><br>
+            <strong><?php echo t('2fa_backup_shown_once'); ?></strong>
         </p>
         <ul style="list-style:none;padding:0;display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;max-width:320px;margin:0 0 1.5rem">
-            <?php foreach ($backupCodes as $code): ?>
+            <?php foreach ($neueCodes as $code): ?>
                 <li><code style="display:block;background:#f0f4ff;color:#1a1a2e;border:1px solid #c0c8e8;padding:.4rem .75rem;border-radius:6px;font-size:1rem;letter-spacing:.1em;text-align:center;font-weight:600"><?php echo htmlspecialchars($code); ?></code></li>
             <?php endforeach; ?>
         </ul>
@@ -212,6 +242,25 @@ include __DIR__ . '/header_next_page.php';
             <button type="button" onclick="window.print()" class="btn btn-secondary"><?php echo t('2fa_btn_print'); ?></button>
             <a href="?step=overview" class="btn btn-primary"><?php echo t('2fa_btn_done'); ?></a>
         </div>
+        <?php else: ?>
+        <p style="margin-bottom:.5rem"><?php echo t('2fa_backup_hidden'); ?></p>
+        <p class="text-muted" style="margin-bottom:1.5rem"><?php echo htmlspecialchars(t('2fa_backup_left', [count($gespeicherteCodes)])); ?></p>
+        <form method="POST">
+            <?php echo Security::getCSRFInput(); ?>
+            <input type="hidden" name="action" value="new_backup_codes">
+            <div class="form-group" style="max-width:240px">
+                <label for="totp_code_backup"><?php echo t('2fa_disable_code_label'); ?></label>
+                <input type="text" id="totp_code_backup" name="totp_code" class="form-control"
+                       inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code"
+                       required
+                       style="font-size:1.2rem;letter-spacing:.2em;text-align:center">
+            </div>
+            <div style="display:flex;gap:1rem;margin-top:1rem;flex-wrap:wrap">
+                <button type="submit" class="btn btn-primary"><?php echo t('2fa_btn_new_backup'); ?></button>
+                <a href="?step=overview" class="btn btn-secondary"><?php echo t('2fa_btn_cancel'); ?></a>
+            </div>
+        </form>
+        <?php endif; ?>
     </div>
 </div>
 

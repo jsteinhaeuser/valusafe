@@ -149,17 +149,7 @@ try {
     $recentActivities = [];
 }
 
-// 7. WHO IS ONLINE (letzte 15 Minuten)
-try {
-    $onlineUsers = $db->select("
-        SELECT username, role, last_seen, current_page, ip_address
-        FROM user_activity
-        WHERE last_seen >= DATE_SUB(NOW(), INTERVAL 15 MINUTE)
-        ORDER BY last_seen DESC
-    ");
-} catch (Exception $e) {
-    $onlineUsers = [];
-}
+// 7. "Wer ist online" ausgebaut 27.10.2026 (siehe backend/users.php)
 
 // Layout laden (Sidebar wird automatisch in header.php included)
 include 'layout/header_next_page.php';
@@ -258,35 +248,6 @@ include 'layout/header_next_page.php';
             </div>
             <div class="widget-footer">
                 <a href="categories.php" class="widget-link"><?php echo t('btn_manage'); ?> →</a>
-            </div>
-        </div>
-
-        <!-- Who is online Widget -->
-        <div class="widget-card">
-            <div class="widget-header">
-                <div>
-                    <div class="widget-value" style="color: var(--vs-success);"><?php echo count($onlineUsers); ?></div>
-                    <div class="widget-label" style="white-space:nowrap;"><i class="ti ti-circle-check" style="color:var(--vs-success);"></i> <?php echo t('online_widget_title'); ?></div>
-                </div>
-                <div class="widget-icon"><i class="ti ti-circle-check" style="opacity:0.25;"></i></div>
-            </div>
-            <?php if (empty($onlineUsers)): ?>
-                <div style="font-size:12px; color:#999; margin: 8px 0;"><?php echo t('online_widget_none'); ?></div>
-            <?php else: ?>
-                <ul style="margin:8px 0 0; padding:0; list-style:none; font-size:12px;">
-                <?php foreach (array_slice($onlineUsers, 0, 4) as $ou): ?>
-                    <li style="padding:3px 0; color:#555;">
-                        <i class="ti ti-circle-check" style="color:var(--vs-success);"></i> <strong><?php echo htmlspecialchars($ou['username']); ?></strong>
-                        <span style="color:#aaa;"> · <?php echo htmlspecialchars($ou['current_page'] ?? ''); ?></span>
-                    </li>
-                <?php endforeach; ?>
-                <?php if (count($onlineUsers) > 4): ?>
-                    <li style="color:#aaa; padding:3px 0;">+ <?php echo count($onlineUsers) - 4; ?> weitere</li>
-                <?php endif; ?>
-                </ul>
-            <?php endif; ?>
-            <div class="widget-footer">
-                <a href="users.php" class="widget-link"><?php echo t('online_widget_link'); ?></a>
             </div>
         </div>
 

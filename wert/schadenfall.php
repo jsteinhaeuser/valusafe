@@ -200,7 +200,7 @@ if ($fall && $schritt === 3) {
         $gegenstaende[] = $z;
         $summen['anzahl']++;
         $summen['preis']    += (float)$z['preis'];
-        $summen['zeitwert'] += (float)($z['aktueller_wert'] ?: $z['preis']);
+        $summen['zeitwert'] += vsZeitwert($z);
         if ((int)$z['belege'] === 0) $summen['ohne_beleg']++;
         if (empty($z['bild'])) $summen['ohne_foto']++;
         $summen['dateien'] += max((int)$z['fotos'], empty($z['bild']) ? 0 : 1)
@@ -387,7 +387,7 @@ include __DIR__ . '/header_next_page.php';
                         <?php endif; ?>
                         <span class="text">
                             <span class="name"><?php echo $e($g['name']); ?></span>
-                            <span class="meta"><?php echo $e($g['raum_name'] ?? '–'); ?> · <?php echo $preis($g['aktueller_wert'] ?: $g['preis']); ?></span>
+                            <span class="meta"><?php echo $e($g['raum_name'] ?? '–'); ?> · <?php echo $preis(vsZeitwert($g)); ?></span>
                         </span>
                     </label>
                     <div>
@@ -458,7 +458,7 @@ include __DIR__ . '/header_next_page.php';
                     <td><a href="edit.php?id=<?php echo (int)$g['id']; ?>"><?php echo $e($g['name']); ?></a></td>
                     <td><?php echo $e(t('claims_cond_' . $g['zustand'])); ?></td>
                     <td class="zahl"><?php echo $preis($g['preis']); ?></td>
-                    <td class="zahl"><?php echo $preis($g['aktueller_wert'] ?: $g['preis']); ?></td>
+                    <td class="zahl"><?php echo $preis(vsZeitwert($g)); ?></td>
                     <td class="zahl"><?php echo (int)$g['belege']; ?></td>
                 </tr>
             <?php endforeach; ?>
