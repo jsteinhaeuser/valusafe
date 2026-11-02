@@ -1,6 +1,6 @@
 # ValuSafe — Architecture
 
-**As of:** 28 October 2026 · Version 4.6.1 (all sections checked against the source before publication)
+**As of:** 31 October 2026 · Version 4.7 (sections checked against the source for 4.6.1; “Updates” in section 11 new for 4.7)
 **Method:** reconstructed from the source, not from memory
 **Audience:** developers who want to read, review or extend the code
 
@@ -226,6 +226,8 @@ Since 4.3.29 the registration lives in one place, `components/sw_registrierung.p
 
 **Deployment:** files go to the master via FileZilla, and from there to the fleet via `file_sync.php`. Database changes are versioned migrations in `backend/migrations/`. Since September 2026 the hub runs them on every instance through `migration_agent.php`, with a dry run first; a standalone installation runs them itself with `migrate.php`.
 
+**Updates (since 4.7):** A standalone installation updates itself via Administration › Update (`backend/update.php`). At most once a day it asks palindrom.de for the current version (can be switched off with `VALUSAFE_UPDATE_PRUEFEN`), downloads the update package on request or accepts it as an uploaded file. The package is a ZIP with `manifest.json` (version, SHA-256 of every file, protected and removed files) and an Ed25519 signature over the manifest (libsodium); the application knows two public keys so that a lost main key can be replaced. Only a package that is signed, complete and newer than the installed version is applied. Before replacing anything, `backend/update.php` backs up the database and every file it replaces; while files are swapped, every other page answers 503. Then the self-test and migrations run — if either fails, the files are rolled back. The core (`update_kern.php`) is byte-identical with Valu-Basic. Fleet instances and the Docker image have no button: they get new files via `file_sync.php` or a new image.
+
 ## 12. Known issues
 
 Honest and complete, in descending order of importance:
@@ -270,4 +272,4 @@ For a critical eye, the most rewarding read is `helpers.php` (1,641 lines, grown
 
 ---
 
-*This document describes the state as of 28 October 2026, version 4.6.1. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*
+*This document describes the state as of 31 October 2026, version 4.7. It was reconstructed from the source and checked against it before publication; where claims could not be verified — in particular regarding `config.php`, which is not in the repository — this is marked.*

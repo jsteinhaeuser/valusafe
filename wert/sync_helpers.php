@@ -20,8 +20,15 @@ function sanitizePath(string $path): ?string {
  * Listet rekursiv alle sync-fähigen Dateien unterhalb von $dir auf
  * (relativ zu $baseDir), unter Auslassung von EXCLUDED_DIRS / EXCLUDED_FILES
  * und Beschränkung auf SYNC_EXTENSIONS. Ergebnis: relativer Pfad => md5.
+ *
+ * SYNC_EXCEPTIONS (sync_agent.php) gelten seit 4.7 auch hier: bis dahin
+ * durften read_file/write_file wert-update/version.json und
+ * backend/config.php zwar lesen und schreiben, die Liste nannte sie aber
+ * nie - der Ordner bzw. der Dateiname 'config.php' war gesperrt. Der Hub sah
+ * dadurch keine Abweichung im Versionsstand.
  */
 function listFiles(string $dir, string $baseDir, array &$result): void {
+    $ausnahmen = defined('SYNC_EXCEPTIONS') ? SYNC_EXCEPTIONS : [];
     foreach (scandir($dir) as $item) {
         if ($item === '.' || $item === '..') continue;
         $fullPath = $dir . '/' . $item;
@@ -30,10 +37,19 @@ function listFiles(string $dir, string $baseDir, array &$result): void {
             if (in_array(explode('/', $relative)[0], EXCLUDED_DIRS)) continue;
             listFiles($fullPath, $baseDir, $result);
         } else {
-            if (in_array(basename($item), EXCLUDED_FILES)) continue;
+            if (in_array(basename($item), EXCLUDED_FILES) && !in_array($relative, $ausnahmen, true)) continue;
             $ext = strtolower(pathinfo($item, PATHINFO_EXTENSION));
             if (!in_array($ext, SYNC_EXTENSIONS)) continue;
             $result[$relative] = md5_file($fullPath);
+        }
+    }
+    // Ausnahmen in gesperrten Ordnern einzeln nachtragen - nur beim
+    // obersten Aufruf, der Ordner selbst wird weiter nicht durchlaufen.
+    if ($dir === $baseDir) {
+        foreach ($ausnahmen as $pfad) {
+            if (!isset($result[$pfad]) && is_file($baseDir . '/' . $pfad) && !is_link($baseDir . '/' . $pfad)) {
+                $result[$pfad] = md5_file($baseDir . '/' . $pfad);
+            }
         }
     }
 }

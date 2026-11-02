@@ -151,6 +151,13 @@ try {
 
 // 7. "Wer ist online" ausgebaut 27.10.2026 (siehe backend/users.php)
 
+// 8. Versionsabfrage bei palindrom.de (4.7): hoechstens einmal am Tag, nur
+// hier und auf update.php; der Hinweis im Kopf liest nur das Ergebnis.
+if (darfSuperAdminAktionen()) {
+    require_once dirname(__DIR__) . '/update_helpers.php';
+    vsUpdStand(rtrim((string)BACKUP_DIR, '/') . '/update/');
+}
+
 // Layout laden (Sidebar wird automatisch in header.php included)
 include 'layout/header_next_page.php';
 ?>
@@ -543,6 +550,11 @@ include 'layout/header_next_page.php';
             <a href="datenuebernahme.php" class="widget-card vs-system-link">
                 <div class="widget-label"><i class="ti ti-database-import"></i> <?php echo t('takeover_title'); ?></div>
             </a>
+            <?php if (function_exists('darfSuperAdminAktionen') && darfSuperAdminAktionen()): ?>
+            <a href="update.php" class="widget-card vs-system-link">
+                <div class="widget-label"><i class="ti ti-download" aria-hidden="true"></i> <?php echo esc(t('upd_tile')); ?></div>
+            </a>
+            <?php endif; ?>
             <?php if (function_exists('isSuperAdmin') && isSuperAdmin()): ?>
             <a href="logs_extended.php" class="widget-card vs-system-link">
                 <div class="widget-label"><i class="ti ti-list-details"></i> <?php echo t('sys_extended_logs'); ?></div>

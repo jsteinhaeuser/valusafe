@@ -1,8 +1,13 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-10-28.
+All changes that affect users. Generated from the project history on 2026-11-02.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.7 — 2026-11-02
+
+- **New:** One-click updates: under Administration > Update, ValuSafe shows whether a new version is available, downloads the update package on request, verifies its signature and installs it - backing up the database first and returning to the previous version if anything goes wrong. Servers without internet access can upload the package instead. Works from the update after 4.7; 4.7 itself is still installed by hand.
+- **New:** Version check: at most once a day, and only when an administrator opens the administration, ValuSafe asks palindrom.de whether a new version exists. Nothing is transmitted except the server's IP address. Can be switched off with define('VALUSAFE_UPDATE_PRUEFEN', false) in config.php; covered in the privacy policy template.
 
 ## 4.6.1 — 2026-10-28
 

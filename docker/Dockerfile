@@ -2,7 +2,11 @@ FROM php:8.4-apache
 
 LABEL maintainer="Jörg Steinhäuser <wert@palindrom.de>"
 LABEL description="Wertsachen-Inventarverwaltung (ValuSafe)"
-LABEL version="4.6.1"
+LABEL version="4.7"
+
+# Im Image wird ValuSafe ueber ein neues Image aktualisiert, nicht ueber den
+# Update-Knopf (backend/update.php sperrt ihn bei VALUSAFE_DOCKER=1, ab 4.7).
+ENV VALUSAFE_DOCKER=1
 
 # ── System-Pakete ─────────────────────────────────────────────────────────────
 RUN apt-get update && apt-get install -y \

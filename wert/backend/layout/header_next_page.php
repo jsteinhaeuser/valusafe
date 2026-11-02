@@ -123,7 +123,7 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
             <i class="ti ti-crown" aria-hidden="true"></i>
         </a>
         <?php endif; ?>
-        <a class="vs-rail-btn <?php echo in_array($_currentPage, ['index.php','users.php','categories.php','locations.php','backup.php','restore.php','datenuebernahme.php','logs.php','system.php','permissions.php']) ? 'vs-rail-on' : ''; ?>"
+        <a class="vs-rail-btn <?php echo in_array($_currentPage, ['index.php','users.php','categories.php','locations.php','backup.php','restore.php','datenuebernahme.php','logs.php','system.php','permissions.php','update.php']) ? 'vs-rail-on' : ''; ?>"
            href="index.php" title="<?php echo tn('nav_admin', 'Admin'); ?>">
             <i class="ti ti-settings-2" aria-hidden="true"></i>
         </a>
@@ -164,3 +164,21 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
         <?php // Die meisten Verwaltungsseiten haben ein eigenes <main class="backend-main">;
               // Seiten ohne setzen $vsEigenesMain = false vor dem Einbinden. ?>
         <div class="vs-page-content" id="hauptinhalt" tabindex="-1"<?php echo (isset($vsEigenesMain) && !$vsEigenesMain) ? ' role="main"' : ''; ?>>
+        <?php
+        // Hinweis auf eine neue ValuSafe-Version (4.7, backend/update.php). Liest
+        // nur den Zwischenspeicher der letzten Abfrage - gefragt wird auf der
+        // Verwaltungsuebersicht und der Update-Seite, nicht bei jedem Aufruf.
+        if ($_currentPage !== 'update.php' && function_exists('darfSuperAdminAktionen') && darfSuperAdminAktionen()
+            && defined('BACKUP_DIR') && is_file(dirname(__DIR__, 2) . '/update_helpers.php')) {
+            require_once dirname(__DIR__, 2) . '/update_helpers.php';
+            $_updStand = vsUpdStand(rtrim((string)BACKUP_DIR, '/') . '/update/', false, true);
+            $_updInst  = vsUpdInstalliert(dirname(__DIR__, 2));
+            if (vsUpdNeuer($_updStand, $_updInst)): ?>
+        <div class="vs-update-hinweis" role="status" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 0 16px; padding:12px 16px; border-radius:12px; background:var(--vs-accent-light, var(--vs-surface)); border:1px solid var(--vs-accent); font-size:14px;">
+            <i class="ti ti-sparkles" aria-hidden="true"></i>
+            <span><?php echo htmlspecialchars(sprintf(t('upd_banner'), $_updInst, $_updStand['info']['version']), ENT_QUOTES, 'UTF-8'); ?></span>
+            <a href="update.php" class="vs-btn vs-btn-primary vs-btn-sm"><?php echo htmlspecialchars(t('upd_banner_link'), ENT_QUOTES, 'UTF-8'); ?></a>
+        </div>
+        <?php endif;
+            unset($_updStand, $_updInst);
+        } ?>

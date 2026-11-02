@@ -27,7 +27,7 @@ include 'header_next_page.php';
     kann diese Seiten dann aber auch stehen lassen.
 -->
 <h2>Datenschutzerklärung</h2>
-<p class="stand">Stand: März 2026</p>
+<p class="stand">Stand: November 2026</p>
 
 <h3>1. Verantwortlicher</h3>
 <p>
@@ -94,6 +94,10 @@ include 'header_next_page.php';
 
 <h3>9. Datenlöschung</h3>
 <p>Aktivitätsprotokolle werden automatisch nach 90 Tagen gelöscht. Ihre Inventardaten bleiben so lange gespeichert wie Ihr Konto aktiv ist. Zur Löschung Ihres Kontos und aller zugehörigen Daten wenden Sie sich bitte an den Administrator.</p>
+
+
+<h3>10. Versionsabfrage</h3>
+<p>Höchstens einmal am Tag fragt der Server, auf dem diese Anwendung läuft, bei palindrom.de (Herausgeber von ValuSafe) nach, ob es eine neue Version gibt – nur wenn ein Administrator die Verwaltung aufruft. Dabei werden keine Daten von Ihnen oder aus dem Inventar übertragen, auch keine Versionsnummer oder Kennung der Installation; palindrom.de erhält wie bei jedem Abruf einer Webseite die IP-Adresse dieses Servers und den Zeitpunkt. Die Abfrage lässt sich in der Konfiguration abschalten.</p>
 
 </div>
 

@@ -2,6 +2,26 @@
 // db.php - FIXED nach DB-Migration
 require_once 'config.php';
 require_once __DIR__ . '/fehlerziel.php';   // Ziel fuer Fehlermeldungen, muss vor allem anderen stehen
+
+// Update laeuft (backend/update.php, ab 4.7): ausser der Update-Seite selbst
+// wartet jede Seite, bis die Dateien getauscht und migriert sind. Schalter
+// aelter als 15 Minuten gilt nicht mehr (VS_UPD_WARTUNG_MAX, update_helpers.php).
+if (PHP_SAPI !== 'cli' && defined('BACKUP_DIR')
+    && is_file($_vsWartung = rtrim((string)BACKUP_DIR, '/') . '/update/wartung.json')
+    && realpath((string)($_SERVER['SCRIPT_FILENAME'] ?? '')) !== realpath(__DIR__ . '/backend/update.php')) {
+    $_vsWartungSeit = json_decode((string)@file_get_contents($_vsWartung), true)['seit'] ?? 0;
+    if (is_int($_vsWartungSeit) && time() - $_vsWartungSeit < 900) {
+        http_response_code(503);
+        header('Retry-After: 30');
+        header('Content-Type: text/html; charset=utf-8');
+        exit('<!DOCTYPE html><meta charset="utf-8"><meta http-equiv="refresh" content="30">'
+           . '<title>ValuSafe</title><p style="font-family:sans-serif;margin:40px">'
+           . 'ValuSafe wird gerade aktualisiert. Bitte in einer Minute erneut laden. / '
+           . '<span lang="en">ValuSafe is being updated. Please reload in a minute.</span></p>');
+    }
+    unset($_vsWartungSeit);
+}
+unset($_vsWartung);
 require_once 'security.php';
 require_once 'SecurityHeaders.php';
 

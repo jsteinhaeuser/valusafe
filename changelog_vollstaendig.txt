@@ -2,7 +2,22 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 28.10.2026 aus der Projektchronik.
+Erzeugt am 02.11.2026 aus der Projektchronik.
+
+Version 4.7   02.11.2026
+------------------------
+  [Neu] Updates per Knopfdruck: Unter Verwaltung > Update zeigt ValuSafe, ob
+        es eine neue Version gibt, lädt das Update-Paket auf Wunsch herunter,
+        prüft seine Signatur und spielt es ein - mit Sicherung der Datenbank
+        vorher und Rückkehr zur bisherigen Version, falls etwas schiefgeht.
+        Wer keinen Internetzugang vom Server aus hat, kann das Paket auch
+        hochladen. Gilt ab dem Update nach 4.7; 4.7 selbst wird noch von Hand
+        installiert.
+  [Neu] Versionsabfrage: Höchstens einmal am Tag fragt ValuSafe bei
+        palindrom.de nach einer neuen Version, nur wenn ein Administrator die
+        Verwaltung öffnet. Übertragen wird nichts außer der IP-Adresse des
+        Servers. Abschaltbar mit define('VALUSAFE_UPDATE_PRUEFEN', false) in
+        config.php; steht in der Vorlage der Datenschutzerklärung.
 
 Version 4.6.1   28.10.2026
 --------------------------

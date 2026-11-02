@@ -26,11 +26,9 @@ try {
     $userId = $_SESSION['user_id'] ?? 0;
     if ($userId) {
         try {
-            // Spalte anlegen falls noch nicht vorhanden
-            try {
-                $db->execute("ALTER TABLE users ADD COLUMN last_seen_version VARCHAR(20) NULL", []);
-            } catch (Exception $e) { /* existiert bereits */ }
-
+            // Die Spalte legt Migration 003 an. Bis 4.6.1 stand hier je Sitzung
+            // ein ALTER TABLE, das bei vorhandener Spalte eine Zeile in
+            // php_errors.log schrieb; fehlt sie doch, faengt das catch unten.
             $user     = $db->selectOne("SELECT last_seen_version FROM users WHERE id = ?", [$userId]);
             $lastSeen = $user['last_seen_version'] ?? null;
 

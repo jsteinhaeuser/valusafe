@@ -118,7 +118,6 @@ function hc_do_curl(string $url): array {
     $errno  = curl_errno($ch);
     $fehler = curl_error($ch);
     $code   = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
     $ms = round((microtime(true) - $start) * 1000);
     $meldung = $errno ? hc_fehlertext($errno, $fehler) : '';
     if ($meldung !== '') hc_transportfehler($meldung);
@@ -144,7 +143,6 @@ function hc_do_curl_headers(string $url): array {
     $errno  = curl_errno($ch);
     $fehler = curl_error($ch);
     $code   = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
     $ms = round((microtime(true) - $start) * 1000);
     $meldung = $errno ? hc_fehlertext($errno, $fehler) : '';
     if ($meldung !== '') hc_transportfehler($meldung);

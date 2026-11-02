@@ -19,7 +19,6 @@ function fetchUrl(string $url): ?string {
         ]);
         $out = curl_exec($ch);
         $err = curl_error($ch);
-        curl_close($ch);
         return ($out !== false && !$err) ? $out : null;
     }
     $ctx = stream_context_create(['http' => ['timeout' => 8, 'ignore_errors' => true,

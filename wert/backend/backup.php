@@ -92,51 +92,13 @@ if (isset($_POST['create_backup'])) {
         try {
             $filename = 'database_' . $ts . '.sql';
             $filepath = BACKUP_DIR . $filename;
-            $f = fopen($filepath, 'w');
-            if (!$f) throw new Exception("Kann Datei nicht erstellen: $filepath");
-            // Versionszeile: die Datenuebernahme (datenuebernahme.php) zeigt
-            // sie in der Vorschau an. Entscheidend fuer die Pruefung ist aber
-            // schema_migrations - Sicherungen bis 4.4.1 haben die Zeile nicht.
-            $vsVersion = json_decode((string)@file_get_contents(__DIR__ . '/../wert-update/version.json'), true)['version'] ?? '';
-            fwrite($f, "-- Backup " . date('Y-m-d H:i:s') . "\n"
-                . ($vsVersion !== '' ? "-- ValuSafe-Version: " . preg_replace('/[^0-9A-Za-z.\-]/', '', $vsVersion) . "\n" : '')
-                . "SET NAMES utf8mb4;\nSET FOREIGN_KEY_CHECKS=0;\n\n");
-            // Alle Tabellen der Datenbank sichern statt einer gepflegten Liste.
-            //
-            // Bis zum 06.09.2026 stand hier eine feste Aufzaehlung von sechs
-            // Tabellen plus drei bedingten. Die Datenbank des Masters hat 22.
-            // Nicht gesichert waren unter anderem versicherungen (saemtliche
-            // Vertraege), app_settings, schema_migrations sowie die gesamte
-            // Standort-Hierarchie: standorte, standort_raeume,
-            // standort_positionen, raeume, positionen. Dazu permissions,
-            // user_activity, wert_historie, login_attempts, password_resets.
-            //
-            // Eine Sicherung, die schweigend die Haelfte weglaesst, ist keine
-            // Sicherung. Jede neue Tabelle war ausserdem so lange nicht
-            // gesichert, bis jemand daran dachte, sie hier nachzutragen.
-            $tables = [];
-            foreach ($pdo->query("SHOW FULL TABLES WHERE Table_type = 'BASE TABLE'") as $zeile) {
-                $tables[] = array_values($zeile)[0];
-            }
-            sort($tables);
-            $appendLog('DB-Backup: ' . count($tables) . ' Tabellen gefunden');
-            foreach ($tables as $table) {
-                try {
-                    $row = $pdo->query("SHOW CREATE TABLE `$table`")->fetch();
-                    fwrite($f, "DROP TABLE IF EXISTS `$table`;\n" . $row['Create Table'] . ";\n\n");
-                    $rows2 = $pdo->query("SELECT * FROM `$table`");
-                    $cnt = 0;
-                    foreach ($rows2 as $row2) {
-                        if ($cnt == 0) fwrite($f, "INSERT INTO `$table` (`" . implode('`,`', array_keys($row2)) . "`) VALUES\n");
-                        $vals = array_map(fn($v) => $v === null ? 'NULL' : $pdo->quote($v), array_values($row2));
-                        fwrite($f, ($cnt > 0 ? ',' : '') . "(" . implode(',', $vals) . ")\n");
-                        $cnt++;
-                    }
-                    if ($cnt > 0) fwrite($f, ";\n\n");
-                } catch(Exception $e) { $appendLog("Tabelle $table: " . $e->getMessage(), true); }
-            }
-            fwrite($f, "SET FOREIGN_KEY_CHECKS=1;\n");
-            fclose($f);
+            // Alle Tabellen, nicht eine gepflegte Liste: bis zum 06.09.2026
+            // fehlten hier versicherungen, app_settings, schema_migrations,
+            // die Standort-Hierarchie u. a. (13 von 22). Seit 4.7 in
+            // helpers_sicherung.php, weil das Update dieselbe Sicherung macht.
+            require_once __DIR__ . '/../helpers_sicherung.php';
+            $anzahl = vsDatenbankSichern($pdo, $filepath, $appendLog);
+            $appendLog('DB-Backup: ' . $anzahl . ' Tabellen');
             $sz = filesize($filepath);
             $appendLog("DB-Backup: $filename (" . $fmtBytes($sz) . ")");
             $backupResults[] = "DB: $filename";

@@ -143,6 +143,9 @@ define('ALLOWED_IMAGE_TYPES', [
 ]);
 define('ALLOWED_EXTENSIONS', ['jpg','jpeg','png','gif','webp','heic','heif']);
 
+// Updates kommen als neues Image, nicht ueber den Update-Knopf (4.7).
+define('VALUSAFE_UPDATE_KNOPF', false);
+
 define('BACKUP_TOKEN', '${BACKUP_TOKEN}');
 ${APP_URL_ZEILE}
 

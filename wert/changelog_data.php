@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 28.10.2026 17:06 von bin/changelog_export.php.
+ * Erzeugt am 02.11.2026 17:10 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,24 @@
  */
 
 return [
+    [
+        'version' => '4.7',
+        'date' => '2026-11-02',
+        'entries' => [
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Updates per Knopfdruck: Unter Verwaltung > Update zeigt ValuSafe, ob es eine neue Version gibt, lädt das Update-Paket auf Wunsch herunter, prüft seine Signatur und spielt es ein - mit Sicherung der Datenbank vorher und Rückkehr zur bisherigen Version, falls etwas schiefgeht. Wer keinen Internetzugang vom Server aus hat, kann das Paket auch hochladen. Gilt ab dem Update nach 4.7; 4.7 selbst wird noch von Hand installiert.',
+                'text_en' => 'One-click updates: under Administration > Update, ValuSafe shows whether a new version is available, downloads the update package on request, verifies its signature and installs it - backing up the database first and returning to the previous version if anything goes wrong. Servers without internet access can upload the package instead. Works from the update after 4.7; 4.7 itself is still installed by hand.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Versionsabfrage: Höchstens einmal am Tag fragt ValuSafe bei palindrom.de nach einer neuen Version, nur wenn ein Administrator die Verwaltung öffnet. Übertragen wird nichts außer der IP-Adresse des Servers. Abschaltbar mit define(\'VALUSAFE_UPDATE_PRUEFEN\', false) in config.php; steht in der Vorlage der Datenschutzerklärung.',
+                'text_en' => 'Version check: at most once a day, and only when an administrator opens the administration, ValuSafe asks palindrom.de whether a new version exists. Nothing is transmitted except the server\'s IP address. Can be switched off with define(\'VALUSAFE_UPDATE_PRUEFEN\', false) in config.php; covered in the privacy policy template.'
+            ]
+        ]
+    ],
     [
         'version' => '4.6.1',
         'date' => '2026-10-28',
@@ -201,54 +219,6 @@ return [
                 'public' => true,
                 'text' => 'Vorsorge für Sprachen mit Apostroph (z. B. Französisch, Italienisch, Irisch): Ein Apostroph in einer Übersetzung konnte einzelne Knöpfe und Rückfragen außer Kraft setzen – beim Löschen von Gegenständen, Dokumenten, Benutzern und Sicherungen, beim Hochladen von Bildern und in der Statistik. Die Texte werden jetzt so eingebunden, dass jedes Zeichen sicher ist. In den derzeitigen Übersetzungen trat der Fehler noch nicht auf.',
                 'text_en' => 'Safeguard for languages with apostrophes (e.g. French, Italian, Irish): an apostrophe in a translation could disable individual buttons and confirmation prompts – when deleting items, documents, users and backups, when uploading images and in the statistics. The texts are now embedded so that every character is safe. The current translations were not yet affected.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.5',
-        'date' => '2026-10-16',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Neue Sprache: Irisch (Gaeilge), vorerst als Beta – die Übersetzung wird gerade von Muttersprachlern gegengelesen. ValuSafe spricht jetzt zehn Sprachen – auswählbar auf der Anmeldeseite und in den Einstellungen.',
-                'text_en' => 'New language: Irish (Gaeilge), for now as a beta – native speakers are currently reviewing the translation. ValuSafe now speaks ten languages – selectable on the sign-in page and in the settings.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Einstellungen: Die Sprache wählen Sie jetzt in einer Auswahlliste in der Kachel „Darstellung“ zusammen mit dem Farbschema. Die eigene Sprachkachel mit zehn Knöpfen entfällt, die Seite ist dadurch deutlich kompakter. Jede Sprache steht in ihrer eigenen Schreibweise in der Liste; gewechselt wird mit „Anwenden“.',
-                'text_en' => 'Settings: you now choose the language from a drop-down list in the "Appearance" card, together with the colour scheme. The separate language card with ten buttons is gone, which makes the page considerably more compact. Each language is listed in its own spelling; click "Apply" to switch.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Einstellungen neu geordnet: vier Abschnitte mit Überschrift – Darstellung, Mein Konto, Meine Daten und Administration. Profilbild, Standard-Ersteller und Sitzung stehen in der Kachel „Profil“, Passwort und Zwei-Faktor-Anmeldung in „Anmeldung“. Die Farbschemata stehen in einer Reihe, Kacheln einer Reihe sind gleich hoch.',
-                'text_en' => 'Settings reorganised into four sections with headings: Appearance, My account, My data and Administration. Profile picture, default creator and session are in the "Profile" card, password and two-factor sign-in in "Sign-in". The colour schemes sit in one row, and cards in a row have the same height.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Tabellenansicht: Ein Klick auf eine Zeile oder den Namen zeigt den Gegenstand jetzt rechts im Detailbereich, wie in der Kartenansicht. Bisher stand dort nur „Gegenstand auswählen“. Auch per Tastatur (Name anwählen, Enter).',
-                'text_en' => 'Table view: clicking a row or the name now shows the item in the detail panel on the right, as in the card view. Until now it only said "Select item". Also works with the keyboard (focus the name, press Enter).'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Daten aus einer früheren ValuSafe-Version übernehmen: Neuer Menüpunkt unter Restore. Sicherung der alten Version (Datenbank und optional Bilder/Belege) auswählen oder hochladen, prüfen lassen, Vorschau ansehen, mit einem Klick übernehmen. Danach wird die Datenbank automatisch auf den neuen Stand gebracht. Möglich mit Sicherungen ab ValuSafe 4.4.',
-                'text_en' => 'Import data from an earlier ValuSafe version: new menu item under Restore. Select or upload the backup of the old version (database and optionally photos/receipts), have it checked, look at the preview and import it with one click. The database is then brought up to date automatically. Works with backups from ValuSafe 4.4 onwards.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Wiederherstellen: Datensätze mit Hochkomma im Text (z. B. „Kinder\'s Rad“) gingen beim Einspielen einer Datenbanksicherung still verloren. Jetzt wird alles vollständig eingespielt, Fehler werden angezeigt, und nach dem Einspielen laufen die Datenbank-Aktualisierungen.',
-                'text_en' => 'Restore: records with an apostrophe in the text (e.g. "Children\'s bike") were silently lost when restoring a database backup. Everything is now restored completely, errors are shown, and database updates run afterwards.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherung: Die Dateien-Sicherung enthält jetzt auch die Profilbilder der Benutzer. Bisher fehlten sie und gingen beim Wiederherstellen oder Umziehen verloren.',
-                'text_en' => 'Backup: the files backup now also contains the users\' profile pictures. Until now they were missing and got lost when restoring or moving.'
             ],
             [
                 'type' => 'feature',

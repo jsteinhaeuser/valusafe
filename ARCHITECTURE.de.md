@@ -1,6 +1,6 @@
 # ValuSafe — Architektur
 
-**Stand:** 28. Oktober 2026 · Version 4.6.1 (alle Abschnitte vor der Veröffentlichung gegen den Quellcode geprüft)
+**Stand:** 31. Oktober 2026 · Version 4.7 (Abschnitte gegen den Quellcode geprüft für 4.6.1; „Updates“ in Abschnitt 11 neu für 4.7)
 **Verfasser:** rekonstruiert aus dem Quellcode, nicht aus der Erinnerung
 **Zielgruppe:** Entwickler, die den Code lesen, prüfen oder erweitern wollen
 
@@ -226,6 +226,8 @@ Seit 4.3.29 steht die Registrierung an einer Stelle, `components/sw_registrierun
 
 **Deployment:** Dateien per FileZilla auf den Master, von dort per `file_sync.php` auf die Flotte. Datenbankänderungen sind versionierte Migrationen in `backend/migrations/`. Seit September 2026 führt der Hub sie über `migration_agent.php` auf jeder Instanz aus, mit Trockenlauf vorab; eine einzelne Installation führt sie mit `migrate.php` selbst aus.
 
+**Updates (seit 4.7):** Eine einzelne Installation aktualisiert sich über Verwaltung › Update (`backend/update.php`). Höchstens einmal am Tag fragt sie bei palindrom.de nach der aktuellen Version (abschaltbar mit `VALUSAFE_UPDATE_PRUEFEN`), lädt auf Knopfdruck das Update-Paket oder nimmt es als Datei entgegen. Das Paket ist ein ZIP mit `manifest.json` (Version, SHA-256 jeder Datei, geschützte und entfallene Dateien) und einer Ed25519-Signatur über das Manifest (libsodium); die Anwendung kennt zwei öffentliche Schlüssel, damit ein verlorener Hauptschlüssel ersetzt werden kann. Eingespielt wird nur, was signiert, vollständig und neuer als der installierte Stand ist. Vor dem Austausch sichert `backend/update.php` die Datenbank und jede ersetzte Datei; während des Austauschs antworten alle anderen Seiten mit 503. Danach laufen Selbsttest und Migrationen — schlägt einer fehl, werden die Dateien zurückgerollt. Der Kern (`update_kern.php`) ist mit Valu-Basic bytegleich. Instanzen der Flotte und das Docker-Image haben keinen Knopf: dort kommen neue Dateien per `file_sync.php` bzw. als neues Image.
+
 ## 12. Bekannte Baustellen
 
 Ehrlich heißt aktuell: Jeder Punkt wurde am 25.09.2026 am Quelltext
@@ -267,4 +269,4 @@ Für einen kritischen Blick lohnen sich vor allem `helpers.php` (1.641 Zeilen, g
 
 ---
 
-*Dieses Dokument beschreibt den Stand vom 28. Oktober 2026, Version 4.6.1. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*
+*Dieses Dokument beschreibt den Stand vom 31. Oktober 2026, Version 4.7. Es wurde aus dem Quellcode rekonstruiert und vor der Veröffentlichung dagegen geprüft; wo Aussagen nicht überprüfbar waren — insbesondere zu `config.php`, die nicht im Repository liegt — ist das kenntlich gemacht.*

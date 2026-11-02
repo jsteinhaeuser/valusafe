@@ -546,7 +546,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 "// Token fuer cron_backup.php. Zufaellig erzeugt, nicht aus den\n" .
                 "// Zugangsdaten abgeleitet.\n" .
                 "define('BACKUP_TOKEN', " . var_export(bin2hex(random_bytes(24)), true) . ");\n" .
-                "define('BACKUP_RETENTION_DAYS', 7);\n";
+                "define('BACKUP_RETENTION_DAYS', 7);\n\n" .
+                "// Update (ab 4.7, Verwaltung > Update): ValuSafe fragt hoechstens\n" .
+                "// einmal am Tag bei palindrom.de nach einer neuen Version (dabei\n" .
+                "// sieht palindrom.de nur die IP-Adresse dieses Servers).\n" .
+                "// Abschalten:                     define('VALUSAFE_UPDATE_PRUEFEN', false);\n" .
+                "// Einspielen von Updates sperren: define('VALUSAFE_UPDATE_KNOPF', false);\n";
 
             $configWritten = false;
             if (is_writable(__DIR__)) {
