@@ -405,6 +405,13 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
                     <?php 
                     // Custom-Felder anzeigen
                     $extras = [];
+                    // 4.8: Hersteller/Modell und Zustand vorneweg
+                    if (vsHerstellerModell($item) !== '') {
+                        $extras[] = vsHerstellerModell($item);
+                    }
+                    if (vsErhaltungszustandText($item['erhaltungszustand'] ?? null) !== '') {
+                        $extras[] = vsUebersetzt('field_condition', 'Zustand') . ': ' . vsErhaltungszustandText($item['erhaltungszustand']);
+                    }
                     if (!empty($item['custom1_typ']) && !empty($item['custom1_wert'])) {
                         $extras[] = $item['custom1_typ'] . ': ' . $item['custom1_wert'];
                     }

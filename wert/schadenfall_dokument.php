@@ -159,7 +159,7 @@ if (!empty($fall['aktenzeichen'])) {
         <?php foreach ($gegenstaende as $g): ?>
             <tr>
                 <td class="foto"><?php if (!empty($g['bild'])): ?><img src="upload/<?php echo rawurlencode($g['bild']); ?>" alt="<?php echo $e($g['name']); ?>"><?php endif; ?></td>
-                <td><strong><?php echo $e($g['name']); ?></strong><br><span class="klein"><?php echo $e(trim(($g['kategorie_name'] ?? '') . ' · ' . ($g['raum_name'] ?? ''), ' ·')); ?> · <?php echo $e(t('claims_cond_' . $g['zustand'])); ?></span></td>
+                <td><strong><?php echo $e($g['name']); ?></strong><?php echo vsHerstellerModell($g) !== '' ? '<br>' . $e(vsHerstellerModell($g)) : ''; ?><br><span class="klein"><?php echo $e(trim(($g['kategorie_name'] ?? '') . ' · ' . ($g['raum_name'] ?? ''), ' ·')); ?> · <?php echo $e(t('claims_cond_' . $g['zustand'])); ?></span></td>
                 <td><?php echo $e($g['seriennummer'] ?? ''); ?><?php echo !empty($g['barcode']) ? '<br><span class="klein">EAN ' . $e($g['barcode']) . '</span>' : ''; ?></td>
                 <td style="white-space:pre-wrap"><?php echo $e(mb_substr((string)$g['notizen'], 0, 400)); ?></td>
                 <td><?php echo $e($datum($g['kaufdatum'])); ?></td>
@@ -217,7 +217,7 @@ if (!empty($fall['aktenzeichen'])) {
         <?php foreach ($gegenstaende as $g): ?>
             <tr>
                 <td class="foto"><?php if (!empty($g['bild'])): ?><img src="upload/<?php echo rawurlencode($g['bild']); ?>" alt="<?php echo $e($g['name']); ?>"><?php endif; ?></td>
-                <td><strong><?php echo $e($g['name']); ?></strong><?php echo !empty($g['seriennummer']) ? '<br><span class="klein">' . $e(t('field_serial')) . ': ' . $e($g['seriennummer']) . '</span>' : ''; ?></td>
+                <td><strong><?php echo $e($g['name']); ?></strong><?php echo vsHerstellerModell($g) !== '' ? '<br>' . $e(vsHerstellerModell($g)) : ''; ?><?php echo !empty($g['seriennummer']) ? '<br><span class="klein">' . $e(t('field_serial')) . ': ' . $e($g['seriennummer']) . '</span>' : ''; ?></td>
                 <td><?php echo $e(t('claims_cond_' . $g['zustand'])); ?></td>
                 <td><?php echo $e($datum($g['kaufdatum'])); ?></td>
                 <td class="zahl"><?php echo $preis($g['preis']); ?></td>

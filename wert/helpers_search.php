@@ -18,6 +18,7 @@ function getFiltersFromRequest() {
         'date_to' => $_GET['date_to'] ?? '',
         'has_image' => !empty($_GET['has_image']),
         'has_docs' => !empty($_GET['has_docs']),
+        'warranty_soon' => !empty($_GET['warranty_soon']),
     ];
 }
 
@@ -33,7 +34,8 @@ function hasActiveFilters($filters) {
            !empty($filters['date_from']) ||
            !empty($filters['date_to']) ||
            $filters['has_image'] ||
-           $filters['has_docs'];
+           $filters['has_docs'] ||
+           !empty($filters['warranty_soon']);
 }
 
 /**
@@ -66,10 +68,9 @@ function getSearchStats($filters, bool $showHidden = false, int $filterRaum = 0,
 
     // Textsuche
     if (!empty($filters['search'])) {
-        $sql .= " AND (w.name LIKE ? OR w.notizen LIKE ?)";
-        $searchParam = "%{$filters['search']}%";
-        $params[] = $searchParam;
-        $params[] = $searchParam;
+        [$suchSql, $suchParams] = vsSuchBedingung($filters['search']);
+        $sql .= " AND " . $suchSql;
+        array_push($params, ...$suchParams);
     }
     
     // Kategorie (Mehrfachwahl)
@@ -118,6 +119,13 @@ function getSearchStats($filters, bool $showHidden = false, int $filterRaum = 0,
         $sql .= " AND EXISTS (SELECT 1 FROM dokumente d WHERE d.wertsache_id = w.id)";
     }
 
+    // Garantie endet in den naechsten 30 Tagen (4.8, nach Migration 017)
+    if (!empty($filters['warranty_soon']) && function_exists('vsMigration017Da') && vsMigration017Da()) {
+        [$gSql, $gParams] = vsGarantieBaldBedingung('w');
+        $sql .= " AND " . $gSql;
+        array_push($params, ...$gParams);
+    }
+
     // Raum- und Positions-Chips der Liste (index.php?filter_raum=, filter_position=).
     // Bis 4.6 kannte die Suchleiste nur den Suchfilter "ort" (TESTFUNDE.md, HINWEIS-06).
     if ($filterRaum) {
@@ -157,10 +165,9 @@ function buildSearchQuery($filters, &$params) {
     
     // Textsuche
     if (!empty($filters['search'])) {
-        $conditions[] = "(w.name LIKE ? OR w.notizen LIKE ?)";
-        $searchParam = "%{$filters['search']}%";
-        $params[] = $searchParam;
-        $params[] = $searchParam;
+        [$suchSql, $suchParams] = vsSuchBedingung($filters['search']);
+        $conditions[] = $suchSql;
+        array_push($params, ...$suchParams);
     }
     
     // Kategorie (Mehrfachwahl)
@@ -207,6 +214,13 @@ function buildSearchQuery($filters, &$params) {
     // Nur mit Dokumenten
     if ($filters['has_docs']) {
         $conditions[] = "EXISTS (SELECT 1 FROM dokumente d WHERE d.wertsache_id = w.id)";
+    }
+
+    // Garantie endet in den naechsten 30 Tagen (4.8, nach Migration 017)
+    if (!empty($filters['warranty_soon']) && function_exists('vsMigration017Da') && vsMigration017Da()) {
+        [$gSql, $gParams] = vsGarantieBaldBedingung('w');
+        $conditions[] = $gSql;
+        array_push($params, ...$gParams);
     }
     
     return $conditions;

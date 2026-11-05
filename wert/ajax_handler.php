@@ -24,16 +24,16 @@ try {
                 exit;
             }
             
+            [$suchSql, $suchParams] = vsSuchBedingung($query);
             $sql = "SELECT w.id, w.name, o.name as ort_name, k.name as kategorie_name, w.preis, w.bild
                     FROM wertsachen w
                     LEFT JOIN raeume o ON w.raum_id = o.id
                     LEFT JOIN kategorien k ON w.kategorie_id = k.id
-                    WHERE (w.name LIKE ? OR w.notizen LIKE ?)" . $ownSql . "
+                    WHERE " . $suchSql . $ownSql . "
                     ORDER BY w.name
                     LIMIT 10";
-            
-            $searchParam = "%$query%";
-            $results = $db->select($sql, array_merge([$searchParam, $searchParam], $ownParams));
+
+            $results = $db->select($sql, array_merge($suchParams, $ownParams));
             
             echo json_encode([
                 'success' => true,

@@ -100,6 +100,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($newId && $seriennummer !== null && vsMigration014Da()) {
                 $db->execute("UPDATE wertsachen SET seriennummer = ? WHERE id = ?", [$seriennummer, $newId]);
             }
+            // Hersteller, Modell, Zustand erst nach Migration 016 (4.8)
+            if ($newId && vsMigration016Da()) {
+                $hm = vsHerstellerModellAusPost($_POST);
+                if (array_filter($hm, fn($v) => $v !== null)) {
+                    $db->execute("UPDATE wertsachen SET hersteller = ?, modell = ?, erhaltungszustand = ? WHERE id = ?",
+                        [$hm['hersteller'], $hm['modell'], $hm['erhaltungszustand'], $newId]);
+                }
+            }
+            // Garantieende erst nach Migration 017 (4.8)
+            if ($newId && vsMigration017Da() && ($garantie = vsGarantieAusPost($_POST)) !== null) {
+                $db->execute("UPDATE wertsachen SET garantie_bis = ? WHERE id = ?", [$garantie, $newId]);
+            }
             
             Security::logSecurityEvent('item_created', [
                 'item_name' => $data['name'],
@@ -510,6 +522,11 @@ include 'header_next_page.php';
                    value="<?php echo htmlspecialchars($_POST['gelistet_am'] ?? date('Y-m-d')); ?>">
         </div>
     </div>
+
+    <?php if (vsMigration017Da()): ?>
+    <!-- GARANTIE BIS (4.8) -->
+    <?php echo vsGarantieFeld($_POST['garantie_bis'] ?? null); ?>
+    <?php endif; ?>
     
     <style>
     @media (max-width: 768px) {
@@ -538,6 +555,11 @@ include 'header_next_page.php';
                aria-describedby="seriennummer_hint">
         <small id="seriennummer_hint" style="color: #595959; font-size: 12px;"><?php echo t('field_serial_hint'); ?></small>
     </div>
+    <?php endif; ?>
+
+    <?php if (vsMigration016Da()): ?>
+    <!-- HERSTELLER, MODELL, ZUSTAND (4.8) -->
+    <?php echo vsHerstellerModellFelder($_POST); ?>
     <?php endif; ?>
 
     <!-- BARCODE -->

@@ -68,7 +68,14 @@ if (!function_exists('vsCsvExportSchreiben')) {
             t('csv_header_image'),
             t('csv_header_created_by'),
             t('csv_header_listed_on'),
-            t('csv_header_created_at')
+            t('csv_header_created_at'),
+            // 4.8: hinten angehaengt, damit bestehende Auswertungen die
+            // ersten 11 Spalten unveraendert finden
+            vsUebersetzt('csv_header_serial', 'Seriennummer'),
+            vsUebersetzt('csv_header_manufacturer', 'Hersteller'),
+            vsUebersetzt('csv_header_model', 'Modell'),
+            vsUebersetzt('csv_header_condition', 'Zustand'),
+            vsUebersetzt('csv_header_warranty', 'Garantie bis'),
         ], "\t", '"', '');
 
         // Datenzeilen
@@ -85,7 +92,12 @@ if (!function_exists('vsCsvExportSchreiben')) {
                 $item['bild'] ?? '',
                 $item['erstellt_von'] ?? '',
                 formatDateLocalized($item['gelistet_am'] ?? null),
-                formatDateTimeLocalized($item['erstellt_am'] ?? null)
+                formatDateTimeLocalized($item['erstellt_am'] ?? null),
+                $item['seriennummer'] ?? '',
+                $item['hersteller'] ?? '',
+                $item['modell'] ?? '',
+                vsErhaltungszustandText($item['erhaltungszustand'] ?? null),
+                formatDateLocalized($item['garantie_bis'] ?? null),
             ]), "\t", '"', '');
         }
     }

@@ -77,6 +77,9 @@ if (!function_exists('tn')) {
         'date'   => tn('field_purchase_date', 'Kaufdatum'),
         'room'   => tn('field_location', 'Raum'),
         'serial' => tn('detail_serial', 'Seriennummer'),
+        'maker'  => tn('field_manufacturer_model', 'Hersteller / Modell'),
+        'cond'   => tn('field_condition', 'Zustand'),
+        'warranty' => tn('field_warranty', 'Garantie bis'),
         'notes'  => tn('field_notes', 'Notizen'),
         'edit'   => tn('btn_edit', 'Bearbeiten'),
         'docs'   => tn('form_documents', 'Dokumente'),
@@ -140,6 +143,27 @@ if (!function_exists('tn')) {
             fields += '<div class="vs-dp-field">'
                 + '<div class="vs-dp-label">' + L.room + '</div>'
                 + '<div class="vs-dp-val">' + esc(item.raum) + '</div>'
+                + '</div>';
+        }
+
+        if (item.herstellerModell) {
+            fields += '<div class="vs-dp-field">'
+                + '<div class="vs-dp-label">' + L.maker + '</div>'
+                + '<div class="vs-dp-val">' + esc(item.herstellerModell) + '</div>'
+                + '</div>';
+        }
+
+        if (item.zustand) {
+            fields += '<div class="vs-dp-field">'
+                + '<div class="vs-dp-label">' + L.cond + '</div>'
+                + '<div class="vs-dp-val">' + esc(item.zustand) + '</div>'
+                + '</div>';
+        }
+
+        if (item.garantie) {
+            fields += '<div class="vs-dp-field">'
+                + '<div class="vs-dp-label">' + L.warranty + '</div>'
+                + '<div class="vs-dp-val">' + esc(item.garantie) + '</div>'
                 + '</div>';
         }
 

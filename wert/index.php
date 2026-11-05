@@ -89,6 +89,7 @@ $_returnParams = array_filter([
     'date_to'     => $_GET['date_to']   ?? '',
     'has_image'   => !empty($_GET['has_image'])  ? '1' : '',
     'has_docs'    => !empty($_GET['has_docs'])   ? '1' : '',
+    'warranty_soon' => !empty($_GET['warranty_soon']) ? '1' : '',
     'filter_raum' => $filter_raum ?: '',
     'filter_position' => $filter_position ?: '',
     'sort'        => $_GET['sort']     ?? '',
@@ -147,6 +148,7 @@ try {
     if (!empty($currentFilters['date_to'])) $paginationParams['date_to'] = $currentFilters['date_to'];
     if ($currentFilters['has_image']) $paginationParams['has_image'] = 1;
     if ($currentFilters['has_docs']) $paginationParams['has_docs'] = 1;
+    if (!empty($currentFilters['warranty_soon'])) $paginationParams['warranty_soon'] = 1;
     if ($sort_column !== 'name') $paginationParams['sort'] = $sort_column;
     if ($sort_order !== 'ASC') $paginationParams['order'] = $sort_order;
     if ($items_per_page != 20) $paginationParams['per_page'] = $items_per_page;
@@ -532,6 +534,9 @@ if (!function_exists('vsDetailJson')) {
             'raum'        => $item['raum_name'] ?? '',
             'kaufdatum'   => $item['kaufdatum'] ?? '',
             'seriennummer'=> $item['seriennummer'] ?? '',
+            'herstellerModell' => vsHerstellerModell($item),
+            'zustand'     => vsErhaltungszustandText($item['erhaltungszustand'] ?? null),
+            'garantie'    => function_exists('vsGarantieText') ? vsGarantieText($item['garantie_bis'] ?? null) : '',
             'notizen'     => mb_substr($item['notizen'] ?? '', 0, 300),
             'bild'        => $hasPhoto ? 'upload/' . rawurlencode($item['bild']) : null,
             'catIcon'     => getCategoryIcon($item['kategorie_name'] ?? ''),
@@ -562,6 +567,9 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
             <?php endif; ?>
             <?php if (hasPermission('bulk_delete')): ?>
             <option value="delete"><?php echo tn('index_bulk_delete', 'Löschen'); ?></option>
+            <?php endif; ?>
+            <?php if (hasPermission('export_qr')): ?>
+            <option value="qr"><?php echo tn('idx_bulk_qr', 'QR-Etiketten drucken'); ?></option>
             <?php endif; ?>
         </select>
         <button type="button" onclick="executeBulkAction()" aria-label="<?php echo htmlspecialchars(tn('idx_bulk_run', 'Aktion ausführen')); ?>">
@@ -680,6 +688,9 @@ if ($view_mode === 'table'):
                 <?php endif; ?>
                 <?php if (hasPermission('bulk_delete')): ?>
                 <option value="delete"><?php echo tn('index_bulk_delete', 'Löschen'); ?></option>
+                <?php endif; ?>
+                <?php if (hasPermission('export_qr')): ?>
+                <option value="qr"><?php echo tn('idx_bulk_qr', 'QR-Etiketten drucken'); ?></option>
                 <?php endif; ?>
             </select>
             <button type="button" onclick="executeBulkAction()" aria-label="<?php echo htmlspecialchars(tn('idx_bulk_run', 'Aktion ausführen')); ?>">
@@ -863,6 +874,12 @@ function executeBulkAction() {
     if (!action) { vsAlert(<?php echo json_encode(t('index_select_action')); ?>); return; }
     var ids = [...document.querySelectorAll('.item-checkbox:checked')].map(cb => cb.value);
     if (ids.length === 0) return;
+
+    // QR-Etiketten (4.8): kein Speichern, nur zur Etikettenseite mit Auswahl
+    if (action === 'qr') {
+        window.location.href = 'qr_generator.php?bogen=70x37&ids=' + ids.map(Number).filter(Boolean).join(',');
+        return;
+    }
 
     // Absenden erst nach der Antwort — deshalb als eigene Funktion, damit es
     // nur an einer Stelle steht und nicht doppelt ausgeloest werden kann.

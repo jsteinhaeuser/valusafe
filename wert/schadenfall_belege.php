@@ -125,6 +125,7 @@ foreach ($gegenstaende as $i => $g) {
     $sumPreis += (float)$g['preis'];
     $sumZeit  += $zeit;
     $txt .= ($i + 1) . '. ' . $g['name'] . "\r\n"
+          . (vsHerstellerModell($g) !== '' ? '   ' . vsUebersetzt('field_manufacturer_model', 'Hersteller / Modell') . ': ' . vsHerstellerModell($g) . "\r\n" : '')
           . '   ' . t('claims_condition') . ': ' . t('claims_cond_' . $g['zustand']) . "\r\n"
           . (!empty($g['seriennummer']) ? '   ' . t('field_serial') . ': ' . $g['seriennummer'] . "\r\n" : '')
           . '   ' . t('claims_purchase_date') . ': ' . $datum($g['kaufdatum'] ?? null)

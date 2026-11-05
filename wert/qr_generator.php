@@ -3,6 +3,7 @@
 require_once 'db.php';
 require_once 'helpers_permissions.php';
 require_once 'helpers.php';
+require_once __DIR__ . '/helpers_etiketten.php';
 requireLogin();
 // Export-Recht aus der Rechteverwaltung (bis 4.3.32 nicht geprueft).
 requirePermission('export_qr');
@@ -278,32 +279,48 @@ function qr_format(array &$m, int $size, int $mask): void {
 }
 // ─── Ende QR-Generator ──────────────────────────────────────────────────────
 
-// Items laden
+// Auswahl: Gegenstaende oder Raeume, Bildschirm-Raster oder Etikettenbogen (4.8)
 $filterCategory = isset($_GET['kategorie']) ? (int)$_GET['kategorie'] : 0;
 $selectedIds = [];
 if (isset($_GET['ids'])) {
-    $selectedIds = array_filter(array_map('intval', explode(',', $_GET['ids'])));
+    $selectedIds = array_values(array_unique(array_filter(array_map('intval', explode(',', (string)$_GET['ids'])))));
 }
+$was       = (($_GET['was'] ?? '') === 'raeume') ? 'raeume' : 'gegenstaende';
+$bogenKey  = (string)($_GET['bogen'] ?? '');
+$bogen     = vsEtikettFormat($bogenKey);
+if ($bogen === null) $bogenKey = '';
+$startFeld = max(1, (int)($_GET['start'] ?? 1));
+$druck     = $bogen !== null && !empty($_GET['druck']);
 
 // Bei "nur eigene" nur eigene Gegenstaende (auch bei ?ids=...).
 [$ownSql, $ownParams] = nurEigeneSql('w');
 
-if (!empty($selectedIds)) {
-    $placeholders = implode(',', array_fill(0, count($selectedIds), '?'));
-    $stmt = $pdo->prepare("SELECT w.id, w.name, k.name as kategorie_name
+$items = [];
+$raeume = [];
+$spaltenSql = "SELECT w.id, w.name, k.name as kategorie_name, o.name as raum_name
         FROM wertsachen w LEFT JOIN kategorien k ON w.kategorie_id = k.id
+        LEFT JOIN raeume o ON w.raum_id = o.id";
+if ($was === 'raeume') {
+    // Raum-Etiketten fuer Kisten, Regale, Schraenke: der Code oeffnet die
+    // Liste dieses Raums. Anzahl bei "nur eigene" nur eigene Gegenstaende.
+    $stmt = $pdo->prepare("SELECT r.id, r.name, COUNT(w.id) AS anzahl
+        FROM raeume r LEFT JOIN wertsachen w ON w.raum_id = r.id" . $ownSql . "
+        GROUP BY r.id, r.name ORDER BY r.name");
+    $stmt->execute($ownParams);
+    $raeume = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} elseif (!empty($selectedIds)) {
+    $placeholders = implode(',', array_fill(0, count($selectedIds), '?'));
+    $stmt = $pdo->prepare($spaltenSql . "
         WHERE w.id IN ($placeholders)" . $ownSql . " ORDER BY w.name");
     $stmt->execute(array_merge($selectedIds, $ownParams));
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } elseif ($filterCategory > 0) {
-    $stmt = $pdo->prepare("SELECT w.id, w.name, k.name as kategorie_name
-        FROM wertsachen w LEFT JOIN kategorien k ON w.kategorie_id = k.id
+    $stmt = $pdo->prepare($spaltenSql . "
         WHERE w.kategorie_id = ?" . $ownSql . " ORDER BY w.name");
     $stmt->execute(array_merge([$filterCategory], $ownParams));
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    $stmt = $pdo->prepare("SELECT w.id, w.name, k.name as kategorie_name
-        FROM wertsachen w LEFT JOIN kategorien k ON w.kategorie_id = k.id
+    $stmt = $pdo->prepare($spaltenSql . "
         WHERE (w.hidden = 0 OR w.hidden IS NULL)" . $ownSql . "
         ORDER BY w.name");
     $stmt->execute($ownParams);
@@ -318,12 +335,107 @@ $baseUrl = defined('APP_URL')
     ? rtrim((string)APP_URL, '/')
     : 'https://' . $_SERVER['HTTP_HOST'] . rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 
-// QR-Codes vorberechnen (serverseitig)
-$qrData = [];
-foreach ($items as $item) {
-    $url = $baseUrl . '/edit.php?id=' . $item['id'];
-    $svg = qr_svg($url, 160);
-    $qrData[$item['id']] = 'data:image/svg+xml;base64,' . base64_encode($svg);
+// Ein Etikett je Gegenstand oder Raum, QR-Code serverseitig als SVG
+$etiketten = [];
+if ($was === 'raeume') {
+    foreach ($raeume as $r) {
+        $etiketten[] = [
+            'schluessel' => 'r' . $r['id'],
+            'url'        => $baseUrl . '/index.php?filter_raum=' . (int)$r['id'],
+            'titel'      => $r['name'],
+            'zeile1'     => sprintf(t('qr_items_count'), (int)$r['anzahl']),
+            'zeile2'     => '',
+        ];
+    }
+} else {
+    foreach ($items as $item) {
+        $etiketten[] = [
+            'schluessel' => (string)$item['id'],
+            'url'        => $baseUrl . '/edit.php?id=' . (int)$item['id'],
+            'titel'      => $item['name'],
+            'zeile1'     => sprintf(tn('qr_label_no', 'Nr. %d'), (int)$item['id']),
+            'zeile2'     => (string)($item['raum_name'] ?? ''),
+            'kategorie'  => (string)($item['kategorie_name'] ?? ''),
+        ];
+    }
+}
+foreach ($etiketten as $n => $e) {
+    $etiketten[$n]['qr'] = 'data:image/svg+xml;base64,' . base64_encode(qr_svg($e['url'], 160));
+}
+$seiten = $bogen ? vsEtikettSeiten($etiketten, $bogen, $startFeld) : [];
+$h = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+
+// Adresse dieser Seite mit geaenderten Parametern (Druckansicht, Formular)
+$parameter = array_filter([
+    'was'       => $was === 'raeume' ? 'raeume' : '',
+    'kategorie' => $was !== 'raeume' && $filterCategory > 0 ? $filterCategory : '',
+    'ids'       => $was !== 'raeume' && $selectedIds ? implode(',', $selectedIds) : '',
+    'bogen'     => $bogenKey,
+    'start'     => $bogen && $startFeld > 1 ? $startFeld : '',
+], fn($v) => $v !== '' && $v !== null);
+$druckUrl = 'qr_generator.php?' . http_build_query($parameter + ['druck' => 1]);
+
+/** Etikettenboegen; auf dem Bildschirm verkleinert, beim Drucken 1:1. */
+$zeichneBoegen = function () use ($seiten, $bogen, $h) {
+    $qrMm = round($bogen['hoehe'] - 6, 1);
+    foreach ($seiten as $seite) {
+        echo '<div class="etb-seite">';
+        foreach ($seite as $i => $e) {
+            $pos = vsEtikettPosition($i, $bogen);
+            echo '<div class="etb-feld' . ($e === null ? ' etb-leer' : '') . '" style="left:' . $pos['links'] . 'mm;top:' . $pos['oben']
+                . 'mm;width:' . $bogen['breite'] . 'mm;height:' . $bogen['hoehe'] . 'mm">';
+            if ($e !== null) {
+                echo '<img src="' . $e['qr'] . '" alt="" style="width:' . $qrMm . 'mm;height:' . $qrMm . 'mm">'
+                   . '<div class="etb-text"><div class="etb-titel">' . $h($e['titel']) . '</div>'
+                   . '<div class="etb-zeile">' . $h($e['zeile1']) . '</div>'
+                   . ($e['zeile2'] !== '' ? '<div class="etb-zeile">' . $h($e['zeile2']) . '</div>' : '')
+                   . '</div>';
+            }
+            echo '</div>';
+        }
+        echo '</div>';
+    }
+};
+$bogenCss = '
+.etb-seite { width:210mm; height:297mm; position:relative; background:#fff; overflow:hidden; }
+.etb-feld { position:absolute; box-sizing:border-box; padding:3mm 3mm 3mm 3mm; display:flex; gap:2.5mm; align-items:center; overflow:hidden; color:#000; font-family:Arial, Helvetica, sans-serif; }
+.etb-feld img { flex:none; display:block; }
+.etb-text { min-width:0; flex:1; }
+.etb-titel { font-weight:700; font-size:9.5pt; line-height:1.15; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; overflow-wrap:anywhere; }
+.etb-zeile { font-size:7.5pt; line-height:1.25; margin-top:0.8mm; color:#222; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+@page { size:A4 portrait; margin:0; }
+@media print { html, body { margin:0 !important; padding:0 !important; background:#fff !important; }
+  .etb-seite { break-after:page; page-break-after:always; } .etb-seite:last-child { break-after:auto; page-break-after:auto; } }';
+
+// ─── Druckansicht: nur die Boegen, ohne Menue (wie die PDF-Exporte) ───────
+if ($druck) {
+    Security::logSecurityEvent('qr_labels_print', ['count' => count($etiketten), 'format' => $bogenKey, 'was' => $was]);
+    ?><!DOCTYPE html>
+<html lang="<?php echo $h($_SESSION['language'] ?? 'de'); ?>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><?php echo $h(t('nav_export_qr')); ?></title>
+<style>
+body { margin:0; background:#e5e7eb; }
+.etb-hinweis { font:14px/1.4 Arial, sans-serif; max-width:210mm; margin:12px auto; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.etb-hinweis button { font:inherit; padding:8px 16px; border-radius:6px; border:0; background:#1f2937; color:#fff; cursor:pointer; }
+.etb-seite { margin:0 auto 10mm; box-shadow:0 2px 10px rgba(0,0,0,.15); }
+.etb-feld { outline:1px dashed #cbd5e1; outline-offset:-1px; }
+@media print { .etb-hinweis { display:none; } .etb-seite { margin:0; box-shadow:none; } .etb-feld { outline:none; } }
+<?php echo $bogenCss; ?>
+</style>
+</head>
+<body>
+<div class="etb-hinweis">
+    <button type="button" onclick="window.print()">🖨️ <?php echo $h(t('qr_print')); ?></button>
+    <span><?php echo $h(tn('qr_print_hint', 'Beim Drucken „Tatsächliche Größe“ bzw. Skalierung 100 % und keine Ränder wählen.')); ?></span>
+</div>
+<?php $zeichneBoegen(); ?>
+</body>
+</html>
+<?php
+    exit;
 }
 
 include 'header_next_page.php';
@@ -408,24 +520,61 @@ include 'header_next_page.php';
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px; flex-wrap:wrap;">
         <a href="index.php" class="btn">← <?php echo t('btn_back'); ?></a>
         <h2 style="margin:0; border:none; padding:0;">📱 <?php echo t('nav_export_qr'); ?></h2>
-        <span style="font-size:13px; color:#64748b;"><?php echo sprintf(t('qr_items_count'), count($items)); ?></span>
-        <button onclick="window.print()" class="btn btn-secondary" style="margin-left:auto;">🖨️ <?php echo t('qr_print'); ?></button>
+        <span style="font-size:13px; color:#64748b;"><?php echo $h($was === 'raeume'
+            ? sprintf(tn('qr_rooms_count', '%d Räume'), count($etiketten))
+            : sprintf(t('qr_items_count'), count($etiketten))); ?></span>
+        <?php if ($bogen && $etiketten): ?>
+            <a href="<?php echo $h($druckUrl); ?>" target="_blank" rel="noopener" class="btn btn-primary" style="margin-left:auto;">🖨️ <?php echo $h(tn('qr_print_sheets', 'Bögen drucken')); ?></a>
+        <?php else: ?>
+            <button onclick="window.print()" class="btn btn-secondary" style="margin-left:auto;">🖨️ <?php echo t('qr_print'); ?></button>
+        <?php endif; ?>
     </div>
 
-    <div class="qr-controls">
+    <form method="get" action="qr_generator.php" class="qr-controls">
+        <?php if ($selectedIds && $was !== 'raeume'): ?>
+            <input type="hidden" name="ids" value="<?php echo $h(implode(',', $selectedIds)); ?>">
+        <?php endif; ?>
+        <label for="qr_was" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(tn('qr_labels_for', 'Etiketten für')); ?>:</label>
+        <select id="qr_was" name="was" class="form-control" style="max-width:170px; margin:0;" onchange="this.form.submit()">
+            <option value=""><?php echo $h(tn('qr_items', 'Gegenstände')); ?></option>
+            <option value="raeume" <?php echo $was === 'raeume' ? 'selected' : ''; ?>><?php echo $h(tn('qr_rooms', 'Räume')); ?></option>
+        </select>
+
+        <?php if ($was !== 'raeume' && !$selectedIds): ?>
         <label for="qr_kategorie" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo t('col_kategorie'); ?>:</label>
-        <select id="qr_kategorie" class="form-control" style="max-width:220px; margin:0;"
-                onchange="window.location.href='qr_generator.php'+(this.value>0?'?kategorie='+this.value:'')">
+        <select id="qr_kategorie" name="kategorie" class="form-control" style="max-width:220px; margin:0;" onchange="this.form.submit()">
             <option value="0"><?php echo t('placeholder_all_categories'); ?></option>
             <?php foreach ($categories as $cat): ?>
-                <option value="<?php echo $cat['id']; ?>" <?php echo $filterCategory == $cat['id'] ? 'selected' : ''; ?>>
-                    <?php echo htmlspecialchars($cat['name']); ?>
+                <option value="<?php echo (int)$cat['id']; ?>" <?php echo $filterCategory == $cat['id'] ? 'selected' : ''; ?>>
+                    <?php echo $h($cat['name']); ?>
                 </option>
             <?php endforeach; ?>
         </select>
-        <?php if ($filterCategory > 0): ?>
-            <a href="qr_generator.php" class="btn btn-secondary">✕ <?php echo t('qr_clear_filter'); ?></a>
         <?php endif; ?>
+        <?php if ($selectedIds && $was !== 'raeume'): ?>
+            <a href="qr_generator.php<?php echo $bogenKey ? '?bogen=' . $h($bogenKey) : ''; ?>" class="btn btn-secondary">✕ <?php echo t('qr_clear_filter'); ?></a>
+        <?php elseif ($filterCategory > 0 && $was !== 'raeume'): ?>
+            <a href="qr_generator.php<?php echo $bogenKey ? '?bogen=' . $h($bogenKey) : ''; ?>" class="btn btn-secondary">✕ <?php echo t('qr_clear_filter'); ?></a>
+        <?php endif; ?>
+
+        <label for="qr_bogen" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(tn('qr_output', 'Ausgabe')); ?>:</label>
+        <select id="qr_bogen" name="bogen" class="form-control" style="max-width:300px; margin:0;" onchange="this.form.submit()">
+            <option value=""><?php echo $h(tn('qr_output_screen', 'Bildschirm-Raster')); ?></option>
+            <?php foreach (vsEtikettFormate() as $schluessel => $f): ?>
+                <option value="<?php echo $h($schluessel); ?>" <?php echo $bogenKey === $schluessel ? 'selected' : ''; ?>>
+                    <?php echo $h(str_replace('.', ',', (string)$f['breite']) . ' × ' . str_replace('.', ',', (string)$f['hoehe']) . ' mm · '
+                        . sprintf(tn('qr_per_sheet', '%d pro Bogen'), $f['spalten'] * $f['zeilen'])
+                        . ' (' . sprintf(tn('qr_for_example', 'z. B. %s'), $f['beispiel']) . ')'); ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <?php if ($bogen): ?>
+            <label for="qr_start" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(tn('qr_start_field', 'Erstes freies Feld')); ?>:</label>
+            <input type="number" id="qr_start" name="start" min="1" max="<?php echo $bogen['spalten'] * $bogen['zeilen']; ?>"
+                   value="<?php echo min($startFeld, $bogen['spalten'] * $bogen['zeilen']); ?>" class="form-control" style="max-width:80px; margin:0;">
+            <button type="submit" class="btn btn-secondary"><?php echo $h(tn('qr_show', 'Anzeigen')); ?></button>
+        <?php else: ?>
         <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
             <label for="qr_groesse" style="font-size:13px; color:#595959; margin:0;"><?php echo t('qr_size'); ?>:</label>
             <select id="qr_groesse" class="form-control" style="max-width:110px; margin:0;" onchange="changeSize(this.value)">
@@ -434,37 +583,50 @@ include 'header_next_page.php';
                 <option value="200"><?php echo t('qr_size_large'); ?></option>
             </select>
         </div>
-    </div>
+        <?php endif; ?>
+        <noscript><button type="submit" class="btn btn-secondary"><?php echo $h(tn('qr_show', 'Anzeigen')); ?></button></noscript>
+    </form>
+    <?php if ($bogen): ?>
+        <p style="font-size:13px; color:#595959; margin:-8px 0 16px;">
+            <?php echo $h(tn('qr_print_hint', 'Beim Drucken „Tatsächliche Größe“ bzw. Skalierung 100 % und keine Ränder wählen.')); ?>
+            <?php echo $h(sprintf(tn('qr_sheets_count', 'Bögen: %d'), count($seiten))); ?>.
+        </p>
+    <?php endif; ?>
 </div>
 
-<?php if (empty($items)): ?>
-    <div class="alert alert-info no-print"><?php echo t('qr_no_items'); ?></div>
+<?php if (empty($etiketten)): ?>
+    <div class="alert alert-info no-print"><?php echo $h($was === 'raeume' ? tn('qr_no_rooms', 'Keine Räume gefunden.') : t('qr_no_items')); ?></div>
+<?php elseif ($bogen): ?>
+
+<!-- Vorschau der Boegen, verkleinert; gedruckt wird die Druckansicht -->
+<style>
+<?php echo $bogenCss; ?>
+.etb-vorschau { overflow-x:auto; padding-bottom:10px; }
+.etb-vorschau-innen { zoom:0.6; }
+.etb-vorschau .etb-seite { margin:0 0 8mm; box-shadow:0 2px 10px rgba(0,0,0,.15); }
+.etb-vorschau .etb-feld { outline:1px dashed #cbd5e1; outline-offset:-1px; }
+.etb-vorschau .etb-leer { background:repeating-linear-gradient(45deg,#f8fafc,#f8fafc 6px,#eef2f7 6px,#eef2f7 12px); }
+@media (max-width: 600px) { .etb-vorschau-innen { zoom:0.42; } }
+</style>
+<div class="etb-vorschau no-print"><div class="etb-vorschau-innen"><?php $zeichneBoegen(); ?></div></div>
+
 <?php else: ?>
 
 <div class="qr-grid">
-    <?php foreach ($items as $item):
-        $itemUrl   = $baseUrl . '/edit.php?id=' . $item['id'];
-        $safeUrl   = htmlspecialchars($itemUrl, ENT_QUOTES);
-        $safeName  = htmlspecialchars($item['name']);
-        $safeCat   = htmlspecialchars($item['kategorie_name'] ?? '');
-        $qrSrc     = $qrData[$item['id']] ?? '';
+    <?php foreach ($etiketten as $e):
+        $safeUrl  = $h($e['url']);
+        $safeName = $h($e['titel']);
+        $unter    = $was === 'raeume' ? $e['zeile1'] : ($e['kategorie'] !== '' ? '📁 ' . $e['kategorie'] : '');
     ?>
     <div class="qr-card">
-        <?php if ($qrSrc): ?>
-            <img src="<?php echo $qrSrc; ?>" alt="<?php echo sprintf(htmlspecialchars(t('qr_alt')), $safeName); ?>"
-                 id="qrimg-<?php echo $item['id']; ?>">
-        <?php else: ?>
-            <div style="width:160px;height:160px;margin:0 auto 12px;background:#f3f4f6;border-radius:8px;
-                        display:flex;align-items:center;justify-content:center;color:#e74c3c;font-size:12px;">
-                <?php echo t('qr_error'); ?>
-            </div>
-        <?php endif; ?>
+        <img src="<?php echo $e['qr']; ?>" alt="<?php echo $h(sprintf(t('qr_alt'), $e['titel'])); ?>"
+             id="qrimg-<?php echo $h($e['schluessel']); ?>">
         <div class="qr-name" title="<?php echo $safeName; ?>"><?php echo $safeName; ?></div>
-        <div class="qr-category"><?php echo $safeCat ? '📁 '.$safeCat : ''; ?></div>
+        <div class="qr-category"><?php echo $h($unter); ?></div>
         <div class="qr-actions no-print">
-            <a href="<?php echo $qrSrc; ?>" download="qr-<?php echo $item['id']; ?>.svg"
+            <a href="<?php echo $e['qr']; ?>" download="qr-<?php echo $h($e['schluessel']); ?>.svg"
                class="qr-btn qr-btn-primary">⬇ SVG</a>
-            <button class="qr-btn" onclick="copyUrl('<?php echo $safeUrl; ?>', this)">📋 URL</button>
+            <button class="qr-btn" onclick="copyUrl(<?php echo $h(json_encode($e['url'])); ?>, this)">📋 URL</button>
         </div>
     </div>
     <?php endforeach; ?>

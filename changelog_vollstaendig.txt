@@ -4,6 +4,24 @@ ValuSafe — Changelog
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
 Erzeugt am 05.11.2026 aus der Projektchronik.
 
+Version 4.8   05.11.2026
+------------------------
+  [Neu] Hersteller, Modell und Zustand: Jeder Gegenstand hat dafür eigene
+        Felder (Zustand: neu, sehr gut, gut, Gebrauchsspuren, defekt). Sie
+        erscheinen in der Detailansicht, als zuschaltbare Spalten, im
+        CSV-Export, in der Versicherungsliste und in den
+        Schadensfall-Unterlagen. Die Suche findet jetzt auch Hersteller,
+        Modell und Seriennummer.
+  [Neu] Garantieende: Ein neues Feld „Garantie bis“ mit dem Knopf „2
+        Jahre ab Kaufdatum“. Das Dashboard zeigt Garantien, die in den
+        nächsten 30 Tagen enden, die Liste hat dafür einen Filter, und die
+        tägliche Sicherungs-Mail nennt sie ebenfalls.
+  [Neu] QR-Etiketten: Die Seite „QR-Codes“ druckt auf A4-Etikettenbögen
+        (70 × 37, 70 × 42,3 und 105 × 48 mm) mit QR-Code, Name, Nummer und
+        Raum. Angebrochene Bögen lassen sich ab einem freien Feld
+        weiterverwenden. Neu sind Etiketten für Räume, Kisten und Regale
+        sowie die Sammelaktion „QR-Etiketten drucken“ in der Liste.
+
 Version 4.7.1   05.11.2026
 --------------------------
   [Neu] Schnellerfassung auch am Desktop: Der Knopf „Schnellerfassung“

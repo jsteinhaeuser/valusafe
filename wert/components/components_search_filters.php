@@ -160,6 +160,18 @@ $hasFilters = hasActiveFilters($currentFilters);
                         <?php echo !empty($currentFilters['has_docs']) ? 'checked' : ''; ?>>
                     <span class="checkbox-label">📄 <?php echo t('filter_only_with_docs'); ?></span>
                 </label>
+                <?php if (function_exists('vsMigration017Da') && vsMigration017Da()): ?>
+
+                <label class="filter-checkbox">
+                    <input 
+                        type="checkbox" 
+                        id="warranty_soon" 
+                        name="warranty_soon" 
+                        value="1"
+                        <?php echo !empty($currentFilters['warranty_soon']) ? 'checked' : ''; ?>>
+                    <span class="checkbox-label">🛡️ <?php echo t('filter_warranty_soon'); ?></span>
+                </label>
+                <?php endif; ?>
             </div>
         </div>
         

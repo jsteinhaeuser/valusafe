@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 05.11.2026 11:05 von bin/changelog_export.php.
+ * Erzeugt am 05.11.2026 16:09 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,30 @@
  */
 
 return [
+    [
+        'version' => '4.8',
+        'date' => '2026-11-05',
+        'entries' => [
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Hersteller, Modell und Zustand: Jeder Gegenstand hat dafür eigene Felder (Zustand: neu, sehr gut, gut, Gebrauchsspuren, defekt). Sie erscheinen in der Detailansicht, als zuschaltbare Spalten, im CSV-Export, in der Versicherungsliste und in den Schadensfall-Unterlagen. Die Suche findet jetzt auch Hersteller, Modell und Seriennummer.',
+                'text_en' => 'Manufacturer, model and condition: every item has its own fields for these (condition: new, very good, good, signs of use, defective). They appear in the detail view, as optional columns, in the CSV export, in the insurance list and in the claim documents. Search now also finds manufacturer, model and serial number.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Garantieende: Ein neues Feld „Garantie bis“ mit dem Knopf „2 Jahre ab Kaufdatum“. Das Dashboard zeigt Garantien, die in den nächsten 30 Tagen enden, die Liste hat dafür einen Filter, und die tägliche Sicherungs-Mail nennt sie ebenfalls.',
+                'text_en' => 'Warranty end: a new “Warranty until” field with a “2 years from purchase date” button. The dashboard shows warranties ending within the next 30 days, the list has a filter for them, and the daily backup e-mail lists them too.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'QR-Etiketten: Die Seite „QR-Codes“ druckt auf A4-Etikettenbögen (70 × 37, 70 × 42,3 und 105 × 48 mm) mit QR-Code, Name, Nummer und Raum. Angebrochene Bögen lassen sich ab einem freien Feld weiterverwenden. Neu sind Etiketten für Räume, Kisten und Regale sowie die Sammelaktion „QR-Etiketten drucken“ in der Liste.',
+                'text_en' => 'QR labels: the “QR codes” page prints on A4 label sheets (70 × 37, 70 × 42.3 and 105 × 48 mm) with QR code, name, number and room. Partly used sheets can be continued from any free label. New: labels for rooms, boxes and shelves, and the bulk action “Print QR labels” in the list.'
+            ]
+        ]
+    ],
     [
         'version' => '4.7.1',
         'date' => '2026-11-05',
@@ -165,78 +189,6 @@ return [
                 'public' => true,
                 'text' => 'Benutzerverwaltung: Die Anzeige „Wer ist online“ ist entfallen. Sie zeigte seit längerem niemanden mehr an. Die dafür früher gespeicherten IP-Adressen und besuchten Seiten werden gelöscht.',
                 'text_en' => 'User management: the “Who is online” display has been removed. It had not shown anyone for some time. The IP addresses and visited pages stored for it in the past are deleted.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.5.2',
-        'date' => '2026-10-24',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Zwei-Faktor-Anmeldung: Der Code aus der Authenticator-App lässt sich nicht mehr beliebig oft durchprobieren. Nach 5 falschen Codes von einem Gerät ist die Eingabe 15 Minuten gesperrt, nach 10 falschen Codes für ein Konto innerhalb von 24 Stunden eine Stunde lang – auch von anderen Geräten aus. Ein Code gilt nur noch 30 Sekunden vor und nach seinem Zeitfenster.',
-                'text_en' => 'Security, two-factor sign-in: the code from the authenticator app can no longer be guessed an unlimited number of times. After 5 wrong codes from one device, entry is blocked for 15 minutes; after 10 wrong codes for one account within 24 hours, for one hour – from any device. A code is now only accepted 30 seconds before and after its time step.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Buchcover: Die Cover-Abfrage für Bücher (ISBN) gibt nur noch echte Bilder (JPEG, PNG, GIF, WebP) weiter. Bisher konnte eine präparierte Datei von einer der erlaubten Bildquellen als Seite unter der Adresse von ValuSafe erscheinen.',
-                'text_en' => 'Security, book covers: the cover lookup for books (ISBN) now only passes on real images (JPEG, PNG, GIF, WebP). Previously a crafted file from one of the permitted image sources could appear as a page under the ValuSafe address.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Belege: Ein Beleg lässt sich nur noch über den Löschen-Knopf entfernen. Bisher genügte ein präparierter Link, den ein angemeldeter Benutzer anklickt.',
-                'text_en' => 'Security, receipts: a receipt can now only be removed with the delete button. Previously a crafted link clicked by a signed-in user was enough.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Installationspaket: Die Ordner für Sicherungen (backups) und Protokolle (logs) bringen jetzt eine Sperre mit, die den Abruf über das Web verhindert – auch im Docker-Betrieb. Der Gesundheitscheck prüft diese Sperre direkt.',
-                'text_en' => 'Security, installation package: the folders for backups and logs now ship with a lock that prevents access via the web – in Docker as well. The health check tests this lock directly.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Passwort vergessen: Der Link in der Mail zum Zurücksetzen des Passworts verwendet jetzt eine fest eingestellte Adresse (APP_URL in config.php). Bisher kam sie aus der Anfrage, und ein Angreifer konnte einen Link auf seinen eigenen Server in die echte Mail schmuggeln. Ohne APP_URL bietet die Seite das Zurücksetzen per Mail nicht an. Der Setup-Assistent trägt die Adresse bei neuen Installationen ein; bei Docker steht sie in der .env.',
-                'text_en' => 'Security, forgotten password: the link in the password reset e-mail now uses a fixed address (APP_URL in config.php). Previously it was taken from the request, so an attacker could slip a link to their own server into the genuine e-mail. Without APP_URL the page does not offer resetting by e-mail. The setup wizard enters the address on new installations; with Docker it is set in the .env file.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Raumverwaltung: Räume, Standorte und Positionen mit Apostroph im Namen (z. B. „Kinder\'s Zimmer“) lassen sich wieder löschen – der Papierkorb-Knopf tat bei solchen Namen nichts. Die Fenster lassen sich per Tastatur bedienen: Der Fokus springt beim Öffnen ins erste Feld, Esc schließt, danach steht der Fokus wieder auf dem auslösenden Knopf. Schließen-, Bearbeiten- und Löschen-Knöpfe werden von Bildschirmlesern benannt.',
-                'text_en' => 'Room management: rooms, locations and positions with an apostrophe in their name (e.g. "Children\'s room") can be deleted again – the bin button did nothing for such names. The dialogs can be used with the keyboard: focus moves to the first field on opening, Esc closes, and focus then returns to the button that opened it. Close, edit and delete buttons are named for screen readers.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Rückfragen vor dem Löschen: Der Knopf „Abbrechen“ hat jetzt den Fokus. Ein versehentlich gedrücktes Enter bricht ab, statt einen Gegenstand, Beleg oder eine Sicherung zu löschen.',
-                'text_en' => 'Confirmation before deleting: the Cancel button now has the focus. Pressing Enter by mistake cancels instead of deleting an item, receipt or backup.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Übersetzungen: Die Hinweise zur Schadenfall-Bereitschaft im Dashboard („Inventar vervollständigen“ und zwei weitere) und „PDF-Dokument“ im Hilfefenster waren in jeder Sprache deutsch. Sie erscheinen jetzt in allen zehn Sprachen.',
-                'text_en' => 'Translations: the claim-readiness hints on the dashboard ("Complete your inventory" and two more) and "PDF document" in the help window were German in every language. They now appear in all ten languages.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Programmname: Seitentitel, PDF-Exporte, Versicherungs-Export und die öffentliche Ansicht nennen jetzt „ValuSafe“ statt des alten Namens „Wertsachen-Inventarverwaltung“.',
-                'text_en' => 'Product name: page titles, PDF exports, the insurance export and the public view now say "ValuSafe" instead of the old name "Wertsachen-Inventarverwaltung".'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Handbücher auf Stand 4.5: Benutzerhandbuch, Erweitertes Handbuch und Facts & Features beschreiben jetzt Schadensfall-Assistent, Seriennummer, Zuschneiden und Drehen, Fotos und Belege als ZIP, Zwei-Faktor-Anmeldung für alle, die neu gegliederten Einstellungen, zehn Sprachen und die Datenübernahme aus einer früheren Version. Der Abschnitt Barrierefreiheit beschreibt ehrlich den heutigen Stand – volle WCAG 2.1 AA ist für Version 5.0 geplant.',
-                'text_en' => 'Manuals updated to 4.5: the user manual, the extended manual and Facts & Features now cover the claims assistant, serial numbers, cropping and rotating, photos and receipts as a ZIP, two-factor sign-in for everyone, the reorganised settings, ten languages and data takeover from an earlier version. The accessibility section now describes the current state honestly – full WCAG 2.1 AA is planned for version 5.0.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Farbschema Midnight: Die Fläche zum Hochladen von Bildern beim Bearbeiten war fest weiß, die helle Schrift darauf kaum lesbar. Im Schema Glass sind die blauen Zahlen der Statistikleiste etwas dunkler und damit besser lesbar.',
-                'text_en' => 'Midnight colour scheme: the image upload area when editing was fixed white, so the light text on it was hard to read. In the Glass scheme the blue figures in the statistics bar are slightly darker and easier to read.'
             ],
             [
                 'type' => 'feature',

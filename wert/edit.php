@@ -147,6 +147,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $db->execute("UPDATE wertsachen SET seriennummer = ? WHERE id = ?",
                     [mb_substr(trim($_POST['seriennummer'] ?? ''), 0, 100) ?: null, $id]);
             }
+            // Hersteller, Modell, Zustand erst nach Migration 016 (4.8)
+            if (vsMigration016Da()) {
+                $hm = vsHerstellerModellAusPost($_POST);
+                $db->execute("UPDATE wertsachen SET hersteller = ?, modell = ?, erhaltungszustand = ? WHERE id = ?",
+                    [$hm['hersteller'], $hm['modell'], $hm['erhaltungszustand'], $id]);
+            }
+            // Garantieende erst nach Migration 017 (4.8)
+            if (vsMigration017Da()) {
+                $db->execute("UPDATE wertsachen SET garantie_bis = ? WHERE id = ?", [vsGarantieAusPost($_POST), $id]);
+            }
             
             // Werthistorie-Eintrag wenn aktueller_wert gesetzt und geändert
             if ($aktueller_wert !== null && hasPermission('items_value')) {
@@ -613,6 +623,11 @@ include 'header_next_page.php';
                    value="<?php echo htmlspecialchars($item['gelistet_am'] ?? date('Y-m-d')); ?>">
         </div>
     </div>
+
+    <?php if (vsMigration017Da()): ?>
+    <!-- GARANTIE BIS (4.8) -->
+    <?php echo vsGarantieFeld($item['garantie_bis'] ?? null); ?>
+    <?php endif; ?>
     
     <div class="form-group">
         <label for="preis"><?php echo t('form_price'); ?>:</label>
@@ -814,6 +829,10 @@ include 'header_next_page.php';
                aria-describedby="seriennummer_hint">
         <small id="seriennummer_hint"><?php echo t('field_serial_hint'); ?></small>
     </div>
+    <?php endif; ?>
+
+    <?php if (vsMigration016Da()): ?>
+    <?php echo vsHerstellerModellFelder($item); ?>
     <?php endif; ?>
 
     <div class="form-group">

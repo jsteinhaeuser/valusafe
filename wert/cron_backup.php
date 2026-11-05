@@ -253,6 +253,30 @@ function rotateBackups() {
 }
 
 /**
+ * Abschnitt fuer die Mail: Garantien, die in den naechsten 30 Tagen enden
+ * (4.8). Leer, wenn keine endet oder Migration 017 noch nicht gelaufen ist.
+ * Gleiche Grenze wie vsGarantieBaldBedingung() in helpers.php; die Datei
+ * wird hier nicht geladen (Sitzung, Uebersetzungen).
+ */
+function cronGarantieAbschnitt(): string {
+    global $pdo;
+    try {
+        $st = $pdo->prepare("SELECT name, garantie_bis FROM wertsachen
+            WHERE garantie_bis >= ? AND garantie_bis <= ? ORDER BY garantie_bis ASC, id ASC LIMIT 50");
+        $st->execute([date('Y-m-d'), date('Y-m-d', strtotime('+30 days'))]);
+        $zeilen = $st->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+        return '';
+    }
+    if (!$zeilen) return '';
+    $text = "=== GARANTIE ENDET IN DEN NÄCHSTEN 30 TAGEN ===\n";
+    foreach ($zeilen as $z) {
+        $text .= "- " . date('d.m.Y', strtotime($z['garantie_bis'])) . "  " . $z['name'] . "\n";
+    }
+    return $text . "\n";
+}
+
+/**
  * Email-Benachrichtigung
  */
 function sendEmailNotification($results, $deleted) {
@@ -279,7 +303,9 @@ function sendEmailNotification($results, $deleted) {
             $body .= "✗ Fehlgeschlagen: {$r['error']}\n\n";
         }
     }
-    $body .= "Gelöschte alte Backups: $deleted\n\n=== LOG ===\n" . implode('', $emailLog);
+    $body .= "Gelöschte alte Backups: $deleted\n\n";
+    $body .= cronGarantieAbschnitt();
+    $body .= "=== LOG ===\n" . implode('', $emailLog);
 
     // Absender aus der eigenen Domain, wie in password_reset_helpers.php und
     // public.php. Bis 4.3.26 stand hier fest die Adresse des Masters - jede

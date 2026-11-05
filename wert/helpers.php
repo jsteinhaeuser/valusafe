@@ -1059,6 +1059,20 @@ if (!function_exists('renderTableCell')) {
             case 'bewertungsdatum':
                 return '<td>' . formatDateLocalized($item['aktueller_wert_datum'] ?? null) . '</td>';
             
+            case 'hersteller_modell':
+                $val = vsHerstellerModell($item);
+                return '<td>' . ($val !== '' ? htmlspecialchars($val) : '<span style="color:#ccc">–</span>') . '</td>';
+
+            case 'erhaltungszustand':
+                $val = vsErhaltungszustandText($item['erhaltungszustand'] ?? null);
+                return '<td>' . ($val !== '' ? htmlspecialchars($val) : '<span style="color:#ccc">–</span>') . '</td>';
+
+            case 'garantie_bis':
+                $bis = $item['garantie_bis'] ?? null;
+                if (!$bis) return '<td><span style="color:#ccc">–</span></td>';
+                $farbe = ['abgelaufen' => '#595959', 'bald' => '#b45309'][vsGarantieStatus($bis)] ?? 'inherit';
+                return '<td style="color:' . $farbe . '">' . htmlspecialchars(vsGarantieText($bis)) . '</td>';
+
             case 'custom1':
                 $val = $item['custom1_wert'] ?? null;
                 if ($val === null || $val === '') return '<td><span style="color:#ccc">–</span></td>';
@@ -1161,6 +1175,15 @@ if (!function_exists('getAvailableSpalten')) {
                 'required' => false
             ]
         ];
+        // Hersteller/Modell und Zustand erst nach Migration 016 (4.8)
+        if (function_exists('vsMigration016Da') && vsMigration016Da()) {
+            $spalten['hersteller_modell'] = ['label' => 'Hersteller / Modell', 'icon' => '🏭', 'required' => false];
+            $spalten['erhaltungszustand'] = ['label' => 'Zustand', 'icon' => '🩺', 'required' => false];
+        }
+        // Garantieende erst nach Migration 017 (4.8)
+        if (function_exists('vsMigration017Da') && vsMigration017Da()) {
+            $spalten['garantie_bis'] = ['label' => 'Garantie bis', 'icon' => '🛡️', 'required' => false];
+        }
         foreach ($spalten as $id => $s) {
             $spalten[$id]['label'] = vsSpaltenStandardName($id, $s['label']);
         }
@@ -1302,6 +1325,216 @@ if (!function_exists('vsMigration014Da')) {
         } catch (Throwable $e) {
             return $da = false;
         }
+    }
+}
+
+if (!function_exists('vsMigration016Da')) {
+    /**
+     * Ist Migration 016 (hersteller, modell, erhaltungszustand) gelaufen?
+     * Gleiches Muster wie vsMigration014Da(): bis migrate.php gelaufen ist,
+     * zeigen Formulare die Felder nicht und Speichern/Suche lassen sie aus.
+     */
+    function vsMigration016Da(): bool {
+        static $da = null;
+        if ($da !== null) return $da;
+        global $pdo;
+        try {
+            $pdo->query("SELECT hersteller, modell, erhaltungszustand FROM wertsachen LIMIT 0");
+            return $da = true;
+        } catch (Throwable $e) {
+            return $da = false;
+        }
+    }
+}
+
+if (!function_exists('vsErhaltungszustaende')) {
+    /** Erlaubte Werte fuer wertsachen.erhaltungszustand, in Anzeigereihenfolge. */
+    function vsErhaltungszustaende(): array {
+        return ['neu', 'sehr_gut', 'gut', 'gebraucht', 'defekt'];
+    }
+}
+
+if (!function_exists('vsErhaltungszustandText')) {
+    /** Uebersetzter Name eines Zustands; leer bei leerem oder unbekanntem Wert. */
+    function vsErhaltungszustandText(?string $wert): string {
+        if ($wert === null || !in_array($wert, vsErhaltungszustaende(), true)) {
+            return '';
+        }
+        $rueckfall = ['neu' => 'Neu', 'sehr_gut' => 'Sehr gut', 'gut' => 'Gut',
+                      'gebraucht' => 'Gebrauchsspuren', 'defekt' => 'Defekt'][$wert];
+        return vsUebersetzt('cond_' . $wert, $rueckfall);
+    }
+}
+
+if (!function_exists('vsHerstellerModellAusPost')) {
+    /**
+     * hersteller, modell, erhaltungszustand aus einem Formular, gekuerzt und
+     * geprueft; unbekannter Zustand wird null.
+     */
+    function vsHerstellerModellAusPost(array $post): array {
+        $zustand = (string)($post['erhaltungszustand'] ?? '');
+        return [
+            'hersteller'        => mb_substr(trim((string)($post['hersteller'] ?? '')), 0, 100) ?: null,
+            'modell'            => mb_substr(trim((string)($post['modell'] ?? '')), 0, 100) ?: null,
+            'erhaltungszustand' => in_array($zustand, vsErhaltungszustaende(), true) ? $zustand : null,
+        ];
+    }
+}
+
+if (!function_exists('vsSuchBedingung')) {
+    /**
+     * Textsuche ueber Name und Notizen, seit 4.8 auch Seriennummer (nach 014)
+     * sowie Hersteller und Modell (nach 016). Gibt [SQL-Bedingung in
+     * Klammern, Parameter] zurueck - eine Fassung fuer Liste, Statistik und
+     * Schnellsuche (ajax_handler.php).
+     */
+    function vsSuchBedingung(string $begriff, string $alias = 'w'): array {
+        $spalten = ['name', 'notizen'];
+        if (function_exists('vsMigration014Da') && vsMigration014Da()) {
+            $spalten[] = 'seriennummer';
+        }
+        if (function_exists('vsMigration016Da') && vsMigration016Da()) {
+            $spalten[] = 'hersteller';
+            $spalten[] = 'modell';
+        }
+        $teile = array_map(fn($sp) => "$alias.$sp LIKE ?", $spalten);
+        return ['(' . implode(' OR ', $teile) . ')', array_fill(0, count($spalten), '%' . $begriff . '%')];
+    }
+}
+
+if (!function_exists('vsHerstellerModellFelder')) {
+    /**
+     * Formularfelder Hersteller, Modell, Zustand fuer add.php und edit.php
+     * (eine Fassung fuer beide). $werte: gespeicherte oder gesendete Werte.
+     */
+    function vsHerstellerModellFelder(array $werte): string {
+        $h = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+        $zustand = (string)($werte['erhaltungszustand'] ?? '');
+        $optionen = '<option value="">' . $h(vsUebersetzt('cond_none', '– keine Angabe –')) . '</option>';
+        foreach (vsErhaltungszustaende() as $z) {
+            $optionen .= '<option value="' . $h($z) . '"' . ($zustand === $z ? ' selected' : '') . '>'
+                       . $h(vsErhaltungszustandText($z)) . '</option>';
+        }
+        return '<div class="vs-hm-reihe" style="display:flex;flex-wrap:wrap;gap:0 12px">'
+            . '<div class="form-group" style="flex:1 1 180px;min-width:0">'
+            .   '<label for="hersteller"><i class="ti ti-building-factory-2" aria-hidden="true"></i> ' . $h(vsUebersetzt('field_manufacturer', 'Hersteller')) . '</label>'
+            .   '<input type="text" id="hersteller" name="hersteller" maxlength="100" autocomplete="off" value="' . $h($werte['hersteller'] ?? '') . '">'
+            . '</div>'
+            . '<div class="form-group" style="flex:1 1 180px;min-width:0">'
+            .   '<label for="modell"><i class="ti ti-tag" aria-hidden="true"></i> ' . $h(vsUebersetzt('field_model', 'Modell')) . '</label>'
+            .   '<input type="text" id="modell" name="modell" maxlength="100" autocomplete="off" value="' . $h($werte['modell'] ?? '') . '">'
+            . '</div>'
+            . '<div class="form-group" style="flex:1 1 180px;min-width:0">'
+            .   '<label for="erhaltungszustand"><i class="ti ti-heart-rate-monitor" aria-hidden="true"></i> ' . $h(vsUebersetzt('field_condition', 'Zustand')) . '</label>'
+            .   '<select id="erhaltungszustand" name="erhaltungszustand">' . $optionen . '</select>'
+            . '</div>'
+            . '</div>';
+    }
+}
+
+if (!function_exists('vsHerstellerModell')) {
+    /** "Hersteller Modell" fuer Listen und Dokumente; leer, wenn beides fehlt. */
+    function vsHerstellerModell(array $item): string {
+        return trim(trim((string)($item['hersteller'] ?? '')) . ' ' . trim((string)($item['modell'] ?? '')));
+    }
+}
+
+if (!function_exists('vsMigration017Da')) {
+    /** Ist Migration 017 (garantie_bis) gelaufen? Muster wie vsMigration016Da(). */
+    function vsMigration017Da(): bool {
+        static $da = null;
+        if ($da !== null) return $da;
+        global $pdo;
+        try {
+            $pdo->query("SELECT garantie_bis FROM wertsachen LIMIT 0");
+            return $da = true;
+        } catch (Throwable $e) {
+            return $da = false;
+        }
+    }
+}
+
+if (!function_exists('vsGarantieBaldTage')) {
+    /** So viele Tage vor dem Ende gilt eine Garantie als "laeuft bald ab". */
+    function vsGarantieBaldTage(): int {
+        return 30;
+    }
+}
+
+if (!function_exists('vsGarantieAusPost')) {
+    /** garantie_bis aus einem Formular: gueltiges Datum JJJJ-MM-TT oder null. */
+    function vsGarantieAusPost(array $post): ?string {
+        $wert = trim((string)($post['garantie_bis'] ?? ''));
+        $d = DateTime::createFromFormat('!Y-m-d', $wert);
+        return ($d && $d->format('Y-m-d') === $wert) ? $wert : null;
+    }
+}
+
+if (!function_exists('vsGarantieStatus')) {
+    /**
+     * '' (kein Datum), 'abgelaufen', 'bald' (endet in den naechsten
+     * vsGarantieBaldTage() Tagen, heute eingeschlossen) oder 'laeuft'.
+     */
+    function vsGarantieStatus(?string $bis, ?string $heute = null): string {
+        if (!$bis || $bis === '0000-00-00') return '';
+        $heute = $heute ?? date('Y-m-d');
+        if ($bis < $heute) return 'abgelaufen';
+        $grenze = date('Y-m-d', strtotime($heute . ' +' . vsGarantieBaldTage() . ' days'));
+        return $bis <= $grenze ? 'bald' : 'laeuft';
+    }
+}
+
+if (!function_exists('vsGarantieText')) {
+    /** "12.03.2027", bei Bedarf mit "(läuft bald ab)" oder "(abgelaufen)". */
+    function vsGarantieText(?string $bis, ?string $heute = null): string {
+        $status = vsGarantieStatus($bis, $heute);
+        if ($status === '') return '';
+        $text = formatDateLocalized($bis);
+        if ($status === 'bald') {
+            $text .= ' (' . vsUebersetzt('warranty_soon', 'läuft bald ab') . ')';
+        } elseif ($status === 'abgelaufen') {
+            $text .= ' (' . vsUebersetzt('warranty_expired', 'abgelaufen') . ')';
+        }
+        return $text;
+    }
+}
+
+if (!function_exists('vsGarantieBaldBedingung')) {
+    /**
+     * SQL-Bedingung "Garantie endet in den naechsten 30 Tagen" mit
+     * Parametern. Die Daten rechnet PHP aus - so laeuft dieselbe Abfrage in
+     * MySQL und in SQLite (Tests, Valu-Basic).
+     */
+    function vsGarantieBaldBedingung(string $alias = 'w', ?string $heute = null): array {
+        $heute = $heute ?? date('Y-m-d');
+        $grenze = date('Y-m-d', strtotime($heute . ' +' . vsGarantieBaldTage() . ' days'));
+        $sp = ($alias !== '' ? $alias . '.' : '') . 'garantie_bis';
+        return ["($sp >= ? AND $sp <= ?)", [$heute, $grenze]];
+    }
+}
+
+if (!function_exists('vsGarantieFeld')) {
+    /**
+     * Formularfeld "Garantie bis" mit Knopf "2 Jahre ab Kaufdatum"
+     * (gesetzliche Gewaehrleistung in der EU) fuer add.php und edit.php.
+     * Der Knopf liest #kaufdatum; fehlt es, springt er dorthin.
+     */
+    function vsGarantieFeld(?string $wert): string {
+        $h = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+        $js = "var k=document.getElementById('kaufdatum'),g=document.getElementById('garantie_bis');"
+            . "if(!k||!k.value){if(k)k.focus();return;}"
+            . "var t=k.value.split('-').map(Number),d=new Date(t[0]+2,t[1]-1,t[2]);"
+            . "if(d.getMonth()!==t[1]-1)d.setDate(0);"
+            . "g.value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');";
+        return '<div class="form-group">'
+            . '<label for="garantie_bis"><i class="ti ti-shield-check" aria-hidden="true"></i> ' . $h(vsUebersetzt('field_warranty', 'Garantie bis')) . ':</label>'
+            . '<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">'
+            .   '<input type="date" id="garantie_bis" name="garantie_bis" value="' . $h($wert ?? '') . '" style="flex:1 1 160px;min-width:0" aria-describedby="garantie_bis_hint">'
+            .   '<button type="button" class="btn btn-secondary" style="white-space:nowrap" onclick="' . $h($js) . '">'
+            .     $h(vsUebersetzt('warranty_two_years', '2 Jahre ab Kaufdatum')) . '</button>'
+            . '</div>'
+            . '<small id="garantie_bis_hint" style="color:#595959;font-size:12px">' . $h(vsUebersetzt('field_warranty_hint', 'Ende der Garantie oder Gewährleistung. Das Dashboard meldet sie 30 Tage vorher.')) . '</small>'
+            . '</div>';
     }
 }
 

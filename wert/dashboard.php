@@ -90,6 +90,21 @@ try {
         LIMIT 5
     ", $ownParams)->fetchAll();
     
+    // Garantie endet in den naechsten 30 Tagen (4.8, nach Migration 017)
+    $garantieBald = [];
+    if (vsMigration017Da()) {
+        try {
+            [$gSql, $gParams] = vsGarantieBaldBedingung('w');
+            $garantieBald = $abfrage("
+                SELECT w.id, w.name, w.garantie_bis
+                FROM wertsachen w
+                WHERE " . $gSql . $ownSql . "
+                ORDER BY w.garantie_bis ASC, w.id ASC
+                LIMIT 10
+            ", array_merge($gParams, $ownParams))->fetchAll();
+        } catch (Exception $e) { $garantieBald = []; }
+    }
+
     // Wertvollste Kategorie
     $topCategory = !empty($categoryStats) ? $categoryStats[0] : null;
 
@@ -515,6 +530,28 @@ include 'header_next_page.php';
                 </div>
             </div>
         </div>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($garantieBald)): ?>
+    <!-- Garantie laeuft bald ab (4.8) -->
+    <div class="dashboard-card" style="margin-bottom: 30px; border-left: 4px solid #b45309;">
+        <h3><i class="ti ti-shield-check" aria-hidden="true"></i> <?php echo t('dashboard_warranty_soon'); ?></h3>
+        <ul class="item-list">
+            <?php foreach ($garantieBald as $g): ?>
+                <li>
+                    <div class="item-info">
+                        <div class="item-name">
+                            <a href="edit.php?id=<?php echo (int)$g['id']; ?>" style="text-decoration: none; color: inherit;">
+                                <?php echo htmlspecialchars($g['name']); ?>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="item-price" style="color:#b45309;"><?php echo formatDateLocalized($g['garantie_bis']); ?></div>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+        <a href="index.php?warranty_soon=1" style="display:inline-block;margin-top:10px;"><?php echo t('dashboard_warranty_show_all'); ?> →</a>
     </div>
     <?php endif; ?>
 
