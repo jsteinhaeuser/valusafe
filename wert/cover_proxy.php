@@ -127,8 +127,18 @@ $currentUrl = $url;
 $maxHops    = 3;
 
 for ($hop = 0; $hop <= $maxHops; $hop++) {
-    $data = @file_get_contents($currentUrl, false, $ctx);
-    $statusLine = $http_response_header[0] ?? '';
+    // Kopfzeilen ueber stream_get_meta_data() statt $http_response_header:
+    // das ist ab PHP 8.5 veraltet, der Ersatz http_get_last_response_headers()
+    // kam erst mit 8.4 - das NAS laeuft auf 8.2 (03.11.2026).
+    $data = false;
+    $kopf = [];
+    $fp   = @fopen($currentUrl, 'rb', false, $ctx);
+    if ($fp !== false) {
+        $kopf = stream_get_meta_data($fp)['wrapper_data'] ?? [];
+        $data = stream_get_contents($fp);
+        fclose($fp);
+    }
+    $statusLine = $kopf[0] ?? '';
 
     // Redirect?
     if (preg_match('/HTTP\/[\d.]+\s+(3\d\d)/', $statusLine, $m)) {
@@ -138,7 +148,7 @@ for ($hop = 0; $hop <= $maxHops; $hop++) {
         }
         // Location-Header extrahieren
         $location = null;
-        foreach ($http_response_header as $h) {
+        foreach ($kopf as $h) {
             if (stripos($h, 'location:') === 0) {
                 $location = trim(substr($h, 9));
                 break;

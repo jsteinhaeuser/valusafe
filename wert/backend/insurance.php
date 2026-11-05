@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['assign_item'])) {
 }
 
 // POST: Speichern
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['delete_id'])) {
     validateRequest();
 
     $name               = trim($_POST['name'] ?? '');
@@ -140,8 +140,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Löschen
-if ($action === 'delete' && $editId) {
+// Löschen - nur per POST mit CSRF-Token (05.11.2026). Bis dahin loeschte ein
+// GET-Link ?action=delete&id=N: ein praeparierter Link, den ein angemeldeter
+// Admin anklickt, haette den Vertrag samt Zuordnungen entfernt.
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    validateRequest();
+    $editId = (int)$_POST['delete_id'];
     try {
         $db->execute("UPDATE wertsachen SET versicherung_id=NULL WHERE versicherung_id=?", [$editId]);
         $db->execute("DELETE FROM versicherungen WHERE id=?", [$editId]);
@@ -302,14 +306,14 @@ include 'layout/header_next_page.php';
                             </td>
                             <td style="text-align:center;">
                                 <a href="insurance.php?action=items&id=<?php echo $v['id']; ?>" style="text-decoration:none;">
-                                    <span class="badge badge-info"><?php echo sprintf(t('bi_pieces'), (int)$v['anzahl_items']); ?></span>
+                                    <span class="badge badge-info"><?php echo (int)$v['anzahl_items'] === 1 ? t('bi_pieces_one') : sprintf(t('bi_pieces'), (int)$v['anzahl_items']); ?></span>
                                 </a>
                             </td>
                             <td><strong style="color:var(--vs-success);"><?php echo $v['gesamtwert'] ? formatPrice($v['gesamtwert']) : '—'; ?></strong></td>
                             <td>
                                 <a href="insurance.php?action=items&id=<?php echo $v['id']; ?>" class="vs-btn vs-btn-sm" style="background:var(--vs-success);color:var(--vs-surface);margin-right:4px;"><i class="ti ti-package"></i> <?php echo t('bi_items'); ?></a>
                                 <a href="insurance.php?action=edit&id=<?php echo $v['id']; ?>" class="vs-btn vs-btn-sm"><i class="ti ti-pencil"></i></a>
-                                <a href="insurance.php?action=delete&id=<?php echo $v['id']; ?>" class="vs-btn vs-btn-sm" style="background:var(--vs-danger);color:var(--vs-surface);" onclick="return vsConfirmLink(event, <?php echo htmlspecialchars(json_encode(t('ins_confirm_delete')), ENT_QUOTES, 'UTF-8'); ?>);"><i class="ti ti-trash"></i></a>
+                                <form method="POST" action="insurance.php" style="display:inline;" onsubmit="return vsConfirmForm(event, <?php echo htmlspecialchars(json_encode(t('ins_confirm_delete')), ENT_QUOTES, 'UTF-8'); ?>);"><?php echo Security::getCSRFInput(); ?><input type="hidden" name="delete_id" value="<?php echo (int)$v['id']; ?>"><button type="submit" class="vs-btn vs-btn-sm" style="background:var(--vs-danger);color:var(--vs-surface);border:none;cursor:pointer;" aria-label="<?php echo htmlspecialchars(t('btn_delete'), ENT_QUOTES); ?>"><i class="ti ti-trash"></i></button></form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

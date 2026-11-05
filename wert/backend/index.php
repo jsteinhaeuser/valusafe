@@ -390,7 +390,7 @@ include 'layout/header_next_page.php';
         <!-- NEU: Backup Status -->
         <div class="widget-card">
             <div class="widget-title">
-                <h3><i class="ti ti-device-floppy"></i> Backup-Status</h3>
+                <h3><i class="ti ti-device-floppy"></i> <?php echo t('bk_widget_title'); ?></h3>
             </div>
             
             <?php if ($lastBackup): ?>
@@ -406,15 +406,16 @@ include 'layout/header_next_page.php';
                     </div>
                     
                     <div class="backup-info">
-                        <div class="backup-label">Letztes Backup:</div>
+                        <div class="backup-label"><?php echo t('bk_last_label'); ?></div>
                         <div class="backup-value">
                             <?php 
                             if ($backupAge < 3600) {
-                                echo 'vor ' . round($backupAge / 60) . ' Min';
+                                echo sprintf(t('bk_ago_min'), (int)round($backupAge / 60));
                             } elseif ($backupAge < 86400) {
-                                echo 'vor ' . round($backupAge / 3600) . ' Std';
+                                echo sprintf(t('bk_ago_hours'), (int)round($backupAge / 3600));
                             } else {
-                                echo 'vor ' . round($backupAge / 86400) . ' Tagen';
+                                $tage = (int)round($backupAge / 86400);
+                                echo $tage === 1 ? t('bk_ago_day') : sprintf(t('bk_ago_days'), $tage);
                             }
                             ?>
                         </div>
@@ -440,7 +441,7 @@ include 'layout/header_next_page.php';
             <?php endif; ?>
             
             <div class="widget-footer">
-                <a href="backup.php" class="widget-link">Backup erstellen →</a>
+                <a href="backup.php" class="widget-link"><?php echo t('bk_create_link'); ?></a>
             </div>
         </div>
         

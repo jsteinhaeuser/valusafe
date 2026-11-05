@@ -129,6 +129,15 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     transition: background 0.15s;
 }
 .vs-add-btn:hover { background: var(--vs-accent-hover); color: var(--vs-accent-text); transform: none; }
+/* Schnellerfassung neben "Hinzufuegen" (nach 4.7); auf dem Handy uebernimmt der FAB */
+.vs-quick-btn {
+    background: var(--vs-surface); color: var(--vs-text);
+    border: 1px solid var(--vs-border); border-radius: var(--vs-rsm);
+    padding: 7px 12px; font-size: 13px; font-weight: 600;
+    text-decoration: none; display: flex; align-items: center; gap: 6px;
+    transition: border-color 0.15s;
+}
+.vs-quick-btn:hover, .vs-quick-btn:focus-visible { border-color: var(--vs-accent); color: var(--vs-text); transform: none; }
 
 /* ── Workspace ────────────────────────────────────────────────── */
 .vs-workspace { flex: 1; display: flex; overflow: hidden; }
@@ -403,6 +412,7 @@ body.vs-next .pagination-container { background: transparent; padding: 12px 0; }
     .vs-topstrip { padding: 0 10px; gap: 8px; }
     .vs-search { max-width: none; flex: 1; }
     .vs-add-btn { display: none; } /* FAB übernimmt das */
+    .vs-quick-btn { display: none; }
     .vs-context { display: none; }
 }
 

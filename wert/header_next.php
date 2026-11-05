@@ -246,6 +246,14 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
                 <i class="ti ti-plus" aria-hidden="true"></i>
                 <?php echo tn('nav_add', 'Hinzufügen'); ?>
             </a>
+            <?php // Schnellerfassung auch am Desktop (Joerg 02.11.: "nicht mehr vorhanden" -
+                  // seit 4.3.33 nur per FAB auf dem Handy). Rechte wie quick_add.php. ?>
+            <?php if (!function_exists('hasPermission') || hasPermission('items_add')): ?>
+            <a href="quick_add.php" class="vs-quick-btn" title="<?php echo tn('quick_title', 'Schnellerfassung'); ?>">
+                <i class="ti ti-bolt" aria-hidden="true"></i>
+                <?php echo tn('quick_title', 'Schnellerfassung'); ?>
+            </a>
+            <?php endif; ?>
             <?php endif; ?>
         </div>
     </div><!-- /.vs-topstrip -->

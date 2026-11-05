@@ -2,7 +2,25 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 02.11.2026 aus der Projektchronik.
+Erzeugt am 05.11.2026 aus der Projektchronik.
+
+Version 4.7.1   05.11.2026
+--------------------------
+  [Neu] Schnellerfassung auch am Desktop: Der Knopf „Schnellerfassung“
+        steht neben „Hinzufügen“ – Foto wählen, Namen eingeben,
+        speichern; Raum und Kategorie bleiben für den nächsten Gegenstand
+        eingestellt.
+  [Neu] Einstellungen: Die Administration ist zweispaltig, mit einem
+        Schnellzugriff auf Verwaltung, Benutzer und Rechte, Sicherung,
+        Systemprüfung und Update.
+  [Fix] Sicherheit: Eine Versicherung lässt sich nur noch über den
+        Löschen-Knopf entfernen. Bisher genügte ein Link – ein
+        präparierter Link, den ein angemeldeter Administrator anklickt,
+        hätte den Vertrag samt Zuordnungen gelöscht.
+  [Fix] Übersetzungen: Die Kachel „Backup-Status“ in der Verwaltung,
+        Zahlungsweise und Gebäudeart in der Versicherungsübersicht sowie die
+        Anzahl „1 Gegenstand“ waren in anderen Sprachen noch deutsch bzw.
+        falsch.
 
 Version 4.7   02.11.2026
 ------------------------

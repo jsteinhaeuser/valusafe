@@ -1,8 +1,15 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-11-02.
+All changes that affect users. Generated from the project history on 2026-11-05.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.7.1 — 2026-11-05
+
+- **New:** Quick entry on the desktop too: the “Quick entry” button sits next to “Add” – choose a photo, enter a name, save; room and category stay selected for the next item.
+- **New:** Settings: the administration section has two columns, with quick access to administration, users and permissions, backup, system check and update.
+- **Fixed:** Security: an insurance policy can now only be removed with the delete button. Previously a link was enough – a crafted link clicked by a logged-in administrator could have deleted the policy and its assignments.
+- **Fixed:** Translations: the “Backup status” tile in the administration, payment mode and building type in the insurance overview, and the count “1 item” were still in German or wrong in other languages.
 
 ## 4.7 — 2026-11-02
 

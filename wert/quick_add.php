@@ -297,7 +297,7 @@ include 'header_next_page.php';
             <div class="qa-group">
                 <label class="qa-label" for="raum_id">📍 <?php echo t('form_location'); ?></label>
                 <select name="raum_id" id="raum_id" class="qa-select">
-                    <option value="">— <?php echo t('placeholder_select'); ?> —</option>
+                    <option value=""><?php echo t('placeholder_select'); ?></option>
                     <?php foreach ($raeume as $ort): ?>
                         <option value="<?php echo $ort['id']; ?>"
                             <?php echo ((int)($_POST['raum_id'] ?? $last_raum_id) === (int)$ort['id']) ? 'selected' : ''; ?>>
@@ -309,7 +309,7 @@ include 'header_next_page.php';
             <div class="qa-group">
                 <label class="qa-label" for="kategorie_id">🏷️ <?php echo t('form_category'); ?></label>
                 <select name="kategorie_id" id="kategorie_id" class="qa-select">
-                    <option value="">— <?php echo t('placeholder_select'); ?> —</option>
+                    <option value=""><?php echo t('placeholder_select'); ?></option>
                     <?php foreach ($kategorien as $kat): ?>
                         <option value="<?php echo $kat['id']; ?>"
                             <?php echo ((int)($_POST['kategorie_id'] ?? $last_kategorie_id) === (int)$kat['id']) ? 'selected' : ''; ?>>

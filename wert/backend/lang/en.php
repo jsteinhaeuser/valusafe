@@ -387,7 +387,8 @@ return [
     'stats_top10_locations'      => 'Top 10 Locations',
     'stats_top10_valuable'       => 'Top 10 Most Valuable Items',
     'stats_avg_value'            => 'Avg. Value',
-    'stats_pieces'               => 'pieces',
+    'stats_pieces'               => 'items',
+    'stats_piece' => 'item',
     'stats_items'                => 'items',
     'stats_no_items'             => 'No items found',
     'stats_no_categories'        => 'No categories found',
@@ -912,7 +913,8 @@ return [
     'bi_premium_year'            => 'Premium/year',
     'bi_items'                   => 'Items',
     'bi_ins_value_short'         => 'Ins. value',
-    'bi_pieces'                  => '%d pcs',
+    'bi_pieces'                  => '%d items',
+    'bi_pieces_one'              => '1 item',
     'bi_edit'                    => 'Edit insurance',
     'bi_ph_name'                 => 'e.g. Home contents Allianz',
     'bi_ph_provider'             => 'e.g. Allianz, AXA, Aviva...',
@@ -1001,5 +1003,14 @@ return [
     'upd_err_db_backup'          => 'Database backup failed – nothing was changed.',
     'upd_err_unknown_run'        => 'Unknown update run.',
     'upd_err_rollback'           => 'Restoring failed:',
+
+    // ── Kachel Backup-Status im Dashboard (05.11.2026, war fest deutsch) ──
+    'bk_widget_title'              => 'Backup status',
+    'bk_last_label'                => 'Last backup:',
+    'bk_ago_min'                   => '%d min ago',
+    'bk_ago_hours'                 => '%d h ago',
+    'bk_ago_days'                  => '%d days ago',
+    'bk_ago_day'                   => '1 day ago',
+    'bk_create_link'               => 'Create backup →',
 ];
 

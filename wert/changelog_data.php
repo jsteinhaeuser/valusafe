@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 02.11.2026 17:10 von bin/changelog_export.php.
+ * Erzeugt am 05.11.2026 11:05 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,36 @@
  */
 
 return [
+    [
+        'version' => '4.7.1',
+        'date' => '2026-11-05',
+        'entries' => [
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Schnellerfassung auch am Desktop: Der Knopf „Schnellerfassung“ steht neben „Hinzufügen“ – Foto wählen, Namen eingeben, speichern; Raum und Kategorie bleiben für den nächsten Gegenstand eingestellt.',
+                'text_en' => 'Quick entry on the desktop too: the “Quick entry” button sits next to “Add” – choose a photo, enter a name, save; room and category stay selected for the next item.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Einstellungen: Die Administration ist zweispaltig, mit einem Schnellzugriff auf Verwaltung, Benutzer und Rechte, Sicherung, Systemprüfung und Update.',
+                'text_en' => 'Settings: the administration section has two columns, with quick access to administration, users and permissions, backup, system check and update.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit: Eine Versicherung lässt sich nur noch über den Löschen-Knopf entfernen. Bisher genügte ein Link – ein präparierter Link, den ein angemeldeter Administrator anklickt, hätte den Vertrag samt Zuordnungen gelöscht.',
+                'text_en' => 'Security: an insurance policy can now only be removed with the delete button. Previously a link was enough – a crafted link clicked by a logged-in administrator could have deleted the policy and its assignments.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Übersetzungen: Die Kachel „Backup-Status“ in der Verwaltung, Zahlungsweise und Gebäudeart in der Versicherungsübersicht sowie die Anzahl „1 Gegenstand“ waren in anderen Sprachen noch deutsch bzw. falsch.',
+                'text_en' => 'Translations: the “Backup status” tile in the administration, payment mode and building type in the insurance overview, and the count “1 item” were still in German or wrong in other languages.'
+            ]
+        ]
+    ],
     [
         'version' => '4.7',
         'date' => '2026-11-02',
@@ -207,18 +237,6 @@ return [
                 'public' => true,
                 'text' => 'Farbschema Midnight: Die Fläche zum Hochladen von Bildern beim Bearbeiten war fest weiß, die helle Schrift darauf kaum lesbar. Im Schema Glass sind die blauen Zahlen der Statistikleiste etwas dunkler und damit besser lesbar.',
                 'text_en' => 'Midnight colour scheme: the image upload area when editing was fixed white, so the light text on it was hard to read. In the Glass scheme the blue figures in the statistics bar are slightly darker and easier to read.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.5.1',
-        'date' => '2026-10-17',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Vorsorge für Sprachen mit Apostroph (z. B. Französisch, Italienisch, Irisch): Ein Apostroph in einer Übersetzung konnte einzelne Knöpfe und Rückfragen außer Kraft setzen – beim Löschen von Gegenständen, Dokumenten, Benutzern und Sicherungen, beim Hochladen von Bildern und in der Statistik. Die Texte werden jetzt so eingebunden, dass jedes Zeichen sicher ist. In den derzeitigen Übersetzungen trat der Fehler noch nicht auf.',
-                'text_en' => 'Safeguard for languages with apostrophes (e.g. French, Italian, Irish): an apostrophe in a translation could disable individual buttons and confirmation prompts – when deleting items, documents, users and backups, when uploading images and in the statistics. The texts are now embedded so that every character is safe. The current translations were not yet affected.'
             ],
             [
                 'type' => 'feature',

@@ -388,6 +388,7 @@ return [
     'stats_top10_valuable'       => 'Top 10 Wertvollste Gegenstände',
     'stats_avg_value'            => 'Ø Wert',
     'stats_pieces'               => 'Stück',
+    'stats_piece' => 'Stück',
     'stats_items'                => 'Gegenstände',
     'stats_no_items'             => 'Keine Gegenstände gefunden',
     'stats_no_categories'        => 'Keine Kategorien gefunden',
@@ -913,6 +914,7 @@ return [
     'bi_items'                   => 'Gegenstände',
     'bi_ins_value_short'         => 'Vers. Wert',
     'bi_pieces'                  => '%d Stück',
+    'bi_pieces_one'              => '1 Stück',
     'bi_edit'                    => 'Versicherung bearbeiten',
     'bi_ph_name'                 => 'z.B. Hausrat Allianz',
     'bi_ph_provider'             => 'z.B. Allianz, ERGO, HUK...',
@@ -1001,5 +1003,14 @@ return [
     'upd_err_db_backup'          => 'Sicherung der Datenbank fehlgeschlagen – nichts geändert.',
     'upd_err_unknown_run'        => 'Unbekannter Update-Lauf.',
     'upd_err_rollback'           => 'Zurückholen fehlgeschlagen:',
+
+    // ── Kachel Backup-Status im Dashboard (05.11.2026, war fest deutsch) ──
+    'bk_widget_title'              => 'Backup-Status',
+    'bk_last_label'                => 'Letztes Backup:',
+    'bk_ago_min'                   => 'vor %d Min.',
+    'bk_ago_hours'                 => 'vor %d Std.',
+    'bk_ago_days'                  => 'vor %d Tagen',
+    'bk_ago_day'                   => 'vor 1 Tag',
+    'bk_create_link'               => 'Backup erstellen →',
 ];
 

@@ -235,7 +235,7 @@ foreach ($versicherungen as $v):
         $vertragsDetails = [];
         if ($v['versicherungssumme']) $vertragsDetails[] = [t('ins_sum'), number_format($v['versicherungssumme'], 2, ',', '.') . ' €'];
         if ($v['selbstbeteiligung'])  $vertragsDetails[] = [t('ins_deductible'),  number_format($v['selbstbeteiligung'],  2, ',', '.') . ' €'];
-        if ($v['zahlungsweise'])      $vertragsDetails[] = [t('ins_payment_mode'),      ucfirst($v['zahlungsweise'])];
+        if ($v['zahlungsweise'])      $vertragsDetails[] = [t('ins_payment_mode'),      t('ins_pay_' . $v['zahlungsweise'])];
         if ($v['kuendigungsfrist'])   $vertragsDetails[] = [t('ins_notice_period'),    htmlspecialchars($v['kuendigungsfrist'])];
         if (!empty($vertragsDetails)):
         ?>
@@ -254,7 +254,7 @@ foreach ($versicherungen as $v):
         $objektDetails = [];
         $adr = trim(($v['adresse'] ?? '') . ($v['plz'] || $v['wohnort'] ? ', ' . trim(($v['plz'] ?? '') . ' ' . ($v['wohnort'] ?? '')) : ''));
         if ($adr)                 $objektDetails[] = [t('ins_address'),      htmlspecialchars(trim($adr, ', '))];
-        if ($v['gebaeudeart'])    $objektDetails[] = [t('ins_building_type'),   htmlspecialchars($v['gebaeudeart'])];
+        if ($v['gebaeudeart'])    $objektDetails[] = [t('ins_building_type'),   htmlspecialchars(t('ins_bt_' . $v['gebaeudeart']))];
         if ($v['wohnflaeche_qm']) $objektDetails[] = [t('ins_living_area'),   number_format($v['wohnflaeche_qm'], 1, ',', '.') . ' m²'];
         if ($v['anzahl_zimmer'])  $objektDetails[] = [t('ins_rooms'),       $v['anzahl_zimmer']];
         if ($v['etage'] !== null && $v['etage'] !== '') $objektDetails[] = [t('ins_floor'), $v['etage'] == 0 ? t('ins_ground_floor') : sprintf(t('ins_floor_nth'), $v['etage'])];

@@ -236,7 +236,7 @@ include 'layout/header_next_page.php';
                             </td>
                             <td>
                                 <span class="badge badge-info" style="font-size: 14px; padding: 6px 14px;">
-                                    <?php echo number_format($kat['anzahl'], 0, ',', '.'); ?> <?php echo t('stats_pieces'); ?>
+                                    <?php echo number_format($kat['anzahl'], 0, ',', '.'); ?> <?php echo t((int)$kat['anzahl'] === 1 ? 'stats_piece' : 'stats_pieces'); ?>
                                 </span>
                             </td>
                             <td>
@@ -289,7 +289,7 @@ include 'layout/header_next_page.php';
                             </td>
                             <td>
                                 <span class="badge badge-info" style="font-size: 14px; padding: 6px 14px;">
-                                    <?php echo number_format($ort['anzahl'], 0, ',', '.'); ?> <?php echo t('stats_pieces'); ?>
+                                    <?php echo number_format($ort['anzahl'], 0, ',', '.'); ?> <?php echo t((int)$ort['anzahl'] === 1 ? 'stats_piece' : 'stats_pieces'); ?>
                                 </span>
                             </td>
                             <td>

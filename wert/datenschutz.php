@@ -20,7 +20,7 @@ include 'header_next_page.php';
     HINWEIS FUER BETREIBER DIESER INSTALLATION
     ==========================================
     Die folgenden Angaben sind Platzhalter. Wer ValuSafe oeffentlich
-    erreichbar betreibt, ist in Deutschland nach Paragraph 5 TMG (Impressum)
+    erreichbar betreibt, ist in Deutschland nach Paragraph 5 DDG (Impressum)
     und nach der DSGVO (Verantwortlicher) verpflichtet, HIER die eigenen
     Angaben einzutragen. Die Platzhalter erfuellen diese Pflicht nicht.
     Wer die Anwendung nur im eigenen Netz betreibt, braucht beides nicht -

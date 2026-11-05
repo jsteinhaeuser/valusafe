@@ -329,6 +329,8 @@ include 'header_next_page.php';
 </style>
 
 <h2><?php echo t('form_new_item'); ?></h2>
+<?php // Gegenstueck zum Link "Vollstaendiges Formular" in quick_add.php (nach 4.7) ?>
+<p style="margin:-6px 0 14px; font-size:13px; color:var(--vs-text-muted);"><?php echo t('add_quick_hint'); ?> <a href="quick_add.php"><?php echo tn('quick_title', 'Schnellerfassung'); ?> →</a></p>
 
 <?php echo showErrorMessages($errors); ?>
 
