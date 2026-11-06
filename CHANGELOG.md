@@ -1,8 +1,13 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-11-05.
+All changes that affect users. Generated from the project history on 2026-11-06.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.8.1 — 2026-11-06
+
+- **Fixed:** QR codes: the “QR codes” page and label printing failed with a server error in 4.8. Fixed.
+- **Fixed:** Update: after “Check now”, ValuSafe confirms that it has just checked and whether a newer version exists. Previously only the time changed.
 
 ## 4.8 — 2026-11-05
 

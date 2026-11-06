@@ -2,7 +2,15 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 05.11.2026 aus der Projektchronik.
+Erzeugt am 06.11.2026 aus der Projektchronik.
+
+Version 4.8.1   06.11.2026
+--------------------------
+  [Fix] QR-Codes: Die Seite „QR-Codes“ und der Etikettendruck brachen in
+        4.8 mit einem Serverfehler ab. Behoben.
+  [Fix] Update: Nach „Jetzt nachsehen“ bestätigt ValuSafe, dass es gerade
+        nachgesehen hat und ob es eine neuere Version gibt. Vorher änderte
+        sich nur die Uhrzeit.
 
 Version 4.8   05.11.2026
 ------------------------

@@ -353,7 +353,7 @@ if ($was === 'raeume') {
             'schluessel' => (string)$item['id'],
             'url'        => $baseUrl . '/edit.php?id=' . (int)$item['id'],
             'titel'      => $item['name'],
-            'zeile1'     => sprintf(tn('qr_label_no', 'Nr. %d'), (int)$item['id']),
+            'zeile1'     => sprintf(vsUebersetzt('qr_label_no', 'Nr. %d'), (int)$item['id']),
             'zeile2'     => (string)($item['raum_name'] ?? ''),
             'kategorie'  => (string)($item['kategorie_name'] ?? ''),
         ];
@@ -429,7 +429,7 @@ body { margin:0; background:#e5e7eb; }
 <body>
 <div class="etb-hinweis">
     <button type="button" onclick="window.print()">🖨️ <?php echo $h(t('qr_print')); ?></button>
-    <span><?php echo $h(tn('qr_print_hint', 'Beim Drucken „Tatsächliche Größe“ bzw. Skalierung 100 % und keine Ränder wählen.')); ?></span>
+    <span><?php echo $h(vsUebersetzt('qr_print_hint', 'Beim Drucken „Tatsächliche Größe“ bzw. Skalierung 100 % und keine Ränder wählen.')); ?></span>
 </div>
 <?php $zeichneBoegen(); ?>
 </body>
@@ -521,10 +521,10 @@ include 'header_next_page.php';
         <a href="index.php" class="btn">← <?php echo t('btn_back'); ?></a>
         <h2 style="margin:0; border:none; padding:0;">📱 <?php echo t('nav_export_qr'); ?></h2>
         <span style="font-size:13px; color:#64748b;"><?php echo $h($was === 'raeume'
-            ? sprintf(tn('qr_rooms_count', '%d Räume'), count($etiketten))
+            ? sprintf(vsUebersetzt('qr_rooms_count', '%d Räume'), count($etiketten))
             : sprintf(t('qr_items_count'), count($etiketten))); ?></span>
         <?php if ($bogen && $etiketten): ?>
-            <a href="<?php echo $h($druckUrl); ?>" target="_blank" rel="noopener" class="btn btn-primary" style="margin-left:auto;">🖨️ <?php echo $h(tn('qr_print_sheets', 'Bögen drucken')); ?></a>
+            <a href="<?php echo $h($druckUrl); ?>" target="_blank" rel="noopener" class="btn btn-primary" style="margin-left:auto;">🖨️ <?php echo $h(vsUebersetzt('qr_print_sheets', 'Bögen drucken')); ?></a>
         <?php else: ?>
             <button onclick="window.print()" class="btn btn-secondary" style="margin-left:auto;">🖨️ <?php echo t('qr_print'); ?></button>
         <?php endif; ?>
@@ -534,10 +534,10 @@ include 'header_next_page.php';
         <?php if ($selectedIds && $was !== 'raeume'): ?>
             <input type="hidden" name="ids" value="<?php echo $h(implode(',', $selectedIds)); ?>">
         <?php endif; ?>
-        <label for="qr_was" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(tn('qr_labels_for', 'Etiketten für')); ?>:</label>
+        <label for="qr_was" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(vsUebersetzt('qr_labels_for', 'Etiketten für')); ?>:</label>
         <select id="qr_was" name="was" class="form-control" style="max-width:170px; margin:0;" onchange="this.form.submit()">
-            <option value=""><?php echo $h(tn('qr_items', 'Gegenstände')); ?></option>
-            <option value="raeume" <?php echo $was === 'raeume' ? 'selected' : ''; ?>><?php echo $h(tn('qr_rooms', 'Räume')); ?></option>
+            <option value=""><?php echo $h(vsUebersetzt('qr_items', 'Gegenstände')); ?></option>
+            <option value="raeume" <?php echo $was === 'raeume' ? 'selected' : ''; ?>><?php echo $h(vsUebersetzt('qr_rooms', 'Räume')); ?></option>
         </select>
 
         <?php if ($was !== 'raeume' && !$selectedIds): ?>
@@ -557,23 +557,23 @@ include 'header_next_page.php';
             <a href="qr_generator.php<?php echo $bogenKey ? '?bogen=' . $h($bogenKey) : ''; ?>" class="btn btn-secondary">✕ <?php echo t('qr_clear_filter'); ?></a>
         <?php endif; ?>
 
-        <label for="qr_bogen" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(tn('qr_output', 'Ausgabe')); ?>:</label>
+        <label for="qr_bogen" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(vsUebersetzt('qr_output', 'Ausgabe')); ?>:</label>
         <select id="qr_bogen" name="bogen" class="form-control" style="max-width:300px; margin:0;" onchange="this.form.submit()">
-            <option value=""><?php echo $h(tn('qr_output_screen', 'Bildschirm-Raster')); ?></option>
+            <option value=""><?php echo $h(vsUebersetzt('qr_output_screen', 'Bildschirm-Raster')); ?></option>
             <?php foreach (vsEtikettFormate() as $schluessel => $f): ?>
                 <option value="<?php echo $h($schluessel); ?>" <?php echo $bogenKey === $schluessel ? 'selected' : ''; ?>>
                     <?php echo $h(str_replace('.', ',', (string)$f['breite']) . ' × ' . str_replace('.', ',', (string)$f['hoehe']) . ' mm · '
-                        . sprintf(tn('qr_per_sheet', '%d pro Bogen'), $f['spalten'] * $f['zeilen'])
-                        . ' (' . sprintf(tn('qr_for_example', 'z. B. %s'), $f['beispiel']) . ')'); ?>
+                        . sprintf(vsUebersetzt('qr_per_sheet', '%d pro Bogen'), $f['spalten'] * $f['zeilen'])
+                        . ' (' . sprintf(vsUebersetzt('qr_for_example', 'z. B. %s'), $f['beispiel']) . ')'); ?>
                 </option>
             <?php endforeach; ?>
         </select>
 
         <?php if ($bogen): ?>
-            <label for="qr_start" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(tn('qr_start_field', 'Erstes freies Feld')); ?>:</label>
+            <label for="qr_start" style="font-size:14px; font-weight:500; margin:0; white-space:nowrap;"><?php echo $h(vsUebersetzt('qr_start_field', 'Erstes freies Feld')); ?>:</label>
             <input type="number" id="qr_start" name="start" min="1" max="<?php echo $bogen['spalten'] * $bogen['zeilen']; ?>"
                    value="<?php echo min($startFeld, $bogen['spalten'] * $bogen['zeilen']); ?>" class="form-control" style="max-width:80px; margin:0;">
-            <button type="submit" class="btn btn-secondary"><?php echo $h(tn('qr_show', 'Anzeigen')); ?></button>
+            <button type="submit" class="btn btn-secondary"><?php echo $h(vsUebersetzt('qr_show', 'Anzeigen')); ?></button>
         <?php else: ?>
         <div style="margin-left:auto; display:flex; gap:8px; align-items:center;">
             <label for="qr_groesse" style="font-size:13px; color:#595959; margin:0;"><?php echo t('qr_size'); ?>:</label>
@@ -584,18 +584,18 @@ include 'header_next_page.php';
             </select>
         </div>
         <?php endif; ?>
-        <noscript><button type="submit" class="btn btn-secondary"><?php echo $h(tn('qr_show', 'Anzeigen')); ?></button></noscript>
+        <noscript><button type="submit" class="btn btn-secondary"><?php echo $h(vsUebersetzt('qr_show', 'Anzeigen')); ?></button></noscript>
     </form>
     <?php if ($bogen): ?>
         <p style="font-size:13px; color:#595959; margin:-8px 0 16px;">
-            <?php echo $h(tn('qr_print_hint', 'Beim Drucken „Tatsächliche Größe“ bzw. Skalierung 100 % und keine Ränder wählen.')); ?>
-            <?php echo $h(sprintf(tn('qr_sheets_count', 'Bögen: %d'), count($seiten))); ?>.
+            <?php echo $h(vsUebersetzt('qr_print_hint', 'Beim Drucken „Tatsächliche Größe“ bzw. Skalierung 100 % und keine Ränder wählen.')); ?>
+            <?php echo $h(sprintf(vsUebersetzt('qr_sheets_count', 'Bögen: %d'), count($seiten))); ?>.
         </p>
     <?php endif; ?>
 </div>
 
 <?php if (empty($etiketten)): ?>
-    <div class="alert alert-info no-print"><?php echo $h($was === 'raeume' ? tn('qr_no_rooms', 'Keine Räume gefunden.') : t('qr_no_items')); ?></div>
+    <div class="alert alert-info no-print"><?php echo $h($was === 'raeume' ? vsUebersetzt('qr_no_rooms', 'Keine Räume gefunden.') : t('qr_no_items')); ?></div>
 <?php elseif ($bogen): ?>
 
 <!-- Vorschau der Boegen, verkleinert; gedruckt wird die Druckansicht -->

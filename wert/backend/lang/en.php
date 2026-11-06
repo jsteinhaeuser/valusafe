@@ -971,6 +971,8 @@ return [
     'upd_btn_fetch'              => 'Download and verify',
     'upd_btn_fetching'           => 'Downloading …',
     'upd_btn_check_now'          => 'Check now',
+    'upd_checked_now_none'       => 'Just checked at palindrom.de: there is no newer version.',
+    'upd_checked_now_new'        => 'Just checked at palindrom.de: a new version is available.',
     'upd_btn_check'              => 'Verify',
     'upd_btn_apply'              => 'Install now',
     'upd_btn_running'            => 'Installing …',

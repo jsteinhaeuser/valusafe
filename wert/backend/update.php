@@ -104,9 +104,13 @@ if (isset($_POST['rollback'])) {
 
 // ── Versionsabfrage von Hand ────────────────────────────────────────────────
 
+// $geradeGeprueft: Rueckmeldung unter dem Knopf (4.8.1) - vorher aenderte
+// sich nach dem Klick nur die Uhrzeit, der Knopf wirkte wie ohne Funktion.
+$geradeGeprueft = false;
 if (isset($_POST['jetzt_pruefen'])) {
     validateRequest();
     vsUpdStand($arbeit, true);
+    $geradeGeprueft = true;
 }
 
 // ── Schritt 1: holen oder hochladen, dann pruefen ───────────────────────────
@@ -341,6 +345,12 @@ include 'layout/header_next_page.php';
         <?php echo esc(sprintf(t('upd_last_check'), date('d.m.Y H:i', $stand['geprueft']))); ?>
         <?php if (!empty($stand['fehler'])): ?><br><span style="color:var(--vs-danger);"><?php echo esc($stand['fehler']); ?></span><?php endif; ?>
     </p>
+    <?php if ($geradeGeprueft && empty($stand['fehler'])): ?>
+    <p role="status" style="font-size:13px; font-weight:600; color:var(--vs-success);">
+        <i class="ti ti-refresh" aria-hidden="true"></i>
+        <?php echo esc($neuer ? t('upd_checked_now_new') : t('upd_checked_now_none')); ?>
+    </p>
+    <?php endif; ?>
     <div class="update-knoepfe">
         <?php if ($neuer && $sperre === null && !$technikFehlt && !empty($info['paket'])): ?>
         <form method="POST">

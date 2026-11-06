@@ -971,6 +971,8 @@ return [
     'upd_btn_fetch'              => 'Herunterladen und prüfen',
     'upd_btn_fetching'           => 'Wird geladen …',
     'upd_btn_check_now'          => 'Jetzt nachsehen',
+    'upd_checked_now_none'       => 'Eben bei palindrom.de nachgesehen: Es gibt keine neuere Version.',
+    'upd_checked_now_new'        => 'Eben bei palindrom.de nachgesehen: Eine neue Version ist da.',
     'upd_btn_check'              => 'Prüfen',
     'upd_btn_apply'              => 'Jetzt einspielen',
     'upd_btn_running'            => 'Wird eingespielt …',

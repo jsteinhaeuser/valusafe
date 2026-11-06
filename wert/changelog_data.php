@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 05.11.2026 16:09 von bin/changelog_export.php.
+ * Erzeugt am 06.11.2026 15:57 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,24 @@
  */
 
 return [
+    [
+        'version' => '4.8.1',
+        'date' => '2026-11-06',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'QR-Codes: Die Seite „QR-Codes“ und der Etikettendruck brachen in 4.8 mit einem Serverfehler ab. Behoben.',
+                'text_en' => 'QR codes: the “QR codes” page and label printing failed with a server error in 4.8. Fixed.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Update: Nach „Jetzt nachsehen“ bestätigt ValuSafe, dass es gerade nachgesehen hat und ob es eine neuere Version gibt. Vorher änderte sich nur die Uhrzeit.',
+                'text_en' => 'Update: after “Check now”, ValuSafe confirms that it has just checked and whether a newer version exists. Previously only the time changed.'
+            ]
+        ]
+    ],
     [
         'version' => '4.8',
         'date' => '2026-11-05',
@@ -117,78 +135,6 @@ return [
                 'public' => true,
                 'text' => 'Änderungsverlauf: Leere Felder (z. B. kein Kaufdatum) werden wieder als leer angezeigt, statt eine Warnung im Fehlerprotokoll zu erzeugen.',
                 'text_en' => 'Change history: empty fields (e.g. no purchase date) are shown as empty again instead of producing a warning in the error log.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.6',
-        'date' => '2026-10-28',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Anmeldung: Wird ein Konto gelöscht, herabgestuft oder sein Passwort geändert, gilt das sofort auch für bereits angemeldete Sitzungen. Bisher arbeitete eine offene Sitzung mit den alten Rechten weiter. Nach einem Passwortwechsel bleibt nur die Sitzung angemeldet, in der er geschah. Jede Anmeldung endet außerdem spätestens nach 12 Stunden.',
-                'text_en' => 'Security, sign-in: when an account is deleted, downgraded or its password is changed, this now applies immediately to sessions that are already signed in. Previously an open session kept working with the old rights. After a password change only the session in which it was made stays signed in. Every sign-in also ends after 12 hours at the latest.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Wiederherstellen: Eine Datenbanksicherung wird vor dem Einspielen geprüft und nur angenommen, wenn sie ausschließlich enthält, was ValuSafe selbst in Sicherungen schreibt. Benutzer, SuperAdmin-Einstellungen und das Sicherheitsprotokoll holt nur der SuperAdmin aus einer Sicherung zurück; ein Admin erhält sie unverändert. Abgelehnte Uploads der Datenübernahme bleiben nicht mehr im Ordner backups/ liegen.',
-                'text_en' => 'Security, restore: a database backup is checked before it is restored and only accepted if it contains nothing but what ValuSafe itself writes into backups. Users, SuperAdmin settings and the security log can only be restored by the SuperAdmin; for an admin they stay as they are. Rejected uploads from the data import no longer remain in the backups/ folder.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, Zwei-Faktor-Anmeldung: Die Backup-Codes werden nur noch verschlüsselt (gehasht) gespeichert und einmal angezeigt, direkt nach dem Erzeugen. Wer sie nicht mehr hat, erzeugt mit einem Code aus der Authenticator-App neue; die alten werden damit ungültig. Vorhandene Codes gelten weiter.',
-                'text_en' => 'Security, two-factor sign-in: backup codes are now stored only in hashed form and shown once, right after they are created. If you no longer have them, create new ones with a code from your authenticator app; the old ones then stop working. Existing codes keep working.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, kleinere Punkte: Das Anmelde-Cookie trägt jetzt auf jeder Installation HttpOnly, SameSite und bei HTTPS Secure. Der CSV-Export schützt vor Formeln in Zellen (z. B. ein Name, der mit = beginnt). Vom Admin vergebene Passwörter brauchen mindestens 8 Zeichen. Die Anmeldung verrät über die Antwortzeit nicht mehr, ob es einen Benutzernamen gibt.',
-                'text_en' => 'Security, smaller items: the sign-in cookie now carries HttpOnly, SameSite and, with HTTPS, Secure on every installation. The CSV export guards against formulas in cells (e.g. a name starting with =). Passwords set by the admin need at least 8 characters. The sign-in no longer reveals through its response time whether a user name exists.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Rechteverwaltung: Die Schalter „Gegenstände anzeigen“ und „Erweiterte Suche & Filter“ sind entfallen - sie ließen sich umstellen, wirkten aber nicht. „Aktuellen Wert & Werthistorie pflegen“ wirkt jetzt: Ohne dieses Recht ist das Feld beim Bearbeiten schreibgeschützt. Die Bestätigung beim Umschalten zeigt wieder ein Symbol statt HTML-Text.',
-                'text_en' => 'Permissions: the switches “View items” and “Advanced search & filters” have been removed - they could be changed but had no effect. “Maintain current value & value history” now takes effect: without this permission the field is read-only when editing. The confirmation when switching shows an icon again instead of HTML text.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Benutzerverwaltung: Benutzer mit Apostroph im Namen lassen sich wieder löschen, ihre Zwei-Faktor-Anmeldung zurücksetzen.',
-                'text_en' => 'User management: users with an apostrophe in their name can be deleted again and their two-factor sign-in reset.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Löschen: Wird ein Gegenstand einzeln gelöscht, verschwinden jetzt auch alle seine Fotos vom Server. Bisher blieben die zusätzlichen Fotos im Upload-Ordner liegen.',
-                'text_en' => 'Deleting: when a single item is deleted, all of its photos are now removed from the server as well. Previously the additional photos stayed in the upload folder.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit, „nur eigene Gegenstände“: Kann die Einstellung wegen eines Datenbankfehlers nicht gelesen werden, bleibt die Einschränkung bestehen, statt alle Gegenstände zu zeigen. Die Statistik über der Liste zählt bei dieser Einstellung nur noch die eigenen Gegenstände.',
-                'text_en' => 'Security, “own items only”: if the setting cannot be read because of a database error, the restriction stays in place instead of showing all items. The statistics above the list now only count the user\'s own items with this setting.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Liste: Mit gewähltem Raum zeigen die Gesamtsumme oben und die Statistik unter „Erweiterte Suche“ nur noch die Gegenstände dieses Raums. Bisher standen dort Anzahl und Summe aller Räume.',
-                'text_en' => 'List: with a room selected, the total at the top and the statistics under “Advanced search” now only cover the items in that room. Previously they showed the count and total of all rooms.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'CSV-Export: Ein Rückstrich vor einem Anführungszeichen (z. B. C:\\"Belege") bringt in Excel und LibreOffice keine Spalten mehr durcheinander.',
-                'text_en' => 'CSV export: a backslash before a quotation mark (e.g. C:\\"Receipts") no longer mixes up the columns in Excel and LibreOffice.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Benutzerverwaltung: Die Anzeige „Wer ist online“ ist entfallen. Sie zeigte seit längerem niemanden mehr an. Die dafür früher gespeicherten IP-Adressen und besuchten Seiten werden gelöscht.',
-                'text_en' => 'User management: the “Who is online” display has been removed. It had not shown anyone for some time. The IP addresses and visited pages stored for it in the past are deleted.'
             ],
             [
                 'type' => 'feature',
