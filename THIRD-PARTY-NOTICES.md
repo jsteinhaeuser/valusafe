@@ -39,11 +39,14 @@ required copyright notices are reproduced here.
 - Lizenz: MIT
 - Copyright (c) 2012 davidshimjs
 
-## ZXing for JS (@zxing/browser)
+## ZXing for JS (@zxing/library 0.19.1)
 
 - Datei: `wert/js/zxing-browser.min.js`
-- https://github.com/zxing-js/browser
-- Lizenz: MIT
+- https://github.com/zxing-js/library
+- Lizenz: MIT (gilt für 0.19.1; spätere Versionen stehen unter Apache-2.0)
+- Der Dateiname ist historisch: Inhalt ist byte-gleich mit
+  `@zxing/library@0.19.1/umd/index.min.js` (geprüft am 07.11.2026 per SHA-256).
+  Bis 4.8 / 2.6 stand hier fälschlich @zxing/browser.
 - Copyright (c) 2018 ZXing for JS
 
 Das ausgelieferte Bundle enthält zusätzlich die TypeScript-Hilfsfunktionen
