@@ -2,7 +2,40 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 06.11.2026 aus der Projektchronik.
+Erzeugt am 08.11.2026 aus der Projektchronik.
+
+Version 4.9   08.11.2026
+------------------------
+  [Neu] Buchsuche: Bücher aus dem deutschen Sprachraum findet ValuSafe jetzt
+        über die Deutsche Nationalbibliothek – mit Titel, Untertitel,
+        Autor, Verlag, Jahr und Auflage. Bisher fragte die Suche nur Google
+        Books und Open Library; Google antwortet ohne eigenen Schlüssel oft
+        gar nicht, Open Library kennt nur wenige deutsche Bücher.
+  [Neu] Ladenpreis: Liefert die Nationalbibliothek einen Preis, trägt
+        ValuSafe ihn in ein leeres Preisfeld ein (ältere D-Mark-Preise
+        umgerechnet) und vermerkt ihn in der Notiz.
+  [Neu] Barcode-Scan auf dem iPhone und iPad: „Scannen“ öffnet jetzt auch
+        in Safari die Kamera und liest Barcode bzw. ISBN. Bisher blieb dort
+        nur die Eingabe von Hand.
+  [Neu] Schnellerfassung mit Barcode: Das Formular hinter dem Plus-Knopf hat
+        jetzt ein Feld „Barcode / ISBN“ mit Scan-Knopf. Die Suche füllt
+        Name, Notiz und Preis und bietet das Cover als Foto an; nach dem
+        Speichern ist alles bereit für den nächsten Gegenstand.
+  [Neu] Sprachen: Das Menü „Hilfe & Information“ ist in allen Sprachen
+        beschriftet; Erste Schritte, Über diese Anwendung, Lizenz und
+        Rückmeldung gibt es auf Englisch (andere Sprachen sehen die englische
+        Fassung). Versicherungs-Export, Übergabeprotokoll und die
+        öffentliche Chronik sind übersetzt, die System-Information im
+        Verwaltungsbereich gibt es auf Englisch.
+  [Neu] Versicherungs-Export: Gegenstände mit englischen Kategorien (z. B.
+        „Jewellery“, „Electronics“) landen in der passenden
+        Versicherungskategorie statt unter „Sonstiges“.
+  [Fix] Umlaute: Namen aus der Buchsuche und vom iPhone kamen teils mit
+        zerlegten Umlauten an („fu r“ statt „für“) – die Suche fand
+        sie dann nicht. Beim Speichern wird jetzt jeder Text vereinheitlicht.
+  [Fix] Update: Wer im Verwaltungsbereich versehentlich das vollständige
+        Paket statt des Update-Pakets wählt, bekommt jetzt eine
+        verständliche Meldung statt eines technischen Fehlers.
 
 Version 4.8.1   06.11.2026
 --------------------------

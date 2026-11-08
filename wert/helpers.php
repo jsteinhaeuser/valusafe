@@ -19,6 +19,57 @@ if (!function_exists('esc')) {
 }
 
 /**
+ * Bringt Text in Unicode-Form NFC (seit 4.9 / Valu-Basic 2.7).
+ * Buecher-APIs und das iPhone liefern Umlaute teils zerlegt (NFD:
+ * "u" + Trema U+0308); gespeichert sah das wie "fu r" aus und Suche/Sortierung
+ * fanden "fuer" nicht. Arrays werden rekursiv behandelt, andere Typen
+ * bleiben unveraendert. Ohne intl-Erweiterung (Valu-Basic-Stick unter
+ * Windows) setzt eine Tabelle die lateinischen Buchstaben mit Akzent
+ * (U+00C0 bis U+017F) zusammen.
+ */
+if (!function_exists('vsNfc')) {
+    function vsNfc($wert) {
+        if (is_array($wert)) {
+            return array_map('vsNfc', $wert);
+        }
+        if (!is_string($wert) || $wert === '' || preg_match('/[\x{0300}-\x{036F}]/u', $wert) !== 1) {
+            return $wert;   // kein kombinierendes Zeichen (oder kein gueltiges UTF-8): nichts zu tun
+        }
+        if (class_exists('Normalizer')) {
+            $nfc = Normalizer::normalize($wert, Normalizer::FORM_C);
+            return $nfc === false ? $wert : $nfc;
+        }
+        static $tabelle = null;
+        if ($tabelle === null) {
+            $tabelle = [];
+            $gruppen = [
+                0x0300 => ['AEIOUaeiou', 'ÀÈÌÒÙàèìòù'],
+                0x0301 => ['AEIOUYaeiouyCcLlNnRrSsZz', 'ÁÉÍÓÚÝáéíóúýĆćĹĺŃńŔŕŚśŹź'],
+                0x0302 => ['AEIOUaeiouCcGgHhJjSsWwYy', 'ÂÊÎÔÛâêîôûĈĉĜĝĤĥĴĵŜŝŴŵŶŷ'],
+                0x0303 => ['ANOanoIiUu', 'ÃÑÕãñõĨĩŨũ'],
+                0x0304 => ['AaEeIiOoUu', 'ĀāĒēĪīŌōŪū'],
+                0x0306 => ['AaEeGgIiOoUu', 'ĂăĔĕĞğĬĭŎŏŬŭ'],
+                0x0307 => ['CcEeGgIZz', 'ĊċĖėĠġİŻż'],
+                0x0308 => ['AEIOUaeiouyY', 'ÄËÏÖÜäëïöüÿŸ'],
+                0x030A => ['AaUu', 'ÅåŮů'],
+                0x030B => ['OoUu', 'ŐőŰű'],
+                0x030C => ['CcDdEeLlNnRrSsTtZz', 'ČčĎďĚěĽľŇňŘřŠšŤťŽž'],
+                0x0327 => ['CcGgKkLlNnRrSsTt', 'ÇçĢģĶķĻļŅņŖŗŞşŢţ'],
+                0x0328 => ['AaEeIiUu', 'ĄąĘęĮįŲų'],
+            ];
+            foreach ($gruppen as $zeichen => [$basis, $fertig]) {
+                $akzent = mb_chr($zeichen, 'UTF-8');
+                $fertig = mb_str_split($fertig, 1, 'UTF-8');
+                foreach (str_split($basis) as $i => $b) {
+                    $tabelle[$b . $akzent] = $fertig[$i];
+                }
+            }
+        }
+        return strtr($wert, $tabelle);
+    }
+}
+
+/**
  * Validiert Theme-Namen (XSS & Path Traversal Prevention)
  */
 if (!function_exists('sanitizeTheme')) {

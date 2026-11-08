@@ -81,6 +81,15 @@ function vsUpdOffeneLaeufe(string $arbeit): array {
     return $offen;
 }
 
+// ── Datei groesser als post_max_size ────────────────────────────────────────
+// PHP verwirft dann die ganze Anfrage: $_POST und $_FILES sind leer, keiner
+// der Zweige unten greift, die Seite sah aus wie vorher (Fund 05.11.2026,
+// USB-ZIP statt Update-Paket). Meist das vollstaendige Paket.
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && empty($_POST) && empty($_FILES)
+    && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+    $error = esc(sprintf(t('upd_err_post_too_large'), ini_get('post_max_size')));
+}
+
 // ── Abgebrochenen Lauf zurueckholen ─────────────────────────────────────────
 
 if (isset($_POST['rollback'])) {
@@ -140,7 +149,9 @@ if ($sperre === null && (isset($_POST['holen']) || isset($_POST['upload_update']
         $step = 'confirm';
     } catch (VsUpdFehler $e) {
         if ($name !== null) @unlink($arbeit . $name);
-        $error = esc(t('upd_err_rejected')) . ' ' . esc($e->getMessage());
+        $error = $e->getCode() === VS_UPD_FEHLER_VOLLPAKET
+            ? esc(t('upd_err_full_package'))
+            : esc(t('upd_err_rejected')) . ' ' . esc($e->getMessage());
     }
 }
 

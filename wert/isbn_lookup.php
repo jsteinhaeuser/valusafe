@@ -5,6 +5,7 @@
  * ?cover=...  → Weiterleitung auf cover_proxy.php (seit 4.6)
  */
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';   // vsNfc()
 requireLogin();
 
 function fetchUrl(string $url): ?string {
@@ -90,4 +91,5 @@ if ($result['cover']) {
     $result['cover'] = isbnCoverUeberProxy($result['cover']);
 }
 
-echo json_encode($result);
+// Open Library liefert Umlaute teils zerlegt (NFD, "fu r"), seit 4.9 zusammengesetzt
+echo json_encode(vsNfc($result));

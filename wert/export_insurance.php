@@ -38,18 +38,25 @@ try {
     // Nach Orten gruppieren
     $byLocation = [];
     foreach ($wertsachen as $item) {
-        $byLocation[$item['ort_name'] ?? 'Kein Ort'][] = $item;
+        $byLocation[$item['ort_name'] ?? t('insx_no_location')][] = $item;
     }
 
     // Versicherungs-Kategorien (angelehnt an Wertermittlungsbogen)
     $versKategorien = [
-        'Einrichtung'              => ['Möbel','Einrichtung','Teppich','Beleuchtung','Vorhang','Gardine','Bett','Wohnzimmer','Schlafzimmer','Kinderzimmer','Küche'],
-        'Elektro & Technik'        => ['Elektronik','Elektro','TV','Fernseher','Computer','Laptop','Foto','Kamera','Audio','Musik','Telefon','Smartphone'],
-        'Schmuck & Edelmetalle'    => ['Schmuck','Gold','Silber','Platin','Perlen','Edelstein','Uhren','Uhr'],
-        'Kunst & Antiquitäten'     => ['Kunst','Gemälde','Grafik','Aquarell','Skulptur','Antiquität','Porzellan','Keramik','Kristall'],
-        'Sammlungen'               => ['Sammlung','Münzen','Briefmarken','Bücher','Vinyl','Schallplatten','Wein'],
-        'Kleidung & Accessoires'   => ['Kleidung','Bekleidung','Schuhe','Tasche','Pelz'],
-        'Sport & Freizeit'         => ['Sport','Fahrrad','Ski','Camping','Instrument'],
+        'Einrichtung'              => ['Möbel','Einrichtung','Teppich','Beleuchtung','Vorhang','Gardine','Bett','Wohnzimmer','Schlafzimmer','Kinderzimmer','Küche',
+                                       'Furniture','Furnishing','Carpet','Rug','Lamp','Lighting','Curtain','Bed','Sofa'],
+        'Elektro & Technik'        => ['Elektronik','Elektro','TV','Fernseher','Computer','Laptop','Foto','Kamera','Audio','Musik','Telefon','Smartphone',
+                                       'Electronic','Electric','Television','Camera','Photo','Music','Phone','Tablet','Console'],
+        'Schmuck & Edelmetalle'    => ['Schmuck','Gold','Silber','Platin','Perlen','Edelstein','Uhren','Uhr',
+                                       'Jewel','Silver','Platinum','Pearl','Gem','Watch'],
+        'Kunst & Antiquitäten'     => ['Kunst','Gemälde','Grafik','Aquarell','Skulptur','Antiquität','Porzellan','Keramik','Kristall',
+                                       'Painting','Print','Watercolour','Sculpture','Antique','Porcelain','Ceramic','Crystal','Artwork'],
+        'Sammlungen'               => ['Sammlung','Münzen','Briefmarken','Bücher','Vinyl','Schallplatten','Wein',
+                                       'Collection','Coin','Stamp','Book','Record','Wine'],
+        'Kleidung & Accessoires'   => ['Kleidung','Bekleidung','Schuhe','Tasche','Pelz',
+                                       'Clothing','Clothes','Shoe','Bag','Fur'],
+        'Sport & Freizeit'         => ['Sport','Fahrrad','Ski','Camping','Instrument',
+                                       'Bicycle','Bike'],
         'Sonstiges'                => [],
     ];
 
@@ -69,6 +76,16 @@ try {
     }
     unset($item);
 
+    // Anzeigenamen der Versicherungskategorien (seit 4.9 / 2.7 uebersetzt; die
+    // Schluessel oben bleiben deutsch, sie sind nur interne Kennung)
+    $vkatName = [
+        'Einrichtung' => 'insx_vk_furnishing', 'Elektro & Technik' => 'insx_vk_electronics',
+        'Schmuck & Edelmetalle' => 'insx_vk_jewellery', 'Kunst & Antiquitäten' => 'insx_vk_art',
+        'Sammlungen' => 'insx_vk_collections', 'Kleidung & Accessoires' => 'insx_vk_clothing',
+        'Sport & Freizeit' => 'insx_vk_sport', 'Sonstiges' => 'insx_vk_other',
+    ];
+    $vkatLabel = function ($vkat) use ($vkatName) { return htmlspecialchars(isset($vkatName[$vkat]) ? t($vkatName[$vkat]) : $vkat); };
+
     // Nach Versicherungskategorie gruppieren
     $byVersKat = [];
     foreach ($wertsachen as $item) {
@@ -82,10 +99,10 @@ try {
 }
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="<?php echo htmlspecialchars($_SESSION['lang'] ?? 'de'); ?>">
 <head>
 <meta charset="UTF-8">
-<title>Versicherungs-Inventarliste</title>
+<title><?php echo htmlspecialchars(t('insx_cover_title')); ?></title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -234,50 +251,50 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
 
 <!-- Toolbar -->
 <div class="no-print toolbar">
-    <h2>🛡️ Versicherungs-Export</h2>
-    <a href="index.php" class="btn btn-back">← Zurück</a>
-    <button onclick="window.print()" class="btn btn-print">🖨️ Als PDF drucken / Speichern</button>
+    <h2>🛡️ <?php echo htmlspecialchars(t('nav_export_insurance')); ?></h2>
+    <a href="index.php" class="btn btn-back"><?php echo htmlspecialchars(t('insx_back')); ?></a>
+    <button onclick="window.print()" class="btn btn-print">🖨️ <?php echo htmlspecialchars(t('insx_print')); ?></button>
 </div>
 
 <!-- Deckblatt -->
 <div class="cover">
-    <div class="cover-title">🏠 Inventarliste für Versicherungszwecke</div>
-    <div class="cover-sub">Hausrat- &amp; Wertsachenverzeichnis · Wertermittlung nach Neuwert-Prinzip</div>
+    <div class="cover-title">🏠 <?php echo htmlspecialchars(t('insx_cover_title')); ?></div>
+    <div class="cover-sub"><?php echo htmlspecialchars(t('insx_cover_sub')); ?></div>
 
     <div class="cover-grid">
         <div class="cover-box">
             <div class="cover-box-val"><?php echo $anzahl; ?></div>
-            <div class="cover-box-lbl">Gegenstände gesamt</div>
+            <div class="cover-box-lbl"><?php echo htmlspecialchars(t('insx_items_total')); ?></div>
         </div>
         <div class="cover-box">
             <div class="cover-box-val"><?php echo count($byLocation); ?></div>
-            <div class="cover-box-lbl">Bereiche / Räume</div>
+            <div class="cover-box-lbl"><?php echo htmlspecialchars(t('insx_areas_rooms')); ?></div>
         </div>
         <div class="cover-box">
             <div class="cover-box-val"><?php echo number_format($gesamtwert, 0, ',', '.'); ?> €</div>
-            <div class="cover-box-lbl">Gesamtwert (Kaufpreise)</div>
+            <div class="cover-box-lbl"><?php echo htmlspecialchars(t('insx_total_purchase')); ?></div>
         </div>
         <?php if ($hat_aktuelle_werte): ?>
         <div class="cover-box" style="border: 2px solid #1a7a3c;">
             <div class="cover-box-val" style="color: #1a7a3c;"><?php echo number_format($gesamtwert_aktuell, 0, ',', '.'); ?> €</div>
-            <div class="cover-box-lbl">Aktueller Gesamtwert</div>
+            <div class="cover-box-lbl"><?php echo htmlspecialchars(t('insx_total_current')); ?></div>
         </div>
         <?php endif; ?>
     </div>
 
     <div class="cover-meta">
         <table>
-            <tr><td>Erstellt am:</td><td><?php echo date('d.m.Y \u\m H:i \U\h\r'); ?></td></tr>
-            <tr><td>Erstellt von:</td><td><?php echo htmlspecialchars($_SESSION['username']); ?></td></tr>
-            <tr><td>Hinweis Neuwert:</td><td>Die Spalte „Neuwert heute" ist zum manuellen Ausfüllen vorgesehen (Wiederbeschaffungspreis gleicher Art und Güte).</td></tr>
-            <tr><td>Hinweis Seriennummer:</td><td>Kann in den Notizen mit „Seriennummer: ..." oder „Marke: ..." hinterlegt werden und wird automatisch erkannt.</td></tr>
+            <tr><td><?php echo htmlspecialchars(t('insx_created_on')); ?></td><td><?php echo date('d.m.Y H:i'); ?></td></tr>
+            <tr><td><?php echo htmlspecialchars(t('insx_created_by')); ?></td><td><?php echo htmlspecialchars($_SESSION['username']); ?></td></tr>
+            <tr><td><?php echo htmlspecialchars(t('insx_note_newvalue_lbl')); ?></td><td><?php echo htmlspecialchars(t('insx_note_newvalue')); ?></td></tr>
+            <tr><td><?php echo htmlspecialchars(t('insx_note_serial_lbl')); ?></td><td><?php echo htmlspecialchars(t('insx_note_serial')); ?></td></tr>
         </table>
     </div>
 </div>
 
 <!-- Inhaltsverzeichnis -->
 <div class="toc">
-    <h3>📋 Übersicht nach Versicherungskategorien</h3>
+    <h3>📋 <?php echo htmlspecialchars(t('insx_toc_title')); ?></h3>
     <table>
         <?php
         $vkatIcons = [
@@ -297,13 +314,13 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
             $tocTotal += $vkatWert;
         ?>
         <tr>
-            <td><?php echo ($vkatIcons[$vkat] ?? '📦') . ' ' . $vkat; ?></td>
-            <td><?php echo count($byVersKat[$vkat]); ?> Gegenstände</td>
+            <td><?php echo ($vkatIcons[$vkat] ?? '📦') . ' ' . $vkatLabel($vkat); ?></td>
+            <td><?php echo htmlspecialchars(count($byVersKat[$vkat]) === 1 ? t('hox_one_item') : str_replace('%s', count($byVersKat[$vkat]), t('insx_n_items'))); ?></td>
             <td><?php echo number_format($vkatWert, 2, ',', '.'); ?> €</td>
         </tr>
         <?php endforeach; ?>
         <tr class="toc-total">
-            <td colspan="2">Gesamt</td>
+            <td colspan="2"><?php echo htmlspecialchars(t('insx_total')); ?></td>
             <td><?php echo number_format($gesamtwert, 2, ',', '.'); ?> €</td>
         </tr>
     </table>
@@ -320,13 +337,13 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
     // Nach Ort sub-gruppieren
     $subByLoc = [];
     foreach ($items as $item) {
-        $subByLoc[$item['ort_name'] ?? 'Kein Ort'][] = $item;
+        $subByLoc[$item['ort_name'] ?? t('insx_no_location')][] = $item;
     }
 ?>
 <div class="section">
     <div class="section-header">
-        <span><?php echo ($vkatIcons[$vkat] ?? '📦') . ' ' . $vkat; ?></span>
-        <span class="section-badge"><?php echo count($items); ?> Gegenstände · <?php echo number_format($vkatWert, 2, ',', '.'); ?> €</span>
+        <span><?php echo ($vkatIcons[$vkat] ?? '📦') . ' ' . $vkatLabel($vkat); ?></span>
+        <span class="section-badge"><?php echo htmlspecialchars(count($items) === 1 ? t('hox_one_item') : str_replace('%s', count($items), t('insx_n_items'))); ?> · <?php echo number_format($vkatWert, 2, ',', '.'); ?> €</span>
     </div>
 
     <?php foreach ($subByLoc as $ort => $ortItems): ?>
@@ -337,16 +354,16 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
         <table class="inv">
             <thead>
                 <tr>
-                    <th class="ci">Foto</th>
-                    <th class="cn">Gegenstand</th>
-                    <?php if (count($subByLoc) === 1): ?><th class="cor">Ort</th><?php endif; ?>
-                    <th class="cm">Marke / Modell</th>
-                    <th class="cd">Kauf</th>
-                    <th class="cp">Kaufpreis</th>
-                    <th class="cnw">Neuwert heute</th>
-                    <th class="cs">Seriennummer</th>
-                    <th class="cb">Beleg</th>
-                    <th class="cno">Notizen</th>
+                    <th class="ci"><?php echo htmlspecialchars(t('insx_col_photo')); ?></th>
+                    <th class="cn"><?php echo htmlspecialchars(t('insx_col_item')); ?></th>
+                    <?php if (count($subByLoc) === 1): ?><th class="cor"><?php echo htmlspecialchars(t('insx_col_room')); ?></th><?php endif; ?>
+                    <th class="cm"><?php echo htmlspecialchars(t('insx_col_brand')); ?></th>
+                    <th class="cd"><?php echo htmlspecialchars(t('insx_col_bought')); ?></th>
+                    <th class="cp"><?php echo htmlspecialchars(t('insx_col_price')); ?></th>
+                    <th class="cnw"><?php echo htmlspecialchars(t('insx_col_newvalue')); ?></th>
+                    <th class="cs"><?php echo htmlspecialchars(t('insx_col_serial')); ?></th>
+                    <th class="cb"><?php echo htmlspecialchars(t('insx_col_receipt')); ?></th>
+                    <th class="cno"><?php echo htmlspecialchars(t('insx_col_notes')); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -360,8 +377,8 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
 
                 $hasBild = $item['bild'] && file_exists(UPLOAD_DIR . $item['bild']);
 
-                if ($hasDoc)      $belegHtml = '<span class="beleg-dok">📄 Dok.</span>';
-                elseif ($hasBild) $belegHtml = '<span class="beleg-foto">📷 Foto</span>';
+                if ($hasDoc)      $belegHtml = '<span class="beleg-dok">📄 ' . htmlspecialchars(t('insx_receipt_doc')) . '</span>';
+                elseif ($hasBild) $belegHtml = '<span class="beleg-foto">📷 ' . htmlspecialchars(t('insx_col_photo')) . '</span>';
                 else              $belegHtml = '<span class="beleg-nein">–</span>';
 
                 // Marke + Seriennummer aus Notizen
@@ -436,36 +453,36 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
     <?php endforeach; ?>
 
     <div class="section-total">
-        Summe <?php echo $vkat; ?>: <strong><?php echo number_format($vkatWert, 2, ',', '.'); ?> €</strong>
+        <?php echo str_replace('%s', $vkatLabel($vkat), t('insx_sum_of')); ?> <strong><?php echo number_format($vkatWert, 2, ',', '.'); ?> €</strong>
     </div>
 </div>
 <?php endforeach; ?>
 
 <!-- Zusammenfassung -->
 <div class="summary page-break">
-    <div class="summary-head">💰 Zusammenstellung (angelehnt an Wertermittlungsbogen)</div>
+    <div class="summary-head">💰 <?php echo htmlspecialchars(t('insx_summary_title')); ?></div>
     <table>
         <?php foreach ($versKategorien as $vkat => $kws):
             if (!isset($byVersKat[$vkat])) continue;
             $vw = array_sum(array_column($byVersKat[$vkat], 'preis'));
         ?>
         <tr>
-            <td><?php echo ($vkatIcons[$vkat] ?? '') . ' ' . $vkat; ?></td>
+            <td><?php echo ($vkatIcons[$vkat] ?? '') . ' ' . $vkatLabel($vkat); ?></td>
             <td><?php echo number_format($vw, 2, ',', '.'); ?> €</td>
         </tr>
         <?php endforeach; ?>
         <tr class="grand">
-            <td>Gesamt-Versicherungssumme (Kaufpreise)</td>
+            <td><?php echo htmlspecialchars(t('insx_grand_purchase')); ?></td>
             <td><?php echo number_format($gesamtwert, 2, ',', '.'); ?> €</td>
         </tr>
         <?php if ($hat_aktuelle_werte): ?>
         <tr class="grand" style="color: #1a7a3c;">
-            <td>Gesamt-Versicherungssumme (Aktueller Wert)</td>
+            <td><?php echo htmlspecialchars(t('insx_grand_current')); ?></td>
             <td><?php echo number_format($gesamtwert_aktuell, 2, ',', '.'); ?> €</td>
         </tr>
         <?php endif; ?>
         <tr class="grand">
-            <td>Gesamt-Versicherungssumme (Neuwert, manuell)</td>
+            <td><?php echo htmlspecialchars(t('insx_grand_new')); ?></td>
             <td>_____________ €</td>
         </tr>
     </table>
@@ -473,18 +490,18 @@ table.inv tbody tr:nth-child(even) td { background: #fafbfc; }
 
 <!-- Hinweise -->
 <div class="notice">
-    <h4>⚠️ Hinweise für Versicherungszwecke</h4>
+    <h4>⚠️ <?php echo htmlspecialchars(t('insx_notes_title')); ?></h4>
     <ul>
-        <li><strong>Versicherungswert = Neuwert:</strong> Versicherer ersetzen den Wiederbeschaffungspreis gleicher Art und Güte – nicht den ursprünglichen Kaufpreis. Bitte Neuwert-Spalte ausfüllen.</li>
-        <li><strong>Besondere Wertgegenstände</strong> (Schmuck, Kunst, Antiquitäten): Hier gelten oft Entschädigungsgrenzen – Expertisen und Zertifikate werden empfohlen.</li>
-        <li><strong>Belege:</strong> Fotos und Dokumente sind als Ersatznachweis anerkannt, falls Quittungen fehlen. Kontoauszüge ebenfalls hilfreich.</li>
-        <li><strong>Seriennummern / Marke:</strong> In den Notizen mit „Marke: ..." oder „Seriennummer: ..." eintragen – wird beim nächsten Export automatisch erkannt.</li>
-        <li><strong>Unterversicherung vermeiden:</strong> Versicherungssumme sollte dem tatsächlichen Neuwert entsprechen (mind. 650 €/m² Wohnfläche als Richtwert).</li>
+        <li><strong><?php echo htmlspecialchars(t('insx_hint1_lbl')); ?></strong> <?php echo htmlspecialchars(t('insx_hint1')); ?></li>
+        <li><strong><?php echo htmlspecialchars(t('insx_hint2_lbl')); ?></strong> <?php echo htmlspecialchars(t('insx_hint2')); ?></li>
+        <li><strong><?php echo htmlspecialchars(t('insx_hint3_lbl')); ?></strong> <?php echo htmlspecialchars(t('insx_hint3')); ?></li>
+        <li><strong><?php echo htmlspecialchars(t('insx_hint4_lbl')); ?></strong> <?php echo htmlspecialchars(t('insx_hint4')); ?></li>
+        <li><strong><?php echo htmlspecialchars(t('insx_hint5_lbl')); ?></strong> <?php echo htmlspecialchars(t('insx_hint5')); ?></li>
     </ul>
 </div>
 
 <div class="doc-footer">
-    ValuSafe &nbsp;·&nbsp; Vertraulich &nbsp;·&nbsp; Erstellt am <?php echo date('d.m.Y H:i'); ?>
+    ValuSafe &nbsp;·&nbsp; <?php echo htmlspecialchars(t('insx_confidential')); ?> &nbsp;·&nbsp; <?php echo date('d.m.Y H:i'); ?>
 </div>
 
 </body>

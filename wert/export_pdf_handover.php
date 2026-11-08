@@ -21,7 +21,7 @@ $protokoll_items = $db->select(
 
 $raum_gruppen = [];
 foreach ($protokoll_items as $item) {
-    $ort = $item['ort_name'] ?? '— Kein Ort —';
+    $ort = $item['ort_name'] ?? '— ' . t('insx_no_location') . ' —';
     $raum_gruppen[$ort][] = $item;
 }
 
@@ -48,14 +48,21 @@ $bemerkung  = trim($_POST['bemerkung']  ?? '');
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
 $baseUrl  = $protocol . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']);
 
+// Protokollart: Wert bleibt deutsch (Formular), Anzeige uebersetzt (4.9 / 2.7)
+$hoTypLabel = function ($typ) {
+    $k = ['Übergabe' => 'hox_type_uebergabe', 'Übernahme' => 'hox_type_uebernahme', 'Zwischenübergabe' => 'hox_type_zwischen'];
+    return isset($k[$typ]) ? t($k[$typ]) : $typ;
+};
+$hoLang = $_SESSION['lang'] ?? 'de';
+
 // Wenn Druckansicht: direkt ausgeben
 if ($show_print):
 ?>
 <!DOCTYPE html>
-<html lang="de">
+<html lang="<?php echo htmlspecialchars($hoLang); ?>">
 <head>
 <meta charset="UTF-8">
-<title>Übergabeprotokoll — <?php echo htmlspecialchars($adresse); ?></title>
+<title><?php echo htmlspecialchars(t('hox_title')); ?> — <?php echo htmlspecialchars($adresse); ?></title>
 <style>
 @media print {
     .no-print { display: none !important; }
@@ -183,80 +190,80 @@ body { font-family: Arial, sans-serif; font-size: 10pt; color: #1a1a1a; backgrou
 <body>
 
 <div class="no-print no-print-bar">
-    <button onclick="window.print()" class="btn-druck">🖨️ Drucken / Als PDF speichern</button>
-    <a href="export_pdf_handover.php" class="btn-druck back">← Zurück zum Formular</a>
-    <a href="index.php" class="btn-druck back">📋 Zur Inventarliste</a>
+    <button onclick="window.print()" class="btn-druck">🖨️ <?php echo htmlspecialchars(t('insx_print')); ?></button>
+    <a href="export_pdf_handover.php" class="btn-druck back"><?php echo htmlspecialchars(t('hox_back_form')); ?></a>
+    <a href="index.php" class="btn-druck back">📋 <?php echo htmlspecialchars(t('hox_to_inventory')); ?></a>
 </div>
 
 <!-- ══ DECKBLATT ══════════════════════════════════════════════ -->
 <div class="cover page-break">
     <div class="cover-header">
         <div class="cover-logo"><span>📦</span> ValuSafe</div>
-        <div style="font-size:9pt; color:#666;">Erstellt: <?php echo date('d.m.Y H:i'); ?></div>
+        <div style="font-size:9pt; color:#666;"><?php echo htmlspecialchars(t('hox_created')); ?> <?php echo date('d.m.Y H:i'); ?></div>
     </div>
 
-    <div class="cover-typ">📋 Übergabeprotokoll — <?php echo htmlspecialchars($typ); ?></div>
+    <div class="cover-typ">📋 <?php echo htmlspecialchars(t('hox_title')); ?> — <?php echo htmlspecialchars($hoTypLabel($typ)); ?></div>
 
-    <div class="section-title">🏠 Objekt</div>
+    <div class="section-title">🏠 <?php echo htmlspecialchars(t('hox_sec_property')); ?></div>
     <table class="info-table">
-        <tr><th>Adresse</th><td><?php echo nl2br(htmlspecialchars($adresse)); ?></td></tr>
-        <tr><th>Lage / Etage</th><td><?php echo htmlspecialchars($lage); ?></td></tr>
-        <tr><th>Datum</th><td><strong><?php echo htmlspecialchars($datum); ?></strong></td></tr>
-        <tr><th>Art</th><td><?php echo htmlspecialchars($typ); ?></td></tr>
+        <tr><th><?php echo htmlspecialchars(t('hox_address')); ?></th><td><?php echo nl2br(htmlspecialchars($adresse)); ?></td></tr>
+        <tr><th><?php echo htmlspecialchars(t('hox_floor')); ?></th><td><?php echo htmlspecialchars($lage); ?></td></tr>
+        <tr><th><?php echo htmlspecialchars(t('hox_date')); ?></th><td><strong><?php echo htmlspecialchars($datum); ?></strong></td></tr>
+        <tr><th><?php echo htmlspecialchars(t('hox_kind')); ?></th><td><?php echo htmlspecialchars($hoTypLabel($typ)); ?></td></tr>
     </table>
 
-    <div class="section-title">👥 Parteien</div>
+    <div class="section-title">👥 <?php echo htmlspecialchars(t('hox_sec_parties')); ?></div>
     <table class="info-table">
-        <tr><th>Mieter/in</th><td><?php echo nl2br(htmlspecialchars($mieter)); ?></td></tr>
-        <tr><th>Vermieter/in</th><td><?php echo nl2br(htmlspecialchars($vermieter)); ?></td></tr>
+        <tr><th><?php echo htmlspecialchars(t('hox_tenant')); ?></th><td><?php echo nl2br(htmlspecialchars($mieter)); ?></td></tr>
+        <tr><th><?php echo htmlspecialchars(t('hox_landlord')); ?></th><td><?php echo nl2br(htmlspecialchars($vermieter)); ?></td></tr>
     </table>
 
-    <div class="section-title">🔑 Schlüsselübergabe</div>
+    <div class="section-title">🔑 <?php echo htmlspecialchars(t('hox_sec_keys')); ?></div>
     <table class="info-table">
-        <tr><th>Schlüssel</th><td><?php echo nl2br(htmlspecialchars($schlussel ?: '—')); ?></td></tr>
+        <tr><th><?php echo htmlspecialchars(t('hox_keys')); ?></th><td><?php echo nl2br(htmlspecialchars($schlussel ?: '—')); ?></td></tr>
     </table>
 
-    <div class="section-title">⚡ Zählerstände</div>
+    <div class="section-title">⚡ <?php echo htmlspecialchars(t('hox_sec_meters')); ?></div>
     <table class="zaehler-table">
-        <thead><tr><th>Zählerart</th><th>Stand bei Übergabe</th><th>Bemerkung</th></tr></thead>
+        <thead><tr><th><?php echo htmlspecialchars(t('hox_meter_type')); ?></th><th><?php echo htmlspecialchars(t('hox_meter_reading')); ?></th><th><?php echo htmlspecialchars(t('hox_remark')); ?></th></tr></thead>
         <tbody>
-            <tr><td>⚡ Strom</td><td><?php echo htmlspecialchars($strom ?: '—'); ?></td><td></td></tr>
-            <tr><td>💧 Wasser</td><td><?php echo htmlspecialchars($wasser ?: '—'); ?></td><td></td></tr>
-            <tr><td>🔥 Gas</td><td><?php echo htmlspecialchars($gas ?: '—'); ?></td><td></td></tr>
+            <tr><td>⚡ <?php echo htmlspecialchars(t('hox_electricity')); ?></td><td><?php echo htmlspecialchars($strom ?: '—'); ?></td><td></td></tr>
+            <tr><td>💧 <?php echo htmlspecialchars(t('hox_water')); ?></td><td><?php echo htmlspecialchars($wasser ?: '—'); ?></td><td></td></tr>
+            <tr><td>🔥 <?php echo htmlspecialchars(t('hox_gas')); ?></td><td><?php echo htmlspecialchars($gas ?: '—'); ?></td><td></td></tr>
         </tbody>
     </table>
 
     <div class="gesamt-box">
         <span style="font-size:10pt; color:#2c3e50;">
-            <strong>Inventar gesamt:</strong>
-            <?php echo count($protokoll_items); ?> Gegenstände in <?php echo count($raum_gruppen); ?> Räumen
+            <strong><?php echo htmlspecialchars(t('hox_inventory_total')); ?></strong>
+            <?php echo htmlspecialchars(strtr(t('hox_items_in_rooms'), ['{n}' => count($protokoll_items), '{r}' => count($raum_gruppen)])); ?>
         </span>
         <span class="gesamt-value"><?php echo formatPriceLocalized($gesamtwert); ?></span>
     </div>
 
     <?php if ($bemerkung): ?>
-    <div class="section-title">📝 Allgemeine Bemerkungen</div>
+    <div class="section-title">📝 <?php echo htmlspecialchars(t('hox_sec_remarks')); ?></div>
     <div class="bem-box"><?php echo nl2br(htmlspecialchars($bemerkung)); ?></div>
     <?php endif; ?>
 
     <!-- Unterschriften Deckblatt -->
     <div class="sig-section">
-        <div class="section-title">✍️ Unterschriften</div>
+        <div class="section-title">✍️ <?php echo htmlspecialchars(t('hox_sec_signatures')); ?></div>
         <div class="sig-row">
-            <?php foreach (['Mieter/in', 'Vermieter/in', 'Zeuge/Zeugin (optional)'] as $partei): ?>
+            <?php foreach ([t('hox_tenant'), t('hox_landlord'), t('hox_witness')] as $partei): ?>
             <div class="sig-box">
                 <div class="sig-name-line"></div>
-                <span class="sig-name-label">Name (Druckbuchstaben)</span>
+                <span class="sig-name-label"><?php echo htmlspecialchars(t('hox_name_print')); ?></span>
                 <div class="sig-line"></div>
-                <div class="sig-label"><?php echo $partei; ?> — Unterschrift</div>
+                <div class="sig-label"><?php echo htmlspecialchars(str_replace('%s', $partei, t('hox_signature'))); ?></div>
                 <div class="sig-date-row">
                     <div class="sig-date-field">
                         <div class="sig-date-line"></div>
-                        <div class="sig-date-label">Ort</div>
+                        <div class="sig-date-label"><?php echo htmlspecialchars(t('hox_place')); ?></div>
                     </div>
                     <div class="sig-date-field">
                         <div class="sig-date-line"></div>
-                        <div class="sig-date-label">Datum</div>
+                        <div class="sig-date-label"><?php echo htmlspecialchars(t('hox_date')); ?></div>
                     </div>
                 </div>
             </div>
@@ -273,20 +280,20 @@ body { font-family: Arial, sans-serif; font-size: 10pt; color: #1a1a1a; backgrou
     <div class="raum-title">
         <span>📍 <?php echo htmlspecialchars($ort); ?></span>
         <span class="raum-summe">
-            <?php echo count($items); ?> Gegenstand<?php echo count($items) !== 1 ? 'e' : ''; ?>
+            <?php echo htmlspecialchars(count($items) === 1 ? t('hox_one_item') : str_replace('%s', count($items), t('insx_n_items'))); ?>
             <?php if ($summe > 0): ?> · <?php echo formatPriceLocalized($summe); ?><?php endif; ?>
         </span>
     </div>
     <table class="item-table">
         <thead>
             <tr>
-                <th style="width:68px;">Foto</th>
-                <th style="width:24%;">Bezeichnung</th>
-                <th style="width:11%;">Kategorie</th>
-                <th style="width:9%;">Kaufpreis</th>
-                <th style="width:105px;">Zustand</th>
-                <th>Bemerkung</th>
-                <th style="width:38px; text-align:center;">i.O.</th>
+                <th style="width:68px;"><?php echo htmlspecialchars(t('insx_col_photo')); ?></th>
+                <th style="width:24%;"><?php echo htmlspecialchars(t('hox_col_name')); ?></th>
+                <th style="width:11%;"><?php echo htmlspecialchars(t('hox_col_category')); ?></th>
+                <th style="width:9%;"><?php echo htmlspecialchars(t('insx_col_price')); ?></th>
+                <th style="width:105px;"><?php echo htmlspecialchars(t('hox_col_condition')); ?></th>
+                <th><?php echo htmlspecialchars(t('hox_remark')); ?></th>
+                <th style="width:38px; text-align:center;"><?php echo htmlspecialchars(t('hox_col_ok')); ?></th>
             </tr>
         </thead>
         <tbody>
@@ -305,10 +312,10 @@ body { font-family: Arial, sans-serif; font-size: 10pt; color: #1a1a1a; backgrou
                 <td class="price"><?php echo $item['preis'] > 0 ? formatPriceLocalized($item['preis']) : '—'; ?></td>
                 <td>
                     <div class="zustand-boxes">
-                        <div class="zustand-item"><span class="check-box"></span> Neuwertig</div>
-                        <div class="zustand-item"><span class="check-box"></span> Gut</div>
-                        <div class="zustand-item"><span class="check-box"></span> Gebrauchsspuren</div>
-                        <div class="zustand-item"><span class="check-box"></span> Beschädigt</div>
+                        <div class="zustand-item"><span class="check-box"></span> <?php echo htmlspecialchars(t('hox_cond_new')); ?></div>
+                        <div class="zustand-item"><span class="check-box"></span> <?php echo htmlspecialchars(t('hox_cond_good')); ?></div>
+                        <div class="zustand-item"><span class="check-box"></span> <?php echo htmlspecialchars(t('hox_cond_worn')); ?></div>
+                        <div class="zustand-item"><span class="check-box"></span> <?php echo htmlspecialchars(t('hox_cond_damaged')); ?></div>
                     </div>
                 </td>
                 <td>
@@ -334,26 +341,25 @@ body { font-family: Arial, sans-serif; font-size: 10pt; color: #1a1a1a; backgrou
 
 <!-- ══ ABSCHLUSS-UNTERSCHRIFTEN ═══════════════════════════════ -->
 <div class="final-sig avoid-break">
-    <div class="final-sig-title">✅ Abschluss-Bestätigung</div>
+    <div class="final-sig-title">✅ <?php echo htmlspecialchars(t('hox_final_title')); ?></div>
     <p class="final-sig-text">
-        Außer den oben vermerkten Mängeln konnten keine weiteren Mängel festgestellt werden.
-        Das Protokoll wurde gemeinsam erstellt und von beiden Parteien als korrekt bestätigt.
+        <?php echo htmlspecialchars(t('hox_final_text')); ?>
     </p>
     <div class="sig-row">
-        <?php foreach (['Mieter/in', 'Vermieter/in', 'Zeuge/Zeugin (optional)'] as $partei): ?>
+        <?php foreach ([t('hox_tenant'), t('hox_landlord'), t('hox_witness')] as $partei): ?>
         <div class="sig-box">
             <div class="sig-name-line"></div>
-            <span class="sig-name-label">Name (Druckbuchstaben)</span>
+            <span class="sig-name-label"><?php echo htmlspecialchars(t('hox_name_print')); ?></span>
             <div class="sig-line"></div>
-            <div class="sig-label"><?php echo $partei; ?> — Unterschrift</div>
+            <div class="sig-label"><?php echo htmlspecialchars(str_replace('%s', $partei, t('hox_signature'))); ?></div>
             <div class="sig-date-row">
                 <div class="sig-date-field">
                     <div class="sig-date-line"></div>
-                    <div class="sig-date-label">Ort</div>
+                    <div class="sig-date-label"><?php echo htmlspecialchars(t('hox_place')); ?></div>
                 </div>
                 <div class="sig-date-field">
                     <div class="sig-date-line"></div>
-                    <div class="sig-date-label">Datum</div>
+                    <div class="sig-date-label"><?php echo htmlspecialchars(t('hox_date')); ?></div>
                 </div>
             </div>
         </div>
@@ -362,7 +368,7 @@ body { font-family: Arial, sans-serif; font-size: 10pt; color: #1a1a1a; backgrou
 </div>
 
 <div class="doc-footer">
-    Erstellt mit ValuSafe · <?php echo date('d.m.Y H:i'); ?> · <?php echo htmlspecialchars($_SESSION['username']); ?>
+    <?php echo htmlspecialchars(str_replace('%s', 'ValuSafe', t('hox_created_with'))); ?> · <?php echo date('d.m.Y H:i'); ?> · <?php echo htmlspecialchars($_SESSION['username']); ?>
 </div>
 
 </body>
@@ -372,6 +378,8 @@ exit;
 endif;
 
 // ══ FORMULAR-SEITE ═══════════════════════════════════════════
+// Ohne PAGE_TITLE zeigten Fenster und Kopfzeile nur den Programmnamen (07.11.2026)
+if (!defined('PAGE_TITLE')) define('PAGE_TITLE', t('hox_title') . ' - ' . t('app_title'));
 include 'header_next_page.php';
 ?>
 
@@ -420,15 +428,14 @@ include 'header_next_page.php';
 </style>
 
 <div class="handover-wrap">
-    <h2 style="margin-bottom:6px;">📋 Übergabeprotokoll</h2>
+    <h2 style="margin-bottom:6px;">📋 <?php echo htmlspecialchars(t('hox_title')); ?></h2>
     <p style="font-size:13px; color:#888; margin-bottom:20px;">
-        Angaben eingeben — das Protokoll wird mit allen Inventargegenständen aus ValuSafe generiert.
+        <?php echo htmlspecialchars(str_replace('%s', 'ValuSafe', t('hox_intro'))); ?>
     </p>
 
     <div class="preview-info">
-        📦 <strong><?php echo count($protokoll_items); ?> Gegenstände</strong> in
-        <strong><?php echo count($raum_gruppen); ?> Räumen</strong> werden ins Protokoll aufgenommen.
-        Gesamtwert: <strong><?php echo formatPriceLocalized($gesamtwert); ?></strong>
+        📦 <?php echo htmlspecialchars(strtr(t('hox_preview'), ['{n}' => count($protokoll_items), '{r}' => count($raum_gruppen)])); ?>
+        <?php echo htmlspecialchars(t('hox_total_value')); ?> <strong><?php echo formatPriceLocalized($gesamtwert); ?></strong>
     </div>
 
     <form method="POST" action="">
@@ -436,85 +443,85 @@ include 'header_next_page.php';
 
         <!-- Objekt -->
         <div class="handover-card">
-            <h3>🏠 Objekt</h3>
+            <h3>🏠 <?php echo htmlspecialchars(t('hox_sec_property')); ?></h3>
             <div class="form-group">
-                <label>Adresse der Wohnung *</label>
-                <textarea name="adresse" placeholder="Musterstraße 12&#10;12345 Musterstadt" rows="2"><?php echo htmlspecialchars($adresse); ?></textarea>
+                <label for="lbl_adresse"><?php echo htmlspecialchars(t('hox_address_label')); ?></label>
+                <textarea id="lbl_adresse" name="adresse" placeholder="<?php echo htmlspecialchars(t('hox_address_ph')); ?>" rows="2"><?php echo htmlspecialchars($adresse); ?></textarea>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Lage / Etage</label>
-                    <input type="text" name="lage" placeholder="z.B. 2. OG links" value="<?php echo htmlspecialchars($lage); ?>">
+                    <label for="lbl_lage"><?php echo htmlspecialchars(t('hox_floor')); ?></label>
+                    <input type="text" id="lbl_lage" name="lage" placeholder="<?php echo htmlspecialchars(t('hox_floor_ph')); ?>" value="<?php echo htmlspecialchars($lage); ?>">
                 </div>
                 <div class="form-group">
-                    <label>Datum der Übergabe</label>
-                    <input type="text" name="datum" value="<?php echo htmlspecialchars($datum); ?>" placeholder="TT.MM.JJJJ">
+                    <label for="lbl_datum"><?php echo htmlspecialchars(t('hox_date_label')); ?></label>
+                    <input type="text" id="lbl_datum" name="datum" value="<?php echo htmlspecialchars($datum); ?>" placeholder="<?php echo htmlspecialchars(t('hox_date_ph')); ?>">
                 </div>
             </div>
             <div class="form-group">
-                <label>Art des Protokolls</label>
-                <select name="typ">
-                    <option value="Übergabe"        <?php echo $typ === 'Übergabe'        ? 'selected' : ''; ?>>Übergabe (Einzug)</option>
-                    <option value="Übernahme"        <?php echo $typ === 'Übernahme'        ? 'selected' : ''; ?>>Übernahme (Auszug)</option>
-                    <option value="Zwischenübergabe" <?php echo $typ === 'Zwischenübergabe' ? 'selected' : ''; ?>>Zwischenübergabe</option>
+                <label for="lbl_typ"><?php echo htmlspecialchars(t('hox_kind_label')); ?></label>
+                <select id="lbl_typ" name="typ">
+                    <option value="Übergabe"        <?php echo $typ === 'Übergabe'        ? 'selected' : ''; ?>><?php echo htmlspecialchars(t('hox_type_uebergabe')); ?></option>
+                    <option value="Übernahme"        <?php echo $typ === 'Übernahme'        ? 'selected' : ''; ?>><?php echo htmlspecialchars(t('hox_type_uebernahme')); ?></option>
+                    <option value="Zwischenübergabe" <?php echo $typ === 'Zwischenübergabe' ? 'selected' : ''; ?>><?php echo htmlspecialchars(t('hox_type_zwischen')); ?></option>
                 </select>
             </div>
         </div>
 
         <!-- Parteien -->
         <div class="handover-card">
-            <h3>👥 Parteien</h3>
+            <h3>👥 <?php echo htmlspecialchars(t('hox_sec_parties')); ?></h3>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Mieter/in</label>
-                    <textarea name="mieter" placeholder="Name&#10;Adresse" rows="2"><?php echo htmlspecialchars($mieter); ?></textarea>
+                    <label for="lbl_mieter"><?php echo htmlspecialchars(t('hox_tenant')); ?></label>
+                    <textarea id="lbl_mieter" name="mieter" placeholder="<?php echo htmlspecialchars(t('hox_name_addr_ph')); ?>" rows="2"><?php echo htmlspecialchars($mieter); ?></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Vermieter/in</label>
-                    <textarea name="vermieter" placeholder="Name&#10;Adresse" rows="2"><?php echo htmlspecialchars($vermieter); ?></textarea>
+                    <label for="lbl_vermieter"><?php echo htmlspecialchars(t('hox_landlord')); ?></label>
+                    <textarea id="lbl_vermieter" name="vermieter" placeholder="<?php echo htmlspecialchars(t('hox_name_addr_ph')); ?>" rows="2"><?php echo htmlspecialchars($vermieter); ?></textarea>
                 </div>
             </div>
         </div>
 
         <!-- Schlüssel -->
         <div class="handover-card">
-            <h3>🔑 Schlüssel</h3>
+            <h3>🔑 <?php echo htmlspecialchars(t('hox_keys')); ?></h3>
             <div class="form-group">
-                <label>Übergebene Schlüssel</label>
-                <textarea name="schlussel" placeholder="z.B. 2x Haustürschlüssel, 1x Briefkastenschlüssel, 1x Kellerschlüssel" rows="2"><?php echo htmlspecialchars($schlussel); ?></textarea>
+                <label for="lbl_schlussel"><?php echo htmlspecialchars(t('hox_keys_label')); ?></label>
+                <textarea id="lbl_schlussel" name="schlussel" placeholder="<?php echo htmlspecialchars(t('hox_keys_ph')); ?>" rows="2"><?php echo htmlspecialchars($schlussel); ?></textarea>
             </div>
         </div>
 
         <!-- Zählerstände -->
         <div class="handover-card">
-            <h3>⚡ Zählerstände</h3>
+            <h3>⚡ <?php echo htmlspecialchars(t('hox_sec_meters')); ?></h3>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Strom</label>
-                    <input type="text" name="strom" placeholder="z.B. 12345 kWh" value="<?php echo htmlspecialchars($strom); ?>">
+                    <label for="lbl_strom"><?php echo htmlspecialchars(t('hox_electricity')); ?></label>
+                    <input type="text" id="lbl_strom" name="strom" placeholder="<?php echo htmlspecialchars(t('hox_elec_ph')); ?>" value="<?php echo htmlspecialchars($strom); ?>">
                 </div>
                 <div class="form-group">
-                    <label>Wasser</label>
-                    <input type="text" name="wasser" placeholder="z.B. 567 m³" value="<?php echo htmlspecialchars($wasser); ?>">
+                    <label for="lbl_wasser"><?php echo htmlspecialchars(t('hox_water')); ?></label>
+                    <input type="text" id="lbl_wasser" name="wasser" placeholder="<?php echo htmlspecialchars(t('hox_water_ph')); ?>" value="<?php echo htmlspecialchars($wasser); ?>">
                 </div>
             </div>
             <div class="form-group" style="max-width:50%;">
-                <label>Gas (falls vorhanden)</label>
-                <input type="text" name="gas" placeholder="z.B. 890 m³" value="<?php echo htmlspecialchars($gas); ?>">
+                <label for="lbl_gas"><?php echo htmlspecialchars(t('hox_gas_label')); ?></label>
+                <input type="text" id="lbl_gas" name="gas" placeholder="<?php echo htmlspecialchars(t('hox_gas_ph')); ?>" value="<?php echo htmlspecialchars($gas); ?>">
             </div>
         </div>
 
         <!-- Bemerkungen -->
         <div class="handover-card">
-            <h3>📝 Allgemeine Bemerkungen</h3>
+            <h3>📝 <?php echo htmlspecialchars(t('hox_sec_remarks')); ?></h3>
             <div class="form-group">
-                <label>Sonstige Bemerkungen <span style="font-weight:400; color:#aaa;">(optional)</span></label>
-                <textarea name="bemerkung" placeholder="Weitere Hinweise zum Zustand der Wohnung..." rows="3"><?php echo htmlspecialchars($bemerkung); ?></textarea>
+                <label for="lbl_bemerkung"><?php echo htmlspecialchars(t('hox_other_remarks')); ?> <span style="font-weight:400; color:#aaa;"><?php echo htmlspecialchars(t('hox_optional')); ?></span></label>
+                <textarea id="lbl_bemerkung" name="bemerkung" placeholder="<?php echo htmlspecialchars(t('hox_remarks_ph')); ?>" rows="3"><?php echo htmlspecialchars($bemerkung); ?></textarea>
             </div>
         </div>
 
         <button type="submit" class="btn-generate">
-            📋 Übergabeprotokoll generieren →
+            📋 <?php echo htmlspecialchars(t('hox_generate')); ?>
         </button>
     </form>
 </div>

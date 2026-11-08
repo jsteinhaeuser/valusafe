@@ -45,6 +45,8 @@ try {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validateRequest();
+    // Umlaute aus Buecher-APIs/iPhone zusammensetzen (NFD -> NFC), seit 4.9 / VB 2.7
+    $_POST = vsNfc($_POST);
     
     // ===== ACTIVITY LOG: Alte Werte speichern =====
     $oldValues = [
@@ -1092,7 +1094,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Entwurf löschen wenn Formular gespeichert wird
         var form = document.getElementById('editForm') || document.querySelector('form');
-        if (form) form.addEventListener('submit', function() { clearDraft(); });
+        if (form) form.addEventListener('submit', function() {
+            // Umlaute zusammensetzen (NFD -> NFC, z. B. vom iPhone), seit 4.9 / VB 2.7
+            this.querySelectorAll('input[type="text"], input:not([type]), textarea').forEach(function(el) {
+                if (el.value && el.value.normalize) el.value = el.value.normalize('NFC');
+            });
+            clearDraft();
+        });
     });
 })();
 </script>
@@ -1126,6 +1134,7 @@ document.addEventListener('DOMContentLoaded', function() {
 (function() {
     let stream     = null;
     let animFrame  = null;
+    let zxingReader = null;
 
     function onBarcodeFound(code) {
         stopBarcodeScanner();
@@ -1163,9 +1172,51 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    window.startBarcodeScanner = function() {
+    // ── ZXing: iPhone/iPad, Safari, Firefox (kein BarcodeDetector) ──────
+    // Seit 4.9 / VB 2.7. Bis dahin war zxing-browser.min.js geladen, aber
+    // unbenutzt, und ohne BarcodeDetector blieb nur die Handeingabe.
+    // Das Bundle ist @zxing/library (globales ZXing): decodeFromConstraints
+    // liest fortlaufend und ruft den Rueckruf je Bild, reset() gibt die
+    // Kamera frei.
+    async function startZxingScanner() {
+        const modal = document.getElementById('barcodeScannerModal');
+        modal.style.display = 'flex';
+        const F = ZXing.BarcodeFormat;
+        const hints = new Map();
+        hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,
+                  [F.EAN_13, F.EAN_8, F.UPC_A, F.UPC_E, F.CODE_128, F.CODE_39, F.QR_CODE]);
+        hints.set(ZXing.DecodeHintType.TRY_HARDER, true);
+        const reader = new ZXing.BrowserMultiFormatReader(hints);
+        zxingReader = reader;
+        try {
+            await reader.decodeFromConstraints(
+                { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } },
+                document.getElementById('barcodeVideo'),
+                function (result) {
+                    // Nur der erste Treffer zaehlt; danach ist zxingReader null.
+                    if (result && zxingReader === reader) onBarcodeFound(result.getText());
+                }
+            );
+            // Abgebrochen, waehrend iOS noch nach der Kamera fragte: dann
+            // lief die Kamera erst danach an und muss wieder aus.
+            if (zxingReader !== reader) { reader.stopContinuousDecode(); reader.reset(); }
+        } catch (e) {
+            if (zxingReader !== reader) return;   // schon abgebrochen
+            // Kamera verweigert oder nicht vorhanden: weiter mit der Handeingabe
+            stopBarcodeScanner();
+            window.startBarcodeScanner(true);
+        }
+    }
+
+    window.startBarcodeScanner = function(ohneKamera) {
         if ('BarcodeDetector' in window) {
             startNativeScanner();
+            return;
+        }
+        // Ohne BarcodeDetector die Kamera ueber ZXing (seit 4.9 / VB 2.7).
+        // ohneKamera: nach einem Kamerafehler direkt zur Handeingabe.
+        if (!ohneKamera && window.ZXing && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+            startZxingScanner();
             return;
         }
         // iOS/Safari: manuelle Eingabe
@@ -1183,6 +1234,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.stopBarcodeScanner = function() {
         if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
         if (stream)    { stream.getTracks().forEach(t => t.stop()); stream = null; }
+        if (zxingReader) { try { zxingReader.stopContinuousDecode(); zxingReader.reset(); } catch(e) {} zxingReader = null; }
         const video = document.getElementById('barcodeVideo');
         if (video) video.srcObject = null;
         document.getElementById('barcodeScannerModal').style.display = 'none';
@@ -1197,6 +1249,8 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const r    = await fetch(`barcode_lookup.php?code=${clean}`);
             const data = await r.json();
+            // Umlaute aus der API zusammensetzen (NFD -> NFC), seit 4.9 / VB 2.7
+            for (const k in data) { if (typeof data[k] === 'string' && data[k].normalize) data[k] = data[k].normalize('NFC'); }
             if (!data.found) {
                 res.style.background = '#fef2f2'; res.style.borderColor = '#dc2626'; res.style.color = '#991b1b';
                 res.textContent = '❌ ' + vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.');
@@ -1207,6 +1261,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const dateEl  = document.getElementById('kaufdatum');
             const authEl  = document.getElementById('erstellt_von');
             if (data.name && !nameEl.value) nameEl.value = data.name;
+            // Ladenpreis (DNB, seit 4.9) nur in ein leeres Preisfeld bzw. eines mit 0
+            const preisEl = document.getElementById('preis');
+            if (data.price && preisEl && !(parseFloat(String(preisEl.value).replace(',', '.')) > 0)) preisEl.value = Number(data.price).toFixed(2);
             if (data.year) {
                 const y = (data.year + '').match(/\d{4}/)?.[0];
                 if (y && !dateEl.value) dateEl.value = y + '-01-01';

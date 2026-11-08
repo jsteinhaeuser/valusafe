@@ -178,32 +178,9 @@ async function _loadVsm(idx,btn){
 try {
     $serviceDir = dirname(__FILE__, 3) . '/service/';
     $files = [];
-    if (is_dir($serviceDir)) {
-        $all = array_merge(
-            glob($serviceDir.'*.md')  ?: [],
-            glob($serviceDir.'*.pdf') ?: [],
-            glob($serviceDir.'*.php') ?: []
-        );
-        $ic = function($n, $e) {
-            if ($e==='pdf') return '📕';
-            $n = strtolower($n);
-            if (strpos($n,'changelog')!==false) return '🦎';
-            if (strpos($n,'manual')!==false||strpos($n,'handbuch')!==false) return '📖';
-            if (strpos($n,'faq')!==false) return '❓';
-            if (strpos($n,'security')!==false) return '🔐';
-            return '📄';
-        };
-        foreach ($all as $fp) {
-            $fn  = basename($fp);
-            $ext = strtolower(pathinfo($fn, PATHINFO_EXTENSION));
-            $files[] = [
-                'file'  => $fn,
-                'label' => ucwords(str_replace(['-','_'],' ', pathinfo($fn, PATHINFO_FILENAME))),
-                'icon'  => $ic($fn, $ext),
-                'type'  => $ext
-            ];
-        }
-    }
+    // Liste, Beschriftung (t()) und Sprachfassungen seit 4.9 / 2.7 in service_helpers.php
+    require_once dirname(__DIR__, 2) . '/service_helpers.php';
+    $files = vsServiceDateien($serviceDir);
     $json = json_encode($files);
     if ($json === false) $json = '[]';
     echo '<script>_vsmFiles=' . $json . ';</script>';

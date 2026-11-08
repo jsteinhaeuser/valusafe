@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 06.11.2026 15:57 von bin/changelog_export.php.
+ * Erzeugt am 08.11.2026 15:58 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,60 @@
  */
 
 return [
+    [
+        'version' => '4.9',
+        'date' => '2026-11-08',
+        'entries' => [
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Buchsuche: Bücher aus dem deutschen Sprachraum findet ValuSafe jetzt über die Deutsche Nationalbibliothek – mit Titel, Untertitel, Autor, Verlag, Jahr und Auflage. Bisher fragte die Suche nur Google Books und Open Library; Google antwortet ohne eigenen Schlüssel oft gar nicht, Open Library kennt nur wenige deutsche Bücher.',
+                'text_en' => 'Book lookup: ValuSafe now finds books from German-speaking countries via the German National Library – with title, subtitle, author, publisher, year and edition. Until now the lookup only asked Google Books and Open Library; Google often does not answer without its own key, and Open Library knows only a few German books.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Ladenpreis: Liefert die Nationalbibliothek einen Preis, trägt ValuSafe ihn in ein leeres Preisfeld ein (ältere D-Mark-Preise umgerechnet) und vermerkt ihn in der Notiz.',
+                'text_en' => 'Retail price: if the National Library supplies a price, ValuSafe enters it into an empty price field (older Deutsche Mark prices converted) and notes it in the notes.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Barcode-Scan auf dem iPhone und iPad: „Scannen“ öffnet jetzt auch in Safari die Kamera und liest Barcode bzw. ISBN. Bisher blieb dort nur die Eingabe von Hand.',
+                'text_en' => 'Barcode scan on iPhone and iPad: “Scan” now also opens the camera in Safari and reads the barcode or ISBN. Until now only manual entry was possible there.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Schnellerfassung mit Barcode: Das Formular hinter dem Plus-Knopf hat jetzt ein Feld „Barcode / ISBN“ mit Scan-Knopf. Die Suche füllt Name, Notiz und Preis und bietet das Cover als Foto an; nach dem Speichern ist alles bereit für den nächsten Gegenstand.',
+                'text_en' => 'Quick entry with barcode: the form behind the plus button now has a “Barcode / ISBN” field with a scan button. The lookup fills in name, notes and price and offers the cover as photo; after saving, everything is ready for the next item.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Sprachen: Das Menü „Hilfe & Information“ ist in allen Sprachen beschriftet; Erste Schritte, Über diese Anwendung, Lizenz und Rückmeldung gibt es auf Englisch (andere Sprachen sehen die englische Fassung). Versicherungs-Export, Übergabeprotokoll und die öffentliche Chronik sind übersetzt, die System-Information im Verwaltungsbereich gibt es auf Englisch.',
+                'text_en' => 'Languages: the “Help & information” menu is labelled in all languages; Getting started, About this application, Licence and Feedback are available in English (other languages see the English version). The insurance export, the handover report and the public changelog are translated, and the system information in the admin area is available in English.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Versicherungs-Export: Gegenstände mit englischen Kategorien (z. B. „Jewellery“, „Electronics“) landen in der passenden Versicherungskategorie statt unter „Sonstiges“.',
+                'text_en' => 'Insurance export: items with English categories (e.g. “Jewellery”, “Electronics”) are now sorted into the matching insurance category instead of “Other”.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Umlaute: Namen aus der Buchsuche und vom iPhone kamen teils mit zerlegten Umlauten an („fu r“ statt „für“) – die Suche fand sie dann nicht. Beim Speichern wird jetzt jeder Text vereinheitlicht.',
+                'text_en' => 'Umlauts: names from the book lookup and from the iPhone sometimes arrived with decomposed umlauts (“fu r” instead of “für”) – search then did not find them. Every text is now normalised when saved.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Update: Wer im Verwaltungsbereich versehentlich das vollständige Paket statt des Update-Pakets wählt, bekommt jetzt eine verständliche Meldung statt eines technischen Fehlers.',
+                'text_en' => 'Update: if you accidentally choose the full package instead of the update package in the admin area, you now get a clear message instead of a technical error.'
+            ]
+        ]
+    ],
     [
         'version' => '4.8.1',
         'date' => '2026-11-06',
@@ -99,42 +153,6 @@ return [
                 'public' => true,
                 'text' => 'Versionsabfrage: Höchstens einmal am Tag fragt ValuSafe bei palindrom.de nach einer neuen Version, nur wenn ein Administrator die Verwaltung öffnet. Übertragen wird nichts außer der IP-Adresse des Servers. Abschaltbar mit define(\'VALUSAFE_UPDATE_PRUEFEN\', false) in config.php; steht in der Vorlage der Datenschutzerklärung.',
                 'text_en' => 'Version check: at most once a day, and only when an administrator opens the administration, ValuSafe asks palindrom.de whether a new version exists. Nothing is transmitted except the server\'s IP address. Can be switched off with define(\'VALUSAFE_UPDATE_PRUEFEN\', false) in config.php; covered in the privacy policy template.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.6.1',
-        'date' => '2026-10-28',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Zeitwert: Überall gilt jetzt dieselbe Regel - der aktuelle Wert, wenn einer über 0 eingetragen ist, sonst der Kaufpreis. Bisher zählte ein Zeitwert von 0 an manchen Stellen als Wert 0, an anderen als „nicht bewertet“. Betroffen waren Dashboard (Zeitwert-Kachel, höchster Zeitwert, wertvollster Gegenstand, Top 5, Kategorien), Suchleiste, Versicherung, Versicherungsexport und Schadensfall mit Dokument und Belegen.',
-                'text_en' => 'Current value: the same rule now applies everywhere - the current value if one above 0 is entered, otherwise the purchase price. Previously a current value of 0 counted as 0 in some places and as “not valued” in others. This affected the dashboard (current value tile, highest current value, most valuable item, top 5, categories), the search bar, insurance, the insurance export and the damage claim with its document and receipts.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Dashboard: Der Trend vergleicht jetzt den Zeitwert heute mit dem Zeitwert zum Stichtag und steht unter der Zeitwert-Kachel. Bisher verglich er Kaufpreise mit alten Zeitwerten.',
-                'text_en' => 'Dashboard: the trend now compares today\'s current value with the current value on the reference date and appears under the current value tile. Previously it compared purchase prices with old current values.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Suchleiste: Verborgene Gegenstände werden nur noch mitgezählt, wenn die Liste sie auch zeigt. Bisher stand dort z. B. „7 Einträge gefunden“ über einer Liste mit 6.',
-                'text_en' => 'Search bar: hidden items are only counted when the list shows them as well. Previously it could say e.g. “7 entries found” above a list of 6.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Kopfzeile: Unter „ValuSafe“ steht jetzt klein die installierte Version.',
-                'text_en' => 'Header: the installed version is now shown in small print below “ValuSafe”.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Änderungsverlauf: Leere Felder (z. B. kein Kaufdatum) werden wieder als leer angezeigt, statt eine Warnung im Fehlerprotokoll zu erzeugen.',
-                'text_en' => 'Change history: empty fields (e.g. no purchase date) are shown as empty again instead of producing a warning in the error log.'
             ],
             [
                 'type' => 'feature',

@@ -20,6 +20,7 @@
  */
 
 require_once 'db.php';
+require_once 'helpers.php';   // vsNfc()
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -70,8 +71,149 @@ function fetchJson(string $url): ?array {
     return is_array($data) ? $data : null;
 }
 
-// ── ISBN → Open Library ───────────────────────────────────────────────────
+// ── ISBN → Deutsche Nationalbibliothek (seit 4.9) ─────────────────────────
+// Gemessen am 07.11.2026 mit 21 deutschen ISBNs: Google Books antwortete
+// ohne API-Schluessel nur mit 429 (Kontingent je IP, auf geteilten
+// Webspaces schnell verbraucht), Open Library fand 3, die DNB alle 21.
+// SRU-Schnittstelle ohne Schluessel, Metadaten CC0. Die DNB hat keine
+// Cover; das von Open Library wird nur genommen, wenn es eines gibt.
+
+function isbnZu13(string $isbn): string {
+    if (strlen($isbn) !== 10) return $isbn;
+    $kern = '978' . substr($isbn, 0, 9);
+    $summe = 0;
+    for ($i = 0; $i < 12; $i++) $summe += (int)$kern[$i] * ($i % 2 ? 3 : 1);
+    return $kern . ((10 - $summe % 10) % 10);
+}
+
+function fetchText(string $url, int $timeout = 6): ?string {
+    $ctx = stream_context_create(['http' => [
+        'timeout'        => $timeout,
+        'user_agent'     => 'Wertsachen-Inventarverwaltung/4.9 (barcode lookup)',
+        'ignore_errors'  => true,
+    ]]);
+    $raw = @file_get_contents($url, false, $ctx);
+    return $raw === false ? null : $raw;
+}
+
+/**
+ * Ladenpreis aus MARC 020 $c, z. B. "Broschur : circa EUR 22.00 (DE), circa
+ * EUR 22.70 (AT)" oder bei aelteren Buechern "kart. : DM 14.80, sfr 14.00".
+ * Bevorzugt der deutsche Euro-Preis, sonst der erste Euro-Preis, sonst D-Mark
+ * zum amtlichen Kurs. Subskriptionspreise zaehlen nicht.
+ * Rueckgabe [Betrag in Euro, Originaltext fuer die Notiz] oder null.
+ */
+function dnbLadenpreis(?string $text): ?array {
+    if (!$text) return null;
+    $treffer = [];
+    preg_match_all('/(EUR|DM)\s*(\d+(?:[.,]\d{1,2})?)\s*(\([^)]*\))?/u', $text, $m, PREG_SET_ORDER);
+    foreach ($m as $t) {
+        $zusatz = $t[3] ?? '';
+        if (stripos($zusatz, 'subskr') !== false) continue;
+        $treffer[] = ['waehrung' => $t[1], 'betrag' => (float)str_replace(',', '.', $t[2]),
+                      'de' => stripos($zusatz, '(DE)') !== false, 'text' => trim($t[0])];
+    }
+    $wahl = null;
+    foreach ($treffer as $t) if ($t['waehrung'] === 'EUR' && $t['de']) { $wahl = $t; break; }
+    if (!$wahl) foreach ($treffer as $t) if ($t['waehrung'] === 'EUR') { $wahl = $t; break; }
+    if (!$wahl) foreach ($treffer as $t) if ($t['waehrung'] === 'DM')  { $wahl = $t; break; }
+    if (!$wahl || $wahl['betrag'] <= 0) return null;
+    $euro = $wahl['waehrung'] === 'DM' ? round($wahl['betrag'] / 1.95583, 2) : $wahl['betrag'];
+    return [$euro, $wahl['text']];
+}
+
+function lookupDNB(string $isbn13): ?array {
+    if (!class_exists('DOMDocument')) return null;
+    $xml = fetchText('https://services.dnb.de/sru/dnb?version=1.1&operation=searchRetrieve'
+                   . '&recordSchema=MARC21-xml&maximumRecords=1&query=' . rawurlencode('num=' . $isbn13));
+    if (!$xml || strpos($xml, '<record') === false) return null;
+
+    $dom = new DOMDocument();
+    if (!@$dom->loadXML($xml, LIBXML_NONET)) return null;
+    $xp = new DOMXPath($dom);
+    $xp->registerNamespace('m', 'http://www.loc.gov/MARC21/slim');
+    $rec = $xp->query('//m:record')->item(0);
+    if (!$rec) return null;
+
+    // Erstes Unterfeld; die DNB markiert Artikel fuer die Sortierung mit
+    // U+0098/U+009C ("<<Die>> Welt") - die Zeichen muessen weg.
+    $feld = function (string $tags, string $code) use ($xp, $rec): ?string {
+        foreach (explode(',', $tags) as $tag) {
+            $n = $xp->query("m:datafield[@tag='$tag']/m:subfield[@code='$code']", $rec)->item(0);
+            if ($n) {
+                $t = trim(preg_replace('/[\x{0098}\x{009C}]/u', '', $n->textContent), " \t\n/:;,");
+                if ($t !== '') return $t;
+            }
+        }
+        return null;
+    };
+
+    $title = $feld('245', 'a');
+    if (!$title) return null;
+    $subtitle = $feld('245', 'b');
+
+    // Personen: "Hanke, Johann-Christian" -> "Johann-Christian Hanke".
+    // 100 ist die Hauptperson; aus 700 nur Mitverfasser ($4 aut), nicht
+    // Uebersetzer (trl), Herausgeber (edt) oder Illustratoren (ill).
+    $autoren = [];
+    foreach ($xp->query("m:datafield[@tag='100']/m:subfield[@code='a'] | m:datafield[@tag='700'][m:subfield[@code='4']='aut']/m:subfield[@code='a']", $rec) as $n) {
+        $name = trim(preg_replace('/[\x{0098}\x{009C}]/u', '', $n->textContent));
+        if (preg_match('/^([^,]+),\s*(.+)$/u', $name, $m)) $name = $m[2] . ' ' . $m[1];
+        if ($name !== '' && !in_array($name, $autoren, true)) $autoren[] = $name;
+        if (count($autoren) >= 3) break;
+    }
+    $authors   = $autoren ? implode(', ', $autoren) : null;
+    $publisher = $feld('264,260', 'b');
+    $jahr      = $feld('264,260', 'c');
+    $year      = ($jahr && preg_match('/\d{4}/', $jahr, $m)) ? $m[0] : null;
+    $auflage   = $feld('250', 'a');
+    // Preis steht nur am 020 der jeweiligen ISBN; das erste 020 mit $c genuegt
+    $preis = null;
+    foreach ($xp->query("m:datafield[@tag='020']/m:subfield[@code='c']", $rec) as $n) {
+        if ($preis = dnbLadenpreis($n->textContent)) break;
+    }
+
+    $cover = "https://covers.openlibrary.org/b/isbn/{$isbn13}-L.jpg?default=false";
+    $kopf  = @get_headers($cover, false, stream_context_create(['http' => ['method' => 'HEAD', 'timeout' => 3]]));
+    if (!$kopf || !preg_grep('#^HTTP/\S+ 200#', $kopf)) $cover = null;
+
+    $notes = [];
+    if ($authors)   $notes[] = "Autor: {$authors}";
+    if ($publisher) $notes[] = "Verlag: {$publisher}";
+    if ($year)      $notes[] = "Erschienen: {$year}";
+    if ($auflage)   $notes[] = $auflage;
+    if ($preis)     $notes[] = "Ladenpreis: {$preis[1]}";
+
+    return [
+        'found'       => true,
+        'type'        => 'book',
+        'name'        => $subtitle ? "{$title}: {$subtitle}" : $title,
+        'description' => $notes ? implode("\n", $notes) : null,
+        'brand'       => $authors,
+        'category'    => 'Buch',
+        'year'        => $year,
+        'cover'       => $cover,
+        'source'      => 'Deutsche Nationalbibliothek',
+        'price'       => $preis ? $preis[0] : null,   // seit 4.9: Preisfeld vorbelegen
+    ];
+}
+
+/**
+ * Buecher aus dem deutschen Sprachraum (978-3) zuerst bei der DNB, alle
+ * anderen erst bei Google Books / Open Library und die DNB als Rueckfall
+ * (sie fuehrt auch viele fremdsprachige Titel).
+ */
 function lookupISBN(string $isbn): array {
+    $isbn13  = isbnZu13($isbn);
+    $deutsch = str_starts_with($isbn13, '9783');
+    if ($deutsch && ($r = lookupDNB($isbn13))) return $r;
+    $r = lookupISBNWeltweit($isbn);
+    if ($r['found'] || $deutsch) return $r;
+    return lookupDNB($isbn13) ?? $r;
+}
+
+// ── ISBN → Google Books, Open Library (bis 4.8 die einzigen Quellen) ──────
+function lookupISBNWeltweit(string $isbn): array {
 
     // ── 1. Google Books (beste Abdeckung, kein API-Key nötig) ─────────────
     $gbUrl  = "https://www.googleapis.com/books/v1/volumes?q=isbn:{$isbn}&maxResults=1&fields=items(volumeInfo)";
@@ -276,4 +418,5 @@ $result = match($type) {
     default => ['found' => false, 'type' => 'unknown'],
 };
 
-echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+// Umlaute aus den APIs zusammensetzen (NFD -> NFC), seit 4.9
+echo json_encode(vsNfc($result), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);

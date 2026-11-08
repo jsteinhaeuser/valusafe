@@ -44,6 +44,8 @@ if ($ext === 'pdf') {
     header('Content-Length: ' . filesize($fullPath));
     readfile($fullPath);
 } else {
+    // Sprachfassung (name_en.md usw.) seit 4.9 / 2.7, sonst die deutsche Grunddatei
+    require_once __DIR__ . '/service_helpers.php';
     header('Content-Type: text/plain; charset=utf-8');
-    echo file_get_contents($fullPath);
+    echo file_get_contents(vsServiceMdDatei($fullPath));
 }

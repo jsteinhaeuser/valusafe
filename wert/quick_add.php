@@ -18,8 +18,12 @@ $last_kategorie_id = $_SESSION['quick_last_kategorie'] ?? 0;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validateRequest();
+    // Umlaute zusammensetzen (NFD -> NFC), seit 4.9 wie add.php/edit.php
+    $_POST = vsNfc($_POST);
 
-    $data   = sanitizeWertsachenInput($_POST);
+    $data    = sanitizeWertsachenInput($_POST);
+    // Barcode/ISBN seit 4.9 auch in der Schnellerfassung (Scan auf dem Handy)
+    $barcode = mb_substr(trim($_POST['barcode'] ?? ''), 0, 100) ?: null;
     $errors = validateWertsachenData($data);
 
     $uploadResult = handleFileUpload($_FILES['bild'] ?? null);
@@ -36,8 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $newId = $db->insert(
-                "INSERT INTO wertsachen (name, raum_id, kategorie_id, kaufdatum, preis, notizen, bild, erstellt_von, gelistet_am)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO wertsachen (name, raum_id, kategorie_id, kaufdatum, preis, notizen, bild, erstellt_von, gelistet_am, barcode)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
                     $data['name'],
                     $data['raum_id'],
@@ -48,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $uploadResult['filename'],
                     $ersteller,
                     date('Y-m-d'),
+                    $barcode,
                 ]
             );
 
@@ -191,6 +196,17 @@ include 'header_next_page.php';
     color: var(--text-color, #374151);
     margin-bottom: 5px;
 }
+.qa-barcode-row { display: flex; gap: 8px; align-items: stretch; }
+.qa-barcode-row .qa-input { flex: 1; min-width: 0; }
+.qa-scan-btn { padding: 0 16px; min-height: 44px; border: none; border-radius: 8px; white-space: nowrap;
+               background: var(--vs-accent, #1a6fb5); color: #fff; font-size: 15px; cursor: pointer; }
+.qa-scan-btn:focus-visible, .qa-cover-btn:focus-visible { outline: 3px solid var(--vs-accent, #1a6fb5); outline-offset: 2px; }
+.qa-lookup { margin-top: 8px; padding: 10px 14px; border-radius: 6px; font-size: 14px;
+             border-left: 4px solid var(--vs-border, #d1d5db); background: var(--vs-surface-2, #f9fafb); color: var(--vs-text, #1f2937); }
+.qa-lookup-ok { border-left-color: var(--vs-success, #16a34a); }
+.qa-lookup-fehler { border-left-color: var(--vs-danger, #dc2626); }
+.qa-cover-btn { margin-top: 6px; padding: 6px 0; background: none; border: none; color: var(--vs-accent-text, #0369a1);
+                text-decoration: underline; font-size: 14px; cursor: pointer; }
 .qa-label .req { color: inherit; font-weight: 700; } /* #e53e3e 3,70:1 auf Ocean, in Midnight noch weniger */
 
 .qa-input, .qa-select {
@@ -292,6 +308,19 @@ include 'header_next_page.php';
                    required autofocus>
         </div>
 
+        <!-- Barcode / ISBN (seit 4.9): Scan fuellt Name und Notiz aus der Buch-/Produktsuche -->
+        <div class="qa-group">
+            <label class="qa-label" for="barcode"><i class="ti ti-barcode" aria-hidden="true"></i> <?php echo t('quick_barcode_label'); ?></label>
+            <div class="qa-barcode-row">
+                <input type="text" name="barcode" id="barcode" class="qa-input" maxlength="100" inputmode="numeric"
+                       placeholder="<?php echo htmlspecialchars(t('barcode_placeholder'), ENT_QUOTES, 'UTF-8'); ?>"
+                       value="<?php echo $success ? '' : htmlspecialchars($_POST['barcode'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                       aria-describedby="qaLookup">
+                <button type="button" class="qa-scan-btn" onclick="vsScannerOeffnen()"><?php echo t('barcode_scan_button'); ?></button>
+            </div>
+            <div id="qaLookup" class="qa-lookup" role="status" hidden></div>
+        </div>
+
         <!-- Raum + Kategorie -->
         <div class="qa-row">
             <div class="qa-group">
@@ -329,7 +358,7 @@ include 'header_next_page.php';
         </div>
 
         <!-- Notiz (optional, eingeklappt) -->
-        <details style="margin-bottom:14px;">
+        <details id="qaNotizBlock" style="margin-bottom:14px;">
             <summary style="font-size:13px; color:var(--text-muted,#888); cursor:pointer; user-select:none; padding:4px 0;">
                 📝 <?php echo tn('quick_add_note', 'Notiz hinzufügen (optional)'); ?>
             </summary>
@@ -357,6 +386,7 @@ include 'header_next_page.php';
     </div>
 </div>
 
+<?php include __DIR__ . '/components/barcode_scanner.php'; ?>
 <script src="js/cropper.min.js"></script>
 <script src="js/bild_zuschnitt.js"></script>
 <script>
@@ -462,8 +492,92 @@ document.addEventListener('DOMContentLoaded', function() {
     qaCropKnopf();
     // Preis zurücksetzen
     document.getElementById('preis').value = '';
+    // Seit 4.9 auch Notiz und Suchergebnis: sonst stand beim naechsten
+    // gescannten Buch noch die Notiz des vorigen, und die Suche fuellte
+    // sie nicht, weil das Feld nicht leer war.
+    document.getElementById('notizen').value = '';
+    document.getElementById('qaLookup').hidden = true;
 });
 <?php endif; ?>
+
+// ── Barcode / ISBN (seit 4.9) ─────────────────────────────────────────────
+// components/barcode_scanner.php ruft vsBarcodeGefunden(code); die Suche
+// wie in add.php, nur fuer die Felder der Schnellerfassung.
+window.vsBarcodeGefunden = function (code) {
+    document.getElementById('barcode').value = code;
+    const clean = code.replace(/[^0-9X]/gi, '').toUpperCase();
+    if (clean.length >= 8) qaSuche(clean);
+};
+
+let qaCoverUrl = null;
+
+function qaMeldung(text, art) {
+    const el = document.getElementById('qaLookup');
+    el.hidden = false;
+    el.className = 'qa-lookup' + (art ? ' qa-lookup-' + art : '');
+    el.textContent = text;
+    return el;
+}
+
+async function qaSuche(clean) {
+    qaMeldung('… ' + vsT('js_lookup_searching', 'Produktdaten werden gesucht …'), '');
+    try {
+        const r    = await fetch('barcode_lookup.php?code=' + encodeURIComponent(clean));
+        const data = await r.json();
+        for (const k in data) { if (typeof data[k] === 'string' && data[k].normalize) data[k] = data[k].normalize('NFC'); }
+        if (!data.found) {
+            qaMeldung('✗ ' + vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.'), 'fehler');
+            return;
+        }
+        const nameEl  = document.getElementById('name');
+        const notesEl = document.getElementById('notizen');
+        if (data.name && !nameEl.value) nameEl.value = data.name;
+        // Ladenpreis (DNB, seit 4.9) nur in ein leeres Preisfeld bzw. eines mit 0
+        const preisEl = document.getElementById('preis');
+        if (data.price && preisEl && !(parseFloat(String(preisEl.value).replace(',', '.')) > 0)) preisEl.value = Number(data.price).toFixed(2);
+        if (data.description && !notesEl.value) {
+            notesEl.value = data.description;
+            document.getElementById('qaNotizBlock').open = true;
+        }
+        const el = qaMeldung('', 'ok');
+        const kopf = document.createElement('strong');
+        kopf.textContent = '✓ ' + (data.name || clean);
+        el.appendChild(kopf);
+        const rest = (data.brand ? ' – ' + data.brand : '') + (data.year ? ' (' + data.year + ')' : '')
+                   + (data.source ? ' · ' + data.source : '');
+        el.appendChild(document.createTextNode(rest));
+        // Cover nur anbieten, solange noch kein Foto gewaehlt ist
+        qaCoverUrl = data.cover || null;
+        if (qaCoverUrl && !document.getElementById('bild').files.length) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'qa-cover-btn';
+            b.textContent = vsT('js_lookup_take_image', 'Bild übernehmen');
+            b.addEventListener('click', qaCoverUebernehmen);
+            el.appendChild(document.createElement('br'));
+            el.appendChild(b);
+        }
+    } catch (e) {
+        qaMeldung('! ' + vsT('js_lookup_error', 'Fehler beim Abrufen: %s', e.message), 'fehler');
+    }
+}
+
+async function qaCoverUebernehmen() {
+    if (!qaCoverUrl) return;
+    try {
+        const r = await fetch('cover_proxy.php?url=' + encodeURIComponent(qaCoverUrl));
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const blob = await r.blob();
+        const dt = new DataTransfer();
+        dt.items.add(new File([blob], 'cover.jpg', { type: blob.type }));
+        const bild = document.getElementById('bild');
+        bild.files = dt.files;
+        bild.dispatchEvent(new Event('change'));   // Vorschau wie bei einem Foto
+        this.remove();
+    } catch (e) {
+        vsAlert(<?php echo json_encode(t('error_cover_load')); ?>.replace('%s', function () { return e.message; }));
+    }
+}
 </script>
 
 <?php include 'footer_next.php'; ?>

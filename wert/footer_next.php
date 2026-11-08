@@ -435,41 +435,9 @@ try {
     $vsmBase  = defined('BASE_URL') ? BASE_URL : '';
     $serviceDir = dirname(__FILE__) . '/service/';
     $files = [];
-    if (is_dir($serviceDir)) {
-        $ic = function($n, $e) {
-            if ($e === 'pdf') return '📕';
-            $n = strtolower($n);
-            if (strpos($n,'erste')!==false||strpos($n,'start')!==false) return '🚀';
-            if (strpos($n,'changelog')!==false) return '🦎';
-            if ($e === 'php') return '🔄';
-            if (strpos($n,'about')!==false) return 'ℹ️';
-            if (strpos($n,'faq')!==false) return '❓';
-            if (strpos($n,'fact')!==false||strpos($n,'feature')!==false) return '⭐';
-            if (strpos($n,'manual')!==false||strpos($n,'handbuch')!==false) return '📖';
-            return '📄';
-        };
-        $all = array_merge(
-            glob($serviceDir.'*.php') ?: [],
-            glob($serviceDir.'*.pdf') ?: [],
-            glob($serviceDir.'*.md')  ?: []
-        );
-        usort($all, function($a,$b){
-            $aA = strpos(strtolower(basename($a)),'about')!==false;
-            $bA = strpos(strtolower(basename($b)),'about')!==false;
-            if($aA&&!$bA) return 1; if(!$aA&&$bA) return -1;
-            return strcmp(strtolower(basename($a)),strtolower(basename($b)));
-        });
-        foreach ($all as $fp) {
-            $fn  = basename($fp);
-            $ext = strtolower(pathinfo($fn, PATHINFO_EXTENSION));
-            $files[] = [
-                'file'  => $fn,
-                'label' => ucwords(str_replace(['-','_'],' ', pathinfo($fn, PATHINFO_FILENAME))),
-                'icon'  => $ic($fn, $ext),
-                'type'  => $ext
-            ];
-        }
-    }
+    // Liste, Beschriftung (t()) und Sprachfassungen seit 4.9 / 2.7 in service_helpers.php
+    require_once __DIR__ . '/service_helpers.php';
+    $files = vsServiceDateien($serviceDir);
     $json = json_encode($files, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
     if ($json === false) $json = '[]';
     echo '<script>_vsmFiles=' . $json . ';_vsmBase=' . json_encode((string)$vsmBase, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';</script>';

@@ -88,7 +88,23 @@ try {
             $body .= "
     Diese Anfrage wurde über deinen öffentlichen Sammlungslink gesendet.";
 
-            $headers  = "From: noreply@" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . "
+            // Absender seit 4.9 / 2.7 aus APP_URL (wie der Passwort-Reset), sonst aus dem
+
+            // Host-Header nur, wenn er ein sauberer Hostname ist. Die Mail geht nur an den
+
+            // eigenen Admin; der Rueckfall haelt aeltere Instanzen ohne APP_URL zustellbar.
+
+            require_once __DIR__ . '/password_reset_helpers.php';
+
+            $absBasis = vsResetBasisAdresse();
+
+            $absHost  = $absBasis !== null ? (string)parse_url($absBasis, PHP_URL_HOST) : (string)($_SERVER['HTTP_HOST'] ?? '');
+
+            $absHost  = preg_replace('/:\d+$/', '', $absHost);
+
+            if (!preg_match('/^[A-Za-z0-9.-]{1,253}$/', $absHost)) $absHost = 'localhost';
+
+            $headers  = "From: noreply@" . $absHost . "
     ";
             $headers .= "Reply-To: " . $email . "
     ";

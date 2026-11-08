@@ -49,6 +49,11 @@ const VS_UPD_MAX_DATEIEN   = 5000;
 const VS_UPD_MAX_BYTES     = 150 * 1024 * 1024;   // entpackt, alle Dateien zusammen
 const VS_UPD_MAX_MANIFEST  = 2 * 1024 * 1024;
 
+// Fehlercode: jemand hat das vollstaendige Installations-/USB-Paket statt des
+// Update-Pakets gewaehlt (Fund 05.11.2026, Update-Test Valu-Basic). Die
+// Anwendung uebersetzt diesen Fall selbst und nennt die richtige Datei.
+const VS_UPD_FEHLER_VOLLPAKET = 2;
+
 class VsUpdFehler extends RuntimeException {}
 
 /** Kennung eines oeffentlichen Schluessels (wie bin/schluessel_erzeugen.php). */
@@ -230,7 +235,15 @@ function vsUpdPaketPruefen(string $zipPfad, array $schluessel, string $programm,
 
         $mStat = $zip->statName('manifest.json');
         $sStat = $zip->statName('manifest.sig');
-        if (!$mStat || !$sStat) throw new VsUpdFehler('Kein Update-Paket (manifest.json oder manifest.sig fehlt).');
+        if (!$mStat || !$sStat) {
+            // ValuSafe_Install_v4.8/... bzw. ValuBasic_USB/... - das ganze Paket
+            for ($i = 0; $i < min($n, 50); $i++) {
+                if (preg_match('#^(ValuSafe_Install_v[0-9.]+|ValuBasic_USB)/#', (string)$zip->getNameIndex($i))) {
+                    throw new VsUpdFehler('Vollstaendiges Installationspaket, kein Update-Paket.', VS_UPD_FEHLER_VOLLPAKET);
+                }
+            }
+            throw new VsUpdFehler('Kein Update-Paket (manifest.json oder manifest.sig fehlt).');
+        }
         if ($mStat['size'] > VS_UPD_MAX_MANIFEST || $sStat['size'] > 4096) throw new VsUpdFehler('Manifest zu gross.');
         // Laenge begrenzt: die Groesse im ZIP-Verzeichnis kann gelogen sein.
         $manifestJson = $zip->getFromName('manifest.json', VS_UPD_MAX_MANIFEST + 1);

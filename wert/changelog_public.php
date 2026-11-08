@@ -21,13 +21,17 @@ $changelog = require $changelogFile;
 
 // Nur öffentliche Einträge (feature + fix mit public=true)
 $publicTypes = ['feature', 'fix'];
+
+// Seit 4.9 / 2.7: ausser auf Deutsch der englische Text (text_en), wo es ihn
+// gibt; aeltere Eintraege ohne text_en bleiben deutsch (lang="de" am Text).
+$clLang = $_SESSION['lang'] ?? 'de';
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo getCurrentLanguage(); ?>">
+<html lang="<?php echo htmlspecialchars($clLang, ENT_QUOTES, 'UTF-8'); ?>">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Changelog · Inventarverwaltung</title>
+<title><?php echo htmlspecialchars(t('svc_changelog'), ENT_QUOTES, 'UTF-8'); ?></title>
 <style>
 .changelog-wrap {
     max-width: 760px;
@@ -148,7 +152,7 @@ $publicTypes = ['feature', 'fix'];
     <a href="index.php" class="back-link"><?php echo t('btn_back_to_overview'); ?></a>
 
     <div class="changelog-header">
-        <h1>📋 Changelog</h1>
+        <h1>📋 <?php echo htmlspecialchars(t('svc_changelog'), ENT_QUOTES, 'UTF-8'); ?></h1>
         <p><?php echo t('changelog_public_subtitle'); ?></p>
     </div>
 
@@ -166,7 +170,7 @@ $publicTypes = ['feature', 'fix'];
                 v<?php echo $version['version']; ?>
             </span>
             <?php if ($i === 0): ?>
-                <span class="latest-badge">NEU</span>
+                <span class="latest-badge"><?php echo htmlspecialchars(t('changelog_latest'), ENT_QUOTES, 'UTF-8'); ?></span>
             <?php endif; ?>
             <span class="version-date"><?php echo date('d.m.Y', strtotime($version['date'])); ?></span>
         </div>
@@ -175,9 +179,10 @@ $publicTypes = ['feature', 'fix'];
             <?php foreach ($publicEntries as $entry): ?>
             <div class="entry">
                 <span class="entry-badge <?php echo $entry['type'] === 'feature' ? 'badge-feature' : 'badge-fix'; ?>">
-                    <?php echo $entry['type'] === 'feature' ? '✨ Neu' : '🔧 Fix'; ?>
+                    <?php echo $entry['type'] === 'feature' ? '✨ ' . htmlspecialchars(t('changelog_badge_new'), ENT_QUOTES, 'UTF-8') : '🔧 ' . htmlspecialchars(t('changelog_badge_fix'), ENT_QUOTES, 'UTF-8'); ?>
                 </span>
-                <span class="entry-text"><?php echo htmlspecialchars($entry['text']); ?></span>
+                <?php $clEn = $clLang !== 'de' && !empty($entry['text_en']); ?>
+                <span class="entry-text"<?php echo ($clLang !== 'de' && !$clEn) ? ' lang="de"' : ''; ?>><?php echo htmlspecialchars($clEn ? $entry['text_en'] : $entry['text']); ?></span>
             </div>
             <?php endforeach; ?>
         </div>
