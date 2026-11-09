@@ -1,0 +1,97 @@
+# ValuSafe behind Nginx: the equivalent of the .htaccess files in wert/.
+#
+# Copy this into your Nginx configuration and adapt the lines marked ANPASSEN.
+# Then run "nginx -t" and open these addresses; each must answer 403 or 404:
+#   https://example.org/config.php
+#   https://example.org/documents/
+#   https://example.org/backups/
+#   https://example.org/logs/
+#
+# Settings that .htaccess passes to PHP belong in php.ini or the PHP-FPM pool:
+#   display_errors = Off, log_errors = On, upload_max_filesize = 20M,
+#   post_max_size = 24M, max_file_uploads = 20
+#
+# Security headers are not set here: SecurityHeaders.php sends them.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.org;                      # ANPASSEN
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;                                     # Nginx older than 1.25.1: "listen 443 ssl http2;"
+    server_name example.org;                      # ANPASSEN
+
+    ssl_certificate     /etc/ssl/valusafe/fullchain.pem;   # ANPASSEN
+    ssl_certificate_key /etc/ssl/valusafe/privkey.pem;     # ANPASSEN
+
+    root  /var/www/valusafe;                      # ANPASSEN: folder containing index.php
+    index index.php;
+
+    autoindex off;
+    client_max_body_size 24m;                     # as post_max_size
+
+    # Certificate renewal must still work
+    location ^~ /.well-known/acme-challenge/ {
+        allow all;
+    }
+
+    # ── Folders that are never served directly ────────────────────────────
+    # ^~ ends the search here, so the PHP location below cannot match inside.
+    # documents/ is delivered by download_document.php, which reads the files
+    # from disk and is not affected by this rule.
+    location ^~ /documents/ { deny all; return 403; }
+    location ^~ /backups/   { deny all; return 403; }
+    location ^~ /logs/      { deny all; return 403; }
+    location ^~ /tests/     { deny all; return 403; }
+    location ^~ /vendor/    { deny all; return 403; }
+
+    # ── Uploads: images yes, scripts never ────────────────────────────────
+    location ^~ /upload/ {
+        location ~* \.(php\d?|phtml|phar|phps|cgi|pl|py|jsp|asp|sh)$ {
+            deny all;
+            return 403;
+        }
+    }
+
+    # ── Regular expressions run in this order: keep them above the PHP block ──
+    # Hidden files (.htaccess, .user.ini, .git ...)
+    location ~ (^|/)\. {
+        deny all;
+        return 403;
+    }
+
+    # Configuration and code that is only ever included
+    location ~ (^|/)(config|db|security|SecurityHeaders)\.php$ {
+        deny all;
+        return 403;
+    }
+
+    # One-off tools
+    location ~ (^|/)(RESET_CACHE|reset_cache|migrate_|setup_|fix_|bulk_.*debug|old_login)[^/]*\.php$ {
+        deny all;
+        return 403;
+    }
+
+    # Backup, log and ini files, including rotated ones such as php_errors.log.1
+    location ~* \.(sql|log|bak|backup|ini)(\.\d+)?$ {
+        deny all;
+        return 403;
+    }
+
+    # ── PHP ───────────────────────────────────────────────────────────────
+    location ~ \.php$ {
+        try_files $uri =404;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_pass unix:/run/php/php8.4-fpm.sock;   # ANPASSEN
+    }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

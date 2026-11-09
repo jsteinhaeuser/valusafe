@@ -67,7 +67,7 @@ Für zusätzlichen Schutz deines Kontos: Gehe zu **Einstellungen → Zwei-Faktor
 ## Tipps für den Alltag
 
 - **Suche & Filter** — Klappe die Suchleiste oben auf, um nach Name, Kategorie, Ort oder Preis zu filtern
-- **Barcode-Scan** — Beim Hinzufügen eines Gegenstands kannst du den Barcode scannen (Bücher, Lebensmittel, Produkte)
+- **Barcode-Scan** — Beim Hinzufügen eines Gegenstands kannst du den Barcode scannen (Bücher, CDs, Schallplatten, Lebensmittel, Produkte)
 - **Dokumente** — Du kannst Rechnungen und Garantiescheine direkt am Gegenstand hinterlegen
 - **Reihenfolge anpassen** — In der Listenansicht lässt sich die Sortierung deiner Gegenstände per Drag & Drop frei ändern
 - **Export** — Unter **Export** kannst du dein Inventar als PDF oder CSV ausgeben — praktisch für die Versicherung

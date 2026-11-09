@@ -74,7 +74,7 @@ Das fertige Paket von [palindrom.de/valusafe](https://palindrom.de/valusafe/) is
 
 ValuSafe hat keine Telemetrie, meldet nichts nach Hause und zählt keine Zugriffe. Chart.js, die Barcode-Bibliothek, das Zuschneide-Werkzeug und die Symbolschrift liegen auf Ihrem eigenen Server, nicht bei einem Anbieter.
 
-Es gibt genau eine Funktion, die nach außen geht, und sie ist freiwillig: Wenn Sie einen Barcode oder eine ISBN nachschlagen lassen, fragt der Server öffentliche Produktdatenbanken ab — Open Library, Google Books, UPCitemdb, Open Food Facts, Open Beauty Facts — und zwar mit dem Code, den Sie gescannt haben. Mehr wird nicht übermittelt, und wer diesen Knopf nie benutzt, bei dem verlassen keine Inventardaten den eigenen Server. Das Scannen selbst geschieht im Browser. Sonst geht nur E-Mail hinaus, und nur, wenn Sie die Funktionen benutzen, die sie verschicken: Passwort zurücksetzen, das Kontaktformular der öffentlichen Ansicht, Hinweise zur Sicherung. Alles andere funktioniert auch auf einem Rechner ganz ohne Internetverbindung.
+Es gibt genau eine Funktion, die nach außen geht, und sie ist freiwillig: Wenn Sie einen Barcode oder eine ISBN nachschlagen lassen, fragt der Server öffentliche Produktdatenbanken ab — Deutsche Nationalbibliothek, Open Library, Google Books, MusicBrainz, Cover Art Archive, UPCitemdb, Open Food Facts, Open Beauty Facts — und zwar mit dem Code, den Sie gescannt haben. Mehr wird nicht übermittelt, und wer diesen Knopf nie benutzt, bei dem verlassen keine Inventardaten den eigenen Server. Das Scannen selbst geschieht im Browser. Sonst geht nur E-Mail hinaus, und nur, wenn Sie die Funktionen benutzen, die sie verschicken: Passwort zurücksetzen, das Kontaktformular der öffentlichen Ansicht, Hinweise zur Sicherung. Alles andere funktioniert auch auf einem Rechner ganz ohne Internetverbindung.
 
 ## Sicherheit
 
@@ -104,7 +104,7 @@ Was das für Sie bedeutet, ohne Beschönigung:
 - **Es wird gepflegt, aber es gibt keine Zusage auf Unterstützung.** Kein Servicevertrag, keine Rufbereitschaft, keine zugesagte Antwortzeit.
 - **Korrekturen gibt es nur für die aktuelle Fassung.** Ältere Versionen werden nicht nachgepflegt.
 - **Es gibt Altlasten.** Der Code ist über ein Jahr gewachsen, und das sieht man — [ARCHITECTURE.de.md](ARCHITECTURE.de.md) führt die bekannten Schwachstellen ehrlich auf. Die größte Altlast, drei konkurrierende Modelle für Räume und Standorte, wurde im September 2026 bereinigt (Versionen 4.3.24 und 4.3.25).
-- **Den Verzeichnisschutz macht die `.htaccess`.** Auf einem Webserver, der sie nicht liest — etwa Nginx — müssen Sie die gleichwertigen Regeln selbst schreiben. Ein Nginx-Regelsatz liegt noch nicht bei.
+- **Den Verzeichnisschutz macht die `.htaccess`.** Auf einem Webserver, der sie nicht liest — etwa Nginx — brauchen Sie gleichwertige Regeln. Eine Vorlage für Nginx liegt unter `install/nginx-valusafe.conf.example`; sie wurde noch nicht auf einem laufenden Nginx erprobt, prüfen Sie also die darin genannten Adressen.
 
 Fehlermeldungen und Fragen sind willkommen. Beiträge ebenfalls — nur kann ein einzelner Entwickler nicht versprechen, wann er dazu kommt.
 

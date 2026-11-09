@@ -1,14 +1,14 @@
 <?php
 /**
  * barcode_lookup.php
- * Universeller Barcode-Lookup: ISBN (Bücher), EAN/UPC (Produkte)
+ * Universeller Barcode-Lookup: ISBN (Bücher), EAN/UPC (Musik, Produkte)
  *
  * GET-Parameter: ?code=<barcode>
  *
  * Rückgabe JSON:
  * {
  *   found: true/false,
- *   type: 'book' | 'product' | 'unknown',
+ *   type: 'book' | 'music' | 'product' | 'unknown',
  *   name: string,
  *   description: string|null,
  *   brand: string|null,
@@ -59,10 +59,10 @@ function detectType(string $code): string {
 $type = detectType($code);
 
 // ── HTTP-Helper ───────────────────────────────────────────────────────────
-function fetchJson(string $url): ?array {
+function fetchJson(string $url, string $userAgent = 'Wertsachen-Inventarverwaltung/3.16 (barcode lookup)'): ?array {
     $ctx = stream_context_create(['http' => [
         'timeout'        => 6,
-        'user_agent'     => 'Wertsachen-Inventarverwaltung/3.16 (barcode lookup)',
+        'user_agent'     => $userAgent,
         'ignore_errors'  => true,
     ]]);
     $raw = @file_get_contents($url, false, $ctx);
@@ -323,8 +323,113 @@ function lookupISBNWeltweit(string $isbn): array {
     return ['found' => false, 'type' => 'book'];
 }
 
-// ── EAN/UPC → Open Food Facts, dann Open Beauty Facts, dann UPCitemdb ────
+// ── EAN/UPC → MusicBrainz (CDs, LPs) ──────────────────────────────────────
+// Ohne Schluessel, Kerndaten CC0. MusicBrainz verlangt eine aussagekraeftige
+// Absenderkennung und hoechstens eine Abfrage je Sekunde. Keine Preise.
+const VS_MB_UA = 'ValuSafe/4 ( https://palindrom.de/valusafe/ )';
+
+/** Cover nur anbieten, wenn es eines gibt: erst die Pressung, dann das Album. */
+function musikCover(string $releaseId, string $gruppenId): ?string {
+    foreach ([['release', $releaseId], ['release-group', $gruppenId]] as [$art, $id]) {
+        if (!preg_match('/^[0-9a-f-]{36}$/', $id)) continue;
+        $url = "https://coverartarchive.org/{$art}/{$id}/front-500";
+        $ctx = stream_context_create(['http' => [
+            'method'          => 'HEAD',
+            'timeout'         => 3,
+            'user_agent'      => VS_MB_UA,
+            'ignore_errors'   => true,
+            'follow_location' => false,
+            'max_redirects'   => 0,
+        ]]);
+        $fp = @fopen($url, 'rb', false, $ctx);
+        if ($fp === false) continue;
+        $status = stream_get_meta_data($fp)['wrapper_data'][0] ?? '';
+        fclose($fp);
+        if (preg_match('/HTTP\/[\d.]+\s+(200|30[1278])/', $status)) return $url;
+    }
+    return null;
+}
+
+function lookupMusicBrainz(string $ean): ?array {
+    // Dieselbe Ware kann als UPC-A (12) oder mit fuehrender 0 (13) gelesen
+    // werden und in MusicBrainz in beiden Schreibweisen stehen.
+    $kern      = ltrim($ean, '0');
+    $varianten = [$kern];
+    if (strlen($kern) < 13) $varianten[] = '0' . $kern;
+    $abfrage = implode(' OR ', array_map(fn($v) => 'barcode:' . $v, $varianten));
+
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        $warten = ($_SESSION['vs_mb_letzte'] ?? 0) + 1.1 - microtime(true);
+        if ($warten > 0) usleep((int)($warten * 1000000));
+        $_SESSION['vs_mb_letzte'] = microtime(true);
+    }
+
+    $url  = 'https://musicbrainz.org/ws/2/release/?fmt=json&limit=10&query=' . rawurlencode($abfrage);
+    $data = fetchJson($url, VS_MB_UA);
+    // Gemessen 09.11.2026: 503 auch bei mehreren Sekunden Abstand. Antwortet
+    // der Dienst mit einem Fehler, einmal nachfassen (bei Zeitueberschreitung
+    // nicht, sonst wartet der Scan doppelt).
+    if (is_array($data) && !isset($data['releases'])) {
+        usleep(1500000);
+        $data = fetchJson($url, VS_MB_UA);
+    }
+
+    // Ein Barcode passt oft auf mehrere Eintraege derselben Pressung:
+    // den vollstaendigsten nehmen, bei Gleichstand den ersten.
+    $beste  = null;
+    $punkte = -1;
+    foreach ($data['releases'] ?? [] as $r) {
+        if (ltrim((string)($r['barcode'] ?? ''), '0') !== $kern || empty($r['title'])) continue;
+        $p = (!empty($r['date']) ? 2 : 0)
+           + (!empty($r['media'][0]['format']) ? 2 : 0)
+           + (!empty($r['label-info'][0]['catalog-number']) ? 1 : 0);
+        if ($p > $punkte) { $beste = $r; $punkte = $p; }
+    }
+    if ($beste === null) return null;
+
+    $kuenstler = '';
+    foreach ($beste['artist-credit'] ?? [] as $c) {
+        $kuenstler .= ($c['name'] ?? '') . ($c['joinphrase'] ?? '');
+    }
+
+    $formate = [];
+    foreach ($beste['media'] ?? [] as $m) {
+        if (!empty($m['format'])) $formate[$m['format']] = ($formate[$m['format']] ?? 0) + 1;
+    }
+    $format = [];
+    foreach ($formate as $f => $n) $format[] = ($n > 1 ? "{$n}×" : '') . $f;
+
+    $jahr  = substr((string)($beste['date'] ?? ''), 0, 4) ?: null;
+    $label = $beste['label-info'][0]['label']['name'] ?? null;
+    $katNr = $beste['label-info'][0]['catalog-number'] ?? null;
+    // Platzhalter von MusicBrainz nicht in die Notizen uebernehmen
+    if ($label === '[no label]') $label = null;
+    if ($katNr === '[none]')     $katNr = null;
+
+    // Sprachneutral, damit keine Sprache deutsche Beschriftungen erhaelt
+    $details = array_filter([implode(' + ', $format), $jahr, $label, $katNr]);
+
+    return [
+        'found'       => true,
+        'type'        => 'music',
+        // Kuenstler im Namen: die Doppelten-Pruefung vergleicht Name und
+        // Ersteller, und "Greatest Hits" gibt es von vielen.
+        'name'        => $kuenstler !== '' ? "{$kuenstler} – {$beste['title']}" : $beste['title'],
+        'description' => $details ? implode(' · ', $details) : null,
+        'brand'       => null,
+        'category'    => 'Musik',
+        'year'        => $jahr,
+        'cover'       => musikCover((string)($beste['id'] ?? ''), (string)($beste['release-group']['id'] ?? '')),
+        'source'      => 'MusicBrainz',
+    ];
+}
+
+// ── EAN/UPC → MusicBrainz, Open Food Facts, Open Beauty Facts, UPCitemdb ──
 function lookupEAN(string $ean): array {
+
+    // Musik zuerst: sonst warten CDs auf zwei Lebensmittel-Datenbanken
+    $musik = lookupMusicBrainz($ean);
+    if ($musik !== null) return $musik;
 
     // 1. Open Food Facts (Lebensmittel)
     $url  = "https://world.openfoodfacts.org/api/v0/product/{$ean}.json";

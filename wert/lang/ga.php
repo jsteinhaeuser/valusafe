@@ -29,6 +29,7 @@ return [
     'nav_export' => 'Easpórtáil',
     'nav_admin'  => 'Riarachán',
     'nav_logout' => 'Logáil amach',
+    'nav_more' => 'Tuilleadh',
     
     // Export Dropdown
     'nav_export_csv' => 'Comhad CSV',

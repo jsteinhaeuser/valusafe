@@ -2,6 +2,7 @@
     </div><!-- /.vs-workspace -->
 </div><!-- /.vs-main -->
 
+<?php $vsBnavRoot = '../'; include __DIR__ . '/../../components/bottom_nav.php'; ?>
 
 <!-- Service Modal (Hilfe & Informationen) -->
 <style>

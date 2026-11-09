@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 08.11.2026 15:58 von bin/changelog_export.php.
+ * Erzeugt am 09.11.2026 15:50 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,48 @@
  */
 
 return [
+    [
+        'version' => '4.9.1',
+        'date' => '2026-11-09',
+        'entries' => [
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'CDs und LPs: Die Barcode-Suche findet jetzt auch Musik über MusicBrainz – mit Künstler, Titel, Erscheinungsjahr und Cover.',
+                'text_en' => 'CDs and LPs: the barcode lookup now also finds music via MusicBrainz, with artist, title, release year and cover.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'iPhone im Hochformat: Die untere Navigation war versehentlich ausgeblendet. Sie erscheint jetzt auf allen Seiten, „Mehr“ öffnet das vollständige Menü mit Abmelden.',
+                'text_en' => 'iPhone in portrait: the bottom navigation was hidden by mistake. It now appears on every page, and “More” opens the full menu including logout.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'iPhone im Querformat: Die Icon-Leiste lässt sich scrollen, die unteren Einträge wie Abmelden sind wieder erreichbar.',
+                'text_en' => 'iPhone in landscape: the icon bar now scrolls, so the lower entries such as logout can be reached again.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Installation: Die Schutzdateien für die Ordner „upload“ und „documents“ fehlten im Installationspaket. Wer aus dem Paket installiert hat, sollte sie von Hand ergänzen (siehe Release-Hinweise).',
+                'text_en' => 'Installation: the protection files for the “upload” and “documents” folders were missing from the installation package. If you installed from the package, please add them by hand (see the release notes).'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Installation: Die .htaccess-Dateien funktionieren jetzt auch auf Apache 2.4 ohne mod_php und ohne mod_access_compat (z. B. Synology Web Station) und hinter einem vorgeschalteten Proxy. Bisher antwortete die Anwendung dort mit Fehler 500.',
+                'text_en' => 'Installation: the .htaccess files now also work on Apache 2.4 without mod_php and mod_access_compat (e.g. Synology Web Station) and behind a reverse proxy. Until now the application answered with error 500 there.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Datenschutz: Die Erklärung nennt jetzt die Verzeichnisse, die beim Nachschlagen von Barcode oder ISBN angefragt werden.',
+                'text_en' => 'Privacy: the privacy policy now names the directories that are queried when you look up a barcode or ISBN.'
+            ]
+        ]
+    ],
     [
         'version' => '4.9',
         'date' => '2026-11-08',
@@ -135,24 +177,6 @@ return [
                 'public' => true,
                 'text' => 'Übersetzungen: Die Kachel „Backup-Status“ in der Verwaltung, Zahlungsweise und Gebäudeart in der Versicherungsübersicht sowie die Anzahl „1 Gegenstand“ waren in anderen Sprachen noch deutsch bzw. falsch.',
                 'text_en' => 'Translations: the “Backup status” tile in the administration, payment mode and building type in the insurance overview, and the count “1 item” were still in German or wrong in other languages.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.7',
-        'date' => '2026-11-02',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Updates per Knopfdruck: Unter Verwaltung > Update zeigt ValuSafe, ob es eine neue Version gibt, lädt das Update-Paket auf Wunsch herunter, prüft seine Signatur und spielt es ein - mit Sicherung der Datenbank vorher und Rückkehr zur bisherigen Version, falls etwas schiefgeht. Wer keinen Internetzugang vom Server aus hat, kann das Paket auch hochladen. Gilt ab dem Update nach 4.7; 4.7 selbst wird noch von Hand installiert.',
-                'text_en' => 'One-click updates: under Administration > Update, ValuSafe shows whether a new version is available, downloads the update package on request, verifies its signature and installs it - backing up the database first and returning to the previous version if anything goes wrong. Servers without internet access can upload the package instead. Works from the update after 4.7; 4.7 itself is still installed by hand.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Versionsabfrage: Höchstens einmal am Tag fragt ValuSafe bei palindrom.de nach einer neuen Version, nur wenn ein Administrator die Verwaltung öffnet. Übertragen wird nichts außer der IP-Adresse des Servers. Abschaltbar mit define(\'VALUSAFE_UPDATE_PRUEFEN\', false) in config.php; steht in der Vorlage der Datenschutzerklärung.',
-                'text_en' => 'Version check: at most once a day, and only when an administrator opens the administration, ValuSafe asks palindrom.de whether a new version exists. Nothing is transmitted except the server\'s IP address. Can be switched off with define(\'VALUSAFE_UPDATE_PRUEFEN\', false) in config.php; covered in the privacy policy template.'
             ],
             [
                 'type' => 'feature',

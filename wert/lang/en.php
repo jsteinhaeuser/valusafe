@@ -23,6 +23,7 @@ return [
     'nav_export' => 'Export',
     'nav_admin'  => 'Admin',
     'nav_logout' => 'Logout',
+    'nav_more' => 'More',
     
     // Export Dropdown
     'nav_export_csv' => 'CSV File',

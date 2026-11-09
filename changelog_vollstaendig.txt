@@ -2,7 +2,27 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 08.11.2026 aus der Projektchronik.
+Erzeugt am 09.11.2026 aus der Projektchronik.
+
+Version 4.9.1   09.11.2026
+--------------------------
+  [Neu] CDs und LPs: Die Barcode-Suche findet jetzt auch Musik über
+        MusicBrainz – mit Künstler, Titel, Erscheinungsjahr und Cover.
+  [Fix] iPhone im Hochformat: Die untere Navigation war versehentlich
+        ausgeblendet. Sie erscheint jetzt auf allen Seiten, „Mehr“ öffnet
+        das vollständige Menü mit Abmelden.
+  [Fix] iPhone im Querformat: Die Icon-Leiste lässt sich scrollen, die
+        unteren Einträge wie Abmelden sind wieder erreichbar.
+  [Fix] Installation: Die Schutzdateien für die Ordner „upload“ und
+        „documents“ fehlten im Installationspaket. Wer aus dem Paket
+        installiert hat, sollte sie von Hand ergänzen (siehe
+        Release-Hinweise).
+  [Fix] Installation: Die .htaccess-Dateien funktionieren jetzt auch auf
+        Apache 2.4 ohne mod_php und ohne mod_access_compat (z. B. Synology Web
+        Station) und hinter einem vorgeschalteten Proxy. Bisher antwortete die
+        Anwendung dort mit Fehler 500.
+  [Neu] Datenschutz: Die Erklärung nennt jetzt die Verzeichnisse, die beim
+        Nachschlagen von Barcode oder ISBN angefragt werden.
 
 Version 4.9   08.11.2026
 ------------------------

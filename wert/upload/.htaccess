@@ -1,17 +1,26 @@
 # upload/.htaccess - Schutz des Upload-Verzeichnisses
 
-# Verhindere PHP-Ausführung
-<FilesMatch "\.php$">
-    Order allow,deny
-    Deny from all
+# Verhindere Skript-Ausführung, auch mit Doppelendung (x.php.jpg).
+# Die Sperre muss selbst greifen: Wo PHP per SetHandler angebunden ist
+# (PHP-FPM), hebt RemoveHandler weiter unten nichts auf.
+<FilesMatch "(?i)\.(php\d?|phtml|phar|phps|cgi|pl|py|jsp|asp|sh)(\.|$)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # Verhindere Verzeichnis-Listing
 Options -Indexes
 
 # Entferne Script-Handler
-RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps .cgi .pl .py .jsp .asp .sh
-RemoveType .php .phtml .php3 .php4 .php5 .php7 .phps
+<IfModule mod_mime.c>
+    RemoveHandler .php .phtml .php3 .php4 .php5 .php7 .phps .cgi .pl .py .jsp .asp .sh
+    RemoveType .php .phtml .php3 .php4 .php5 .php7 .phps
+</IfModule>
 
 # Setze Content-Type für Bilder
 <IfModule mod_headers.c>

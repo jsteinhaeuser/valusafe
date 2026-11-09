@@ -74,7 +74,7 @@ The ready-made package from [palindrom.de/valusafe](https://palindrom.de/valusaf
 
 ValuSafe has no telemetry, no phone-home and no analytics. Chart.js, the barcode library, the image cropper and the icon font are served from your own server, never from a CDN.
 
-There is exactly one outward-facing feature, and it is optional: when you look up a barcode or an ISBN, the server queries public product databases — Open Library, Google Books, UPCitemdb, Open Food Facts, Open Beauty Facts — with the code you scanned. Nothing else about your inventory is sent, and if you never use that button, none of your inventory data leaves your server. Scanning itself happens in the browser. The only other traffic is e-mail, if you use the features that send it: password reset, the contact form of the public view, backup notifications. Everything else works on a machine with no internet connection at all.
+There is exactly one outward-facing feature, and it is optional: when you look up a barcode or an ISBN, the server queries public product databases — German National Library, Open Library, Google Books, MusicBrainz, Cover Art Archive, UPCitemdb, Open Food Facts, Open Beauty Facts — with the code you scanned. Nothing else about your inventory is sent, and if you never use that button, none of your inventory data leaves your server. Scanning itself happens in the browser. The only other traffic is e-mail, if you use the features that send it: password reset, the contact form of the public view, backup notifications. Everything else works on a machine with no internet connection at all.
 
 ## Security
 
@@ -104,7 +104,7 @@ What that means for you, stated plainly:
 - **It is maintained, but there is no support promise.** No service level, no on-call, no guaranteed response time.
 - **Only the current version gets fixes.** There are no backports to older releases.
 - **There is legacy inside.** The code has grown over a year and it shows — [ARCHITECTURE.md](ARCHITECTURE.md) lists the known weak spots, honestly. The largest piece of legacy, three competing models for rooms and locations, was cleaned up in September 2026 (versions 4.3.24 and 4.3.25).
-- **`.htaccess` does the directory protection.** On a web server that ignores `.htaccess` — Nginx, for instance — you have to write the equivalent rules yourself. An Nginx rule set is not yet included.
+- **`.htaccess` does the directory protection.** On a web server that ignores `.htaccess` — Nginx, for instance — you need equivalent rules. A template for Nginx is at `install/nginx-valusafe.conf.example`; it has not yet been tried on a running Nginx, so check the addresses listed in it.
 
 Bug reports and questions are welcome as issues. Pull requests are welcome too, but a single maintainer cannot promise when he will get to them.
 

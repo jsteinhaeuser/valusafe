@@ -1264,7 +1264,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Ladenpreis (DNB, seit 4.9) nur in ein leeres Preisfeld bzw. eines mit 0
             const preisEl = document.getElementById('preis');
             if (data.price && preisEl && !(parseFloat(String(preisEl.value).replace(',', '.')) > 0)) preisEl.value = Number(data.price).toFixed(2);
-            if (data.year) {
+            // Bei Musik ist das Jahr die Veroeffentlichung, nicht der Kauf
+            if (data.year && data.type !== 'music') {
                 const y = (data.year + '').match(/\d{4}/)?.[0];
                 if (y && !dateEl.value) dateEl.value = y + '-01-01';
             }

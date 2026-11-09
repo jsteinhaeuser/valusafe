@@ -21,6 +21,7 @@ return [
     'nav_export' => 'Eksport',
     'nav_admin'  => 'Admin',
     'nav_logout' => 'Wyloguj',
+    'nav_more' => 'Więcej',
     'nav_export_csv' => 'Plik CSV',
     'nav_export_html' => 'Strona HTML',
     'nav_export_pdf' => 'PDF Szczegółowy',

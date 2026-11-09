@@ -88,6 +88,8 @@ $allowedDomains = [
     // Open Library (leitet auf archive.org CDN weiter)
     'covers.openlibrary.org',
     'archive.org',
+    // Cover Art Archive (CDs, LPs; leitet ebenfalls auf archive.org weiter)
+    'coverartarchive.org',
     // Amazon
     'images-na.ssl-images-amazon.com',
     'm.media-amazon.com',

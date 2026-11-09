@@ -1,24 +1,45 @@
 # .htaccess für Root-Verzeichnis
+#
+# Seit 4.9.1 auch für Apache 2.4 ohne mod_access_compat und ohne mod_php (Synology
+# Web Station u. a.): "Order" und "php_flag" sind dort unbekannte Befehle, und ein
+# einziger unbekannter Befehl ergibt 500 auf allen Seiten.
 
 <FilesMatch "^(RESET_CACHE|reset_cache|migrate_|setup_|fix_|bulk_.*debug|old_login).*\.php$">
-    Order deny,allow
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
-# HTTPS erzwingen
-RewriteEngine On
-RewriteCond %{HTTPS} off
-RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# HTTPS erzwingen. X-Forwarded-Proto: Hinter einem Proxy (Nginx vor Apache) ist die
+# Verbindung zu Apache unverschlüsselt, ohne die Bedingung würde endlos umgeleitet.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteCond %{HTTP:X-Forwarded-Proto} !https
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
 
-# PHP-Einstellungen
-php_flag display_errors Off
-php_flag log_errors On
-php_value error_log /path/to/php-error.log
-
-# Upload-Limit (Fotos von Kompaktkameras)
-php_value upload_max_filesize 20M
-php_value post_max_size 24M
-php_value max_file_uploads 20
+# PHP-Einstellungen (nur mit mod_php; PHP 8 heisst dort mod_php.c)
+<IfModule mod_php.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log /path/to/php-error.log
+    php_value upload_max_filesize 20M
+    php_value post_max_size 24M
+    php_value max_file_uploads 20
+</IfModule>
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log /path/to/php-error.log
+    php_value upload_max_filesize 20M
+    php_value post_max_size 24M
+    php_value max_file_uploads 20
+</IfModule>
 
 # Schutz vor Verzeichnis-Listing
 Options -Indexes
@@ -26,15 +47,25 @@ Options -Indexes
 # Schutz sensibler Dateien
 # SecurityHeaders.php hinzugefügt (enthält keine Geheimnisse, aber kein Direktaufruf nötig)
 <FilesMatch "^(config\.php|db\.php|security\.php|SecurityHeaders\.php)$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # Schutz von Backup-, Log- und ini-Dateien (.user.ini u. a. - seit 4.3.29 nicht mehr ausgeliefert, aber ein Rest waere sonst lesbar)
 # (\.\d+)? seit 4.5.2: auch rotierte Reste wie php_errors.log.1 (OWASP-A01-004)
 <FilesMatch "\.(sql|log|bak|backup|ini)(\.\d+)?$">
-    Order allow,deny
-    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 # Session-Cookie Sicherheit

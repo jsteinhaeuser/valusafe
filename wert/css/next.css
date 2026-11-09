@@ -16,6 +16,7 @@
 body.vs-next {
     display: flex;
     height: 100vh;
+    height: 100dvh; /* iPhone: 100vh ist hoeher als die sichtbare Flaeche */
     overflow: hidden;
     background: var(--vs-bg);
     margin: 0; padding: 0;
@@ -27,7 +28,7 @@ body.vs-next {
 /* Navy.css-Strukturen neutralisieren */
 body.vs-next .container       { max-width: none !important; padding: 0 !important; margin: 0 !important; }
 body.vs-next > header,
-body.vs-next > nav,
+body.vs-next > nav:not(.vs-bottom-nav),
 body.vs-next .old-header,
 body.vs-next .old-nav          { display: none !important; }
 body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none; border-radius: 0; background: transparent; }
@@ -44,6 +45,11 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     flex-shrink: 0;
     z-index: 100;
     min-width: var(--vs-rail);
+    /* Quer auf dem iPhone sind die Eintraege hoeher als der Bildschirm */
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
 }
 
 .vs-rail-logo {
@@ -60,8 +66,17 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     display: flex; flex-direction: column;
     align-items: center; gap: 2px;
     width: 100%; padding: 0 7px;
+    flex-shrink: 0;
 }
 .vs-rail-spacer { flex: 1; }
+
+/* Schublade auf schmalen Bildschirmen: Regeln im Block bis 600 px */
+.vs-rail-zu, .vs-rail-schirm { display: none; }
+
+@media (max-height: 520px) {
+    .vs-rail      { padding: 6px 0; }
+    .vs-rail-logo { margin-bottom: 6px; }
+}
 
 .vs-rail-btn {
     width: 38px; height: 38px;
@@ -405,6 +420,48 @@ body.vs-next .pagination-container { background: transparent; padding: 12px 0; }
         justify-content: space-around;
         padding: 0 8px;
     }
+    /* Inhalt endet ueber der Leiste, damit sie nichts verdeckt */
+    .vs-main { padding-bottom: 60px; }
+    body.vs-next .bulk-actions-bar { bottom: 72px; }
+
+    /* "Mehr": die Icon-Leiste als Schublade mit Beschriftung */
+    .vs-rail.vs-rail-offen {
+        display: flex;
+        position: fixed; top: 0; bottom: 0; left: 0;
+        width: min(270px, 82vw);
+        align-items: stretch;
+        padding: 10px 0;
+        z-index: 9001;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
+    }
+    .vs-rail-schirm.vs-rail-offen {
+        display: block;
+        position: fixed; inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9000;
+    }
+    .vs-rail-offen .vs-rail-logo { margin-left: 14px; }
+    .vs-rail-offen .vs-rail-nav,
+    .vs-rail-offen .vs-rail-foot { align-items: stretch; padding: 0 8px; }
+    .vs-rail-offen .vs-rail-btn {
+        width: auto; height: 44px;
+        justify-content: flex-start;
+        gap: 12px; padding: 0 10px;
+    }
+    .vs-rail-offen .vs-rail-btn::after {
+        content: attr(title);
+        font-size: 15px;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .vs-rail-offen .vs-rail-btn.vs-rail-on::after { color: var(--vs-rail-text); font-weight: 600; }
+    .vs-rail-offen .vs-rail-zu {
+        display: flex; align-items: center; justify-content: center;
+        position: absolute; top: 6px; right: 8px;
+        width: 44px; height: 44px;
+        color: var(--vs-rail-text);
+        background: none; border: none; cursor: pointer;
+        font-size: 22px;
+    }
 
     .vs-fab { bottom: 70px; right: 14px; width: 42px; height: 42px; }
     .vs-fab-full  { display: none; }
@@ -426,10 +483,13 @@ body.vs-next .pagination-container { background: transparent; padding: 12px 0; }
     align-items: center; justify-content: center;
     gap: 3px; color: var(--vs-text-muted);
     text-decoration: none; font-size: 10px;
-    padding: 6px 14px; border-radius: var(--vs-rsm);
+    padding: 6px 2px; border-radius: var(--vs-rsm);
     transition: color 0.15s;
     border: none; background: none; cursor: pointer;
+    font-family: inherit;
+    flex: 1 1 auto; min-width: 0; /* Breite nach Text: "Versicherungen" braucht mehr */
 }
+.vs-bnav-text { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .vs-bnav-btn.vs-bnav-on { color: var(--vs-accent); }
 .vs-bnav-btn i { font-size: 22px; }
 

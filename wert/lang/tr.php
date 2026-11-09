@@ -23,6 +23,7 @@ return [
     'nav_export' => 'Dışa Aktar',
     'nav_admin'  => 'Yönetim',
     'nav_logout' => 'Çıkış Yap',
+    'nav_more' => 'Daha fazla',
 
     // Dışa Aktarma Menüsü
     'nav_export_csv' => 'CSV Dosyası',

@@ -67,7 +67,7 @@ For extra protection of your account: go to **Settings → Manage two-factor**, 
 ## Everyday tips
 
 - **Search & filter** — Open the search bar at the top to filter by name, category, location or price
-- **Barcode scan** — When adding an item you can scan its barcode (books, groceries, products)
+- **Barcode scan** — When adding an item you can scan its barcode (books, CDs, vinyl records, groceries, products)
 - **Documents** — You can store invoices and warranty certificates directly with the item
 - **Change the order** — In the list view you can freely rearrange your items by drag & drop
 - **Export** — Under **Export** you can output your inventory as PDF or CSV — handy for your insurer

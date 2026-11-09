@@ -99,6 +99,9 @@ include 'header_next_page.php';
 <h3>10. Versionsabfrage</h3>
 <p>Höchstens einmal am Tag fragt der Server, auf dem diese Anwendung läuft, bei palindrom.de (Herausgeber von ValuSafe) nach, ob es eine neue Version gibt – nur wenn ein Administrator die Verwaltung aufruft. Dabei werden keine Daten von Ihnen oder aus dem Inventar übertragen, auch keine Versionsnummer oder Kennung der Installation; palindrom.de erhält wie bei jedem Abruf einer Webseite die IP-Adresse dieses Servers und den Zeitpunkt. Die Abfrage lässt sich in der Konfiguration abschalten.</p>
 
+<h3>11. Nachschlagen von Barcodes und ISBN</h3>
+<p>Wenn Sie beim Erfassen eines Gegenstands einen Barcode oder eine ISBN nachschlagen lassen, sendet der Server, auf dem diese Anwendung läuft, ausschließlich diese Nummer an öffentliche Verzeichnisse, um Titel, Hersteller und ein Vorschaubild zu finden: Deutsche Nationalbibliothek, Google Books, Open Library, MusicBrainz und Cover Art Archive, Open Food Facts, Open Beauty Facts sowie UPCitemdb. Die Anfrage geht vom Server aus, nicht von Ihrem Gerät; Angaben zu Ihrer Person oder zu Ihrem Inventar werden nicht übermittelt. Ohne dass Sie das Nachschlagen auslösen, findet keine Übermittlung statt.</p>
+
 </div>
 
 <?php include 'footer_next.php'; ?>

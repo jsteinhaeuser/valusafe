@@ -43,29 +43,7 @@ if (!function_exists('tn')) {
 <?php endif; ?>
 
 <!-- ── Bottom Navigation (nur Mobile) ───────────────────── -->
-<?php // Bis 4.3.32: Einstellungen zeigte auf backend/settings.php (gibt es nicht, 404),
-      // Versicherungen auf backend/insurance.php (nur Admin - Editor/Leser sahen
-      // "Zugriff verweigert"). Jetzt wie die Seitenleiste. ?>
-<nav class="vs-bottom-nav" aria-label="<?php echo tn('nav_aria_mobile', 'Mobile Navigation'); ?>">
-    <a class="vs-bnav-btn vs-bnav-on" href="index.php" aria-label="<?php echo tn('page_overview', 'Übersicht'); ?>">
-        <i class="ti ti-layout-cards" aria-hidden="true"></i>
-        <?php echo tn('page_overview', 'Übersicht'); ?>
-    </a>
-    <?php if ((function_exists('isSuperAdmin') && isSuperAdmin()) || ($_SESSION['role'] ?? '') === 'admin'): ?>
-    <a class="vs-bnav-btn" href="backend/stats.php" aria-label="<?php echo tn('nav_stats', 'Statistiken'); ?>">
-        <i class="ti ti-chart-pie" aria-hidden="true"></i>
-        <?php echo tn('nav_stats', 'Statistiken'); ?>
-    </a>
-    <?php endif; ?>
-    <a class="vs-bnav-btn" href="insurance.php" aria-label="<?php echo tn('nav_insurance', 'Versicherungen'); ?>">
-        <i class="ti ti-shield" aria-hidden="true"></i>
-        <?php echo tn('nav_insurance', 'Versicherungen'); ?>
-    </a>
-    <a class="vs-bnav-btn" href="settings.php" aria-label="<?php echo tn('nav_settings', 'Einstellungen'); ?>">
-        <i class="ti ti-settings" aria-hidden="true"></i>
-        <?php echo tn('nav_settings', 'Einstellungen'); ?>
-    </a>
-</nav>
+<?php $vsBnavRoot = ''; include __DIR__ . '/components/bottom_nav.php'; ?>
 
 <!-- ── Detail-Pane JS ────────────────────────────────────── -->
 <script>

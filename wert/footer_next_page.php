@@ -2,6 +2,8 @@
     </div><!-- /.vs-workspace -->
 </div><!-- /.vs-main -->
 
+<?php $vsBnavRoot = ''; include __DIR__ . '/components/bottom_nav.php'; ?>
+
 <!-- ── Export-Menü (Body-Portal) ─────────────────────────────── -->
 <?php
 $vsmBase = defined('BASE_URL') ? BASE_URL : '';

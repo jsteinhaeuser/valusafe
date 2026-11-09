@@ -1,8 +1,17 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-11-08.
+All changes that affect users. Generated from the project history on 2026-11-09.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.9.1 — 2026-11-09
+
+- **New:** CDs and LPs: the barcode lookup now also finds music via MusicBrainz, with artist, title, release year and cover.
+- **Fixed:** iPhone in portrait: the bottom navigation was hidden by mistake. It now appears on every page, and “More” opens the full menu including logout.
+- **Fixed:** iPhone in landscape: the icon bar now scrolls, so the lower entries such as logout can be reached again.
+- **Fixed:** Installation: the protection files for the “upload” and “documents” folders were missing from the installation package. If you installed from the package, please add them by hand (see the release notes).
+- **Fixed:** Installation: the .htaccess files now also work on Apache 2.4 without mod_php and mod_access_compat (e.g. Synology Web Station) and behind a reverse proxy. Until now the application answered with error 500 there.
+- **New:** Privacy: the privacy policy now names the directories that are queried when you look up a barcode or ISBN.
 
 ## 4.9 — 2026-11-08
 
