@@ -2,6 +2,8 @@
 
 Self-hosted inventory management for valuables. You record what you own — with photos, purchase price and location — and ValuSafe turns it into overviews, charts and the kind of documentation an insurer asks for after a burglary, a fire or a flood.
 
+**Try it first:** [live demo at valusafe.palindrom.de](https://valusafe.palindrom.de) — sample data, reset every hour. The sign-in details are on [palindrom.de/valusafe/online-test.php](https://www.palindrom.de/valusafe/online-test.php?lang=en). The sample data is in German; switch the interface to English with “EN” on the sign-in page.
+
 The same works for collections — guitars, watches, books, art — and for moving in or out of a rental: the handover report lists everything room by room, with fields for tenant and landlord, ready to print and sign.
 
 It runs on ordinary shared hosting. No framework, no Composer, no Node, no external CDN: upload the files, run the setup wizard, done.
@@ -68,7 +70,7 @@ No shell access needed. No Composer, no build step, no background worker.
 
 The ready-made package from [palindrom.de/valusafe](https://palindrom.de/valusafe/) is already laid out this way, and it also contains the user manuals.
 
-**With Docker:** see [docker/INSTALL.de.md](docker/INSTALL.de.md) — `docker compose up` after filling in a `.env` file. The guide is in German and covers the failure cases that actually happen.
+**With Docker:** see [docker/INSTALL.md](docker/INSTALL.md) — `docker compose up` after filling in a `.env` file. The guide covers the failure cases that actually happen. (German version: [docker/INSTALL.de.md](docker/INSTALL.de.md))
 
 ## Your data stays yours
 
@@ -88,7 +90,8 @@ If you find a security problem, [SECURITY.md](SECURITY.md) says where to report 
 |---|---|
 | [ARCHITECTURE.md](ARCHITECTURE.md) | How the code is built, reconstructed from the source rather than from memory |
 | [SECURITY.md](SECURITY.md) | Reporting security issues, scope, what is out of scope |
-| [docker/INSTALL.de.md](docker/INSTALL.de.md) | Docker installation, step by step (German) |
+| [docker/INSTALL.md](docker/INSTALL.md) | Docker installation, step by step |
+| [docker/INSTALL.de.md](docker/INSTALL.de.md) | The same in German |
 | [CHANGELOG.md](CHANGELOG.md) | Changes that affect users, in English, from version 4.3.28 on |
 | [changelog_vollstaendig.txt](changelog_vollstaendig.txt) | Every change that affects users, all versions (German) |
 | [doku/Benutzerhandbuch.pdf](doku/Benutzerhandbuch.pdf) | User manual (German) — version 4.3.33 |

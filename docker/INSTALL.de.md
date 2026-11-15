@@ -3,7 +3,7 @@
 Diese Anleitung führt von einem leeren System zu einer laufenden ValuSafe-Installation.
 Sie setzt keine Docker-Kenntnisse voraus, aber einen Rechner, auf dem Docker läuft.
 
-**Stand:** 29.08.2026 · gilt ab Version 4.3.3 · auf einer Synology durchlaufen
+**Stand:** 29.08.2026 · gilt ab Version 4.3.3 · auf einer Synology durchlaufen · *(English version: [INSTALL.md](INSTALL.md))*
 
 ---
 
@@ -42,7 +42,7 @@ und das gebaute ValuSafe-Abbild.
 Entweder aus dem Repository klonen:
 
 ```
-git clone <Repository-Adresse> valusafe
+git clone https://github.com/jsteinhaeuser/valusafe.git valusafe
 cd valusafe
 ```
 
@@ -109,7 +109,7 @@ Passwort `changeme` aus.
 
 Der Anmeldename des ersten Administrators, zum Beispiel `admin`. Dieser Name
 wird zugleich als `SUPERADMIN_USERNAME` gesetzt; **nur dieses Konto erreicht die
-Benutzerverwaltung** im Backend.
+Benutzerverwaltung** im Admin-Bereich.
 
 `ADMIN_PASS` bleibt leer. Dann erzeugt der Container beim ersten Start ein
 Zufallspasswort und zeigt es einmalig im Log an (siehe Abschnitt 5).
@@ -160,7 +160,7 @@ Im Log steht ein Kasten:
      Passwort:  malVOXeZ02HBtimrI6XEjy7M
 
    Dieses Passwort wird nur EINMAL angezeigt. Notiere es jetzt
-   oder aendere es nach der ersten Anmeldung unter Profil.
+   oder aendere es nach der ersten Anmeldung unter Einstellungen.
   ============================================================
 ```
 
@@ -183,14 +183,15 @@ Servers und den in `APP_PORT` gesetzten Port.
 Vier Dinge nach der Anmeldung prüfen:
 
 1. **Anmeldung** mit Benutzername und Passwort aus dem Log.
-2. **Backend → Benutzer** ist erreichbar. Ist es das nicht, stimmt `ADMIN_USER`
+2. **Admin → Benutzer** ist erreichbar (Zahnrad „Admin“ in der linken Leiste,
+   dort Kachel „Benutzer“, „Verwalten“). Ist es das nicht, stimmt `ADMIN_USER`
    in der `.env` nicht mit dem angemeldeten Konto überein.
 3. **Einen Gegenstand anlegen**, mit Raum und Standort. Damit ist bestätigt,
    dass das vollständige Schema eingespielt wurde.
-4. **Eigenes Passwort setzen** unter Profil, falls es erzeugt wurde.
+4. **Eigenes Passwort setzen** unter Einstellungen, falls es erzeugt wurde.
 
-Danach empfiehlt sich ein Blick in **Einstellungen**: Instanzname, Sprache,
-Themenauswahl.
+Danach empfiehlt sich ein Blick in **Einstellungen**: Sprache und Theme.
+Den Namen der Instanz legt `APP_NAME` in der `.env` fest.
 
 ---
 
@@ -290,7 +291,7 @@ Drei Dinge sind zu sichern:
 | Bilder | Volume `uploads` |
 | Dokumente | Volume `documents` |
 
-Die Anwendung bringt unter **Backend → Backup** eine eigene Sicherung mit, die
+Die Anwendung bringt unter **Admin → Backup** eine eigene Sicherung mit, die
 Datenbank und Dateien in ein Archiv schreibt. Für automatische Sicherungen gibt
 es `cron_backup.php`; der dafür nötige Token liegt nach dem ersten Start unter
 `backups/.backup_token` im gleichnamigen Volume.
@@ -306,7 +307,56 @@ es `cron_backup.php`; der dafür nötige Token liegt nach dem ersten Start unter
 - **phpMyAdmin** ist in `docker-compose.yml` enthalten, startet aber nur mit
   `docker compose --profile dev up -d`. Für den regulären Betrieb nicht
   verwenden.
-- **Aktualisierung auf eine neue ValuSafe-Version.** Bisher nicht beschrieben.
+- **Aktualisierung auf eine neue ValuSafe-Version** ist noch nicht erprobt;
+  siehe den Abschnitt darunter.
+
+---
+
+## 10. Aktualisieren
+
+Im Container ist der Update-Knopf der Anwendung gesperrt. Eine neue Version
+kommt über ein neu gebautes Abbild; die Daten liegen in den Volumes und
+bleiben dabei erhalten.
+
+Vorher eine Sicherung unter **Admin → Backup** anlegen und herunterladen.
+Dann im Projektverzeichnis:
+
+```
+git pull
+cd docker
+docker compose build
+docker compose up -d
+```
+
+Wer aus einem Archiv installiert hat, entpackt stattdessen das neue Archiv
+über das alte Verzeichnis; die `.env` in `docker/` bleibt dabei stehen.
+
+Neue Versionen bringen manchmal Änderungen an der Datenbank mit. Der Container
+spielt sie bei jedem Start selbst ein; bereits ausgeführte merkt sich die
+Anwendung und überspringt sie. Was geschehen ist, steht im Log:
+
+```
+docker compose logs app | grep -i migration
+```
+
+Schlägt eine Änderung fehl, startet der Container nicht und zeigt im Log die
+Ausgabe des Migrationslaufs.
+
+**Ausnahme:** Installationen, die vor dem 26.09.2026 aufgesetzt wurden und auf
+denen nie eine Migration lief. Dort ist nicht feststellbar, welche Änderungen
+das Schema schon enthält, und alle nachzuholen kann Standortangaben löschen.
+Der Container führt dann nichts aus und zeigt stattdessen eine Warnung. In
+diesem Fall erst sichern, dann nachsehen, was anstünde:
+
+```
+docker compose exec app php migrate.php --dry-run
+```
+
+und den eigentlichen Lauf (derselbe Befehl ohne `--dry-run`) erst ausführen,
+wenn klar ist, was er tut.
+
+Dieser Ablauf folgt aus dem Aufbau von Abbild und Entrypoint, ist aber noch
+nicht an einer bestehenden Installation durchgespielt worden.
 
 ---
 
@@ -317,7 +367,7 @@ Verzeichnis bis zur angemeldeten Anwendung. Testumgebung: Synology NAS,
 Container Manager (Docker 24.0.2, Compose 2.20.1), btrfs.
 
 **Bestätigt:** Aufbau des Abbilds, Erstinitialisierung der Datenbank mit allen
-22 Tabellen, Anlage des Administratorkontos mit Passwortausgabe im Log,
+Tabellen (damals 22; das heutige `install/schema.sql` legt 21 an), Anlage des Administratorkontos mit Passwortausgabe im Log,
 Anmeldung im Browser, Zugriff auf die Benutzerverwaltung, Anlegen eines
 Gegenstands mit Raum und Standort, Passwortwechsel im Profil.
 
@@ -328,4 +378,4 @@ Hinweis auf die DSM-Firewall in Abschnitt 7.
 
 **Weiterhin nicht geprüft** ist alles, was Abschnitt 9 aufzählt: der Betrieb
 hinter einem Reverse Proxy mit HTTPS, und die Aktualisierung einer bestehenden
-Installation auf eine neuere ValuSafe-Version.
+Installation auf eine neuere ValuSafe-Version (Abschnitt 10).

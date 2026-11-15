@@ -250,7 +250,7 @@ case "$ADMIN_RESULT" in
         echo "     Passwort:  ${A_PASS}"
         echo ""
         echo "   Dieses Passwort wird nur EINMAL angezeigt. Notiere es jetzt"
-        echo "   oder aendere es nach der ersten Anmeldung unter Profil."
+        echo "   oder aendere es nach der ersten Anmeldung unter Einstellungen."
         echo "  ============================================================"
         echo ""
         ;;
@@ -264,6 +264,73 @@ case "$ADMIN_RESULT" in
         echo "$ADMIN_RESULT"
         echo ""
         exit 1
+        ;;
+esac
+
+# ── Datenbank-Migrationen bei jedem Start ─────────────────────────────────────
+# Im Container ist der Update-Knopf gesperrt (VALUSAFE_DOCKER=1); eine neue
+# Version kommt als neues Abbild. Bis 4.9.1 musste danach jemand migrate.php
+# von Hand aufrufen, obwohl der Changelog zu 4.8 etwas anderes behauptete.
+# Jetzt laeuft es hier. Bereits angewendete Migrationen stehen in
+# schema_migrations und werden uebersprungen; beim allerersten Start hat der
+# Block darueber sie alle als erledigt eingetragen, es passiert dann nichts.
+#
+# Ausnahme: schema_migrations ist LEER, obwohl die Installation schon benutzt
+# wird. Das sind Installationen, die vor dem 26.09.2026 aufgesetzt wurden
+# (damals fehlte das Vorbelegen) und auf denen migrate.php nie lief. Dort
+# wuerden alle Migrationen nachgeholt, und 005 + 012 nacheinander loeschen
+# echte Standortangaben. Deshalb in diesem Fall nichts tun und laut warnen.
+MIG_STAND="$(php -r '
+try {
+    $pdo = new PDO(
+        "mysql:host=" . getenv("DB_HOST") . ";dbname=" . getenv("DB_NAME") . ";charset=utf8mb4",
+        getenv("DB_USER"), getenv("DB_PASS"),
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+    echo (int)$pdo->query("SELECT COUNT(*) FROM schema_migrations")->fetchColumn();
+} catch (Exception $e) {
+    echo "FEHLER " . $e->getMessage();
+}
+' 2>&1)"
+
+case "$MIG_STAND" in
+    0)
+        echo ""
+        echo "  ============================================================"
+        echo "   WARNUNG: Datenbank-Migrationen NICHT automatisch ausgefuehrt"
+        echo ""
+        echo "   Die Tabelle schema_migrations ist leer. Diese Installation"
+        echo "   wurde vermutlich vor dem 26.09.2026 aufgesetzt, und es ist"
+        echo "   nicht feststellbar, welche Migrationen ihr Schema schon"
+        echo "   enthaelt. Alle nachzuholen kann Standortangaben loeschen."
+        echo ""
+        echo "   Erst eine Sicherung anlegen, dann ansehen, was anstuende:"
+        echo "     docker compose exec app php migrate.php --dry-run"
+        echo "   Siehe docker/INSTALL.md (Abschnitt 10)."
+        echo "  ============================================================"
+        echo ""
+        ;;
+    ''|*[!0-9]*)
+        echo "[Entrypoint] FEHLER: Migrationsstand nicht lesbar:"
+        echo "$MIG_STAND"
+        exit 1
+        ;;
+    *)
+        echo "[Entrypoint] Pruefe Datenbank-Migrationen..."
+        if MIG_AUSGABE="$(cd /var/www/html && php migrate.php 2>&1)"; then
+            # Nur die Zusammenfassung und neu angewendete Migrationen zeigen.
+            printf '%s\n' "$MIG_AUSGABE" | grep -E '^\[APPLIED|^bereits angewendet' | sed 's/^/[Entrypoint] Migration: /'
+        else
+            # Ohne vollstaendiges Schema lieber nicht starten: die Anwendung
+            # liefe sonst auf einem halben Stand. Nachfolgende Migrationen
+            # hat migrate.php ohnehin nicht mehr ausgefuehrt.
+            echo ""
+            echo "[Entrypoint] FEHLER: Eine Datenbank-Migration ist fehlgeschlagen."
+            echo "             Ausgabe von migrate.php:"
+            printf '%s\n' "$MIG_AUSGABE"
+            echo ""
+            exit 1
+        fi
         ;;
 esac
 
