@@ -8,7 +8,7 @@ Dasselbe taugt für Sammlungen — Gitarren, Uhren, Bücher, Kunst — und für 
 
 Es läuft auf gewöhnlichem Webhosting. Kein Framework, kein Composer, kein Node, keine fremden Server: Dateien hochladen, Assistenten durchklicken, fertig.
 
-**Stand:** 09.2026 · *(English version: [README.md](README.md))*
+**Stand:** 11.2026 · *(English version: [README.md](README.md))*
 
 ![Die Hauptliste als Kachelansicht](doku/screenshots/01-liste.png)
 

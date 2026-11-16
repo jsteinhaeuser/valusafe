@@ -8,7 +8,7 @@ The same works for collections — guitars, watches, books, art — and for movi
 
 It runs on ordinary shared hosting. No framework, no Composer, no Node, no external CDN: upload the files, run the setup wizard, done.
 
-**Stand:** 09.2026 · *(German version: [README.de.md](README.de.md))*
+**As of:** 11.2026 · *(German version: [README.de.md](README.de.md))*
 
 ![The main list as a tile view](doku/screenshots/01-liste.png)
 
