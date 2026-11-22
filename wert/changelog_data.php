@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 09.11.2026 15:50 von bin/changelog_export.php.
+ * Erzeugt am 22.11.2026 15:35 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,24 @@
  */
 
 return [
+    [
+        'version' => '4.9.2',
+        'date' => '2026-11-22',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Benutzerverwaltung: Auf Installationen ohne eingerichteten SuperAdmin kann der Admin wieder Benutzer anlegen und bearbeiten. Die Rechte-Übersicht zeigt jetzt, dass „Benutzer verwalten“ dem SuperAdmin vorbehalten ist, wo es einen gibt, und dass der Admin-Bereich für Editor und Leser grundsätzlich gesperrt ist. Neu: Der SuperAdmin kann in seinen Einstellungen Admins die Benutzerverwaltung freigeben; SuperAdmin-Konten bleiben dabei geschützt.',
+                'text_en' => 'User management: on installations without a SuperAdmin, the admin can create and edit users again. The permissions overview now shows that “Manage users” is reserved for the SuperAdmin where one exists, and that the admin area is always closed to editors and readers. New: the SuperAdmin can allow admins to manage users in the SuperAdmin settings; SuperAdmin accounts stay protected.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Docker: Der Container spielt Datenbank-Migrationen jetzt bei jedem Start selbst ein. Bisher musste nach einem neuen Image die Datenbank-Aktualisierung von Hand gestartet werden, obwohl die Hinweise zu Version 4.8 anderes sagten. Schlägt eine Migration fehl, startet der Container nicht und meldet den Fehler im Protokoll. Ausnahme: Auf Installationen von vor dem 26.09.2026, auf denen nie eine Migration lief, führt der Container nichts aus und zeigt eine Warnung; das weitere Vorgehen beschreibt die Docker-Anleitung (Abschnitt 10).',
+                'text_en' => 'Docker: the container now applies database migrations itself every time it starts. Until now the database update had to be started by hand after a new image, although the notes for version 4.8 said otherwise. If a migration fails, the container does not start and reports the error in its log. Exception: on installations set up before 26 September 2026 on which no migration ever ran, the container applies nothing and shows a warning; the Docker guide (section 10) explains what to do.'
+            ]
+        ]
+    ],
     [
         'version' => '4.9.1',
         'date' => '2026-11-09',
@@ -147,36 +165,6 @@ return [
                 'public' => true,
                 'text' => 'QR-Etiketten: Die Seite „QR-Codes“ druckt auf A4-Etikettenbögen (70 × 37, 70 × 42,3 und 105 × 48 mm) mit QR-Code, Name, Nummer und Raum. Angebrochene Bögen lassen sich ab einem freien Feld weiterverwenden. Neu sind Etiketten für Räume, Kisten und Regale sowie die Sammelaktion „QR-Etiketten drucken“ in der Liste.',
                 'text_en' => 'QR labels: the “QR codes” page prints on A4 label sheets (70 × 37, 70 × 42.3 and 105 × 48 mm) with QR code, name, number and room. Partly used sheets can be continued from any free label. New: labels for rooms, boxes and shelves, and the bulk action “Print QR labels” in the list.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.7.1',
-        'date' => '2026-11-05',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Schnellerfassung auch am Desktop: Der Knopf „Schnellerfassung“ steht neben „Hinzufügen“ – Foto wählen, Namen eingeben, speichern; Raum und Kategorie bleiben für den nächsten Gegenstand eingestellt.',
-                'text_en' => 'Quick entry on the desktop too: the “Quick entry” button sits next to “Add” – choose a photo, enter a name, save; room and category stay selected for the next item.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Einstellungen: Die Administration ist zweispaltig, mit einem Schnellzugriff auf Verwaltung, Benutzer und Rechte, Sicherung, Systemprüfung und Update.',
-                'text_en' => 'Settings: the administration section has two columns, with quick access to administration, users and permissions, backup, system check and update.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Sicherheit: Eine Versicherung lässt sich nur noch über den Löschen-Knopf entfernen. Bisher genügte ein Link – ein präparierter Link, den ein angemeldeter Administrator anklickt, hätte den Vertrag samt Zuordnungen gelöscht.',
-                'text_en' => 'Security: an insurance policy can now only be removed with the delete button. Previously a link was enough – a crafted link clicked by a logged-in administrator could have deleted the policy and its assignments.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Übersetzungen: Die Kachel „Backup-Status“ in der Verwaltung, Zahlungsweise und Gebäudeart in der Versicherungsübersicht sowie die Anzahl „1 Gegenstand“ waren in anderen Sprachen noch deutsch bzw. falsch.',
-                'text_en' => 'Translations: the “Backup status” tile in the administration, payment mode and building type in the insurance overview, and the count “1 item” were still in German or wrong in other languages.'
             ],
             [
                 'type' => 'feature',

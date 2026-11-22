@@ -1,8 +1,13 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-11-09.
+All changes that affect users. Generated from the project history on 2026-11-22.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.9.2 — 2026-11-22
+
+- **Fixed:** User management: on installations without a SuperAdmin, the admin can create and edit users again. The permissions overview now shows that “Manage users” is reserved for the SuperAdmin where one exists, and that the admin area is always closed to editors and readers. New: the SuperAdmin can allow admins to manage users in the SuperAdmin settings; SuperAdmin accounts stay protected.
+- **Fixed:** Docker: the container now applies database migrations itself every time it starts. Until now the database update had to be started by hand after a new image, although the notes for version 4.8 said otherwise. If a migration fails, the container does not start and reports the error in its log. Exception: on installations set up before 26 September 2026 on which no migration ever ran, the container applies nothing and shows a warning; the Docker guide (section 10) explains what to do.
 
 ## 4.9.1 — 2026-11-09
 

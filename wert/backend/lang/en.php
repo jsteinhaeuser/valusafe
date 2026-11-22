@@ -843,6 +843,7 @@ return [
     'usr_2fa_reset_text'         => 'The account will then sign in with its password only and can set up 2FA again.',
     'usr_2fa_reset_done'         => 'Two-factor authentication has been reset.',
     'usr_2fa_reset_failed'       => 'Two-factor authentication could not be reset.',
+    'usr_superadmin_protected'   => 'This account belongs to a SuperAdmin or the name is reserved for the SuperAdmin. Only the SuperAdmin can change it.',
     'usr_load_failed'            => 'The users could not be loaded.',
     'usr_error_title'            => 'Error!',
     'usr_none'                   => 'No users found',

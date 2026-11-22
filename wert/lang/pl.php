@@ -852,6 +852,8 @@ return [
     'perm_toast_connection' => 'Błąd połączenia – spróbuj ponownie',
     'perm_checkbox_hint' => 'Kliknij pole wyboru aby natychmiast zmienić.',
     'perm_admin_fixed_note' => 'Prawa Admina są stałe.',
+    'perm_admin_superadmin_only' => 'Tylko SuperAdmin',
+    'perm_admin_area_note' => 'Tylko dla adminów. Edytorzy i czytelnicy nie mają dostępu do obszaru Admin.',
     'perm_admin_full_access' => 'Admin zawsze ma pełny dostęp',
     'perm_admin_full_access_badge' => 'Admin – Pełny dostęp (stały)',
     'perm_editor_badge' => 'Edytor – konfigurowalny',

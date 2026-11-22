@@ -7,8 +7,9 @@
 require_once __DIR__ . '/config.php';
 requireBackendAccess();
 
-// Nur SuperAdmin darf andere Benutzer sehen/verwalten
-if (!isSuperAdmin()) {
+// Nur SuperAdmin darf andere Benutzer sehen/verwalten - auf Instanzen ohne
+// SuperAdmin der Admin (darfBenutzerVerwalten(), rechte_helpers.php, 4.9.2)
+if (!darfBenutzerVerwalten()) {
     header('Location: /backend/index.php');
     exit;
 }
@@ -23,7 +24,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF-Schutz: alle state-aendernden Aktionen dieser Seite laufen
     // ueber diesen einen POST-Block (s. backend/backup.php als Vorbild).
     validateRequest();
-    
+
+    // SuperAdmin-Konten schuetzen (4.9.2): Seit der SuperAdmin die Seite fuer
+    // Admins freigeben kann (sa_users_allowed), darf ein Admin hier landen.
+    // Er darf weder ein SuperAdmin-Konto aendern, loeschen oder dessen 2FA
+    // zuruecksetzen noch ein Konto auf einen Namen aus SUPERADMIN_USERNAME
+    // anlegen oder umbenennen - sonst waere er selbst SuperAdmin.
+    $_aktion = $_POST['action'] ?? '';
+    $_namen  = [];
+    if (in_array($_aktion, ['add', 'edit'], true)) {
+        $_namen[] = trim($_POST['username'] ?? '');
+    }
+    if (in_array($_aktion, ['edit', 'delete', 'reset_2fa'], true)) {
+        $_ziel = $db->selectOne("SELECT username FROM users WHERE id = ?", [intval($_POST['id'] ?? 0)]);
+        if ($_ziel) $_namen[] = (string)$_ziel['username'];
+    }
+    foreach ($_namen as $_name) {
+        if (!darfKontoAnfassen($_name)) {
+            $error = t('usr_superadmin_protected');
+            $_POST['action'] = '';   // keiner der Bloecke unten laeuft
+            break;
+        }
+    }
+    unset($_aktion, $_namen, $_name, $_ziel);
+
     // Benutzer hinzufügen
     if (isset($_POST['action']) && $_POST['action'] === 'add') {
         $username = trim($_POST['username'] ?? '');
@@ -300,6 +324,11 @@ include 'layout/header_next_page.php';
                                 // Backup-Codes im HTML der Seite.
                                 $_editDaten = array_diff_key($user, array_flip(['password', 'totp_secret', 'totp_backup_codes']));
                                 ?>
+                                <?php // SuperAdmin-Konten: fuer freigegebene Admins keine Knoepfe (4.9.2),
+                                      // der POST-Block oben weist es ohnehin ab. ?>
+                                <?php if (!darfKontoAnfassen((string)$user['username'])): ?>
+                                <span class="badge badge-danger" title="<?php echo esc(t('usr_superadmin_protected')); ?>"><i class="ti ti-crown" aria-hidden="true"></i> SuperAdmin</span>
+                                <?php else: ?>
                                 <button onclick='editUser(<?php echo json_encode($_editDaten, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP); ?>)' class="vs-btn vs-btn-sm" title="<?php echo esc(t('btn_edit')); ?>" aria-label="<?php echo esc(t('btn_edit')); ?>"><i class="ti ti-pencil" aria-hidden="true"></i></button>
                                 <?php // Name per data-name statt in '...' im onclick: ein Apostroph
                                       // im Namen brach bis 4.5.2 den Knopf (wie die Raumverwaltung) ?>
@@ -309,6 +338,7 @@ include 'layout/header_next_page.php';
                                 <?php if ($user['id'] != $_SESSION['user_id']): ?>
                                     <button data-name="<?php echo htmlspecialchars($user['username'], ENT_QUOTES); ?>" onclick="deleteUser(<?php echo (int)$user['id']; ?>, this.dataset.name)" class="vs-btn vs-btn-sm vs-btn-danger" title="<?php echo esc(t('btn_delete')); ?>"><i class="ti ti-trash"></i></button>
                                 <?php endif; ?>
+                                <?php endif; // darfKontoAnfassen ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

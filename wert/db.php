@@ -178,13 +178,8 @@ function requireLogin() {
 // damit die Tests sie einbinden koennen). Verhalten unveraendert.
 require_once __DIR__ . '/rechte_helpers.php';
 
-function isSuperAdmin(): bool {
-    if (!isset($_SESSION['username'])) return false;
-    if (!defined('SUPERADMIN_USERNAME')) return false;
-    // Unterstützt einzelnen String oder kommagetrennte Liste
-    $admins = array_map('trim', explode(',', SUPERADMIN_USERNAME));
-    return in_array($_SESSION['username'], $admins, true);
-}
+// isSuperAdmin(), hatSuperAdmin() und darfSuperAdminAktionen() stehen seit
+// 4.9.2 ebenfalls in rechte_helpers.php (Tests ohne Datenbank).
 
 /**
  * Prüft ob eine SuperAdmin-Einstellung aktiv ist.
@@ -217,21 +212,6 @@ function requireAdmin() {
 }
 
 /**
- * Gibt es auf dieser Instanz ueberhaupt einen SuperAdmin?
- *
- * SUPERADMIN_USERNAME steht in der config.php der jeweiligen Instanz. Fehlt
- * sie oder ist sie leer, besteht niemand die Pruefung isSuperAdmin() — dann
- * ist der Admin die oberste Stufe, die es dort gibt.
- */
-function hatSuperAdmin(): bool {
-    if (!defined('SUPERADMIN_USERNAME')) return false;
-    foreach (explode(',', SUPERADMIN_USERNAME) as $name) {
-        if (trim($name) !== '') return true;
-    }
-    return false;
-}
-
-/**
  * Wie requireAdmin(), nur eine Stufe hoeher. Fuer Vorgaenge, die sich nicht
  * rueckgaengig machen lassen und den Nachweis betreffen, wer was getan hat.
  *
@@ -246,15 +226,6 @@ function requireSuperAdmin() {
     if (isSuperAdmin()) return;
     if (!hatSuperAdmin() && isRealAdmin()) return;
     die('Zugriff verweigert. SuperAdmin-Berechtigung erforderlich.');
-}
-
-/**
- * Fuer die Anzeige: darf dieser Benutzer die geschuetzten Vorgaenge sehen?
- * Dieselbe Regel wie requireSuperAdmin(), nur ohne Abbruch — damit Knoepfe
- * dort erscheinen, wo sie auch funktionieren.
- */
-function darfSuperAdminAktionen(): bool {
-    return isSuperAdmin() || (!hatSuperAdmin() && isRealAdmin());
 }
 
 /**

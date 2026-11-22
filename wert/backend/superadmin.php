@@ -27,12 +27,16 @@ function getSASettings(object $db): array {
         'sa_backup_images_allowed',
         'sa_backup_download_allowed',
         'sa_restore_allowed',
+        'sa_users_allowed',
     ];
+    // Vorgabe je Schalter, solange nichts gespeichert ist. Benutzerverwaltung
+    // fuer Admins ist AUS (Verhalten seit 4.2.2), alles andere AN.
+    $vorgabe = ['sa_users_allowed' => '0'];
     $result = [];
     foreach ($keys as $key) {
         try {
             $row = $db->selectOne("SELECT setting_value FROM app_settings WHERE setting_key = ?", [$key]);
-            $result[$key] = ($row['setting_value'] ?? '1') === '1';
+            $result[$key] = ($row['setting_value'] ?? ($vorgabe[$key] ?? '1')) === '1';
         } catch (Exception $e) {
             $result[$key] = true; // Default: erlaubt
         }
@@ -59,6 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         saveSASetting($db, 'sa_backup_images_allowed',   isset($_POST['sa_backup_images_allowed'])   ? '1' : '0');
         saveSASetting($db, 'sa_backup_download_allowed', isset($_POST['sa_backup_download_allowed']) ? '1' : '0');
         saveSASetting($db, 'sa_restore_allowed',         isset($_POST['sa_restore_allowed'])         ? '1' : '0');
+        saveSASetting($db, 'sa_users_allowed',           isset($_POST['sa_users_allowed'])           ? '1' : '0');
         $messageIcon = 'ti-circle-check';
         $message     = 'SuperAdmin-Einstellungen gespeichert.';
     } catch (Exception $e) {
@@ -225,6 +230,27 @@ require_once 'layout/header_next_page.php';
             <label class="sa-toggle-label" for="sa_restore_allowed">
                 <strong>Restore erlauben</strong>
                 <small>Wenn deaktiviert, können Admins keine Backups wiederherstellen.</small>
+            </label>
+        </div>
+    </div>
+
+    <div class="sa-card">
+        <div class="sa-card-title"><i class="ti ti-users" aria-hidden="true"></i> Benutzerverwaltung</div>
+        <div class="sa-card-desc">
+            Legen Sie fest, ob normale Admins Benutzer anlegen, bearbeiten und löschen dürfen.
+            Als SuperAdmin haben Sie immer vollen Zugriff.
+        </div>
+
+        <div class="sa-toggle-row">
+            <input type="checkbox" name="sa_users_allowed" id="sa_users_allowed"
+                   aria-describedby="sa_users_allowed_hint"
+                   <?php echo $settings['sa_users_allowed'] ? 'checked' : ''; ?>>
+            <label class="sa-toggle-label" for="sa_users_allowed">
+                <strong>Admins dürfen Benutzer verwalten</strong>
+                <small id="sa_users_allowed_hint">Wenn aktiviert, öffnet sich „Alle Benutzer“ auch für Admins.
+                SuperAdmin-Konten bleiben geschützt: Admins können sie weder bearbeiten noch löschen,
+                ihre Zwei-Faktor-Anmeldung nicht zurücksetzen und keinen Namen aus
+                <code>SUPERADMIN_USERNAME</code> vergeben.</small>
             </label>
         </div>
     </div>

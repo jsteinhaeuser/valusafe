@@ -2,7 +2,27 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 09.11.2026 aus der Projektchronik.
+Erzeugt am 22.11.2026 aus der Projektchronik.
+
+Version 4.9.2   22.11.2026
+--------------------------
+  [Fix] Benutzerverwaltung: Auf Installationen ohne eingerichteten SuperAdmin
+        kann der Admin wieder Benutzer anlegen und bearbeiten. Die
+        Rechte-Übersicht zeigt jetzt, dass „Benutzer verwalten“ dem
+        SuperAdmin vorbehalten ist, wo es einen gibt, und dass der
+        Admin-Bereich für Editor und Leser grundsätzlich gesperrt ist. Neu:
+        Der SuperAdmin kann in seinen Einstellungen Admins die
+        Benutzerverwaltung freigeben; SuperAdmin-Konten bleiben dabei
+        geschützt.
+  [Fix] Docker: Der Container spielt Datenbank-Migrationen jetzt bei jedem
+        Start selbst ein. Bisher musste nach einem neuen Image die
+        Datenbank-Aktualisierung von Hand gestartet werden, obwohl die
+        Hinweise zu Version 4.8 anderes sagten. Schlägt eine Migration fehl,
+        startet der Container nicht und meldet den Fehler im Protokoll.
+        Ausnahme: Auf Installationen von vor dem 26.09.2026, auf denen nie
+        eine Migration lief, führt der Container nichts aus und zeigt eine
+        Warnung; das weitere Vorgehen beschreibt die Docker-Anleitung
+        (Abschnitt 10).
 
 Version 4.9.1   09.11.2026
 --------------------------

@@ -981,6 +981,8 @@ return [
     'perm_admin_full_access'        => 'Admin always has full access',
     'perm_admin_full_access_badge'  => 'Admin – Full access (fixed)',
     'perm_admin_fixed_note'         => 'Admin rights are fixed.',
+    'perm_admin_superadmin_only'    => 'SuperAdmin only',
+    'perm_admin_area_note'          => 'Admins only. Editors and readers have no access to the admin area.',
     'perm_locked'                   => 'This permission is fixed',
 
     // Public settings page

@@ -991,14 +991,15 @@ h5.settings-subtitle { margin: 0 0 8px; }
             </form>
         </div>
     </div>
-    <?php // Rechte wie die Zielseiten: users/permissions nur SuperAdmin,
+    <?php // Rechte wie die Zielseiten: users/permissions darfBenutzerVerwalten()
+          // (SuperAdmin, ohne SuperAdmin auf der Instanz der Admin),
           // update.php darfSuperAdminAktionen(), der Rest jeder Admin. ?>
     <div class="settings-card">
         <h4 class="card-title"><i class="ti ti-layout-dashboard"></i> <?php echo t('settings_admin_links'); ?></h4>
         <p style="font-size:13px; color:var(--vs-text-muted); margin-bottom:14px;"><?php echo t('settings_admin_links_desc'); ?></p>
         <nav class="admin-links" aria-label="<?php echo htmlspecialchars(t('settings_admin_links'), ENT_QUOTES, 'UTF-8'); ?>">
             <a class="role-btn" href="backend/index.php"><i class="ti ti-settings-2" aria-hidden="true"></i> <span><?php echo tn('nav_admin', 'Admin'); ?></span></a>
-            <?php if (function_exists('isSuperAdmin') && isSuperAdmin()): ?>
+            <?php if (function_exists('darfBenutzerVerwalten') && darfBenutzerVerwalten()): ?>
             <a class="role-btn" href="backend/users.php"><i class="ti ti-users" aria-hidden="true"></i> <span><?php echo t('settings_user_management'); ?></span></a>
             <a class="role-btn" href="backend/permissions.php"><i class="ti ti-key" aria-hidden="true"></i> <span><?php echo tn('nav_permissions', 'Rechtevergabe'); ?></span></a>
             <?php endif; ?>

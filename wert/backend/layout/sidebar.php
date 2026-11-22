@@ -44,7 +44,7 @@ $menu = [
         'title' => 'Benutzer',
         'icon' => '👥',
         'submenu' => array_merge(
-            isSuperAdmin() ? [[
+            darfBenutzerVerwalten() ? [[
                 'title' => 'Alle Benutzer',
                 'url' => '/backend/users.php',
                 'active' => ($currentPage === 'users.php')

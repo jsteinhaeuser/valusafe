@@ -37,6 +37,94 @@ function isRealAdmin(): bool {
     return $rolle === 'admin';
 }
 
+// -------------------------------------------------------
+// SuperAdmin (bis 4.9.1 in db.php, unveraendert hierher verschoben)
+// -------------------------------------------------------
+
+function isSuperAdmin(): bool {
+    if (!isset($_SESSION['username'])) return false;
+    if (!defined('SUPERADMIN_USERNAME')) return false;
+    // Unterstützt einzelnen String oder kommagetrennte Liste
+    $admins = array_map('trim', explode(',', SUPERADMIN_USERNAME));
+    return in_array($_SESSION['username'], $admins, true);
+}
+
+/**
+ * Gibt es auf dieser Instanz ueberhaupt einen SuperAdmin?
+ *
+ * SUPERADMIN_USERNAME steht in der config.php der jeweiligen Instanz. Fehlt
+ * sie oder ist sie leer, besteht niemand die Pruefung isSuperAdmin() — dann
+ * ist der Admin die oberste Stufe, die es dort gibt.
+ */
+function hatSuperAdmin(): bool {
+    if (!defined('SUPERADMIN_USERNAME')) return false;
+    foreach (explode(',', SUPERADMIN_USERNAME) as $name) {
+        if (trim($name) !== '') return true;
+    }
+    return false;
+}
+
+/**
+ * Fuer die Anzeige: darf dieser Benutzer die geschuetzten Vorgaenge sehen?
+ * Dieselbe Regel wie requireSuperAdmin() in db.php, nur ohne Abbruch — damit
+ * Knoepfe dort erscheinen, wo sie auch funktionieren.
+ */
+function darfSuperAdminAktionen(): bool {
+    return isSuperAdmin() || (!hatSuperAdmin() && isRealAdmin());
+}
+
+/**
+ * Darf dieser Benutzer backend/users.php benutzen (Konten anlegen, aendern,
+ * loeschen, 2FA zuruecksetzen)?
+ *
+ * - SuperAdmin: immer.
+ * - Instanz ohne SuperAdmin: der Admin (Rueckfall wie darfSuperAdminAktionen).
+ *   Bis 4.9.1 fragte users.php nur isSuperAdmin() - dort konnte niemand ein
+ *   Konto anlegen.
+ * - Instanz mit SuperAdmin: der Admin nur, wenn der SuperAdmin es in
+ *   backend/superadmin.php freigibt (app_settings sa_users_allowed, Vorgabe
+ *   AUS = Verhalten seit 4.2.2). SuperAdmin-Konten bleiben auch dann
+ *   geschuetzt, siehe darfKontoAnfassen().
+ *
+ * $adminsFreigegeben nur fuer Tests; sonst wird die Einstellung gelesen.
+ */
+function darfBenutzerVerwalten(?bool $adminsFreigegeben = null): bool {
+    if (darfSuperAdminAktionen()) return true;
+    if (!isRealAdmin()) return false;
+    if ($adminsFreigegeben === null) {
+        $adminsFreigegeben = function_exists('getSuperAdminSetting')
+            && getSuperAdminSetting('sa_users_allowed', false);
+    }
+    return $adminsFreigegeben;
+}
+
+/**
+ * Steht dieser Benutzername in SUPERADMIN_USERNAME? Gross/klein egal: die
+ * Spalte users.username vergleicht in MySQL ohne Ruecksicht darauf.
+ */
+function istSuperAdminName(string $name): bool {
+    if (!defined('SUPERADMIN_USERNAME')) return false;
+    $name = mb_strtolower(trim($name));
+    if ($name === '') return false;
+    foreach (explode(',', SUPERADMIN_USERNAME) as $sa) {
+        if (mb_strtolower(trim($sa)) === $name) return true;
+    }
+    return false;
+}
+
+/**
+ * Darf der angemeldete Benutzer das Konto mit diesem Namen anlegen, aendern,
+ * loeschen oder dessen 2FA zuruecksetzen - bzw. ein Konto so benennen?
+ *
+ * Ein freigegebener Admin darf es bei SuperAdmin-Konten nicht: er koennte
+ * sonst dessen Passwort setzen, es loeschen oder ein noch fehlendes Konto mit
+ * einem Namen aus SUPERADMIN_USERNAME anlegen und waere damit selbst
+ * SuperAdmin.
+ */
+function darfKontoAnfassen(string $zielName): bool {
+    return isSuperAdmin() || !istSuperAdminName($zielName);
+}
+
 // Rechte, die die Rechteverwaltung nicht mehr anbietet (OWASP-A01-006, 4.6):
 // Sie liessen sich schalten, wirkten aber nirgends. Eine Leserrolle ohne
 // Leserecht ergibt in ValuSafe keinen Sinn, und die Suche zu sperren schuetzt

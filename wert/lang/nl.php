@@ -852,6 +852,8 @@ return [
     'perm_toast_connection' => 'Verbindingsfout – probeer het opnieuw',
     'perm_checkbox_hint' => 'Klik op een selectievakje om direct te wijzigen.',
     'perm_admin_fixed_note' => 'Admin-rechten zijn vast.',
+    'perm_admin_superadmin_only' => 'Alleen SuperAdmin',
+    'perm_admin_area_note' => 'Alleen voor admins. Editors en lezers hebben geen toegang tot het admin gebied.',
     'perm_admin_full_access' => 'Admin heeft altijd volledige toegang',
     'perm_admin_full_access_badge' => 'Admin – Volledige toegang (vast)',
     'perm_editor_badge' => 'Redacteur – configureerbaar',

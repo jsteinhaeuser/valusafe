@@ -960,6 +960,8 @@ return [
     'perm_toast_connection' => 'Bağlantı hatası – lütfen tekrar deneyin',
     'perm_checkbox_hint' => 'Hemen değiştirmek için bir kutuya tıklayın.',
     'perm_admin_fixed_note' => 'Admin hakları sabittir.',
+    'perm_admin_superadmin_only' => 'Yalnızca SuperAdmin',
+    'perm_admin_area_note' => 'Yalnızca adminler için. Editörler ve okuyucular admin alanına erişemez.',
     'perm_admin_full_access' => 'Admin her zaman tam erişime sahiptir',
     'perm_admin_full_access_badge' => 'Admin – Tam erişim (sabit)',
     'perm_editor_badge' => 'Editör – yapılandırılabilir',

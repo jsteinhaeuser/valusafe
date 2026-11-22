@@ -987,6 +987,8 @@ return [
     'perm_admin_full_access'        => 'Bíonn rochtain iomlán ag an riarthóir i gcónaí',
     'perm_admin_full_access_badge'  => 'Riarthóir – Rochtain iomlán (seasta)',
     'perm_admin_fixed_note'         => 'Tá cearta an riarthóra seasta.',
+    'perm_admin_superadmin_only'    => 'SuperAdmin amháin',
+    'perm_admin_area_note'          => 'Riarthóirí amháin. Níl rochtain ag eagarthóirí ná ag léitheoirí ar an limistéar riaracháin.',
     'perm_locked'                   => 'Tá an cead seo seasta',
 
     // Public settings page

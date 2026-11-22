@@ -852,6 +852,8 @@ return [
     'perm_toast_connection' => 'Error de conexión: inténtalo de nuevo',
     'perm_checkbox_hint' => 'Haga clic en una casilla para cambiar inmediatamente.',
     'perm_admin_fixed_note' => 'Los derechos de Admin son fijos.',
+    'perm_admin_superadmin_only' => 'Solo SuperAdmin',
+    'perm_admin_area_note' => 'Solo para admins. Editores y lectores no tienen acceso a la zona Admin.',
     'perm_admin_full_access' => 'El Admin siempre tiene acceso total',
     'perm_admin_full_access_badge' => 'Admin – Acceso total (fijo)',
     'perm_editor_badge' => 'Editor – configurable',

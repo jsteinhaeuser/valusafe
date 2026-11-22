@@ -843,6 +843,7 @@ return [
     'usr_2fa_reset_text'         => 'Das Konto meldet sich danach nur noch mit Passwort an und kann 2FA neu einrichten.',
     'usr_2fa_reset_done'         => 'Zwei-Faktor-Anmeldung zurückgesetzt.',
     'usr_2fa_reset_failed'       => 'Zwei-Faktor-Anmeldung konnte nicht zurückgesetzt werden.',
+    'usr_superadmin_protected'   => 'Dieses Konto gehört einem SuperAdmin bzw. der Name ist für den SuperAdmin reserviert. Nur der SuperAdmin kann es ändern.',
     'usr_load_failed'            => 'Die Benutzer konnten nicht geladen werden.',
     'usr_error_title'            => 'Fehler!',
     'usr_none'                   => 'Keine Benutzer gefunden',

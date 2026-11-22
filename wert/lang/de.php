@@ -1035,6 +1035,8 @@ return [
     'perm_toast_connection' => 'Verbindungsfehler – bitte erneut versuchen',
     'perm_checkbox_hint'            => 'Klicke auf eine Checkbox um die Berechtigung sofort zu ändern.',
     'perm_admin_fixed_note'         => 'Admin-Rechte sind fest.',
+    'perm_admin_superadmin_only'    => 'Nur SuperAdmin',
+    'perm_admin_area_note'          => 'Nur für Admins. Editor und Leser haben keinen Zugang zum Verwaltungsbereich.',
     'perm_admin_full_access'        => 'Admin hat immer Vollzugriff',
     'perm_admin_full_access_badge'  => 'Admin – Vollzugriff (fest)',
     'perm_editor_badge'             => 'Editor – konfigurierbar',

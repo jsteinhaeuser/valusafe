@@ -149,6 +149,21 @@ $csrfToken = Security::generateCSRFToken();
             gap: 8px;
         }
         .perm-icon { font-size: 16px; width: 24px; text-align: center; }
+        .perm-section-note {
+            display: block;
+            margin-top: 2px;
+            font-weight: 400;
+            font-size: 12px;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--vs-text);
+        }
+        .perm-cell-note {
+            display: block;
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--vs-text);
+        }
 
         /* Checkbox-Styling */
         .perm-check {
@@ -279,6 +294,12 @@ $csrfToken = Security::generateCSRFToken();
             <tr class="section-header">
                 <td colspan="4">
                     <?php $si = $sectionIcons[$section] ?? null; echo ($si ? $si['icon'] . ' ' . htmlspecialchars(t($si['label'])) : '• ' . htmlspecialchars(strtoupper($section))); ?>
+                    <?php // Die Zeilen hier sind fuer Editor/Leser gesperrt (locked_for), weil
+                          // requireBackendAccess() nur Admins hineinlaesst. Ohne sichtbaren
+                          // Hinweis las sich das als "nicht vergeben" (Meldung 11.2026). ?>
+                    <?php if ($section === 'admin'): ?>
+                    <span class="perm-section-note"><?php echo htmlspecialchars(t('perm_admin_area_note'), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <?php endif; ?>
                 </td>
             </tr>
             <?php foreach ($items as $p):
@@ -296,9 +317,22 @@ $csrfToken = Security::generateCSRFToken();
                 <!-- Admin: immer gesetzt, immer disabled -->
                 <td>
                     <?php $permName = $lk ? t($lk) : $p['label']; ?>
+                    <?php if ($p['action_key'] === 'admin_users' && hatSuperAdmin()
+                              && !getSuperAdminSetting('sa_users_allowed', false)): ?>
+                    <?php // backend/users.php laesst nur den SuperAdmin hinein, wenn es auf
+                          // der Instanz einen gibt und er Admins nicht freigegeben hat
+                          // (darfBenutzerVerwalten(), Schalter in superadmin.php). Bis 4.9.1
+                          // stand hier trotzdem ein Haken - die Tabelle versprach, was die
+                          // Seite verweigerte. ?>
+                    <input type="checkbox" class="perm-check locked" disabled
+                           aria-describedby="perm-sa-only"
+                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_admin'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <span id="perm-sa-only" class="perm-cell-note"><?php echo htmlspecialchars(t('perm_admin_superadmin_only'), ENT_QUOTES, 'UTF-8'); ?></span>
+                    <?php else: ?>
                     <input type="checkbox" class="perm-check locked" checked disabled
                            title="<?php echo t('perm_admin_full_access'); ?>"
                            aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_admin'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <?php endif; ?>
                 </td>
                 <!-- Editor -->
                 <td>
@@ -308,7 +342,7 @@ $csrfToken = Security::generateCSRFToken();
                            data-role="edit"
                            aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_editor'), ENT_QUOTES, 'UTF-8'); ?>"
                            <?php echo $p['edit_can'] ? 'checked' : ''; ?>
-                           <?php echo $editLocked ? 'disabled title="Diese Berechtigung ist fest"' : ''; ?>>
+                           <?php echo $editLocked ? 'disabled title="' . htmlspecialchars(t('perm_locked'), ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
                 </td>
                 <!-- Leser -->
                 <td>
@@ -318,7 +352,7 @@ $csrfToken = Security::generateCSRFToken();
                            data-role="read"
                            aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_reader'), ENT_QUOTES, 'UTF-8'); ?>"
                            <?php echo $p['read_can'] ? 'checked' : ''; ?>
-                           <?php echo $readLocked ? 'disabled title="Diese Berechtigung ist fest"' : ''; ?>>
+                           <?php echo $readLocked ? 'disabled title="' . htmlspecialchars(t('perm_locked'), ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
                 </td>
             </tr>
             <?php endforeach; ?>

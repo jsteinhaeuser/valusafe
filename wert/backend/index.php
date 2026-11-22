@@ -186,9 +186,12 @@ include 'layout/header_next_page.php';
                 </div>
                 <div class="widget-icon"><i class="ti ti-users"></i></div>
             </div>
+            <?php // Link nur, wo users.php auch oeffnet (4.9.2) ?>
+            <?php if (darfBenutzerVerwalten()): ?>
             <div class="widget-footer">
                 <a href="users.php" class="widget-link"><?php echo t('link_manage'); ?></a>
             </div>
+            <?php endif; ?>
         </div>
         
         <!-- Gegenstände Widget -->
@@ -259,7 +262,7 @@ include 'layout/header_next_page.php';
         </div>
 
         <!-- Rechtevergabe -->
-        <?php if (function_exists('isSuperAdmin') && isSuperAdmin()): ?>
+        <?php if (function_exists('darfBenutzerVerwalten') && darfBenutzerVerwalten()): ?>
         <div class="widget-card">
             <div class="widget-header">
                 <div>
