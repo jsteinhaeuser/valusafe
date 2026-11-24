@@ -78,6 +78,27 @@ jobs:
             case "$c" in 403|404) ;; *) exit 1 ;; esac
           done
 
+      # OWASP ZAP Baseline: Spider ohne Anmeldung, nur passive Pruefungen
+      # (Header, Cookies, Informationslecks). Greift nichts an. -I: Warnungen
+      # brechen den Lauf nicht ab; der Bericht steht in der Zusammenfassung
+      # des Laufs und als Download (zap-bericht).
+      - name: OWASP ZAP Baseline
+        run: |
+          mkdir -p zap && chmod 777 zap
+          docker run --rm --network host -v "$PWD/zap:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://localhost:8080/ -m 3 -I \
+            -r zap-bericht.html -J zap-bericht.json -w zap-bericht.md
+          cat zap/zap-bericht.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: ZAP-Bericht hochladen
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-bericht
+          path: zap/
+          if-no-files-found: ignore
+
       - name: Aufraeumen
         if: always()
         working-directory: docker
