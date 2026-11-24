@@ -638,7 +638,7 @@ include 'header_next_page.php';
                name="preis" 
                inputmode="decimal"
                pattern="[0-9]*[.,]?[0-9]*"
-               value="<?php echo htmlspecialchars($item['preis']); ?>"
+               value="<?php echo htmlspecialchars($item['preis'] ?? ''); ?>"
                placeholder="0.00">
         <small style="color: #666; font-size: 12px;"><?php echo t('price_decimal_hint'); ?></small>
     </div>
@@ -820,7 +820,7 @@ include 'header_next_page.php';
 
     <div class="form-group">
         <label for="notizen"><?php echo t('form_notes'); ?>:</label>
-        <textarea id="notizen" name="notizen" rows="5" maxlength="5000"><?php echo htmlspecialchars($item['notizen']); ?></textarea>
+        <textarea id="notizen" name="notizen" rows="5" maxlength="5000"><?php echo htmlspecialchars($item['notizen'] ?? ''); ?></textarea>
     </div>
 
     <?php if (vsMigration014Da()): ?>
@@ -865,8 +865,8 @@ include 'header_next_page.php';
         <small><?php echo t('form_help_created_by_empty'); ?></small>
     </div>
     
-    <!-- MULTI-IMAGE UPLOAD -->
-    <div class="form-group">
+    <!-- MULTI-IMAGE UPLOAD (id="bilder": Sprungziel der Bilderzahl auf Kachel und Liste, 4.9.4) -->
+    <div class="form-group" id="bilder" style="scroll-margin-top: 80px;">
         <label><i class="ti ti-photo" aria-hidden="true"></i> <?php echo t('dash_storage_images'); ?>:</label>
         <div id="multi-image-container">
             <p style="color:#999; font-size:13px;"><?php echo t('loading'); ?></p>

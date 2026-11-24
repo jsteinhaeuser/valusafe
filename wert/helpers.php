@@ -262,7 +262,7 @@ if (!function_exists('handleFileUpload')) {
     
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        unset($finfo);   // statt finfo_close(): seit PHP 8.0 wirkungslos, ab 8.5 veraltet
     
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
     
@@ -383,8 +383,7 @@ if (!function_exists('optimizeAndSaveImage')) {
         $success = imagejpeg($destination, $destPath, 85);
     
         // Speicher freigeben
-        imagedestroy($source);
-        imagedestroy($destination);
+        unset($source, $destination);   // statt imagedestroy(): seit PHP 8.0 wirkungslos, ab 8.5 veraltet
     
         return $success;
     }
@@ -1064,8 +1063,8 @@ if (!function_exists('renderTableCell')) {
                 // Bilder Icon (nur wenn > 1, da 1 Bild der Normalfall ist)
                 $bilderAnzahl = $item['bilder_anzahl'] ?? 0;
                 if ($bilderAnzahl > 1) {
-                    $html .= '<a href="edit.php?id=' . $item['id'] . $editReturnParam . '" 
-                                 title="' . $bilderAnzahl . ' Bilder"
+                    $html .= '<a href="edit.php?id=' . $item['id'] . $editReturnParam . '#bilder" 
+                                 title="' . htmlspecialchars(sprintf(t('card_photo_count'), $bilderAnzahl), ENT_QUOTES, 'UTF-8') . '"
                                  style="text-decoration: none; font-weight: bold; display: block; color: #667eea;">
                                 🖼️ ' . $bilderAnzahl . '
                               </a>';

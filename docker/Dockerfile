@@ -2,7 +2,7 @@ FROM php:8.4-apache
 
 LABEL maintainer="Jörg Steinhäuser <wert@palindrom.de>"
 LABEL description="Wertsachen-Inventarverwaltung (ValuSafe)"
-LABEL version="4.9.3"
+LABEL version="4.9.4"
 
 # Im Image wird ValuSafe ueber ein neues Image aktualisiert, nicht ueber den
 # Update-Knopf (backend/update.php sperrt ihn bei VALUSAFE_DOCKER=1, ab 4.7).
@@ -31,7 +31,9 @@ RUN docker-php-ext-configure gd --with-jpeg --with-webp \
         opcache
 
 # ── Apache: mod_rewrite + mod_headers ─────────────────────────────────────────
-RUN a2enmod rewrite headers
+RUN a2enmod rewrite headers \
+    && printf 'ServerTokens Prod\nServerSignature Off\n' > /etc/apache2/conf-available/valusafe-security.conf \
+    && a2enconf valusafe-security
 
 # ── PHP-Konfiguration ─────────────────────────────────────────────────────────
 RUN echo "upload_max_filesize = 20M"        >> /usr/local/etc/php/conf.d/app.ini \
@@ -39,6 +41,7 @@ RUN echo "upload_max_filesize = 20M"        >> /usr/local/etc/php/conf.d/app.ini
     && echo "max_execution_time = 120"      >> /usr/local/etc/php/conf.d/app.ini \
     && echo "memory_limit = 256M"           >> /usr/local/etc/php/conf.d/app.ini \
     && echo "display_errors = Off"          >> /usr/local/etc/php/conf.d/app.ini \
+    && echo "expose_php = Off"              >> /usr/local/etc/php/conf.d/app.ini \
     && echo "log_errors = On"              >> /usr/local/etc/php/conf.d/app.ini \
     && echo "opcache.enable = 1"            >> /usr/local/etc/php/conf.d/app.ini \
     && echo "opcache.memory_consumption = 128" >> /usr/local/etc/php/conf.d/app.ini

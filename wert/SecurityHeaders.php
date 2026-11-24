@@ -43,6 +43,17 @@ class SecurityHeaders {
         // 7. Permissions Policy (früher Feature-Policy)
         // Kontrolliert Browser-Features
         self::setPermissionsPolicy();
+
+        // 8. Cross-Origin-Opener/Resource-Policy (4.9.4, ZAP-Baseline):
+        // fremde Fenster bekommen keinen Zugriff, Antworten werden nicht
+        // in fremde Seiten eingebunden. Cross-Origin-Embedder-Policy bewusst
+        // nicht: require-corp kann eingebettete Inhalte blockieren.
+        header("Cross-Origin-Opener-Policy: same-origin");
+        header("Cross-Origin-Resource-Policy: same-origin");
+
+        // 9. PHP-Version nicht verraten (expose_php laesst sich beim
+        // Hoster nicht immer abschalten)
+        header_remove('X-Powered-By');
     }
     
     /**
@@ -177,7 +188,9 @@ class SecurityHeaders {
                 'X-Content-Type-Options',
                 'X-XSS-Protection',
                 'Referrer-Policy',
-                'Permissions-Policy'
+                'Permissions-Policy',
+                'Cross-Origin-Opener-Policy',
+                'Cross-Origin-Resource-Policy'
             ];
             
             foreach ($headers as $header) {

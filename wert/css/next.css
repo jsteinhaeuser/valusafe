@@ -275,6 +275,11 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     display: flex; align-items: center; gap: 3px;
 }
 .vs-mcard-photo-badge i { font-size: 12px; }
+/* Bilderzahl als Link zu den Bildern im Bearbeiten (4.9.4, wie Valu-Basic) */
+a.vs-mcard-photo-badge { text-decoration: none; cursor: pointer; }
+a.vs-mcard-photo-badge:hover { background: var(--vs-accent, #185fa5); }
+.vs-mcard-photo-badge:focus-visible,
+.vs-mcard-doc-badge:focus-visible { outline: 3px solid var(--vs-accent); outline-offset: 2px; }
 
 .vs-mcard-body             { padding: 10px 12px; }
 

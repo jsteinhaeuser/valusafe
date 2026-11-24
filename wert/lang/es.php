@@ -1271,6 +1271,7 @@ return [
     'idx_clear_selection'           => 'Quitar selección',
     'idx_select_item'               => 'Seleccionar %s',
     'idx_edit_item'                 => 'Editar: %s',
+    'card_photo_count' => '%s imágenes',   // Kachel/Liste: Anzahl Bilder (4.9.4)
     'idx_drag_sort'                 => 'Arrastrar para ordenar',
     'idx_click_enlarge'             => '%s - clic para ampliar',
     'idx_image_preview'             => 'Vista previa de la imagen',

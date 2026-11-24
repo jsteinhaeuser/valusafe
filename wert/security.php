@@ -54,7 +54,7 @@ class Security {
         // Prüfe MIME-Type
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        unset($finfo);   // statt finfo_close(): seit PHP 8.0 wirkungslos, ab 8.5 veraltet
         
         if (!in_array($mimeType, ALLOWED_IMAGE_TYPES)) {
             $errors[] = 'Ungültiger Dateityp. Nur Bilder erlaubt.';

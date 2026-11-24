@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 24.11.2026 08:39 von bin/changelog_export.php.
+ * Erzeugt am 24.11.2026 16:29 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,24 @@
  */
 
 return [
+    [
+        'version' => '4.9.4',
+        'date' => '2026-11-24',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Sicherheit: Zwei weitere Schutz-Header schirmen ValuSafe gegen fremde Fenster und Seiten ab. Server und Docker-Image nennen keine Versionsnummern von Apache und PHP mehr.',
+                'text_en' => 'Security: two more protective headers shield ValuSafe from other windows and sites. The server and the Docker image no longer reveal the Apache and PHP version numbers.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Übersicht: Die Bilderzahl auf einer Kachel führt jetzt direkt zu den Bildern in der Bearbeitung. Bisher öffnete sie die Detailansicht, die nur das Hauptbild zeigt. Wer nur lesen darf, sieht weiter nur die Anzahl.',
+                'text_en' => 'Overview: the image count on a tile now leads straight to the images on the edit page. Until now it opened the detail view, which shows only the main image. Users who may only read still see just the count.'
+            ]
+        ]
+    ],
     [
         'version' => '4.9.3',
         'date' => '2026-11-24',
@@ -159,24 +177,6 @@ return [
                 'public' => true,
                 'text' => 'Update: Wer im Verwaltungsbereich versehentlich das vollständige Paket statt des Update-Pakets wählt, bekommt jetzt eine verständliche Meldung statt eines technischen Fehlers.',
                 'text_en' => 'Update: if you accidentally choose the full package instead of the update package in the admin area, you now get a clear message instead of a technical error.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.8.1',
-        'date' => '2026-11-06',
-        'entries' => [
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'QR-Codes: Die Seite „QR-Codes“ und der Etikettendruck brachen in 4.8 mit einem Serverfehler ab. Behoben.',
-                'text_en' => 'QR codes: the “QR codes” page and label printing failed with a server error in 4.8. Fixed.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Update: Nach „Jetzt nachsehen“ bestätigt ValuSafe, dass es gerade nachgesehen hat und ob es eine neuere Version gibt. Vorher änderte sich nur die Uhrzeit.',
-                'text_en' => 'Update: after “Check now”, ValuSafe confirms that it has just checked and whether a newer version exists. Previously only the time changed.'
             ],
             [
                 'type' => 'feature',

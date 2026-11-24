@@ -239,7 +239,7 @@ function uploadSingleImage($tmpName, $originalName, $size) {
     // MIME-Type bestimmen
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mimeType = finfo_file($finfo, $tmpName);
-    finfo_close($finfo);
+    unset($finfo);   // statt finfo_close(): seit PHP 8.0 wirkungslos, ab 8.5 veraltet
     
     $extension = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
     

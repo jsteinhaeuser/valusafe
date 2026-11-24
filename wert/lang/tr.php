@@ -1370,6 +1370,7 @@ return [
     'idx_clear_selection'           => 'Seçimi kaldır',
     'idx_select_item'               => '%s seç',
     'idx_edit_item'                 => 'Düzenle: %s',
+    'card_photo_count' => '%s görsel',   // Kachel/Liste: Anzahl Bilder (4.9.4)
     'idx_drag_sort'                 => 'Sıralamak için sürükleyin',
     'idx_click_enlarge'             => '%s - büyütmek için tıklayın',
     'idx_image_preview'             => 'Resim önizlemesi',

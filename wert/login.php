@@ -15,7 +15,7 @@ if (isLoggedIn()) {
 if (isset($_GET['lang']) && in_array($_GET['lang'], VS_SPRACHEN, true)) {
     $_SESSION['lang'] = $_GET['lang'];
     setcookie('user_language', $_GET['lang'],
-        ['expires' => time() + 365 * 24 * 3600, 'path' => '/', 'samesite' => 'Lax']);
+        ['expires' => time() + 365 * 24 * 3600, 'path' => '/', 'samesite' => 'Lax', 'httponly' => true]);
     header('Location: login.php' . (isset($_GET['timeout']) ? '?timeout=1' : ''));
     exit;
 }

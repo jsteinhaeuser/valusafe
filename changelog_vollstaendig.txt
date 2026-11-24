@@ -4,6 +4,16 @@ ValuSafe — Changelog
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
 Erzeugt am 24.11.2026 aus der Projektchronik.
 
+Version 4.9.4   24.11.2026
+--------------------------
+  [Fix] Sicherheit: Zwei weitere Schutz-Header schirmen ValuSafe gegen fremde
+        Fenster und Seiten ab. Server und Docker-Image nennen keine
+        Versionsnummern von Apache und PHP mehr.
+  [Fix] Übersicht: Die Bilderzahl auf einer Kachel führt jetzt direkt zu den
+        Bildern in der Bearbeitung. Bisher öffnete sie die Detailansicht, die
+        nur das Hauptbild zeigt. Wer nur lesen darf, sieht weiter nur die
+        Anzahl.
+
 Version 4.9.3   24.11.2026
 --------------------------
   [Fix] Bilder hochladen: Wer mehrere Bilder auf einmal auswählt, bekommt sie

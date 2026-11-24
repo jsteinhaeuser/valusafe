@@ -37,12 +37,11 @@ if (file_exists(__DIR__ . '/config.php')) {
  * dagegen im Klartext in jedem Protokoll — gefunden am 16.09.2026 bei
  * all-inkl, elfmal, bei drei Hostern.
  *
- * GET bleibt BEWUSST erhalten. Waehrend des Umbaus schicken die Hub-Seiten
- * noch die alte Form; faellt GET weg, bevor der Hub umgestellt ist, steht die
- * ganze Flotte auf 403. Entfernt werden darf es erst, wenn keine Stelle mehr
- * so aufruft — und das ist eine eigene Entscheidung, kein Nebeneffekt.
+ * GET ist seit 4.9.4 abgeschaltet: Hub und bin/ schicken das Token seit dem
+ * 16.09.2026 nur noch per Kopfzeile oder POST. Ein ?token= in der Adresse wird
+ * nicht mehr gelesen; die Anfrage bekommt 403 mit einem Hinweis.
  */
-$token      = $_SERVER['HTTP_X_VALUSAFE_TOKEN'] ?? $_POST['token'] ?? $_GET['token'] ?? '';
+$token      = (string)($_SERVER['HTTP_X_VALUSAFE_TOKEN'] ?? $_POST['token'] ?? '');
 $validToken = defined('TOOLS_TOKEN') ? (string)TOOLS_TOKEN : '';
 
 if ($validToken === '') {
@@ -54,7 +53,7 @@ if ($validToken === '') {
 // hash_equals statt !== : laufzeitkonstanter Vergleich.
 if ($token === '' || !hash_equals($validToken, $token)) {
     http_response_code(403);
-    echo json_encode(['error' => 'Unauthorized']);
+    echo json_encode(['error' => isset($_GET['token']) ? 'Token nicht in der Adresse - Kopfzeile X-ValuSafe-Token oder POST verwenden' : 'Unauthorized']);
     exit;
 }
 

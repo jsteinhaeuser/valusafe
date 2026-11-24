@@ -633,9 +633,24 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
             </a>
         <?php endif; ?>
         <?php if ($photoCount > 1): ?>
-            <span class="vs-mcard-photo-badge" title="<?php echo $photoCount; ?> Fotos">
+            <?php // Bilderzahl (4.9.4, wie Valu-Basic 2.9.2): Bis 4.9.3 nur Anzeige,
+                  // der Klick oeffnete die Detailansicht - die zeigt nur das Hauptbild.
+                  // Wer bearbeiten darf, springt jetzt zu den Bildern in edit.php. ?>
+            <?php $photoText = sprintf(t('card_photo_count'), $photoCount); ?>
+            <?php if (canEdit()): ?>
+            <a href="edit.php?id=<?php echo (int)$item['id']; ?>#bilder"
+               class="vs-mcard-photo-badge" draggable="false"
+               onclick="event.stopPropagation()"
+               title="<?php echo htmlspecialchars($photoText, ENT_QUOTES, 'UTF-8'); ?>"
+               aria-label="<?php echo htmlspecialchars($photoText . ' – ' . sprintf(tn('idx_edit_item', 'Bearbeiten: %s'), $item['name']), ENT_QUOTES, 'UTF-8'); ?>">
                 <i class="ti ti-photo" aria-hidden="true"></i> <?php echo $photoCount; ?>
+            </a>
+            <?php else: ?>
+            <span class="vs-mcard-photo-badge" title="<?php echo htmlspecialchars($photoText, ENT_QUOTES, 'UTF-8'); ?>">
+                <i class="ti ti-photo" aria-hidden="true"></i> <span aria-hidden="true"><?php echo $photoCount; ?></span>
+                <span class="sr-only"><?php echo htmlspecialchars($photoText, ENT_QUOTES, 'UTF-8'); ?></span>
             </span>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
     <div class="vs-mcard-body">

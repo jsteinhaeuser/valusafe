@@ -27,7 +27,7 @@ if (!function_exists('setLanguage')) {
     function setLanguage($lang) {
         if (in_array($lang, ['de', 'en'])) {
             $_SESSION['lang'] = $lang;
-            setcookie('user_language', $lang, time() + (365 * 24 * 60 * 60), '/');
+            setcookie('user_language', $lang, ['expires' => time() + (365 * 24 * 60 * 60), 'path' => '/', 'samesite' => 'Lax', 'httponly' => true]);
             return true;
         }
         return false;

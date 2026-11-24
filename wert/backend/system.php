@@ -556,7 +556,9 @@ include 'layout/header_next_page.php';
                 'X-Content-Type-Options' => 'MIME-Sniffing Protection',
                 'X-XSS-Protection' => 'Legacy XSS Filter',
                 'Referrer-Policy' => 'Privacy Protection',
-                'Permissions-Policy' => 'Feature Control'
+                'Permissions-Policy' => 'Feature Control',
+                'Cross-Origin-Opener-Policy' => 'Window Isolation',
+                'Cross-Origin-Resource-Policy' => 'Resource Isolation'
             ];
             
             // HSTS nur bei HTTPS erwarten

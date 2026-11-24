@@ -88,8 +88,7 @@ class ImageOptimizer {
                 break;
         }
         
-        imagedestroy($source);
-        imagedestroy($destination);
+        unset($source, $destination);   // statt imagedestroy(): seit PHP 8.0 wirkungslos, ab 8.5 veraltet
         
         return $result;
     }

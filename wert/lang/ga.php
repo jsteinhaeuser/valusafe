@@ -1437,6 +1437,7 @@ return [
     'idx_clear_selection'           => 'Glan an rogha',
     'idx_select_item'               => 'Roghnaigh %s',
     'idx_edit_item'                 => 'Cuir in eagar: %s',
+    'card_photo_count' => '%s íomhá',   // Kachel/Liste: Anzahl Bilder (4.9.4)
     'idx_drag_sort'                 => 'Tarraing chun an t-ord a athrú',
     'idx_click_enlarge'             => '%s - cliceáil chun é a mhéadú',
     'idx_image_preview'             => 'Réamhamharc íomhá',

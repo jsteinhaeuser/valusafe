@@ -44,7 +44,7 @@ if (!function_exists('handleAvatarUpload')) {
 
         $finfo    = finfo_open(FILEINFO_MIME_TYPE);
         $mimeType = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        unset($finfo);   // statt finfo_close(): seit PHP 8.0 wirkungslos, ab 8.5 veraltet
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         if (in_array($ext, ['heic', 'heif'])) $mimeType = 'image/heic';
 
@@ -81,8 +81,7 @@ if (!function_exists('handleAvatarUpload')) {
         if (!imagejpeg($dest, $path, 88)) {
             return ['error' => t('profile_avatar_store_failed')];
         }
-        imagedestroy($src);
-        imagedestroy($dest);
+        unset($src, $dest);   // statt imagedestroy(): seit PHP 8.0 wirkungslos, ab 8.5 veraltet
 
         if ($oldAvatar && file_exists($avatarDir . $oldAvatar)) {
             unlink($avatarDir . $oldAvatar);

@@ -4,6 +4,11 @@ All changes that affect users. Generated from the project history on 2026-11-24.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
 
+## 4.9.4 — 2026-11-24
+
+- **Fixed:** Security: two more protective headers shield ValuSafe from other windows and sites. The server and the Docker image no longer reveal the Apache and PHP version numbers.
+- **Fixed:** Overview: the image count on a tile now leads straight to the images on the edit page. Until now it opened the detail view, which shows only the main image. Users who may only read still see just the count.
+
 ## 4.9.3 — 2026-11-24
 
 - **Fixed:** Image upload: selecting several images at once now uploads them reliably – each image is sent separately, with progress per image. Previously the upload could fail entirely on servers with a small upload limit and show only an unclear security error. If an image is too large, the message now names it and states how much the server accepts.
