@@ -4,6 +4,7 @@
  * Universeller Barcode-Lookup: ISBN (Bücher), EAN/UPC (Musik, Produkte)
  *
  * GET-Parameter: ?code=<barcode>
+ *            oder ?katnr=<Katalognummer> (seit 4.9.3, nur Musik/MusicBrainz)
  *
  * Rückgabe JSON:
  * {
@@ -21,6 +22,7 @@
 
 require_once 'db.php';
 require_once 'helpers.php';   // vsNfc()
+require_once __DIR__ . '/musik_helpers.php';   // seit 4.9.3
 
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
@@ -32,10 +34,21 @@ if (!isLoggedIn()) {  // volle Anmeldung inkl. Fingerabdruck (OWASP-A07-005)
     exit;
 }
 
+// Katalognummer (seit 4.9.3): eigener Weg, nur MusicBrainz. Die Funktionen
+// stehen weiter unten; ausgewertet wird erst nach ihrer Definition.
+$katNr = null;
+if (isset($_GET['katnr'])) {
+    $katNr = vsKatNrBereinigen((string)$_GET['katnr']);
+    if ($katNr === null) {
+        echo json_encode(['found' => false, 'error' => 'Ungültige Katalognummer']);
+        exit;
+    }
+}
+
 $code = trim($_GET['code'] ?? '');
 $code = preg_replace('/[^0-9X]/', '', strtoupper($code));
 
-if (strlen($code) < 8 || strlen($code) > 14) {
+if ($katNr === null && (strlen($code) < 8 || strlen($code) > 14)) {
     echo json_encode(['found' => false, 'error' => 'Ungültiger Code']);
     exit;
 }
@@ -350,78 +363,64 @@ function musikCover(string $releaseId, string $gruppenId): ?string {
     return null;
 }
 
-function lookupMusicBrainz(string $ean): ?array {
-    // Dieselbe Ware kann als UPC-A (12) oder mit fuehrender 0 (13) gelesen
-    // werden und in MusicBrainz in beiden Schreibweisen stehen.
-    $kern      = ltrim($ean, '0');
-    $varianten = [$kern];
-    if (strlen($kern) < 13) $varianten[] = '0' . $kern;
-    $abfrage = implode(' OR ', array_map(fn($v) => 'barcode:' . $v, $varianten));
-
+/**
+ * Eine Suchanfrage an MusicBrainz, hoechstens eine je Sekunde und Sitzung.
+ * Antwortet der Dienst mit einem Fehler ("busy", 503), einmal nachfassen.
+ * Liefert die Antwort, oder null, wenn er auch dann nicht antwortet.
+ */
+function musicBrainzSuche(string $abfrage): ?array {
     if (session_status() === PHP_SESSION_ACTIVE) {
         $warten = ($_SESSION['vs_mb_letzte'] ?? 0) + 1.1 - microtime(true);
         if ($warten > 0) usleep((int)($warten * 1000000));
         $_SESSION['vs_mb_letzte'] = microtime(true);
     }
 
-    $url  = 'https://musicbrainz.org/ws/2/release/?fmt=json&limit=10&query=' . rawurlencode($abfrage);
+    $url  = 'https://musicbrainz.org/ws/2/release/?fmt=json&limit=25&query=' . rawurlencode($abfrage);
     $data = fetchJson($url, VS_MB_UA);
-    // Gemessen 09.11.2026: 503 auch bei mehreren Sekunden Abstand. Antwortet
-    // der Dienst mit einem Fehler, einmal nachfassen (bei Zeitueberschreitung
-    // nicht, sonst wartet der Scan doppelt).
+    // Gemessen 09.11. und 22.11.2026: 503 auch bei mehreren Sekunden Abstand.
+    // Bei Zeitueberschreitung nicht nachfassen, sonst wartet der Scan doppelt.
     if (is_array($data) && !isset($data['releases'])) {
         usleep(1500000);
         $data = fetchJson($url, VS_MB_UA);
     }
+    return (is_array($data) && isset($data['releases'])) ? $data : null;
+}
+
+function lookupMusicBrainz(string $ean): ?array {
+    // Dieselbe Ware kann als UPC-A (12) oder mit fuehrender 0 (13) gelesen
+    // werden und in MusicBrainz in beiden Schreibweisen stehen.
+    $kern      = ltrim($ean, '0');
+    $varianten = [$kern];
+    if (strlen($kern) < 13) $varianten[] = '0' . $kern;
+    $data = musicBrainzSuche(implode(' OR ', array_map(fn($v) => 'barcode:' . $v, $varianten)));
 
     // Ein Barcode passt oft auf mehrere Eintraege derselben Pressung:
     // den vollstaendigsten nehmen, bei Gleichstand den ersten.
-    $beste  = null;
-    $punkte = -1;
-    foreach ($data['releases'] ?? [] as $r) {
-        if (ltrim((string)($r['barcode'] ?? ''), '0') !== $kern || empty($r['title'])) continue;
-        $p = (!empty($r['date']) ? 2 : 0)
-           + (!empty($r['media'][0]['format']) ? 2 : 0)
-           + (!empty($r['label-info'][0]['catalog-number']) ? 1 : 0);
-        if ($p > $punkte) { $beste = $r; $punkte = $p; }
-    }
+    $beste = vsMusikBeste($data['releases'] ?? [],
+        fn($r) => ltrim((string)($r['barcode'] ?? ''), '0') === $kern);
     if ($beste === null) return null;
 
-    $kuenstler = '';
-    foreach ($beste['artist-credit'] ?? [] as $c) {
-        $kuenstler .= ($c['name'] ?? '') . ($c['joinphrase'] ?? '');
+    return vsMusikErgebnis($beste,
+        musikCover((string)($beste['id'] ?? ''), (string)($beste['release-group']['id'] ?? '')));
+}
+
+/**
+ * Katalognummer -> MusicBrainz (seit 4.9.3, fuer aeltere LPs ohne Barcode).
+ * Schreibweisen und Auswahl: musik_helpers.php.
+ */
+function lookupKatNr(string $katNr): array {
+    $data = musicBrainzSuche(vsKatNrAbfrage($katNr));
+    if ($data === null) {
+        // Nicht "nichts gefunden": die Platte kann durchaus drin sein.
+        return ['found' => false, 'type' => 'music', 'busy' => true];
     }
+    $beste = vsMusikBeste($data['releases'],
+        fn($r) => vsKatNrDesEintrags($r, $katNr) !== null, true);
+    if ($beste === null) return ['found' => false, 'type' => 'music'];
 
-    $formate = [];
-    foreach ($beste['media'] ?? [] as $m) {
-        if (!empty($m['format'])) $formate[$m['format']] = ($formate[$m['format']] ?? 0) + 1;
-    }
-    $format = [];
-    foreach ($formate as $f => $n) $format[] = ($n > 1 ? "{$n}×" : '') . $f;
-
-    $jahr  = substr((string)($beste['date'] ?? ''), 0, 4) ?: null;
-    $label = $beste['label-info'][0]['label']['name'] ?? null;
-    $katNr = $beste['label-info'][0]['catalog-number'] ?? null;
-    // Platzhalter von MusicBrainz nicht in die Notizen uebernehmen
-    if ($label === '[no label]') $label = null;
-    if ($katNr === '[none]')     $katNr = null;
-
-    // Sprachneutral, damit keine Sprache deutsche Beschriftungen erhaelt
-    $details = array_filter([implode(' + ', $format), $jahr, $label, $katNr]);
-
-    return [
-        'found'       => true,
-        'type'        => 'music',
-        // Kuenstler im Namen: die Doppelten-Pruefung vergleicht Name und
-        // Ersteller, und "Greatest Hits" gibt es von vielen.
-        'name'        => $kuenstler !== '' ? "{$kuenstler} – {$beste['title']}" : $beste['title'],
-        'description' => $details ? implode(' · ', $details) : null,
-        'brand'       => null,
-        'category'    => 'Musik',
-        'year'        => $jahr,
-        'cover'       => musikCover((string)($beste['id'] ?? ''), (string)($beste['release-group']['id'] ?? '')),
-        'source'      => 'MusicBrainz',
-    ];
+    return vsMusikErgebnis($beste,
+        musikCover((string)($beste['id'] ?? ''), (string)($beste['release-group']['id'] ?? '')),
+        $katNr);
 }
 
 // ── EAN/UPC → MusicBrainz, Open Food Facts, Open Beauty Facts, UPCitemdb ──
@@ -517,7 +516,7 @@ function lookupEAN(string $ean): array {
 }
 
 // ── Routing ───────────────────────────────────────────────────────────────
-$result = match($type) {
+$result = $katNr !== null ? lookupKatNr($katNr) : match($type) {
     'isbn'  => lookupISBN($code),
     'ean'   => lookupEAN($code),
     default => ['found' => false, 'type' => 'unknown'],

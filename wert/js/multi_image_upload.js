@@ -14,6 +14,8 @@ class MultiImageUpload {
         this.itemId = itemId;
         this.csrfToken = csrfToken;
         this.maxImages = options.maxImages || 10;
+        // Groesste Datei, die der Server annimmt (Bytes, 0 = nicht pruefen)
+        this.maxFileSize = options.maxFileSize || 0;
         this.images = [];
         this.lightboxIndex = 0;
         this.dragSrcIndex = null;
@@ -273,59 +275,100 @@ class MultiImageUpload {
             this.showError(_miuE(_miuT('js_img_max', 'Maximum von %s Bildern erreicht', this.maxImages)));
             return;
         }
-        
-        // Progress anzeigen
-        this.showProgress(0, _miuT('js_img_uploading', 'Lade hoch …'));
+
+        // Jede Datei in einer eigenen Anfrage (seit ValuSafe 4.9.3 / Valu-Basic 2.9.2). Bis dahin
+        // gingen bis zu 10 Bilder in EINER Anfrage; ueberstieg sie post_max_size
+        // des Servers (beim Hoster z. B. 8 MB), verwarf PHP alles und meldete
+        // nur einen CSRF-Fehler.
+        const queue = fileArray.slice(0, remaining);
+        const errors = [];
+        if (fileArray.length > remaining) {
+            errors.push(_miuT('js_img_max', 'Maximum von %s Bildern erreicht', this.maxImages));
+        }
+        const total = queue.length;
+        let done = 0;
+
         this.hideError();
-        
+        this.showProgress(0, _miuT('js_img_uploading', 'Lade hoch …'));
+
+        for (let i = 0; i < total; i++) {
+            const file = queue[i];
+            const step = 100 / total;
+            const base = i * step;
+            const label = _miuT('js_img_uploading_i', 'Bild %s von %s: %s', i + 1, total, file.name);
+            this.showProgress(Math.round(base), label);
+
+            const processed = await MultiImageUpload.compressIfNeeded(file, (msg) => {
+                this.showProgress(Math.round(base + step * 0.1), msg);
+            });
+
+            // Clientseitig gegen die tatsaechliche Servergrenze pruefen
+            // (min. aus upload_max_filesize, post_max_size, MAX_FILE_SIZE)
+            if (this.maxFileSize > 0 && processed.size > this.maxFileSize) {
+                errors.push(_miuT('js_img_too_large', '%s: Datei zu groß (%s MB). Der Server nimmt höchstens %s MB pro Bild an.',
+                    file.name, MultiImageUpload.mb(processed.size), MultiImageUpload.mb(this.maxFileSize)));
+                continue;
+            }
+
+            this.showProgress(Math.round(base + step * 0.3), label);
+            try {
+                const data = await this.uploadOne(processed);
+                if (data.uploaded && data.uploaded.length > 0) {
+                    this.images = [...this.images, ...data.uploaded];
+                    done += data.uploaded.length;
+                    this.renderGallery();
+                }
+                if (data.errors && data.errors.length > 0) {
+                    errors.push(...data.errors);
+                } else if (!data.success && data.error) {
+                    errors.push(data.error);
+                    // Server meldet "Maximum erreicht": weitere Versuche sinnlos
+                    if (this.images.length >= this.maxImages) break;
+                }
+            } catch (err) {
+                errors.push(_miuT('js_img_upload_failed', 'Upload fehlgeschlagen: %s', file.name + ' – ' + err.message));
+            }
+            this.showProgress(Math.round(base + step), label);
+        }
+
+        this.showProgress(100, done === total
+            ? _miuT('js_img_done', 'Fertig!')
+            : _miuT('js_img_result', '%s von %s Bildern hochgeladen', done, total));
+
+        if (done > 0 && navigator.vibrate) navigator.vibrate(50);
+
+        if (errors.length > 0) {
+            // Fehlertexte koennen den Dateinamen enthalten - maskieren
+            this.showError(errors.map(_miuE).join('<br>'));
+        }
+
+        setTimeout(() => this.hideProgress(), errors.length > 0 ? 4000 : 1500);
+    }
+
+    // Eine Datei hochladen; liefert die JSON-Antwort von image_manager.php
+    async uploadOne(file) {
         const formData = new FormData();
         formData.append('csrf_token', this.csrfToken);
         formData.append('action', 'upload');
         formData.append('item_id', this.itemId);
-        
-        // Füge Dateien hinzu (max. remaining) — mit client-seitiger Komprimierung
-        let added = 0;
-        for (const file of fileArray) {
-            if (added >= remaining) break;
-            const processed = await MultiImageUpload.compressIfNeeded(file, (msg) => {
-                this.showProgress(10 + added * 5, msg);
-            });
-            formData.append('images[]', processed);
-            added++;
-        }
+        formData.append('images[]', file);
 
-        try {
-            // Progress
-            this.showProgress(30, _miuT('js_img_uploading_n', 'Lade %s Bild(er) hoch …', added));
-            
-            const response = await fetch('image_manager.php', {
-                method: 'POST',
-                body: formData
-            });
-            
-            this.showProgress(80, _miuT('js_img_processing', 'Verarbeite …'));
-            const data = await response.json();
-            
-            this.showProgress(100, _miuT('js_img_done', 'Fertig!'));
-            
-            if (data.uploaded && data.uploaded.length > 0) {
-                this.images = [...this.images, ...data.uploaded];
-                this.renderGallery();
-                
-                // Haptic Feedback
-                if (navigator.vibrate) navigator.vibrate(50);
-            }
-            
-            if (data.errors && data.errors.length > 0) {
-                // Fehlertexte koennen den Dateinamen enthalten (image_manager.php) - maskieren
-                this.showError(data.errors.map(_miuE).join('<br>'));
-            }
-            
-        } catch (err) {
-            this.showError(_miuE(_miuT('js_img_upload_failed', 'Upload fehlgeschlagen: %s', err.message)));
-        } finally {
-            setTimeout(() => this.hideProgress(), 1500);
+        const response = await fetch('image_manager.php', { method: 'POST', body: formData });
+        const text = await response.text();
+        // Mit display_errors=On kann PHP vor dem JSON eine Warnung ausgeben
+        // (z. B. "POST Content-Length ... exceeds the limit") - JSON dahinter suchen.
+        const start = text.indexOf('{');
+        if (start >= 0) {
+            try { return JSON.parse(text.slice(start)); } catch (e) { /* unten */ }
         }
+        // Keine JSON-Antwort, z. B. 413 vom Webserver vor PHP
+        throw new Error(_miuT('js_img_bad_answer', 'Unerwartete Antwort vom Server (HTTP %s)', response.status));
+    }
+
+    // Bytes als MB-Zahl, Dezimalkomma ausser bei Englisch
+    static mb(bytes) {
+        const v = String(Math.round(bytes / 104857.6) / 10);
+        return /^en/i.test(document.documentElement.lang || '') ? v : v.replace('.', ',');
     }
     
     // =============================================

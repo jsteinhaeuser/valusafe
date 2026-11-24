@@ -722,6 +722,8 @@ return [
     'price_decimal_hint'        => 'Decimals with a point or comma are possible (e.g. 123.45 or 123,45)',
     'barcode_scan_button'       => '📷 Scan',
     'barcode_manual_prompt'     => 'Enter barcode / ISBN:',
+    'barcode_catno_button'      => 'Catalogue no.',
+    'barcode_catno_prompt'      => 'Catalogue number of the record (on the label or the spine, e.g. SHVL 804):',
     'barcode_in_frame'          => 'Hold the barcode within the frame',
 
     // Custom Fields
@@ -1202,6 +1204,8 @@ return [
     'js_lookup_none' => 'No product data found – please enter it manually.',
     'js_lookup_error' => 'Lookup failed: %s',
     'js_lookup_take_image' => 'Use image',
+    'js_lookup_busy'       => 'MusicBrainz is busy right now – please try again in a few seconds.',
+    'js_catno_invalid'     => 'Please enter a catalogue number with digits, e.g. SHVL 804.',
     'js_note_author' => 'Author',
     'js_note_brand' => 'Brand',
     'js_note_category' => 'Category',
@@ -1426,6 +1430,7 @@ return [
     'idx_bulk_run'                  => 'Run action',
     'idx_clear_selection'           => 'Clear selection',
     'idx_select_item'               => 'Select %s',
+    'idx_edit_item'                 => 'Edit: %s',
     'idx_drag_sort'                 => 'Drag to reorder',
     'idx_click_enlarge'             => '%s - click to enlarge',
     'idx_image_preview'             => 'Image preview',
@@ -1853,4 +1858,14 @@ return [
     'hox_optional' => '(optional)',
     'hox_remarks_ph' => 'Further notes on the condition of the flat …',
     'hox_generate' => 'Generate handover report →',
+    // Upload-Fehler und Einzel-Upload (4.9.3, aus Valu-Basic 2.9.2)
+    'upload_err_too_large' => '%s: File too large. The server accepts at most %s MB per file.',
+    'upload_err_partial' => '%s: The file was only partially received. Please try again.',
+    'upload_err_server' => '%s: The server could not store the file (error code %s).',
+    'upload_err_post_size' => 'The request was too large (%s MB). The server accepts at most %s MB at once. Please upload fewer or smaller files at a time.',
+    'upload_err_unknown' => 'The image could not be uploaded.',
+    'js_img_too_large' => '%s: File too large (%s MB). The server accepts at most %s MB per image.',
+    'js_img_uploading_i' => 'Image %s of %s: %s',
+    'js_img_result' => '%s of %s images uploaded',
+    'js_img_bad_answer' => 'Unexpected response from the server (HTTP %s)',
 ];

@@ -19,6 +19,7 @@ $GLOBALS['_vsJsTexteAusgegeben'] = true;
 $_vsJsSchluessel = [
     'js_draft_found', 'js_draft_unsaved', 'js_draft_question', 'js_restore', 'js_discard',
     'js_lookup_searching', 'js_lookup_none', 'js_lookup_error', 'js_lookup_take_image',
+    'js_lookup_busy', 'js_catno_invalid',   // Katalognummer, 4.9.3
     'js_note_author', 'js_note_brand', 'js_note_category', 'js_note_year',
     'js_position_choose', 'js_compress_none', 'js_compress_failed', 'js_detected_type',
     'js_img_count', 'js_img_none', 'js_img_upload', 'js_img_hint', 'js_img_limits',
@@ -28,6 +29,7 @@ $_vsJsSchluessel = [
     'js_img_upload_failed', 'js_img_delete_failed', 'js_img_primary_failed',
     'js_img_compressing', 'js_error_prefix', 'js_close', 'js_prev', 'js_next',
     'js_pdf_open', 'js_opens_new_tab', 'js_doc_open', 'js_pdf_document',
+    'js_img_too_large', 'js_img_uploading_i', 'js_img_result', 'js_img_bad_answer',   // Einzel-Upload (4.9.3)
     // Zuschnitt (js/bild_zuschnitt.js, 4.4.1)
     'js_crop_button', 'js_crop_title', 'js_crop_help', 'js_crop_image', 'js_crop_rotate_left', 'js_crop_rotate_right', 'js_crop_ratio',
     'js_crop_ratio_free', 'js_crop_reset', 'js_crop_cancel', 'js_crop_apply', 'js_crop_rotated', 'js_crop_saving', 'js_crop_failed',

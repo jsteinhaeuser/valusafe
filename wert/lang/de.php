@@ -721,6 +721,8 @@ return [
     'barcode_placeholder'       => 'Barcode / ISBN eingeben oder scannen',
     'barcode_scan_button'       => '📷 Scannen',
     'barcode_manual_prompt'     => 'Barcode / ISBN eingeben:',
+    'barcode_catno_button'      => 'Katalognummer',
+    'barcode_catno_prompt'      => 'Katalognummer der Schallplatte (auf dem Etikett oder dem Rücken, z. B. SHVL 804):',
     'barcode_in_frame'          => 'Barcode im Rahmen halten',
 
     // Custom Fields
@@ -1188,6 +1190,8 @@ return [
     'js_lookup_none' => 'Keine Produktdaten gefunden – bitte manuell eintragen.',
     'js_lookup_error' => 'Fehler beim Abrufen: %s',
     'js_lookup_take_image' => 'Bild übernehmen',
+    'js_lookup_busy'       => 'MusicBrainz ist gerade ausgelastet – bitte in ein paar Sekunden noch einmal versuchen.',
+    'js_catno_invalid'     => 'Bitte eine Katalognummer mit Ziffern eingeben, z. B. SHVL 804.',
     'js_note_author' => 'Autor',
     'js_note_brand' => 'Marke',
     'js_note_category' => 'Kategorie',
@@ -1412,6 +1416,7 @@ return [
     'idx_bulk_run'                  => 'Aktion ausführen',
     'idx_clear_selection'           => 'Auswahl aufheben',
     'idx_select_item'               => '%s auswählen',
+    'idx_edit_item'                 => 'Bearbeiten: %s',
     'idx_drag_sort'                 => 'Ziehen zum Sortieren',
     'idx_click_enlarge'             => '%s - zum Vergrößern klicken',
     'idx_image_preview'             => 'Bildvorschau',
@@ -1839,4 +1844,14 @@ return [
     'hox_optional' => '(optional)',
     'hox_remarks_ph' => 'Weitere Hinweise zum Zustand der Wohnung …',
     'hox_generate' => 'Übergabeprotokoll generieren →',
+    // Upload-Fehler und Einzel-Upload (4.9.3, aus Valu-Basic 2.9.2)
+    'upload_err_too_large' => '%s: Datei zu groß. Der Server nimmt höchstens %s MB pro Datei an.',
+    'upload_err_partial' => '%s: Die Datei kam nur teilweise an. Bitte erneut versuchen.',
+    'upload_err_server' => '%s: Der Server konnte die Datei nicht speichern (Fehlercode %s).',
+    'upload_err_post_size' => 'Die Anfrage war mit %s MB zu groß. Der Server nimmt höchstens %s MB auf einmal an. Bitte weniger oder kleinere Dateien auf einmal hochladen.',
+    'upload_err_unknown' => 'Das Bild konnte nicht hochgeladen werden.',
+    'js_img_too_large' => '%s: Datei zu groß (%s MB). Der Server nimmt höchstens %s MB pro Bild an.',
+    'js_img_uploading_i' => 'Bild %s von %s: %s',
+    'js_img_result' => '%s von %s Bildern hochgeladen',
+    'js_img_bad_answer' => 'Unerwartete Antwort vom Server (HTTP %s)',
 ];

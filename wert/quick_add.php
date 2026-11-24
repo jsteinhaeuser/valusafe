@@ -200,6 +200,9 @@ include 'header_next_page.php';
 .qa-barcode-row .qa-input { flex: 1; min-width: 0; }
 .qa-scan-btn { padding: 0 16px; min-height: 44px; border: none; border-radius: 8px; white-space: nowrap;
                background: var(--vs-accent, #1a6fb5); color: #fff; font-size: 15px; cursor: pointer; }
+.qa-katnr-btn { margin-top: 8px; width: 100%; min-height: 44px; border: 1px solid var(--vs-accent, #1a6fb5); border-radius: 8px;
+                background: transparent; color: var(--vs-accent, #1a6fb5); font-size: 15px; cursor: pointer; }
+.qa-katnr-btn:focus-visible { outline: 3px solid var(--vs-accent, #1a6fb5); outline-offset: 2px; }
 .qa-scan-btn:focus-visible, .qa-cover-btn:focus-visible { outline: 3px solid var(--vs-accent, #1a6fb5); outline-offset: 2px; }
 .qa-lookup { margin-top: 8px; padding: 10px 14px; border-radius: 6px; font-size: 14px;
              border-left: 4px solid var(--vs-border, #d1d5db); background: var(--vs-surface-2, #f9fafb); color: var(--vs-text, #1f2937); }
@@ -318,6 +321,10 @@ include 'header_next_page.php';
                        aria-describedby="qaLookup">
                 <button type="button" class="qa-scan-btn" onclick="vsScannerOeffnen()"><?php echo t('barcode_scan_button'); ?></button>
             </div>
+            <?php // Katalognummer (4.9.3): aeltere LPs haben oft keinen Barcode ?>
+            <button type="button" class="qa-katnr-btn" onclick="qaKatNr()">
+                <i class="ti ti-vinyl" aria-hidden="true"></i> <?php echo htmlspecialchars(t('barcode_catno_button'), ENT_QUOTES, 'UTF-8'); ?>
+            </button>
             <div id="qaLookup" class="qa-lookup" role="status" hidden></div>
         </div>
 
@@ -519,14 +526,29 @@ function qaMeldung(text, art) {
     return el;
 }
 
-async function qaSuche(clean) {
+// Katalognummer (4.9.3): sucht nur, das Barcode-Feld bleibt leer.
+function qaKatNr() {
+    vsPrompt(<?php echo json_encode(t('barcode_catno_prompt')); ?>, '').then(function (k) {
+        if (!k || !k.trim()) return;
+        if (!/\d/.test(k)) {
+            qaMeldung('✗ ' + vsT('js_catno_invalid', 'Bitte eine Katalognummer mit Ziffern eingeben, z. B. SHVL 804.'), 'fehler');
+            return;
+        }
+        qaSuche('', k.trim());
+    });
+}
+
+async function qaSuche(clean, katnr) {
     qaMeldung('… ' + vsT('js_lookup_searching', 'Produktdaten werden gesucht …'), '');
     try {
-        const r    = await fetch('barcode_lookup.php?code=' + encodeURIComponent(clean));
+        const r    = await fetch(katnr ? 'barcode_lookup.php?katnr=' + encodeURIComponent(katnr)
+                                       : 'barcode_lookup.php?code=' + encodeURIComponent(clean));
         const data = await r.json();
         for (const k in data) { if (typeof data[k] === 'string' && data[k].normalize) data[k] = data[k].normalize('NFC'); }
         if (!data.found) {
-            qaMeldung('✗ ' + vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.'), 'fehler');
+            qaMeldung('✗ ' + (data.busy
+                ? vsT('js_lookup_busy', 'MusicBrainz ist gerade ausgelastet – bitte in ein paar Sekunden noch einmal versuchen.')
+                : vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.')), 'fehler');
             return;
         }
         const nameEl  = document.getElementById('name');
@@ -541,7 +563,7 @@ async function qaSuche(clean) {
         }
         const el = qaMeldung('', 'ok');
         const kopf = document.createElement('strong');
-        kopf.textContent = '✓ ' + (data.name || clean);
+        kopf.textContent = '✓ ' + (data.name || katnr || clean);
         el.appendChild(kopf);
         const rest = (data.brand ? ' – ' + data.brand : '') + (data.year ? ' (' + data.year + ')' : '')
                    + (data.source ? ' · ' + data.source : '');

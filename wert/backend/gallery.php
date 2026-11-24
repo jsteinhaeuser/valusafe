@@ -9,8 +9,32 @@ requireBackendAccess();
 
 $pageTitle = t('image_gallery');
 
-// Alle Gegenstände mit Bildern laden
+// Alle Bilder laden: jedes Bild aus item_images (bis 4.9.2 nur das Hauptbild
+// wertsachen.bild, die weiteren Bilder eines Gegenstands fehlten hier), dazu
+// alte Gegenstaende, deren Hauptbild noch nicht in item_images steht.
 try {
+    $items = $db->select("
+        SELECT w.id AS id, w.name AS name, ii.filename AS bild, k.name AS kategorie, o.name AS ort, w.preis AS preis,
+               ii.is_primary AS is_primary, ii.sort_order AS sort_order
+        FROM item_images ii
+        JOIN wertsachen w ON w.id = ii.item_id
+        LEFT JOIN kategorien k ON w.kategorie_id = k.id
+        LEFT JOIN raeume o ON w.raum_id = o.id
+        UNION ALL
+        SELECT w.id, w.name, w.bild, k.name, o.name, w.preis, 1, -1
+        FROM wertsachen w
+        LEFT JOIN kategorien k ON w.kategorie_id = k.id
+        LEFT JOIN raeume o ON w.raum_id = o.id
+        WHERE w.bild IS NOT NULL AND w.bild != ''
+          AND NOT EXISTS (SELECT 1 FROM item_images x WHERE x.item_id = w.id AND x.filename = w.bild)
+        ORDER BY id DESC, is_primary DESC, sort_order ASC
+    ");
+} catch (Exception $e) {
+    $items = [];
+}
+// Rueckfall, falls die Abfrage scheitert (Database::select liefert dann []),
+// z. B. alte Datenbank ohne item_images: nur Hauptbilder wie bis 4.9.2
+if (!$items) try {
     $items = $db->select("
         SELECT w.id, w.name, w.bild, k.name as kategorie, o.name as ort, w.preis
         FROM wertsachen w

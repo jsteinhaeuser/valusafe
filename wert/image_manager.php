@@ -19,6 +19,14 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 header('Expires: 0');
 
+// Anfrage groesser als post_max_size: PHP hat $_POST und $_FILES verworfen,
+// es fehlt also auch das CSRF-Token. Klare Meldung statt CSRF-Fehler (4.9.3, aus Valu-Basic 2.9.2).
+if (vbPostZuGross()) {
+    http_response_code(413);
+    echo json_encode(['success' => false, 'error' => vbPostZuGrossMeldung(), 'errors' => [vbPostZuGrossMeldung()]]);
+    exit;
+}
+
 // CSRF für AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = $_POST['csrf_token'] ?? '';
@@ -118,22 +126,29 @@ switch ($action) {
         $uploaded = [];
         $errors = [];
         
-        // Normalisiere Files Array (single oder multiple)
-        $fileList = [];
+        // Normalisiere Files Array (single oder multiple). Bis 4.9.2 wurden
+        // Dateien mit Fehlercode stillschweigend uebergangen (Ergebnis: success
+        // false ohne Meldung), jetzt gibt es je Datei eine Fehlermeldung.
+        $roh = [];
         if (is_array($files['tmp_name'])) {
             for ($i = 0; $i < count($files['tmp_name']); $i++) {
-                if ($files['error'][$i] === UPLOAD_ERR_OK) {
-                    $fileList[] = [
-                        'tmp_name' => $files['tmp_name'][$i],
-                        'name'     => $files['name'][$i],
-                        'size'     => $files['size'][$i],
-                        'error'    => $files['error'][$i],
-                    ];
-                }
+                $roh[] = [
+                    'tmp_name' => $files['tmp_name'][$i],
+                    'name'     => $files['name'][$i],
+                    'size'     => $files['size'][$i],
+                    'error'    => $files['error'][$i],
+                ];
             }
         } else {
-            if ($files['error'] === UPLOAD_ERR_OK) {
-                $fileList[] = $files;
+            $roh[] = $files;
+        }
+        $fileList = [];
+        foreach ($roh as $file) {
+            $code = (int)$file['error'];
+            if ($code === UPLOAD_ERR_OK) {
+                $fileList[] = $file;
+            } elseif ($code !== UPLOAD_ERR_NO_FILE) {
+                $errors[] = vbUploadFehlerText($code, (string)$file['name']);
             }
         }
         
@@ -174,6 +189,10 @@ switch ($action) {
             }
         }
         
+        if (!$uploaded && !$errors) {
+            $errors[] = t('upload_err_unknown');
+        }
+
         echo json_encode([
             'success'  => count($uploaded) > 0,
             'uploaded' => $uploaded,
@@ -204,6 +223,12 @@ switch ($action) {
             exit;
         }
         $file = $_FILES['image'] ?? null;
+        if ($file && !is_array($file['tmp_name'])
+            && !in_array((int)$file['error'], [UPLOAD_ERR_OK, UPLOAD_ERR_NO_FILE], true)) {
+            // z. B. Zuschnitt groesser als upload_max_filesize (4.9.3)
+            echo json_encode(['success' => false, 'error' => vbUploadFehlerText((int)$file['error'], (string)$file['name'])]);
+            exit;
+        }
         if (!$file || is_array($file['tmp_name']) || $file['error'] !== UPLOAD_ERR_OK) {
             echo json_encode(['success' => false, 'error' => 'Keine Datei']);
             exit;

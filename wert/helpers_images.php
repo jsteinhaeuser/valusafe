@@ -210,11 +210,29 @@ function countItemImages($itemId) {
  * Upload einzelnes Bild
  * Nutzt optimizeAndSaveImage() aus helpers.php - inkl. HEIC→JPG Konvertierung
  */
+/**
+ * Verstaendliche Meldung zu einem PHP-Upload-Fehlercode, mit Dateiname (4.9.3, aus Valu-Basic 2.9.2).
+ * Bei "zu gross" steht die tatsaechliche Grenze des Servers dabei.
+ */
+function vbUploadFehlerText($code, $dateiname) {
+    $name = basename((string)$dateiname);
+    switch ((int)$code) {
+        case UPLOAD_ERR_INI_SIZE:
+        case UPLOAD_ERR_FORM_SIZE:
+            return sprintf(t('upload_err_too_large'), $name, vbMbText(vbUploadGrenzeBytes()));
+        case UPLOAD_ERR_PARTIAL:
+            return sprintf(t('upload_err_partial'), $name);
+        default:
+            // UPLOAD_ERR_NO_TMP_DIR, UPLOAD_ERR_CANT_WRITE, UPLOAD_ERR_EXTENSION
+            return sprintf(t('upload_err_server'), $name, (int)$code);
+    }
+}
+
 function uploadSingleImage($tmpName, $originalName, $size) {
     $result = ['success' => false, 'filename' => '', 'error' => ''];
     
     if ($size > MAX_FILE_SIZE) {
-        $result['error'] = "Datei zu groß: " . basename($originalName);
+        $result['error'] = vbUploadFehlerText(UPLOAD_ERR_FORM_SIZE, $originalName);
         return $result;
     }
     

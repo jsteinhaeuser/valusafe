@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 22.11.2026 15:35 von bin/changelog_export.php.
+ * Erzeugt am 24.11.2026 08:39 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,42 @@
  */
 
 return [
+    [
+        'version' => '4.9.3',
+        'date' => '2026-11-24',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Bilder hochladen: Wer mehrere Bilder auf einmal auswählt, bekommt sie jetzt zuverlässig hochgeladen – jedes Bild wird einzeln übertragen, mit Fortschritt pro Bild. Bisher konnte der Upload bei Servern mit kleiner Upload-Grenze ganz scheitern und nur einen unverständlichen Sicherheits-Fehler zeigen. Ist ein Bild zu groß, steht jetzt dabei, welches und wie viel der Server annimmt.',
+                'text_en' => 'Image upload: selecting several images at once now uploads them reliably – each image is sent separately, with progress per image. Previously the upload could fail entirely on servers with a small upload limit and show only an unclear security error. If an image is too large, the message now names it and states how much the server accepts.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Bild-Galerie (Verwaltung): Sie zeigt jetzt alle Bilder, nicht mehr nur das Hauptbild jedes Gegenstands.',
+                'text_en' => 'Image gallery (admin): it now shows all images, not only the main image of each item.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Übersicht: Auf jeder Kachel steht neben dem Namen ein Bleistift. Er öffnet die Bearbeitung direkt, ohne Umweg über die Detailansicht. Er ist immer sichtbar, auch auf iPhone und iPad, und nur für Benutzer mit Bearbeitungsrecht.',
+                'text_en' => 'Overview: every tile now shows a pencil next to the name. It opens the edit page directly, without going through the detail view. It is always visible, also on iPhone and iPad, and only for users who may edit.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Rechte-Übersicht: Fest vergebene Rechte sind jetzt voll grün und tragen ein kleines Schloss. Bisher waren sie nur blass und sahen aus wie „nicht gesetzt“.',
+                'text_en' => 'Permissions overview: fixed permissions are now shown in full green with a small lock. Until now they were only pale and looked like “not set”.'
+            ],
+            [
+                'type' => 'feature',
+                'public' => true,
+                'text' => 'Schallplatten: Ältere LPs ohne Barcode lassen sich jetzt über ihre Katalognummer finden (steht auf dem Etikett oder dem Rücken, z. B. „SHVL 804“). Der neue Knopf „Katalognummer“ neben „Scannen“ sucht bei MusicBrainz und füllt Name, Notiz und Cover. Ein fehlender Zusatz wie „AS“ oder „-P“ stört nicht. Bei Musik nennt die Notiz jetzt auch das Land der Pressung.',
+                'text_en' => 'Records: older LPs without a barcode can now be found by their catalogue number (on the label or the spine, e.g. “SHVL 804”). The new “Catalogue no.” button next to “Scan” searches MusicBrainz and fills in name, notes and cover. A missing suffix such as “AS” or “-P” does not matter. For music, the notes now also name the country of the pressing.'
+            ]
+        ]
+    ],
     [
         'version' => '4.9.2',
         'date' => '2026-11-22',
@@ -141,30 +177,6 @@ return [
                 'public' => true,
                 'text' => 'Update: Nach „Jetzt nachsehen“ bestätigt ValuSafe, dass es gerade nachgesehen hat und ob es eine neuere Version gibt. Vorher änderte sich nur die Uhrzeit.',
                 'text_en' => 'Update: after “Check now”, ValuSafe confirms that it has just checked and whether a newer version exists. Previously only the time changed.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.8',
-        'date' => '2026-11-05',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Hersteller, Modell und Zustand: Jeder Gegenstand hat dafür eigene Felder (Zustand: neu, sehr gut, gut, Gebrauchsspuren, defekt). Sie erscheinen in der Detailansicht, als zuschaltbare Spalten, im CSV-Export, in der Versicherungsliste und in den Schadensfall-Unterlagen. Die Suche findet jetzt auch Hersteller, Modell und Seriennummer.',
-                'text_en' => 'Manufacturer, model and condition: every item has its own fields for these (condition: new, very good, good, signs of use, defective). They appear in the detail view, as optional columns, in the CSV export, in the insurance list and in the claim documents. Search now also finds manufacturer, model and serial number.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Garantieende: Ein neues Feld „Garantie bis“ mit dem Knopf „2 Jahre ab Kaufdatum“. Das Dashboard zeigt Garantien, die in den nächsten 30 Tagen enden, die Liste hat dafür einen Filter, und die tägliche Sicherungs-Mail nennt sie ebenfalls.',
-                'text_en' => 'Warranty end: a new “Warranty until” field with a “2 years from purchase date” button. The dashboard shows warranties ending within the next 30 days, the list has a filter for them, and the daily backup e-mail lists them too.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'QR-Etiketten: Die Seite „QR-Codes“ druckt auf A4-Etikettenbögen (70 × 37, 70 × 42,3 und 105 × 48 mm) mit QR-Code, Name, Nummer und Raum. Angebrochene Bögen lassen sich ab einem freien Feld weiterverwenden. Neu sind Etiketten für Räume, Kisten und Regale sowie die Sammelaktion „QR-Etiketten drucken“ in der Liste.',
-                'text_en' => 'QR labels: the “QR codes” page prints on A4 label sheets (70 × 37, 70 × 42.3 and 105 × 48 mm) with QR code, name, number and room. Partly used sheets can be continued from any free label. New: labels for rooms, boxes and shelves, and the bulk action “Print QR labels” in the list.'
             ],
             [
                 'type' => 'feature',

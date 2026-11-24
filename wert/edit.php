@@ -839,14 +839,19 @@ include 'header_next_page.php';
 
     <div class="form-group">
         <label for="barcode"><i class="ti ti-barcode" aria-hidden="true"></i> Barcode / ISBN:</label>
-        <div style="display:flex; gap:8px; align-items:center;">
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             <input type="text" id="barcode" name="barcode" maxlength="100"
                    value="<?php echo htmlspecialchars($item['barcode'] ?? ''); ?>"
                    placeholder="<?php echo t('barcode_placeholder'); ?>"
-                   style="flex:1;">
+                   style="flex:1; min-width:12em;">
             <button type="button" id="btnScanBarcode" onclick="startBarcodeScanner()" 
                     style="padding:8px 14px; background:#2980b9; color:white; border:none; border-radius:6px; cursor:pointer; white-space:nowrap;">
                 <?php echo t('barcode_scan_button'); ?>
+            </button>
+            <button type="button" id="btnKatNr" onclick="lookupKatNrFragen()"
+                    style="padding:8px 14px; background:#fff; color:#2980b9; border:1px solid #2980b9; border-radius:6px; cursor:pointer; white-space:nowrap;"
+                    title="<?php echo htmlspecialchars(t('barcode_catno_prompt'), ENT_QUOTES, 'UTF-8'); ?>">
+                <i class="ti ti-vinyl" aria-hidden="true"></i> <?php echo htmlspecialchars(t('barcode_catno_button'), ENT_QUOTES, 'UTF-8'); ?>
             </button>
         </div>
         <div id="isbn-lookup-result" style="display:none; margin-top:8px; padding:10px 12px; border-left:4px solid #16a34a; border-radius:4px; font-size:13px;"></div>
@@ -981,7 +986,8 @@ try {
 <script>
 // Übersetzungen für JavaScript
 const translations = {
-    errorSize: <?php echo json_encode(sprintf(t("upload_error_size"), (MAX_FILE_SIZE / 1024 / 1024))); ?>,
+    // Tatsaechliche Servergrenze (upload_max_filesize, post_max_size, MAX_FILE_SIZE), seit 4.9.3
+    errorSize: <?php echo json_encode(sprintf(t("upload_error_size"), vbMbText(vbUploadGrenzeBytes()))); ?>,
     errorType: <?php echo json_encode(t("upload_error_type")); ?>,
     confirmCancel: <?php echo json_encode(t("confirm_cancel_unsaved")); ?>
 };
@@ -991,7 +997,7 @@ document.addEventListener('DOMContentLoaded', function() {
     multiImageUpload = new MultiImageUpload(
         <?php echo $id; ?>,
         '<?php echo Security::generateCSRFToken(); ?>',
-        { maxImages: 10, maxFileSize: <?php echo MAX_FILE_SIZE; ?>, errorSize: translations.errorSize }
+        { maxImages: 10, maxFileSize: <?php echo (int)vbUploadGrenzeBytes(); ?>, errorSize: translations.errorSize }
     );
 });
 
@@ -1240,20 +1246,37 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('barcodeScannerModal').style.display = 'none';
     };
 
-    window.lookupBarcode = async function(code) {
-        const clean = code.replace(/[^0-9X]/gi, '').toUpperCase();
+    // Katalognummer (4.9.3): fuer aeltere LPs ohne Barcode. Sucht nur, das
+    // Barcode-Feld bleibt unberuehrt; die Nummer landet ueber die Notiz.
+    window.lookupKatNrFragen = function() {
+        vsPrompt(<?php echo json_encode(t('barcode_catno_prompt')); ?>, '').then(function (k) {
+            if (k && k.trim()) lookupBarcode('', k.trim());
+        });
+    };
+
+    window.lookupBarcode = async function(code, katnr) {
+        const clean = String(code || '').replace(/[^0-9X]/gi, '').toUpperCase();
         const res   = document.getElementById('isbn-lookup-result');
+        if (katnr && !/\d/.test(katnr)) {
+            res.style.display = 'block';
+            res.style.background = '#fef2f2'; res.style.borderColor = '#dc2626'; res.style.color = '#991b1b';
+            res.textContent = '✗ ' + vsT('js_catno_invalid', 'Bitte eine Katalognummer mit Ziffern eingeben, z. B. SHVL 804.');
+            return;
+        }
         res.style.display = 'block';
         res.textContent   = '⏳ ' + vsT('js_lookup_searching', 'Produktdaten werden gesucht …');
         res.style.background = '#f0fdf4'; res.style.borderColor = '#16a34a'; res.style.color = '#166534';
         try {
-            const r    = await fetch(`barcode_lookup.php?code=${clean}`);
+            const r    = await fetch(katnr ? 'barcode_lookup.php?katnr=' + encodeURIComponent(katnr)
+                                           : `barcode_lookup.php?code=${clean}`);
             const data = await r.json();
             // Umlaute aus der API zusammensetzen (NFD -> NFC), seit 4.9 / VB 2.7
             for (const k in data) { if (typeof data[k] === 'string' && data[k].normalize) data[k] = data[k].normalize('NFC'); }
             if (!data.found) {
                 res.style.background = '#fef2f2'; res.style.borderColor = '#dc2626'; res.style.color = '#991b1b';
-                res.textContent = '❌ ' + vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.');
+                res.textContent = '❌ ' + (data.busy
+                    ? vsT('js_lookup_busy', 'MusicBrainz ist gerade ausgelastet – bitte in ein paar Sekunden noch einmal versuchen.')
+                    : vsT('js_lookup_none', 'Keine Produktdaten gefunden – bitte manuell eintragen.'));
                 return;
             }
             const nameEl  = document.getElementById('name');

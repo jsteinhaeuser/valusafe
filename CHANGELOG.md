@@ -1,8 +1,16 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-11-22.
+All changes that affect users. Generated from the project history on 2026-11-24.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.9.3 — 2026-11-24
+
+- **Fixed:** Image upload: selecting several images at once now uploads them reliably – each image is sent separately, with progress per image. Previously the upload could fail entirely on servers with a small upload limit and show only an unclear security error. If an image is too large, the message now names it and states how much the server accepts.
+- **Fixed:** Image gallery (admin): it now shows all images, not only the main image of each item.
+- **New:** Overview: every tile now shows a pencil next to the name. It opens the edit page directly, without going through the detail view. It is always visible, also on iPhone and iPad, and only for users who may edit.
+- **Fixed:** Permissions overview: fixed permissions are now shown in full green with a small lock. Until now they were only pale and looked like “not set”.
+- **New:** Records: older LPs without a barcode can now be found by their catalogue number (on the label or the spine, e.g. “SHVL 804”). The new “Catalogue no.” button next to “Scan” searches MusicBrainz and fills in name, notes and cover. A missing suffix such as “AS” or “-P” does not matter. For music, the notes now also name the country of the pressing.
 
 ## 4.9.2 — 2026-11-22
 

@@ -2,7 +2,31 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 22.11.2026 aus der Projektchronik.
+Erzeugt am 24.11.2026 aus der Projektchronik.
+
+Version 4.9.3   24.11.2026
+--------------------------
+  [Fix] Bilder hochladen: Wer mehrere Bilder auf einmal auswählt, bekommt sie
+        jetzt zuverlässig hochgeladen – jedes Bild wird einzeln
+        übertragen, mit Fortschritt pro Bild. Bisher konnte der Upload bei
+        Servern mit kleiner Upload-Grenze ganz scheitern und nur einen
+        unverständlichen Sicherheits-Fehler zeigen. Ist ein Bild zu groß,
+        steht jetzt dabei, welches und wie viel der Server annimmt.
+  [Fix] Bild-Galerie (Verwaltung): Sie zeigt jetzt alle Bilder, nicht mehr nur
+        das Hauptbild jedes Gegenstands.
+  [Neu] Übersicht: Auf jeder Kachel steht neben dem Namen ein Bleistift. Er
+        öffnet die Bearbeitung direkt, ohne Umweg über die Detailansicht. Er
+        ist immer sichtbar, auch auf iPhone und iPad, und nur für Benutzer
+        mit Bearbeitungsrecht.
+  [Fix] Rechte-Übersicht: Fest vergebene Rechte sind jetzt voll grün und
+        tragen ein kleines Schloss. Bisher waren sie nur blass und sahen aus
+        wie „nicht gesetzt“.
+  [Neu] Schallplatten: Ältere LPs ohne Barcode lassen sich jetzt über ihre
+        Katalognummer finden (steht auf dem Etikett oder dem Rücken, z. B.
+        „SHVL 804“). Der neue Knopf „Katalognummer“ neben
+        „Scannen“ sucht bei MusicBrainz und füllt Name, Notiz und Cover.
+        Ein fehlender Zusatz wie „AS“ oder „-P“ stört nicht. Bei
+        Musik nennt die Notiz jetzt auch das Land der Pressung.
 
 Version 4.9.2   22.11.2026
 --------------------------

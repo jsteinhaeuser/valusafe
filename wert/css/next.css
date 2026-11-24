@@ -290,6 +290,21 @@ body.vs-next > main            { padding: 0; min-height: auto; box-shadow: none;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     cursor: pointer; font: inherit; color: inherit;
 }
+/* Bleistift neben dem Namen (4.9.3): Name kuerzt sich weiter mit "...",
+   der Knopf behaelt seine Groesse. 28x28 px Ziel, negative Raender halten
+   die Kartenhoehe wie bisher. */
+.vs-mcard-name:has(.vs-mcard-edit) { display: flex; align-items: center; gap: 4px; }
+.vs-mcard-name:has(.vs-mcard-edit) .vs-mcard-open { flex: 1 1 auto; min-width: 0; width: auto; }
+.vs-mcard-edit {
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; margin: -7px -6px -7px 0;
+    border-radius: var(--vs-r-sm);
+    color: var(--vs-text-muted); text-decoration: none;
+}
+.vs-mcard-edit i { font-size: 16px; }
+.vs-mcard-edit:hover { color: var(--vs-accent); background: var(--vs-accent-light); }
+.vs-mcard-edit:focus-visible { outline: 3px solid var(--vs-accent); outline-offset: 1px; color: var(--vs-accent); }
 .vs-mcard:has(.vs-mcard-open:focus-visible) { outline: 3px solid var(--vs-accent); outline-offset: 2px; }
 .vs-mcard-open:focus-visible { text-decoration: underline; }
 .vs-dp-title:focus { outline: none; }

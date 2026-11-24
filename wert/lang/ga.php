@@ -728,6 +728,8 @@ return [
     'price_decimal_hint'        => 'Is féidir deachúlacha le pointe nó camóg a úsáid (m.sh. 123.45 nó 123,45)',
     'barcode_scan_button'       => '📷 Scan',
     'barcode_manual_prompt'     => 'Iontráil barrachód / ISBN:',
+    'barcode_catno_button'      => 'Uimhir chatalóige',
+    'barcode_catno_prompt'      => 'Uimhir chatalóige na ceirníní (ar an lipéad nó ar an droim, m.sh. SHVL 804):',
     'barcode_in_frame'          => 'Coinnigh an barrachód laistigh den fhráma',
 
     // Custom Fields
@@ -1208,6 +1210,8 @@ return [
     'js_lookup_none' => 'Níor aimsíodh sonraí táirge – iontráil de láimh iad.',
     'js_lookup_error' => 'Theip ar an gcuardach: %s',
     'js_lookup_take_image' => 'Úsáid an íomhá',
+    'js_lookup_busy'       => 'Tá MusicBrainz gnóthach faoi láthair – bain triail eile as i gceann cúpla soicind.',
+    'js_catno_invalid'     => 'Cuir isteach uimhir chatalóige le digití, m.sh. SHVL 804.',
     'js_note_author' => 'Údar',
     'js_note_brand' => 'Branda',
     'js_note_category' => 'Catagóir',
@@ -1432,6 +1436,7 @@ return [
     'idx_bulk_run'                  => 'Rith an gníomh',
     'idx_clear_selection'           => 'Glan an rogha',
     'idx_select_item'               => 'Roghnaigh %s',
+    'idx_edit_item'                 => 'Cuir in eagar: %s',
     'idx_drag_sort'                 => 'Tarraing chun an t-ord a athrú',
     'idx_click_enlarge'             => '%s - cliceáil chun é a mhéadú',
     'idx_image_preview'             => 'Réamhamharc íomhá',
@@ -1859,4 +1864,14 @@ return [
     'hox_optional' => '(roghnach)',
     'hox_remarks_ph' => 'Nótaí breise ar riocht an árasáin …',
     'hox_generate' => 'Gin tuairisc aistrithe →',
+    // Upload-Fehler und Einzel-Upload (4.9.3, aus Valu-Basic 2.9.2)
+    'upload_err_too_large' => '%s: Comhad ró-mhór. Glacann an freastalaí le %s MB ar a mhéad in aghaidh an chomhaid.',
+    'upload_err_partial' => '%s: Níor tháinig ach cuid den chomhad. Bain triail eile as.',
+    'upload_err_server' => '%s: Níorbh fhéidir leis an bhfreastalaí an comhad a shábháil (cód earráide %s).',
+    'upload_err_post_size' => 'Bhí an t-iarratas ró-mhór (%s MB). Glacann an freastalaí le %s MB ar a mhéad ag an am céanna. Uaslódáil níos lú comhad nó comhaid níos lú ag an am.',
+    'upload_err_unknown' => 'Níorbh fhéidir an íomhá a uaslódáil.',
+    'js_img_too_large' => '%s: Comhad ró-mhór (%s MB). Glacann an freastalaí le %s MB ar a mhéad in aghaidh na híomhá.',
+    'js_img_uploading_i' => 'Íomhá %s as %s: %s',
+    'js_img_result' => '%s as %s íomhá uaslódáilte',
+    'js_img_bad_answer' => 'Freagra gan choinne ón bhfreastalaí (HTTP %s)',
 ];

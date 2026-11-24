@@ -199,9 +199,33 @@ $csrfToken = Security::generateCSRFToken();
             cursor: default;
             opacity: 0.6;
         }
+        /* Feste Kaestchen (seit 4.9.3): volle Farbe plus Schloss. Bis 4.9.2
+           waren sie nur blass (opacity 0.55) - ein fester Haken sah aus wie
+           "nicht gesetzt" (Rueckmeldung 17.11.2026). */
         .perm-check.locked {
             cursor: not-allowed;
-            opacity: 0.55;
+            opacity: 1;
+        }
+        .perm-check.locked:not(:checked) {
+            background: var(--vs-surface-2);
+            border-color: var(--vs-border-strong);
+        }
+        .perm-lockbox {
+            position: relative;
+            display: inline-block;
+            line-height: 0;
+        }
+        .perm-lock {
+            position: absolute;
+            right: -9px;
+            bottom: -7px;
+            font-size: 13px;
+            line-height: 1;
+            padding: 1px;
+            border-radius: 50%;
+            background: var(--vs-surface);
+            color: var(--vs-text-muted);
+            pointer-events: none;
         }
         .perm-check.saving {
             border-color: var(--vs-warning);
@@ -324,35 +348,35 @@ $csrfToken = Security::generateCSRFToken();
                           // (darfBenutzerVerwalten(), Schalter in superadmin.php). Bis 4.9.1
                           // stand hier trotzdem ein Haken - die Tabelle versprach, was die
                           // Seite verweigerte. ?>
-                    <input type="checkbox" class="perm-check locked" disabled
+                    <span class="perm-lockbox"><input type="checkbox" class="perm-check locked" disabled
                            aria-describedby="perm-sa-only"
-                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_admin'), ENT_QUOTES, 'UTF-8'); ?>">
+                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_admin'), ENT_QUOTES, 'UTF-8'); ?>"><i class="ti ti-lock perm-lock" aria-hidden="true"></i></span>
                     <span id="perm-sa-only" class="perm-cell-note"><?php echo htmlspecialchars(t('perm_admin_superadmin_only'), ENT_QUOTES, 'UTF-8'); ?></span>
                     <?php else: ?>
-                    <input type="checkbox" class="perm-check locked" checked disabled
-                           title="<?php echo t('perm_admin_full_access'); ?>"
-                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_admin'), ENT_QUOTES, 'UTF-8'); ?>">
+                    <span class="perm-lockbox"><input type="checkbox" class="perm-check locked" checked disabled
+                           title="<?php echo htmlspecialchars(t('perm_admin_full_access'), ENT_QUOTES, 'UTF-8'); ?>"
+                           aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_admin'), ENT_QUOTES, 'UTF-8'); ?>"><i class="ti ti-lock perm-lock" aria-hidden="true"></i></span>
                     <?php endif; ?>
                 </td>
                 <!-- Editor -->
                 <td>
-                    <input type="checkbox"
+                    <?php if ($editLocked): ?><span class="perm-lockbox"><?php endif; ?><input type="checkbox"
                            class="perm-check <?php echo $editLocked ? 'locked' : 'editable'; ?>"
                            data-key="<?php echo htmlspecialchars($p['action_key']); ?>"
                            data-role="edit"
                            aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_editor'), ENT_QUOTES, 'UTF-8'); ?>"
                            <?php echo $p['edit_can'] ? 'checked' : ''; ?>
-                           <?php echo $editLocked ? 'disabled title="' . htmlspecialchars(t('perm_locked'), ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
+                           <?php echo $editLocked ? 'disabled title="' . htmlspecialchars(t('perm_locked'), ENT_QUOTES, 'UTF-8') . '"' : ''; ?>><?php if ($editLocked): ?><i class="ti ti-lock perm-lock" aria-hidden="true"></i></span><?php endif; ?>
                 </td>
                 <!-- Leser -->
                 <td>
-                    <input type="checkbox"
+                    <?php if ($readLocked): ?><span class="perm-lockbox"><?php endif; ?><input type="checkbox"
                            class="perm-check <?php echo $readLocked ? 'locked' : 'editable'; ?>"
                            data-key="<?php echo htmlspecialchars($p['action_key']); ?>"
                            data-role="read"
                            aria-label="<?php echo htmlspecialchars($permName . ' – ' . t('perm_col_reader'), ENT_QUOTES, 'UTF-8'); ?>"
                            <?php echo $p['read_can'] ? 'checked' : ''; ?>
-                           <?php echo $readLocked ? 'disabled title="' . htmlspecialchars(t('perm_locked'), ENT_QUOTES, 'UTF-8') . '"' : ''; ?>>
+                           <?php echo $readLocked ? 'disabled title="' . htmlspecialchars(t('perm_locked'), ENT_QUOTES, 'UTF-8') . '"' : ''; ?>><?php if ($readLocked): ?><i class="ti ti-lock perm-lock" aria-hidden="true"></i></span><?php endif; ?>
                 </td>
             </tr>
             <?php endforeach; ?>

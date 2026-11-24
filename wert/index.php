@@ -643,6 +643,19 @@ if ($view_mode === 'masonry' || ($view_mode !== 'table' && $view_mode !== 'room'
               // Der Klick laeuft zur Karte hoch (vsOpenDetail). ?>
         <div class="vs-mcard-name" title="<?php echo htmlspecialchars($item['name']); ?>">
             <button type="button" class="vs-mcard-open" aria-controls="vsDetail" aria-expanded="false"><?php echo htmlspecialchars($item['name']); ?></button>
+            <?php if (canEdit()): ?>
+            <?php // Bleistift (4.9.3, Idee Joerg 22.11.2026): direkt zur Bearbeitung,
+                  // ohne Umweg ueber die Detailansicht. Immer sichtbar (kein Hover,
+                  // iPhone/iPad), eigener Name fuer Screenreader, Ziel 28x28 px
+                  // (WCAG 2.5.8). Der Klick laeuft nicht zur Karte hoch. ?>
+            <a href="edit.php?id=<?php echo (int)$item['id']; ?>"
+               class="vs-mcard-edit" draggable="false"
+               onclick="event.stopPropagation()"
+               aria-label="<?php echo htmlspecialchars(sprintf(tn('idx_edit_item', 'Bearbeiten: %s'), $item['name']), ENT_QUOTES, 'UTF-8'); ?>"
+               title="<?php echo htmlspecialchars(t('btn_edit'), ENT_QUOTES, 'UTF-8'); ?>">
+                <i class="ti ti-pencil" aria-hidden="true"></i>
+            </a>
+            <?php endif; ?>
         </div>
         <div class="vs-mcard-meta">
             <span class="vs-mcard-cat"><?php echo htmlspecialchars($item['kategorie_name'] ?? '—'); ?></span>

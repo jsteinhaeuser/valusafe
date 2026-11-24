@@ -239,7 +239,86 @@ function requireEditPermission() {
     }
 }
 
+/**
+ * PHP-Groessenangabe aus der php.ini ("4M", "512K", "1G", "8388608") in Bytes.
+ * 0 oder leer bedeutet bei post_max_size: keine Grenze. (4.9.3, aus Valu-Basic 2.9.2)
+ */
+function vbIniBytes($wert) {
+    $wert = trim((string)$wert);
+    if ($wert === '') {
+        return 0;
+    }
+    $zahl = (int)$wert;
+    switch (strtoupper(substr($wert, -1))) {
+        case 'G': $zahl *= 1024;
+        // weiter
+        case 'M': $zahl *= 1024;
+        // weiter
+        case 'K': $zahl *= 1024;
+    }
+    return max(0, $zahl);
+}
+
+/**
+ * Groesste Datei, die der Server je Anfrage wirklich annimmt: kleinster Wert aus
+ * upload_max_filesize, post_max_size (abzueglich Platz fuer die uebrigen Felder)
+ * und MAX_FILE_SIZE. Bis 4.9.2 kannte das JavaScript nur MAX_FILE_SIZE (16 MB),
+ * beim Hoster gelten aber z. B. 4 MB. (4.9.3, aus Valu-Basic 2.9.2)
+ */
+function vbUploadGrenzeBytes() {
+    $grenzen = [];
+    if (defined('MAX_FILE_SIZE')) {
+        $grenzen[] = (int)MAX_FILE_SIZE;
+    }
+    $upload = vbIniBytes(ini_get('upload_max_filesize'));
+    if ($upload > 0) {
+        $grenzen[] = $upload;
+    }
+    $post = vbIniBytes(ini_get('post_max_size'));
+    if ($post > 0) {
+        $grenzen[] = max(1, $post - 64 * 1024);
+    }
+    return $grenzen ? min($grenzen) : 16 * 1024 * 1024;
+}
+
+/** Bytes als MB-Zahl fuer Meldungen: 4194304 -> "4", 1572864 -> "1,5" (Englisch "1.5") */
+function vbMbText($bytes) {
+    $s = number_format($bytes / 1048576, 1, '.', '');
+    if (substr($s, -2) === '.0') {
+        return substr($s, 0, -2);
+    }
+    $lang = $_SESSION['lang'] ?? ($GLOBALS['currentLang'] ?? 'de');
+    return $lang === 'en' ? $s : str_replace('.', ',', $s);
+}
+
+/**
+ * true, wenn PHP den POST-Inhalt verworfen hat, weil er post_max_size
+ * ueberschritt: Content-Length > 0, aber $_POST und $_FILES leer. Dann fehlt
+ * auch das CSRF-Token, und ohne diese Pruefung sah der Nutzer nur
+ * "Ungueltiges Sicherheits-Token". (4.9.3, aus Valu-Basic 2.9.2)
+ */
+function vbPostZuGross() {
+    return ($_SERVER['REQUEST_METHOD'] ?? '') === 'POST'
+        && (int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 0
+        && empty($_POST) && empty($_FILES);
+}
+
+/** Meldung zu vbPostZuGross() in der Sprache des Benutzers */
+function vbPostZuGrossMeldung() {
+    $text = function_exists('t') ? t('upload_err_post_size') : 'upload_err_post_size';
+    if ($text === 'upload_err_post_size') {
+        $text = 'Die Anfrage war mit %s MB zu groß. Der Server nimmt höchstens %s MB auf einmal an. Bitte weniger oder kleinere Dateien auf einmal hochladen.';
+    }
+    return sprintf($text,
+        vbMbText((int)($_SERVER['CONTENT_LENGTH'] ?? 0)),
+        vbMbText(vbIniBytes(ini_get('post_max_size'))));
+}
+
 function validateRequest() {
+    if (vbPostZuGross()) {
+        http_response_code(413);
+        die(htmlspecialchars(vbPostZuGrossMeldung(), ENT_QUOTES, 'UTF-8'));
+    }
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $token = $_POST['csrf_token'] ?? '';
         if (!Security::validateCSRFToken($token)) {
