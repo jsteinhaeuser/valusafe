@@ -7,11 +7,10 @@ services:
 
   # ── Anwendung ──────────────────────────────────────────────────────────────
   app:
-    # Kontext ist das Projektwurzelverzeichnis, damit der Dockerfile die
-    # Anwendung direkt aus wert/ kopieren kann — ohne vorherigen Kopierschritt.
-    build:
-      context: ..
-      dockerfile: docker/Dockerfile
+    # Fertiges Image von GitHub (seit 4.9.3, amd64 und arm64). Eine feste
+    # Version statt "latest" in der .env: VALUSAFE_IMAGE=ghcr.io/jsteinhaeuser/valusafe:4.9.3
+    # Selbst bauen statt herunterladen: siehe docker-compose.build.yml.
+    image: ${VALUSAFE_IMAGE:-ghcr.io/jsteinhaeuser/valusafe:latest}
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8080}:80"

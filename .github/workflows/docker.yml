@@ -1,0 +1,129 @@
+# Docker-Image: bauen, mit MariaDB starten, pruefen - und bei einem
+# Versions-Tag (v4.9.3) auf GitHub Container Registry veroeffentlichen:
+#   ghcr.io/jsteinhaeuser/valusafe:4.9.3, :4.9 und :latest
+# Ohne Tag (Push auf main, Pull Request) wird nur gebaut und geprueft.
+# Zum Veroeffentlichen dient der kurzlebige GITHUB_TOKEN des Laufs, kein
+# persoenlicher Token.
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths-ignore:
+      - '**.md'
+      - 'doku/**'
+      - 'changelog_vollstaendig.txt'
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ghcr.io/jsteinhaeuser/valusafe
+
+jobs:
+  test:
+    name: Bauen und pruefen (amd64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag passt zur Version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          ver="$(php -r 'echo json_decode(file_get_contents("wert/wert-update/version.json"), true)["version"];')"
+          echo "Tag $tag, version.json $ver"
+          test "$tag" = "$ver"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Image bauen
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          load: true
+          tags: valusafe:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Mit MariaDB starten
+        working-directory: docker
+        env:
+          VALUSAFE_IMAGE: valusafe:test
+        run: |
+          printf 'DB_PASS=ci-db-pass\nDB_ROOT_PASS=ci-root-pass\nADMIN_USER=admin\n' > .env
+          docker compose up -d
+
+      - name: Anmeldeseite und Administratorkonto
+        working-directory: docker
+        env:
+          VALUSAFE_IMAGE: valusafe:test
+        run: |
+          for i in $(seq 1 60); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/login.php || true)"
+            [ "$code" = "200" ] && break
+            sleep 5
+          done
+          docker compose logs app | tail -40
+          test "$code" = "200"
+          docker compose logs app | grep -q "Administratorkonto angelegt"
+          # Was nie ausgeliefert werden darf
+          for p in /config.php /documents/ /backups/ /logs/ /.htaccess; do
+            c="$(curl -s -o /dev/null -w '%{http_code}' "http://localhost:8080$p")"
+            echo "$c $p"
+            case "$c" in 403|404) ;; *) exit 1 ;; esac
+          done
+
+      - name: Aufraeumen
+        if: always()
+        working-directory: docker
+        env:
+          VALUSAFE_IMAGE: valusafe:test
+        run: docker compose down -v
+
+  publish:
+    name: Veroeffentlichen (amd64 + arm64)
+    needs: test
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-qemu-action@v3
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=match,pattern=^v(.*)$,group=1
+            type=match,pattern=^v(\d+\.\d+),group=1
+            type=raw,value=latest
+          labels: |
+            org.opencontainers.image.title=ValuSafe
+            org.opencontainers.image.description=Self-hosted inventory management for valuables
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha

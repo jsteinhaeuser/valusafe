@@ -131,16 +131,36 @@ leerer `ADMIN_PASS` und der gewünschte Port.
 
 ---
 
-## 4. Bauen und starten
+## 4. Starten
 
 ```
-docker compose build
 docker compose up -d
+```
+
+Docker lädt das fertige ValuSafe-Abbild von GitHub
+(`ghcr.io/jsteinhaeuser/valusafe`) und das MariaDB-Abbild. Es gibt Abbilder für
+Intel/AMD und für ARM (Raspberry Pi, viele NAS). Je nach Leitung dauert das
+einige Minuten.
+
+Ohne weitere Einstellung kommt die neueste Version (`latest`). Wer selbst
+bestimmen will, wann aktualisiert wird, trägt in der `.env` eine feste Version
+ein:
+
+```
+VALUSAFE_IMAGE=ghcr.io/jsteinhaeuser/valusafe:4.9.3
+```
+
+**Das Abbild stattdessen selbst bauen** — etwa, um es aus dem lesbaren
+Quelltext zu erzeugen:
+
+```
+docker compose -f docker-compose.yml -f docker-compose.build.yml build
+docker compose -f docker-compose.yml -f docker-compose.build.yml up -d
 ```
 
 Der erste Aufbau lädt die Basis-Abbilder und übersetzt die PHP-Erweiterungen.
 Je nach Leitung und Rechner dauert das fünf bis fünfzehn Minuten. Spätere
-Aufbauten sind deutlich schneller.
+Aufbauten sind deutlich schneller. Bis Version 4.9.2 war das der einzige Weg.
 
 ---
 
@@ -315,18 +335,22 @@ es `cron_backup.php`; der dafür nötige Token liegt nach dem ersten Start unter
 ## 10. Aktualisieren
 
 Im Container ist der Update-Knopf der Anwendung gesperrt. Eine neue Version
-kommt über ein neu gebautes Abbild; die Daten liegen in den Volumes und
-bleiben dabei erhalten.
+kommt über ein neues Abbild; die Daten liegen in den Volumes und bleiben
+dabei erhalten.
 
 Vorher eine Sicherung unter **Admin → Backup** anlegen und herunterladen.
-Dann im Projektverzeichnis:
+Wer in der `.env` eine feste Version als `VALUSAFE_IMAGE` eingetragen hat,
+ändert sie auf die neue. Dann im Projektverzeichnis:
 
 ```
 git pull
 cd docker
-docker compose build
+docker compose pull
 docker compose up -d
 ```
+
+Wer das Abbild selbst baut, nimmt statt `docker compose pull` die beiden
+Zeilen aus Abschnitt 4.
 
 Wer aus einem Archiv installiert hat, entpackt stattdessen das neue Archiv
 über das alte Verzeichnis; die `.env` in `docker/` bleibt dabei stehen.

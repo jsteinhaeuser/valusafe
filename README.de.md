@@ -72,7 +72,7 @@ Kein Shell-Zugang nötig. Kein Composer, kein Bauschritt, kein Hintergrundprozes
 
 Das fertige Paket von [palindrom.de/valusafe](https://palindrom.de/valusafe/) ist bereits so aufgebaut und enthält zusätzlich die Handbücher.
 
-**Mit Docker:** siehe [docker/INSTALL.de.md](docker/INSTALL.de.md) — `docker compose up`, nachdem eine `.env` ausgefüllt ist. Die Anleitung behandelt auch die Fälle, in denen es schiefgeht.
+**Mit Docker:** fertige Abbilder für amd64 und arm64 unter `ghcr.io/jsteinhaeuser/valusafe`. Siehe [docker/INSTALL.de.md](docker/INSTALL.de.md) — `docker compose up`, nachdem eine `.env` ausgefüllt ist. Die Anleitung behandelt auch die Fälle, in denen es schiefgeht.
 
 ## Ihre Daten bleiben bei Ihnen
 

@@ -131,16 +131,35 @@ You should see two filled password lines, a set `ADMIN_USER`, an empty
 
 ---
 
-## 4. Build and start
+## 4. Start
 
 ```
-docker compose build
 docker compose up -d
+```
+
+Docker downloads the ready-made ValuSafe image from GitHub
+(`ghcr.io/jsteinhaeuser/valusafe`) and the MariaDB image. There are images for
+Intel/AMD and for ARM (Raspberry Pi, many NAS models). Depending on your
+connection this takes a few minutes.
+
+Without further settings you get the newest version (`latest`). To decide
+yourself when to update, enter a fixed version in `.env`:
+
+```
+VALUSAFE_IMAGE=ghcr.io/jsteinhaeuser/valusafe:4.9.3
+```
+
+**Building the image yourself instead** — for example to build it from the
+source you can read:
+
+```
+docker compose -f docker-compose.yml -f docker-compose.build.yml build
+docker compose -f docker-compose.yml -f docker-compose.build.yml up -d
 ```
 
 The first build downloads the base images and compiles the PHP extensions.
 Depending on your connection and machine this takes five to fifteen minutes.
-Later builds are much faster.
+Later builds are much faster. Up to version 4.9.2 this was the only way.
 
 ---
 
@@ -318,18 +337,21 @@ volume of the same name after the first start.
 ## 10. Updating
 
 Inside the container the application's update button is disabled. A new
-version arrives as a newly built image; the data lives in the volumes and
-is kept.
+version arrives as a new image; the data lives in the volumes and is kept.
 
 First create a backup under **Admin → Backup** and download it.
-Then, in the project directory:
+If you entered a fixed version as `VALUSAFE_IMAGE` in `.env`, change it to
+the new one. Then, in the project directory:
 
 ```
 git pull
 cd docker
-docker compose build
+docker compose pull
 docker compose up -d
 ```
+
+If you build the image yourself, use the two lines from section 4 instead of
+`docker compose pull`.
 
 If you installed from an archive, unpack the new archive over the old
 directory instead; the `.env` in `docker/` stays in place.

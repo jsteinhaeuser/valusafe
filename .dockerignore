@@ -24,6 +24,12 @@ wert/logs/
 bin/
 wert/vendor/
 wert/.phpunit.cache/
+wert/tests/
+wert/composer.json
+wert/composer.lock
+wert/phpunit.xml.dist
+.github/
+doku/
 ARCHITECTURE.md
 ARCHITECTURE.de.md
 

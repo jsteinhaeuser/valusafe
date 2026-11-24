@@ -1,0 +1,13 @@
+# Selbst bauen statt das fertige Image von GitHub zu laden.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml build
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d
+#
+# Kontext ist das Projektwurzelverzeichnis, damit der Dockerfile die
+# Anwendung direkt aus wert/ kopieren kann - ohne vorherigen Kopierschritt.
+services:
+  app:
+    image: valusafe:lokal
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
