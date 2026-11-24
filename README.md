@@ -1,5 +1,7 @@
 # ValuSafe
 
+[![Tests](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml/badge.svg)](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml)
+
 Self-hosted inventory management for valuables. You record what you own — with photos, purchase price and location — and ValuSafe turns it into overviews, charts and the kind of documentation an insurer asks for after a burglary, a fire or a flood.
 
 **Try it first:** [live demo at valusafe.palindrom.de](https://valusafe.palindrom.de) — sample data, reset every hour. The sign-in details are on [palindrom.de/valusafe/online-test.php](https://www.palindrom.de/valusafe/online-test.php?lang=en). The sample data is in German; switch the interface to English with “EN” on the sign-in page.
@@ -108,6 +110,7 @@ What that means for you, stated plainly:
 - **Only the current version gets fixes.** There are no backports to older releases.
 - **There is legacy inside.** The code has grown over a year and it shows — [ARCHITECTURE.md](ARCHITECTURE.md) lists the known weak spots, honestly. The largest piece of legacy, three competing models for rooms and locations, was cleaned up in September 2026 (versions 4.3.24 and 4.3.25).
 - **`.htaccess` does the directory protection.** On a web server that ignores `.htaccess` — Nginx, for instance — you need equivalent rules. A template for Nginx is at `install/nginx-valusafe.conf.example`; it has not yet been tried on a running Nginx, so check the addresses listed in it.
+- **There are automated tests.** About 300 PHPUnit tests in `wert/tests` cover permissions, values, deletion, exports, data import and the signed update package. GitHub runs them on PHP 8.2 to 8.5 on every push; they need no database. Composer is only needed for the tests (`cd wert && composer install && vendor/bin/phpunit`), not for running ValuSafe.
 
 Bug reports and questions are welcome as issues. Pull requests are welcome too, but a single maintainer cannot promise when he will get to them.
 

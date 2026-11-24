@@ -65,3 +65,6 @@ wert/password_tool.php
 # ── Betriebssystem ───────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+
+# PHPUnit-Zwischenspeicher (Tests, seit 4.9.3)
+wert/.phpunit.cache/

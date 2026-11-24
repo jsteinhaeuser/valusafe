@@ -1,5 +1,7 @@
 # ValuSafe
 
+[![Tests](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml/badge.svg)](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml)
+
 Selbst gehostete Inventarverwaltung für Wertsachen. Sie erfassen, was Sie besitzen — mit Foto, Kaufpreis und Standort — und ValuSafe macht daraus Übersichten, Auswertungen und die Unterlagen, nach denen eine Versicherung nach einem Einbruch, einem Brand oder einem Wasserschaden fragt.
 
 **Erst ausprobieren:** [Live-Demo unter valusafe.palindrom.de](https://valusafe.palindrom.de) — mit Beispieldaten, stündlich zurückgesetzt. Die Zugangsdaten stehen auf [palindrom.de/valusafe/online-test.php](https://www.palindrom.de/valusafe/online-test.php).
@@ -107,6 +109,7 @@ Was das für Sie bedeutet, ohne Beschönigung:
 - **Korrekturen gibt es nur für die aktuelle Fassung.** Ältere Versionen werden nicht nachgepflegt.
 - **Es gibt Altlasten.** Der Code ist über ein Jahr gewachsen, und das sieht man — [ARCHITECTURE.de.md](ARCHITECTURE.de.md) führt die bekannten Schwachstellen ehrlich auf. Die größte Altlast, drei konkurrierende Modelle für Räume und Standorte, wurde im September 2026 bereinigt (Versionen 4.3.24 und 4.3.25).
 - **Den Verzeichnisschutz macht die `.htaccess`.** Auf einem Webserver, der sie nicht liest — etwa Nginx — brauchen Sie gleichwertige Regeln. Eine Vorlage für Nginx liegt unter `install/nginx-valusafe.conf.example`; sie wurde noch nicht auf einem laufenden Nginx erprobt, prüfen Sie also die darin genannten Adressen.
+- **Es gibt automatische Tests.** Rund 300 PHPUnit-Tests in `wert/tests` prüfen Rechte, Werte, Löschen, Exporte, Datenübernahme und das signierte Update-Paket. GitHub führt sie bei jedem Push unter PHP 8.2 bis 8.5 aus; eine Datenbank brauchen sie nicht. Composer braucht man nur für die Tests (`cd wert && composer install && vendor/bin/phpunit`), nicht für den Betrieb von ValuSafe.
 
 Fehlermeldungen und Fragen sind willkommen. Beiträge ebenfalls — nur kann ein einzelner Entwickler nicht versprechen, wann er dazu kommt.
 
