@@ -6,12 +6,22 @@
 #   https://example.org/documents/
 #   https://example.org/backups/
 #   https://example.org/logs/
+#   https://example.org/upload/.htaccess
 #
 # Settings that .htaccess passes to PHP belong in php.ini or the PHP-FPM pool:
 #   display_errors = Off, log_errors = On, upload_max_filesize = 20M,
 #   post_max_size = 24M, max_file_uploads = 20
 #
 # Security headers are not set here: SecurityHeaders.php sends them.
+#
+# Tested on 24.11.2026 with Nginx 1.31 and PHP-FPM 8.5 (plain HTTP on a local
+# port; the HTTPS lines were left out): 36 addresses that must be refused
+# answered 403/404 (configuration, documents/, backups/, logs/, hidden files,
+# scripts in upload/ including "photo.php.jpg", one-off tools, .sql/.log/.ini);
+# sign-in, image upload, images and the document download through
+# download_document.php worked. fastcgi_pass may also point to a TCP address
+# such as 127.0.0.1:9000, and fastcgi_params must be where your Nginx expects
+# it (Debian/Ubuntu: /etc/nginx/fastcgi_params).
 
 server {
     listen 80;
@@ -51,8 +61,16 @@ server {
     location ^~ /vendor/    { deny all; return 403; }
 
     # ── Uploads: images yes, scripts never ────────────────────────────────
+    # ^~ also skips the regular expressions further down, so hidden files
+    # need their own rule here. Script endings are refused anywhere in the
+    # name, as in upload/.htaccess: "photo.php.jpg" is refused too.
     location ^~ /upload/ {
-        location ~* \.(php\d?|phtml|phar|phps|cgi|pl|py|jsp|asp|sh)$ {
+        add_header X-Content-Type-Options nosniff always;
+        location ~ (^|/)\. {
+            deny all;
+            return 403;
+        }
+        location ~* \.(php\d?|phtml|phar|phps|cgi|pl|py|jsp|asp|sh)(\.|$) {
             deny all;
             return 403;
         }
