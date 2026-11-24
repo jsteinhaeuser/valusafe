@@ -99,6 +99,14 @@ Wenn Sie ein Sicherheitsproblem finden: In [SECURITY.de.md](SECURITY.de.md) steh
 | [doku/Benutzerhandbuch_Erweitert.pdf](doku/Benutzerhandbuch_Erweitert.pdf) | Erweitertes Handbuch, Stand 4.3.33 |
 | [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) | Mitgelieferte fremde Bestandteile und ihre Lizenzen |
 
+## Im Vergleich
+
+Wer ein allgemeines Haushaltsinventar sucht — was liegt in welcher Kiste, wann muss die Heizung zur Wartung —, sollte sich zuerst [Homebox](https://github.com/sysadminsmedia/homebox) ansehen. Es ist das bekanntere Projekt, hat eine aktive Gemeinschaft, läuft als kleiner Docker-Container mit SQLite, unterstützt Anmeldung über bestehende Konten (OIDC), importiert CSV und hat eine API. Die letzten drei Punkte hat ValuSafe nicht, und es wird von einer Person gepflegt.
+
+ValuSafe ist enger gefasst. Es dreht sich um Wert und Versicherung: Verträge mit den Gegenständen, die sie abdecken, ein Wertverlauf je Gegenstand, ein Versicherungsbericht und ein Schadensfall-Assistent, der aus einem Einbruch oder Brand eine Liste für die Polizei, eine Schadensmeldung und ein ZIP mit allen Fotos und Belegen macht. Es hat Rollen mit Rechte-Tabelle, eingebaute Zwei-Faktor-Anmeldung und läuft auf gewöhnlichem PHP-Webhosting ohne Docker.
+
+Für andere Aufgaben gibt es andere Werkzeuge: [Grocy](https://github.com/grocy/grocy) für Vorräte und Haushaltsaufgaben, [Snipe-IT](https://github.com/grokability/snipe-it) für IT-Geräte in Organisationen, [InvenTree](https://github.com/inventree/InvenTree) für Bauteile und Lager.
+
 ## Stand, und was Sie erwarten können
 
 ValuSafe wird von einer einzelnen Person geschrieben und gepflegt, einem pensionierten Informatiklehrer, in seiner Freizeit. Die Entwicklung begann Ende 2025; elf Installationen sind im täglichen Einsatz.
