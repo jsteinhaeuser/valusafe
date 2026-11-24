@@ -92,7 +92,7 @@ jobs:
             -t http://localhost:8080/ -m 3 -I -c rules.tsv \
             -r zap-bericht.html -J zap-bericht.json -w zap-bericht.md || rc=$?
           cat zap/zap-bericht.md >> "$GITHUB_STEP_SUMMARY" || true
-          exit $rc"
+          exit $rc
 
       - name: ZAP-Bericht hochladen
         if: always()
