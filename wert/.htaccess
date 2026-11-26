@@ -77,7 +77,16 @@ Options -Indexes
 
 # HINWEIS: Security Headers (CSP, X-Frame-Options, HSTS etc.) werden ausschließlich
 # über SecurityHeaders.php gesetzt (aufgerufen in header.php).
-# Kein mod_headers-Block hier — verhindert doppelte/widersprüchliche Headers.
+# Kein mod_headers-Block fuer PHP-Seiten — verhindert doppelte/widersprüchliche Headers.
+#
+# Ausnahme seit 4.9.5: statische Dateien laufen nicht durch PHP und bekamen
+# deshalb kein nosniff (ZAP-Vollscan 26.11.2026: CSS, PNG, manifest.json).
+# Nur diese Endungen, also nie doppelt mit SecurityHeaders.php.
+<IfModule mod_headers.c>
+    <FilesMatch "\.(css|js|json|webmanifest|png|jpe?g|gif|webp|svg|ico|woff2?|ttf|txt|xml)$">
+        Header always set X-Content-Type-Options "nosniff"
+    </FilesMatch>
+</IfModule>
 
 # Kompression aktivieren
 <IfModule mod_deflate.c>

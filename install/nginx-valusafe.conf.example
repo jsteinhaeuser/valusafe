@@ -109,7 +109,11 @@ server {
         fastcgi_pass unix:/run/php/php8.4-fpm.sock;   # ANPASSEN
     }
 
+    # Statische Dateien laufen nicht durch PHP; SecurityHeaders.php setzt
+    # nosniff nur fuer PHP-Seiten. Hier, nicht auf Server-Ebene: dort kaeme
+    # es bei PHP-Seiten doppelt (ZAP-Vollscan 26.11.2026).
     location / {
+        add_header X-Content-Type-Options nosniff always;
         try_files $uri $uri/ =404;
     }
 }

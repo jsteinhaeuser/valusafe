@@ -56,8 +56,8 @@ class ImageOptimizer {
         
         // Neue Dimensionen
         $ratio = min($this->maxWidth / $width, $this->maxHeight / $height);
-        $newWidth = round($width * $ratio);
-        $newHeight = round($height * $ratio);
+        $newWidth = max(1, (int) round($width * $ratio));    // GD erwartet int (PHPStan, 4.9.5)
+        $newHeight = max(1, (int) round($height * $ratio));
         
         $destination = imagecreatetruecolor($newWidth, $newHeight);
         

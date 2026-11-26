@@ -271,20 +271,20 @@ if (!function_exists('tn')) {
 <div id="vs-export-menu" style="display:none;position:fixed;background:var(--vs-surface,#fff);
      border:1px solid var(--vs-border,#e2e8f0);border-radius:8px;
      box-shadow:0 6px 20px rgba(0,0,0,.15);z-index:99999;min-width:220px;overflow:hidden;">
-    <?php if (hasPermission('export_csv')): ?><a href="<?php echo $vsmBase; ?>export_csv.php"          class="vsexp-item"><i class="ti ti-table-export"></i> <?php echo tn('nav_export_csv', 'CSV-Datei'); ?></a><?php endif; ?>
-    <?php if (hasPermission('export_html')): ?><a href="<?php echo $vsmBase; ?>export_html.php"         class="vsexp-item"><i class="ti ti-file-type-html"></i> <?php echo tn('nav_export_html', 'HTML-Seite'); ?></a><?php endif; ?>
-    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf.php"          class="vsexp-item"><i class="ti ti-file-type-pdf"></i> <?php echo tn('nav_export_pdf', 'PDF Detailliert'); ?></a><?php endif; ?>
-    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf_compact.php"  class="vsexp-item"><i class="ti ti-file-description"></i> <?php echo tn('nav_export_pdf_compact', 'PDF Kompakt'); ?></a><?php endif; ?>
-    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf_handover.php" class="vsexp-item"><i class="ti ti-home-check"></i> <?php echo tn('nav_export_handover', 'Übergabeprotokoll'); ?></a><?php endif; ?>
-    <?php if (hasPermission('export_insurance')): ?><a href="<?php echo $vsmBase; ?>export_insurance.php"    class="vsexp-item" style="font-weight:600"><i class="ti ti-shield-check"></i> <?php echo tn('nav_export_insurance', 'Versicherungs-Export'); ?></a><?php endif; ?>
-    <?php if (hasPermission('export_qr')): ?><a href="<?php echo $vsmBase; ?>qr_generator.php"        class="vsexp-item" style="border-bottom:none"><i class="ti ti-qrcode"></i> <?php echo tn('nav_export_qr', 'QR-Codes'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_csv')): ?><a href="<?php echo $vsmBase; ?>export_csv.php"          class="vsexp-item"><i class="ti ti-table-export" aria-hidden="true"></i> <?php echo tn('nav_export_csv', 'CSV-Datei'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_html')): ?><a href="<?php echo $vsmBase; ?>export_html.php"         class="vsexp-item"><i class="ti ti-file-type-html" aria-hidden="true"></i> <?php echo tn('nav_export_html', 'HTML-Seite'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf.php"          class="vsexp-item"><i class="ti ti-file-type-pdf" aria-hidden="true"></i> <?php echo tn('nav_export_pdf', 'PDF Detailliert'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf_compact.php"  class="vsexp-item"><i class="ti ti-file-description" aria-hidden="true"></i> <?php echo tn('nav_export_pdf_compact', 'PDF Kompakt'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_pdf')): ?><a href="<?php echo $vsmBase; ?>export_pdf_handover.php" class="vsexp-item"><i class="ti ti-home-check" aria-hidden="true"></i> <?php echo tn('nav_export_handover', 'Übergabeprotokoll'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_insurance')): ?><a href="<?php echo $vsmBase; ?>export_insurance.php"    class="vsexp-item" style="font-weight:600"><i class="ti ti-shield-check" aria-hidden="true"></i> <?php echo tn('nav_export_insurance', 'Versicherungs-Export'); ?></a><?php endif; ?>
+    <?php if (hasPermission('export_qr')): ?><a href="<?php echo $vsmBase; ?>qr_generator.php"        class="vsexp-item" style="border-bottom:none"><i class="ti ti-qrcode" aria-hidden="true"></i> <?php echo tn('nav_export_qr', 'QR-Codes'); ?></a><?php endif; ?>
 </div>
 
 <div id="vsServiceModal" onclick="if(event.target===this)closeServiceModal()">
-    <div class="vsm-box">
+    <div class="vsm-box" role="dialog" aria-modal="true" aria-labelledby="vsmTitle">
         <div class="vsm-header">
-            <h2>ℹ️ <?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?></h2>
-            <button class="vsm-close" onclick="closeServiceModal()">✕</button>
+            <h2 id="vsmTitle"><span aria-hidden="true">ℹ️</span> <?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?></h2>
+            <button type="button" class="vsm-close" onclick="closeServiceModal()" aria-label="<?php echo htmlspecialchars(tn('btn_close', 'Schließen'), ENT_QUOTES, 'UTF-8'); ?>"><span aria-hidden="true">✕</span></button>
         </div>
         <div class="vsm-body">
             <div class="vsm-sidebar">
@@ -307,11 +307,33 @@ function vsToggleExport(e) {
     if(!m.style.display||m.style.display==='none') {
         var r=b.getBoundingClientRect();
         m.style.top=(r.bottom+6)+'px'; m.style.right=(window.innerWidth-r.right)+'px'; m.style.left='auto'; m.style.display='block';
-    } else { m.style.display='none'; }
+        b.setAttribute('aria-expanded','true');
+        /* per Tastatur geoeffnet (detail 0): Fokus auf den ersten Eintrag - das Menue
+           steht am Seitenende, Tab wuerde sonst daran vorbeilaufen (4.9.5) */
+        if(e.detail===0){var a=m.querySelector('a'); if(a) a.focus();}
+    } else { vsCloseExport(false); }
+}
+function vsCloseExport(zurueck) {
+    var m=document.getElementById('vs-export-menu'), b=document.getElementById('vs-export-btn');
+    if(!m||m.style.display!=='block') return;
+    m.style.display='none';
+    if(b){ b.setAttribute('aria-expanded','false'); if(zurueck) b.focus(); }
 }
 document.addEventListener('click',function(e){
     var m=document.getElementById('vs-export-menu'),b=document.getElementById('vs-export-btn');
-    if(m&&m.style.display==='block'&&b&&!b.contains(e.target)&&!m.contains(e.target)) m.style.display='none';
+    if(m&&m.style.display==='block'&&b&&!b.contains(e.target)&&!m.contains(e.target)) vsCloseExport(false);
+});
+/* Tastatur im Export-Menue: Esc schliesst, Pfeile wechseln, Tab am Ende fuehrt hinter den Knopf (4.9.5) */
+document.addEventListener('keydown',function(e){
+    var m=document.getElementById('vs-export-menu');
+    if(!m||m.style.display!=='block') return;
+    var l=[].slice.call(m.querySelectorAll('a')), i=l.indexOf(document.activeElement);
+    if(e.key==='Escape'){e.preventDefault();vsCloseExport(true);return;}
+    if(i<0) return;
+    if(e.key==='ArrowDown'){e.preventDefault();l[(i+1)%l.length].focus();}
+    else if(e.key==='ArrowUp'){e.preventDefault();l[(i-1+l.length)%l.length].focus();}
+    else if(e.key==='Tab'&&!e.shiftKey&&i===l.length-1){vsCloseExport(true);}
+    else if(e.key==='Tab'&&e.shiftKey&&i===0){e.preventDefault();vsCloseExport(true);}
 });
 
 /* ── Service Modal Funktionen (kein PHP) ── */
@@ -339,18 +361,38 @@ function _vsmRail(an){
     }
 }
 
+var _vsmOpener=null;
 function openServiceModal(){
-    document.getElementById('vsServiceModal').classList.add('active');
+    var m=document.getElementById('vsServiceModal');
+    _vsmOpener=document.activeElement;
+    m.classList.add('active');
     _vsmRail(true);
     document.body.style.overflow='hidden';
     if(!_vsmLoaded)_renderVsm();
+    var z=m.querySelector('.vsm-close'); if(z) z.focus();
 }
 function closeServiceModal(){
-    document.getElementById('vsServiceModal').classList.remove('active');
+    var m=document.getElementById('vsServiceModal');
+    if(!m||!m.classList.contains('active')) return;
+    m.classList.remove('active');
     _vsmRail(false);
     document.body.style.overflow='';
+    if(_vsmOpener&&_vsmOpener.focus) _vsmOpener.focus();
+    _vsmOpener=null;
 }
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeServiceModal();});
+/* Tastatur im Hilfefenster: Esc schliesst, Tab bleibt im Fenster (WCAG 2.4.3, 4.9.5) */
+document.addEventListener('keydown',function(e){
+    var m=document.getElementById('vsServiceModal');
+    if(!m||!m.classList.contains('active')) return;
+    if(e.key==='Escape'){closeServiceModal();return;}
+    if(e.key!=='Tab') return;
+    var f=[].filter.call(m.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])'),function(x){return x.offsetParent!==null;});
+    if(!f.length) return;
+    var a=f[0], z=f[f.length-1], akt=document.activeElement;
+    if(!m.contains(akt)){e.preventDefault();a.focus();}
+    else if(e.shiftKey&&akt===a){e.preventDefault();z.focus();}
+    else if(!e.shiftKey&&akt===z){e.preventDefault();a.focus();}
+});
 
 function _renderVsm(){
     var l=document.getElementById('vsmFileList');

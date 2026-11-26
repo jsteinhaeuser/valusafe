@@ -512,7 +512,7 @@ h5.settings-subtitle { margin: 0 0 8px; }
 }
 </style>
 
-<h2><i class="ti ti-settings"></i> <?php echo t('settings_title'); ?></h2>
+<h1 class="vs-seitentitel"><i class="ti ti-settings" aria-hidden="true"></i> <?php echo t('settings_title'); ?></h1>
 
 <?php if ($message): ?>
     <div class="success-message"><?php echo esc($message); ?></div>

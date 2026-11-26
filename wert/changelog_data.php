@@ -2,7 +2,7 @@
 /**
  * changelog_data.php — Auslieferungsfassung
  *
- * Erzeugt am 24.11.2026 16:29 von bin/changelog_export.php.
+ * Erzeugt am 26.11.2026 12:24 von bin/changelog_export.php.
  * NICHT von Hand aendern — Aenderungen gehoeren in die Projektchronik,
  * aus der diese Datei bei jedem Paketbau neu entsteht.
  *
@@ -12,6 +12,36 @@
  */
 
 return [
+    [
+        'version' => '4.9.5',
+        'date' => '2026-11-26',
+        'entries' => [
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Update-Seite: Scheitert die Versionsabfrage, nennt die Meldung jetzt den Grund (etwa „palindrom.de antwortet mit Status 404“) statt „Antwort größer als angekündigt“. Die Meldungen der Update-Seite erscheinen jetzt in der eingestellten Sprache, bisher immer auf Deutsch.',
+                'text_en' => 'Update page: if the version check fails, the message now names the reason (such as “palindrom.de answers with status 404”) instead of “answer larger than announced”. The messages of the update page now appear in the selected language; until now they were always in German.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Barrierefreiheit: Export-Menü und Hilfefenster lassen sich jetzt vollständig mit der Tastatur bedienen – der Fokus springt beim Öffnen hinein, die Pfeiltasten wechseln im Export-Menü den Eintrag, Esc schließt und kehrt zum Knopf zurück. Der Zurück-Pfeil oben und der Schließen-Knopf der Hilfe haben jetzt einen Namen für Screenreader, die Versicherungsseite einen eigenen Seitentitel, und eine fehlgeschlagene Anmeldung wird von Screenreadern sofort angesagt.',
+                'text_en' => 'Accessibility: the export menu and the help window can now be used entirely with the keyboard – focus moves into them when they open, the arrow keys move through the export menu, Esc closes and returns to the button. The back arrow at the top and the close button of the help window now have a name for screen readers, the insurance page has its own page title, and a failed sign-in is announced by screen readers right away.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Bilder: Die Reihenfolge, die man beim Bearbeiten durch Ziehen der Bilder festlegt, wird jetzt gespeichert. Bisher sah es nur so aus – nach dem Neuladen stand wieder die alte Reihenfolge da.',
+                'text_en' => 'Images: the order you set by dragging the images while editing an item is now saved. Until now it only looked that way – after reloading, the old order was back.'
+            ],
+            [
+                'type' => 'fix',
+                'public' => true,
+                'text' => 'Barrierefreiheit: Beim Bearbeiten lassen sich die Bilder jetzt auch mit der Tastatur vergrößern; die Großansicht ist für Screenreader als Fenster erkennbar, und Esc führt zurück zum Bild. Übersicht, Neu, Bearbeiten, Einstellungen und Versicherungen haben eine Hauptüberschrift für Screenreader. Auf sehr schmalen Bildschirmen wird der Knopf „Schnell“ oben nicht mehr abgeschnitten.',
+                'text_en' => 'Accessibility: while editing, images can now also be enlarged with the keyboard; the large view is recognisable as a window for screen readers, and Esc returns to the image. Overview, new item, edit, settings and insurance now have a main heading for screen readers. On very narrow screens the “Quick” button at the top is no longer cut off.'
+            ]
+        ]
+    ],
     [
         'version' => '4.9.4',
         'date' => '2026-11-24',
@@ -123,60 +153,6 @@ return [
                 'public' => true,
                 'text' => 'Datenschutz: Die Erklärung nennt jetzt die Verzeichnisse, die beim Nachschlagen von Barcode oder ISBN angefragt werden.',
                 'text_en' => 'Privacy: the privacy policy now names the directories that are queried when you look up a barcode or ISBN.'
-            ]
-        ]
-    ],
-    [
-        'version' => '4.9',
-        'date' => '2026-11-08',
-        'entries' => [
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Buchsuche: Bücher aus dem deutschen Sprachraum findet ValuSafe jetzt über die Deutsche Nationalbibliothek – mit Titel, Untertitel, Autor, Verlag, Jahr und Auflage. Bisher fragte die Suche nur Google Books und Open Library; Google antwortet ohne eigenen Schlüssel oft gar nicht, Open Library kennt nur wenige deutsche Bücher.',
-                'text_en' => 'Book lookup: ValuSafe now finds books from German-speaking countries via the German National Library – with title, subtitle, author, publisher, year and edition. Until now the lookup only asked Google Books and Open Library; Google often does not answer without its own key, and Open Library knows only a few German books.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Ladenpreis: Liefert die Nationalbibliothek einen Preis, trägt ValuSafe ihn in ein leeres Preisfeld ein (ältere D-Mark-Preise umgerechnet) und vermerkt ihn in der Notiz.',
-                'text_en' => 'Retail price: if the National Library supplies a price, ValuSafe enters it into an empty price field (older Deutsche Mark prices converted) and notes it in the notes.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Barcode-Scan auf dem iPhone und iPad: „Scannen“ öffnet jetzt auch in Safari die Kamera und liest Barcode bzw. ISBN. Bisher blieb dort nur die Eingabe von Hand.',
-                'text_en' => 'Barcode scan on iPhone and iPad: “Scan” now also opens the camera in Safari and reads the barcode or ISBN. Until now only manual entry was possible there.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Schnellerfassung mit Barcode: Das Formular hinter dem Plus-Knopf hat jetzt ein Feld „Barcode / ISBN“ mit Scan-Knopf. Die Suche füllt Name, Notiz und Preis und bietet das Cover als Foto an; nach dem Speichern ist alles bereit für den nächsten Gegenstand.',
-                'text_en' => 'Quick entry with barcode: the form behind the plus button now has a “Barcode / ISBN” field with a scan button. The lookup fills in name, notes and price and offers the cover as photo; after saving, everything is ready for the next item.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Sprachen: Das Menü „Hilfe & Information“ ist in allen Sprachen beschriftet; Erste Schritte, Über diese Anwendung, Lizenz und Rückmeldung gibt es auf Englisch (andere Sprachen sehen die englische Fassung). Versicherungs-Export, Übergabeprotokoll und die öffentliche Chronik sind übersetzt, die System-Information im Verwaltungsbereich gibt es auf Englisch.',
-                'text_en' => 'Languages: the “Help & information” menu is labelled in all languages; Getting started, About this application, Licence and Feedback are available in English (other languages see the English version). The insurance export, the handover report and the public changelog are translated, and the system information in the admin area is available in English.'
-            ],
-            [
-                'type' => 'feature',
-                'public' => true,
-                'text' => 'Versicherungs-Export: Gegenstände mit englischen Kategorien (z. B. „Jewellery“, „Electronics“) landen in der passenden Versicherungskategorie statt unter „Sonstiges“.',
-                'text_en' => 'Insurance export: items with English categories (e.g. “Jewellery”, “Electronics”) are now sorted into the matching insurance category instead of “Other”.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Umlaute: Namen aus der Buchsuche und vom iPhone kamen teils mit zerlegten Umlauten an („fu r“ statt „für“) – die Suche fand sie dann nicht. Beim Speichern wird jetzt jeder Text vereinheitlicht.',
-                'text_en' => 'Umlauts: names from the book lookup and from the iPhone sometimes arrived with decomposed umlauts (“fu r” instead of “für”) – search then did not find them. Every text is now normalised when saved.'
-            ],
-            [
-                'type' => 'fix',
-                'public' => true,
-                'text' => 'Update: Wer im Verwaltungsbereich versehentlich das vollständige Paket statt des Update-Pakets wählt, bekommt jetzt eine verständliche Meldung statt eines technischen Fehlers.',
-                'text_en' => 'Update: if you accidentally choose the full package instead of the update package in the admin area, you now get a clear message instead of a technical error.'
             ],
             [
                 'type' => 'feature',

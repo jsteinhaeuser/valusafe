@@ -1,5 +1,6 @@
 # Automatischer Testlauf: bei jedem Push und jedem Pull Request laufen die
-# PHPUnit-Tests aus wert/tests auf allen unterstuetzten PHP-Versionen.
+# PHPUnit-Tests aus wert/tests auf allen unterstuetzten PHP-Versionen,
+# dazu php -l fuer jede Datei und einmal PHPStan (seit 4.9.5).
 # Die Tests brauchen keine Datenbank: Sie bauen sich je Test eine SQLite-
 # Datenbank im Speicher aus install/schema.sql.
 name: Tests
@@ -32,8 +33,18 @@ jobs:
           extensions: mbstring, pdo_sqlite, sodium, zip, gd, intl
           coverage: none
 
-      - name: PHPUnit installieren
+      - name: PHPUnit und PHPStan installieren
         run: composer install --no-interaction --no-progress --prefer-dist
+
+      # Syntaxpruefung jeder PHP-Datei mit der jeweiligen PHP-Version (4.9.5)
+      - name: Syntax (php -l)
+        run: git ls-files '*.php' | xargs -n1 -P4 php -l -d display_errors=1 > /dev/null
 
       - name: Tests
         run: vendor/bin/phpunit
+
+      # Statische Analyse (phpstan.neon.dist, Stufe 5 mit Baseline) - einmal
+      # genuegt, sie haengt nicht von der PHP-Version ab (4.9.5)
+      - name: Statische Analyse (PHPStan)
+        if: matrix.php == '8.4'
+        run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G

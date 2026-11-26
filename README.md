@@ -120,7 +120,7 @@ What that means for you, stated plainly:
 - **`.htaccess` does the directory protection.** On a web server that ignores `.htaccess` — Nginx, for instance — you need equivalent rules. A template for Nginx is at `install/nginx-valusafe.conf.example`. It was tested in November 2026 with Nginx 1.31 and PHP-FPM; after setting it up, check the addresses listed at the top of the file.
 - **There are automated tests.** About 300 PHPUnit tests in `wert/tests` cover permissions, values, deletion, exports, data import and the signed update package. GitHub runs them on PHP 8.2 to 8.5 on every push; they need no database. Composer is only needed for the tests (`cd wert && composer install && vendor/bin/phpunit`), not for running ValuSafe.
 
-Bug reports and questions are welcome as issues. Pull requests are welcome too, but a single maintainer cannot promise when he will get to them.
+Bug reports and questions are welcome as issues. Pull requests are welcome too, but a single maintainer cannot promise when he will get to them. How to contribute, and what a change needs: [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 

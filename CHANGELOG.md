@@ -1,8 +1,15 @@
 # Changelog
 
-All changes that affect users. Generated from the project history on 2026-11-24.
+All changes that affect users. Generated from the project history on 2026-11-26.
 
 Earlier versions (before 4.3.28) are documented in German only: [changelog_vollstaendig.txt](changelog_vollstaendig.txt).
+
+## 4.9.5 — 2026-11-26
+
+- **Fixed:** Update page: if the version check fails, the message now names the reason (such as “palindrom.de answers with status 404”) instead of “answer larger than announced”. The messages of the update page now appear in the selected language; until now they were always in German.
+- **Fixed:** Accessibility: the export menu and the help window can now be used entirely with the keyboard – focus moves into them when they open, the arrow keys move through the export menu, Esc closes and returns to the button. The back arrow at the top and the close button of the help window now have a name for screen readers, the insurance page has its own page title, and a failed sign-in is announced by screen readers right away.
+- **Fixed:** Images: the order you set by dragging the images while editing an item is now saved. Until now it only looked that way – after reloading, the old order was back.
+- **Fixed:** Accessibility: while editing, images can now also be enlarged with the keyboard; the large view is recognisable as a window for screen readers, and Esc returns to the image. Overview, new item, edit, settings and insurance now have a main heading for screen readers. On very narrow screens the “Quick” button at the top is no longer cut off.
 
 ## 4.9.4 — 2026-11-24
 

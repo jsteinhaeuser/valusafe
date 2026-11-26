@@ -420,12 +420,15 @@ include 'header_next_page.php';
     }
     
     .content-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
     
+    /* minmax(0, ...) + Umbruch: bei 320 px ragten die Kacheln in Valu-Basic
+       ueber den Rand (WCAG 1.4.10, 4.9.5) */
     .quick-actions {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    .action-card { padding: 16px 10px; overflow-wrap: anywhere; }
 }
 </style>
 

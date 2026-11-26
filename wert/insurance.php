@@ -141,6 +141,7 @@ function deckungsHinweis(array $v, bool $druck = false): string
 }
 
 $pageTitle = t('insurance_overview');
+$_pageTitle = $pageTitle;   // fuer header_next_page.php (Titel und Kopfzeile, 4.9.5)
 $exportDatum = date('d.m.Y');
 
 if (!$printMode) {
@@ -189,7 +190,7 @@ if (!$printMode) {
 
 <main class="backend-main">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
-        <h2 style="margin:0;">🛡️ <?php echo t('insurance_overview'); ?></h2>
+        <h1 class="vs-seitentitel" style="margin:0;"><span aria-hidden="true">🛡️</span> <?php echo t('insurance_overview'); ?></h1>
         <div style="display:flex; gap:10px;">
             <a href="insurance.php?print=1<?php echo $versId ? '&v='.$versId : ''; ?>" target="_blank"
                style="padding:9px 18px; background:var(--vs-danger); color:white; border-radius:6px; text-decoration:none; font-weight:600;"><i class="ti ti-file-type-pdf" aria-hidden="true"></i> <?php echo t('btn_export_pdf'); ?></a>

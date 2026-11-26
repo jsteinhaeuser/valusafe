@@ -88,6 +88,8 @@ class MultiImageUpload {
             const lb = document.createElement('div');
             lb.className = 'lightbox-overlay';
             lb.id = 'lightboxOverlay';
+            lb.setAttribute('role', 'dialog');          // Dialog fuer Screenreader (4.9.5)
+            lb.setAttribute('aria-modal', 'true');
             lb.innerHTML = `
                 <div class="lightbox-content">
                     <button type="button" class="lightbox-close" onclick="multiImageUpload.closeLightbox()" aria-label="${_miuE(_miuT('js_close', 'Schließen'))}">✕</button>
@@ -141,6 +143,16 @@ class MultiImageUpload {
             if (e.key === 'Escape') this.closeLightbox();
             if (e.key === 'ArrowLeft') this.lightboxPrev();
             if (e.key === 'ArrowRight') this.lightboxNext();
+            // Tab bleibt in der Grossansicht (WCAG 2.4.3, 4.9.5)
+            if (e.key === 'Tab') {
+                const lb = document.getElementById('lightboxOverlay');
+                const f = [...lb.querySelectorAll('button')].filter(b => b.offsetParent !== null);
+                if (!f.length) return;
+                const a = f[0], z = f[f.length - 1], akt = document.activeElement;
+                if (!lb.contains(akt)) { e.preventDefault(); a.focus(); }
+                else if (e.shiftKey && akt === a) { e.preventDefault(); z.focus(); }
+                else if (!e.shiftKey && akt === z) { e.preventDefault(); a.focus(); }
+            }
         });
         
         // Kamera-Button nur auf Mobile anzeigen
@@ -221,10 +233,12 @@ class MultiImageUpload {
                  data-index="${index}"
                  draggable="true">
                 ${img.is_primary ? '<div class="primary-badge">★ ' + _miuE(_miuT('js_img_primary', 'Hauptbild')) + '</div>' : ''}
-                <img src="${img.url}" 
-                     alt="${_miuE(_miuT('js_img_alt', 'Bild %s', index + 1))}"
-                     onclick="multiImageUpload.openLightbox(${index})"
-                     loading="lazy">
+                <button type="button" class="image-preview-btn"
+                        onclick="multiImageUpload.openLightbox(${index})">
+                    <img src="${img.url}"
+                         alt="${_miuE(_miuT('js_img_alt', 'Bild %s', index + 1))}"
+                         loading="lazy" draggable="false">
+                </button>
                 <div class="image-actions">
                     ${!img.is_primary ? `
                     <button type="button" class="image-action-btn primary-btn" 
@@ -577,14 +591,22 @@ class MultiImageUpload {
     // =============================================
     openLightbox(index) {
         this.lightboxIndex = index;
+        this.lightboxOpener = document.activeElement;   // Fokus danach zurueck (4.9.5)
         this.updateLightbox();
-        document.getElementById('lightboxOverlay').classList.add('active');
+        const lb = document.getElementById('lightboxOverlay');
+        lb.classList.add('active');
         document.body.style.overflow = 'hidden';
+        const zu = lb.querySelector('.lightbox-close');
+        if (zu) zu.focus();
     }
     
     closeLightbox() {
-        document.getElementById('lightboxOverlay').classList.remove('active');
+        const lb = document.getElementById('lightboxOverlay');
+        if (!lb.classList.contains('active')) return;
+        lb.classList.remove('active');
         document.body.style.overflow = '';
+        if (this.lightboxOpener && this.lightboxOpener.isConnected && this.lightboxOpener.focus) this.lightboxOpener.focus();
+        this.lightboxOpener = null;
     }
     
     lightboxPrev() {
@@ -604,6 +626,9 @@ class MultiImageUpload {
         
         if (current) {
             img.src = current.url;
+            // Name fuer Bild und Dialog (vorher alt="", 4.9.5)
+            img.alt = _miuT('js_img_alt', 'Bild %s', this.lightboxIndex + 1);
+            document.getElementById('lightboxOverlay').setAttribute('aria-label', img.alt);
             counter.textContent = `${this.lightboxIndex + 1} / ${this.images.length}`;
         }
         

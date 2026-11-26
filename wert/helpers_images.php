@@ -192,6 +192,33 @@ function setPrimaryImage($imageId) {
 }
 
 /**
+ * Reihenfolge der Bilder eines Gegenstands speichern (Ziehen in der Bildergalerie
+ * beim Bearbeiten, image_manager.php action=reorder). Fehlte bis 4.9.5 - der
+ * Aufruf endete in einem Fehler, die Reihenfolge blieb nach dem Neuladen die
+ * alte (gefunden von PHPStan). Nur Bilder dieses Gegenstands werden angefasst.
+ */
+function reorderItemImages($itemId, array $imageIds) {
+    global $db;
+
+    $offen = false;
+    try {
+        $offen = $db->beginTransaction();
+        foreach (array_values($imageIds) as $pos => $imageId) {
+            $db->execute(
+                "UPDATE item_images SET sort_order = ? WHERE id = ? AND item_id = ?",
+                [$pos, (int)$imageId, (int)$itemId]
+            );
+        }
+        $db->commit();
+        return true;
+    } catch (PDOException $e) {
+        if ($offen) $db->rollback();
+        error_log("Error reordering images: " . $e->getMessage());
+        return false;
+    }
+}
+
+/**
  * Zähle Bilder eines Items
  */
 function countItemImages($itemId) {

@@ -2,7 +2,31 @@ ValuSafe — Changelog
 ====================
 
 Alle Änderungen, die Anwenderinnen und Anwender betreffen.
-Erzeugt am 24.11.2026 aus der Projektchronik.
+Erzeugt am 26.11.2026 aus der Projektchronik.
+
+Version 4.9.5   26.11.2026
+--------------------------
+  [Fix] Update-Seite: Scheitert die Versionsabfrage, nennt die Meldung jetzt
+        den Grund (etwa „palindrom.de antwortet mit Status 404“) statt
+        „Antwort größer als angekündigt“. Die Meldungen der
+        Update-Seite erscheinen jetzt in der eingestellten Sprache, bisher
+        immer auf Deutsch.
+  [Fix] Barrierefreiheit: Export-Menü und Hilfefenster lassen sich jetzt
+        vollständig mit der Tastatur bedienen – der Fokus springt beim
+        Öffnen hinein, die Pfeiltasten wechseln im Export-Menü den Eintrag,
+        Esc schließt und kehrt zum Knopf zurück. Der Zurück-Pfeil oben und
+        der Schließen-Knopf der Hilfe haben jetzt einen Namen für
+        Screenreader, die Versicherungsseite einen eigenen Seitentitel, und
+        eine fehlgeschlagene Anmeldung wird von Screenreadern sofort angesagt.
+  [Fix] Bilder: Die Reihenfolge, die man beim Bearbeiten durch Ziehen der
+        Bilder festlegt, wird jetzt gespeichert. Bisher sah es nur so aus –
+        nach dem Neuladen stand wieder die alte Reihenfolge da.
+  [Fix] Barrierefreiheit: Beim Bearbeiten lassen sich die Bilder jetzt auch
+        mit der Tastatur vergrößern; die Großansicht ist für Screenreader
+        als Fenster erkennbar, und Esc führt zurück zum Bild. Übersicht,
+        Neu, Bearbeiten, Einstellungen und Versicherungen haben eine
+        Hauptüberschrift für Screenreader. Auf sehr schmalen Bildschirmen
+        wird der Knopf „Schnell“ oben nicht mehr abgeschnitten.
 
 Version 4.9.4   24.11.2026
 --------------------------

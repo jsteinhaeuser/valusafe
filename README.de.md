@@ -119,7 +119,7 @@ Was das für Sie bedeutet, ohne Beschönigung:
 - **Den Verzeichnisschutz macht die `.htaccess`.** Auf einem Webserver, der sie nicht liest — etwa Nginx — brauchen Sie gleichwertige Regeln. Eine Vorlage für Nginx liegt unter `install/nginx-valusafe.conf.example`. Sie wurde im November 2026 mit Nginx 1.31 und PHP-FPM erprobt; prüfen Sie nach dem Einrichten die oben in der Datei genannten Adressen.
 - **Es gibt automatische Tests.** Rund 300 PHPUnit-Tests in `wert/tests` prüfen Rechte, Werte, Löschen, Exporte, Datenübernahme und das signierte Update-Paket. GitHub führt sie bei jedem Push unter PHP 8.2 bis 8.5 aus; eine Datenbank brauchen sie nicht. Composer braucht man nur für die Tests (`cd wert && composer install && vendor/bin/phpunit`), nicht für den Betrieb von ValuSafe.
 
-Fehlermeldungen und Fragen sind willkommen. Beiträge ebenfalls — nur kann ein einzelner Entwickler nicht versprechen, wann er dazu kommt.
+Fehlermeldungen und Fragen sind willkommen. Beiträge ebenfalls — nur kann ein einzelner Entwickler nicht versprechen, wann er dazu kommt. Wie man beiträgt und was eine Änderung braucht: [CONTRIBUTING.de.md](CONTRIBUTING.de.md).
 
 ## Lizenz
 

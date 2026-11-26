@@ -1,0 +1,36 @@
+# Statische Analyse mit PHPStan (seit 4.9.5, OpenSSF-Kriterium static_analysis).
+#   cd wert && composer install && vendor/bin/phpstan analyse
+# Laeuft auch in .github/workflows/tests.yml.
+#
+# Stufe 5. Was es beim Einfuehren schon gab, steht in phpstan-baseline.neon
+# (vor allem Variablen, die per include aus Kopf/Fuss kommen) - neue Befunde
+# fallen damit sofort auf. Bitte nichts Neues in die Baseline schreiben,
+# sondern den Befund beheben oder hier mit Begruendung ausnehmen.
+includes:
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    paths:
+        - .
+    excludePaths:
+        - vendor/*
+        - tests/*
+        - Tools/*
+        - ValuSafe_Pakete/*
+        - upload/*
+        - backups/*
+        - documents/*
+        - logs/*
+        - wert-update/*
+    # Dieselbe Datei gilt im oeffentlichen Repo, dem einige private Dateien
+    # fehlen (z. B. sync_agent.php) - deren Baseline-Eintraege passen dort nicht.
+    reportUnmatchedIgnoredErrors: false
+    # Konstanten aus config.php (entsteht erst bei der Einrichtung)
+    bootstrapFiles:
+        - tests/phpstan_konstanten.php
+    ignoreErrors:
+        # config.php entsteht erst bei der Einrichtung (install/setup.php)
+        -
+            identifier: requireOnce.fileNotFound
+            message: '#"config\.php"#'

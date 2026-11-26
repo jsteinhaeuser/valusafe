@@ -414,7 +414,7 @@ $loginLang  = in_array($_SESSION['lang'] ?? '', VS_SPRACHEN, true) ? $_SESSION['
         <?php endif; ?>
 
         <?php if ($error): ?>
-            <div class="msg-error"><?php echo htmlspecialchars($error); ?></div>
+            <div class="msg-error" role="alert"><?php echo htmlspecialchars($error); ?></div>
         <?php endif; ?>
 
         <form method="POST" action="">

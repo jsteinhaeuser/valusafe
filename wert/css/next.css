@@ -493,7 +493,13 @@ body.vs-next .pagination-container { background: transparent; padding: 12px 0; }
     .vs-context { display: none; }
 }
 
-@media (max-width: 400px) { .vs-masonry { columns: 1; } }
+@media (max-width: 400px) {
+    .vs-masonry { columns: 1; }
+    /* "Schnell" oben wurde bei 320 px abgeschnitten: nur noch das Blitz-Symbol;
+       der Text bleibt fuer Screenreader im Knopf (WCAG 1.4.10, 4.9.5) */
+    .vs-topstrip .vs-quick-btn { font-size: 0; gap: 0; padding: 7px 9px; }
+    .vs-topstrip .vs-quick-btn i { font-size: 16px; }
+}
 
 /* Bottom Nav (standardmäßig versteckt, nur mobile sichtbar) */
 .vs-bottom-nav { display: none; }

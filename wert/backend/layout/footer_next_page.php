@@ -60,10 +60,10 @@ if (!function_exists('tn')) {
 }
 ?>
 <div id="vsServiceModal" onclick="if(event.target===this)closeServiceModal()">
-    <div class="vsm-box">
+    <div class="vsm-box" role="dialog" aria-modal="true" aria-labelledby="vsmTitle">
         <div class="vsm-header">
-            <h2>ℹ️ <?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?></h2>
-            <button class="vsm-close" onclick="closeServiceModal()">✕</button>
+            <h2 id="vsmTitle"><span aria-hidden="true">ℹ️</span> <?php echo htmlspecialchars(tn('nav_help', 'Hilfe & Informationen'), ENT_QUOTES, 'UTF-8'); ?></h2>
+            <button type="button" class="vsm-close" onclick="closeServiceModal()" aria-label="<?php echo htmlspecialchars(tn('btn_close', 'Schließen'), ENT_QUOTES, 'UTF-8'); ?>"><span aria-hidden="true">✕</span></button>
         </div>
         <div class="vsm-body">
             <div class="vsm-sidebar">
@@ -102,18 +102,38 @@ function _vsmRail(an){
     }
 }
 
+var _vsmOpener=null;
 function openServiceModal(){
-    document.getElementById('vsServiceModal').classList.add('active');
+    var m=document.getElementById('vsServiceModal');
+    _vsmOpener=document.activeElement;
+    m.classList.add('active');
     _vsmRail(true);
     document.body.style.overflow='hidden';
-    if(!_vsmLoaded) _renderVsm();
+    if(!_vsmLoaded)_renderVsm();
+    var z=m.querySelector('.vsm-close'); if(z) z.focus();
 }
 function closeServiceModal(){
-    document.getElementById('vsServiceModal').classList.remove('active');
+    var m=document.getElementById('vsServiceModal');
+    if(!m||!m.classList.contains('active')) return;
+    m.classList.remove('active');
     _vsmRail(false);
     document.body.style.overflow='';
+    if(_vsmOpener&&_vsmOpener.focus) _vsmOpener.focus();
+    _vsmOpener=null;
 }
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeServiceModal();});
+/* Tastatur im Hilfefenster: Esc schliesst, Tab bleibt im Fenster (WCAG 2.4.3, 4.9.5) */
+document.addEventListener('keydown',function(e){
+    var m=document.getElementById('vsServiceModal');
+    if(!m||!m.classList.contains('active')) return;
+    if(e.key==='Escape'){closeServiceModal();return;}
+    if(e.key!=='Tab') return;
+    var f=[].filter.call(m.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])'),function(x){return x.offsetParent!==null;});
+    if(!f.length) return;
+    var a=f[0], z=f[f.length-1], akt=document.activeElement;
+    if(!m.contains(akt)){e.preventDefault();a.focus();}
+    else if(e.shiftKey&&akt===a){e.preventDefault();z.focus();}
+    else if(!e.shiftKey&&akt===z){e.preventDefault();a.focus();}
+});
 
 function _renderVsm(){
     var l=document.getElementById('vsmFileList');

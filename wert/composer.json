@@ -3,7 +3,8 @@
     "description": "wert.palindrom.de - Test-Infrastruktur (Roadmap: automatisierte Tests)",
     "type": "project",
     "require-dev": {
-        "phpunit/phpunit": "^10.5"
+        "phpunit/phpunit": "^10.5",
+        "phpstan/phpstan": "^2.1"
     },
     "autoload-dev": {
         "psr-4": {

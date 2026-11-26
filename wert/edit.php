@@ -504,7 +504,7 @@ include 'header_next_page.php';
 .activity-action-deleted { background: #f8d7da; color: #721c24; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; font-weight: 600; }
 </style>
 
-<h2><?php echo t('form_edit_item'); ?></h2>
+<h1 class="vs-seitentitel"><?php echo t('form_edit_item'); ?></h1>
 
 <?php echo showErrorMessages($errors); ?>
 

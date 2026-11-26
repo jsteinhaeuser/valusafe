@@ -145,7 +145,7 @@ if (file_exists(__DIR__ . '/../update_check.php')) {
 <div class="vs-main">
     <!-- Top Strip -->
     <div class="vs-topstrip">
-        <a href="../index.php" class="vs-topstrip-back" style="color:var(--vs-muted,#64748b);text-decoration:none;display:flex;align-items:center;gap:6px;font-size:13px;">
+        <a href="../index.php" class="vs-topstrip-back" aria-label="<?php echo htmlspecialchars(tn('btn_back', 'Zurück'), ENT_QUOTES, 'UTF-8'); ?>" style="color:var(--vs-muted,#64748b);text-decoration:none;display:flex;align-items:center;gap:6px;font-size:13px;">
             <i class="ti ti-arrow-left" aria-hidden="true"></i>
         </a>
         <span class="vs-context"><?php echo htmlspecialchars($_pageTitle); ?></span>

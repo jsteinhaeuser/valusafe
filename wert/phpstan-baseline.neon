@@ -1,0 +1,614 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^If condition is always false\.$#'
+			identifier: if.alwaysFalse
+			count: 1
+			path: '2fa_setup.php'
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: '2fa_setup.php'
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: activity_log.php
+
+		-
+			message: '#^Variable \$data might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: add.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 12
+			path: add.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: ajax/get_positionen.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 10
+			path: ajax_handler.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: ajax_permissions.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: ajax_reset_columns.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: ajax_save_columns.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: backend/activity_log.php
+
+		-
+			message: '#^Offset ''download'' on non\-empty\-array\<mixed\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: backend/backup.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: backend/backup.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 8
+			path: backend/categories.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: backend/cleanup_activity_logs.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 8
+			path: backend/datenuebernahme.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: backend/gallery.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 7
+			path: backend/index.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 11
+			path: backend/insurance.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: backend/insurance_minimal.php
+
+		-
+			message: '#^Ternary operator condition is always true\.$#'
+			identifier: ternary.alwaysTrue
+			count: 1
+			path: backend/layout/header.php
+
+		-
+			message: '#^Variable \$cssPrefix on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: backend/layout/header.php
+
+		-
+			message: '#^Offset ''expanded'' on array\{title\: ''Benutzer'', icon\: ''👥'', submenu\: list\{0\?\: array\{title\: ''Alle Benutzer'', url\: ''/backend/users\.php'', active\: bool\}\|array\{title\: ''Berechtigungen'', url\: ''/backend…'', active\: bool\}, 1\?\: array\{title\: ''Berechtigungen'', url\: ''/backend…'', active\: bool\}\}\}\|array\{title\: ''Inhalte'', icon\: ''📦'', submenu\: list\{0\?\: array\{title\: ''Alle Gegenstände'', url\: ''/index\.php'', active\: false\}\|array\{title\: ''Bild\-Galerie'', url\: ''/backend/gallery\.php'', active\: bool\}\|array\{title\: ''Kategorien'', url\: ''/backend/categories…'', active\: bool\}\|array\{title\: ''Orte'', url\: ''/backend/locations…'', active\: bool\}, 1\?\: array\{title\: ''Bild\-Galerie'', url\: ''/backend/gallery\.php'', active\: bool\}\|array\{title\: ''Kategorien'', url\: ''/backend/categories…'', active\: bool\}\|array\{title\: ''Orte'', url\: ''/backend/locations…'', active\: bool\}, 2\?\: array\{title\: ''Kategorien'', url\: ''/backend/categories…'', active\: bool\}\|array\{title\: ''Orte'', url\: ''/backend/locations…'', active\: bool\}, 3\?\: array\{title\: ''Orte'', url\: ''/backend/locations…'', active\: bool\}\}\}\|array\{title\: ''System'', icon\: ''⚙️'', submenu\: list\{0\?\: array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Diagnose\-Tools'', url\: ''/Tools/diagnose…'', active\: bool\}\|array\{title\: ''Login\-Security'', url\: ''/backend/login…'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''System\-Info'', url\: ''/backend/system\.php'', active\: bool\}\|array\{title\: ''System\-Logs'', url\: ''/backend/logs\.php'', active\: bool\}\|array\{title\: ''🔐 2FA\-Einrichtung'', url\: ''/backend/2fa_setup…'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}\|array\{title\: ''🩺 Health Check'', url\: ''/backend/health…'', active\: bool\}, 1\?\: array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Diagnose\-Tools'', url\: ''/Tools/diagnose…'', active\: bool\}\|array\{title\: ''Login\-Security'', url\: ''/backend/login…'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''System\-Logs'', url\: ''/backend/logs\.php'', active\: bool\}\|array\{title\: ''🔐 2FA\-Einrichtung'', url\: ''/backend/2fa_setup…'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}\|array\{title\: ''🩺 Health Check'', url\: ''/backend/health…'', active\: bool\}, 2\?\: array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Diagnose\-Tools'', url\: ''/Tools/diagnose…'', active\: bool\}\|array\{title\: ''Login\-Security'', url\: ''/backend/login…'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''🔐 2FA\-Einrichtung'', url\: ''/backend/2fa_setup…'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}\|array\{title\: ''🩺 Health Check'', url\: ''/backend/health…'', active\: bool\}, 3\?\: array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Diagnose\-Tools'', url\: ''/Tools/diagnose…'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''🔐 2FA\-Einrichtung'', url\: ''/backend/2fa_setup…'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}\|array\{title\: ''🩺 Health Check'', url\: ''/backend/health…'', active\: bool\}, 4\?\: array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Diagnose\-Tools'', url\: ''/Tools/diagnose…'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}\|array\{title\: ''🩺 Health Check'', url\: ''/backend/health…'', active\: bool\}, 5\?\: array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Diagnose\-Tools'', url\: ''/Tools/diagnose…'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}, 6\?\: array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}, 7\?\: array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}, \.\.\.\}\} on left side of \?\? does not exist\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: backend/layout/sidebar.php
+
+		-
+			message: '#^Offset ''url'' on array\{title\: ''Alle Benutzer'', url\: ''/backend/users\.php'', active\: bool\}\|array\{title\: ''Alle Gegenstände'', url\: ''/index\.php'', active\: false\}\|array\{title\: ''Backup'', url\: ''/backend/backup\.php'', active\: bool\}\|array\{title\: ''Berechtigungen'', url\: ''/backend…'', active\: bool\}\|array\{title\: ''Bild\-Galerie'', url\: ''/backend/gallery\.php'', active\: bool\}\|array\{title\: ''Diagnose\-Tools'', url\: ''/Tools/diagnose…'', active\: bool\}\|array\{title\: ''Kategorien'', url\: ''/backend/categories…'', active\: bool\}\|array\{title\: ''Login\-Security'', url\: ''/backend/login…'', active\: bool\}\|array\{title\: ''Orte'', url\: ''/backend/locations…'', active\: bool\}\|array\{title\: ''Restore'', url\: ''/backend/restore\.php'', active\: bool\}\|array\{title\: ''System\-Info'', url\: ''/backend/system\.php'', active\: bool\}\|array\{title\: ''System\-Logs'', url\: ''/backend/logs\.php'', active\: bool\}\|array\{title\: ''🔐 2FA\-Einrichtung'', url\: ''/backend/2fa_setup…'', active\: bool\}\|array\{title\: ''🔑 SuperAdmin'', url\: ''/backend/superadmin…'', active\: bool\}\|array\{title\: ''🩺 Health Check'', url\: ''/backend/health…'', active\: bool\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: backend/layout/sidebar.php
+
+		-
+			message: '#^Ternary operator condition is always false\.$#'
+			identifier: ternary.alwaysFalse
+			count: 1
+			path: backend/layout/sidebar.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 28
+			path: backend/locations.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: backend/login_security.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 9
+			path: backend/logs.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: backend/logs_extended.php
+
+		-
+			message: '#^Offset ''already''\|''applied''\|''dry\-run''\|''error''\|''pending'' on array\{already\: int\<0, max\>, applied\: int\<0, max\>, dry\-run\: int\<0, max\>, error\: int\<0, max\>, pending\: int\<0, max\>\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: backend/migration_runner.php
+
+		-
+			message: '#^Variable \$dbError on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: backend/permissions.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: backend/permissions.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 10
+			path: backend/public_settings.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: backend/restore.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: backend/stats.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 7
+			path: backend/superadmin.php
+
+		-
+			message: '#^Parameter \#2 \$replace of function str_replace expects array\<string\>\|string, int given\.$#'
+			identifier: argument.type
+			count: 1
+			path: backend/system.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: backend/update.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: backend/update_check.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 7
+			path: backend/users.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: backend/users.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: components/components_search_filters.php
+
+		-
+			message: '#^Variable \$paginationParams might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: components/components_search_filters.php
+
+		-
+			message: '#^Result of && is always false\.$#'
+			identifier: booleanAnd.alwaysFalse
+			count: 1
+			path: cron_backup.php
+
+		-
+			message: '#^Result of \|\| is always true\.$#'
+			identifier: booleanOr.alwaysTrue
+			count: 1
+			path: cron_backup.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between ''cli'' and ''cli'' will always evaluate to false\.$#'
+			identifier: notIdentical.alwaysFalse
+			count: 1
+			path: cron_backup.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between '''' and '''' will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: cron_backup.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: dashboard.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: dashboard.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between ''POST'' and ''POST'' will always evaluate to true\.$#'
+			identifier: identical.alwaysTrue
+			count: 1
+			path: delete.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: delete.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: download_document.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: edit.php
+
+		-
+			message: '#^Variable \$data might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: edit.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 16
+			path: edit.php
+
+		-
+			message: '#^Variable \$dokumente_aktiv on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.variable
+			count: 1
+			path: edit.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: export_csv.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: export_html.php
+
+		-
+			message: '#^Offset ''Einrichtung''\|''Elektro & Technik''\|''Kleidung &…''\|''Kunst & Antiquitäten''\|''Sammlungen''\|''Schmuck &…''\|''Sonstiges''\|''Sport & Freizeit'' on array\{Einrichtung\: ''🛋️'', ''Elektro & Technik''\: ''📺'', ''Schmuck & Edelmetalle''\: ''💍'', ''Kunst & Antiquitäten''\: ''🖼️'', Sammlungen\: ''📚'', ''Kleidung & Accessoires''\: ''👔'', ''Sport & Freizeit''\: ''🚴'', Sonstiges\: ''📦''\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 3
+			path: export_insurance.php
+
+		-
+			message: '#^Parameter \#2 \$replace of function str_replace expects array\<string\>\|string, int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 2
+			path: export_insurance.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: export_insurance.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: export_pdf.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: export_pdf_compact.php
+
+		-
+			message: '#^Parameter \#2 \$replace of function str_replace expects array\<string\>\|string, int\<1, max\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: export_pdf_handover.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: export_pdf_handover.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: forgot_password.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: forgot_password.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 2
+			path: helpers.php
+
+		-
+			message: '''
+				#^PHPDoc tag @return has invalid value \(array\{
+				  ok\: bool,
+				  fehler\: string\[\],               Schluessel\: unzulaessig, keine_migrationen,
+				                                  zu_alt, zu_neu, keine_gegenstaende, leer
+				  unzulaessig\: string\[\],          die ersten abgelehnten Anweisungen \(gekuerzt\)
+				  zu_neu\: string\[\],               Migrationen, die diese Installation nicht kennt
+				  migrationen\: string\[\],
+				  zeilen\: array\<string,int\>,      Tabelle \=\> Zahl der Datensaetze
+				  fremd\: string\[\],                Tabellen, die ValuSafe nicht \(mehr\) kennt
+				  ausfuehren\: string\[\],           die Anweisungen, die eingespielt werden
+				  version\: string\|null            aus der Kopfzeile, wenn vorhanden
+				\}\)\: Unexpected token "unzulaessig", expected '\}' at offset 448 on line 10$#
+			'''
+			identifier: phpDoc.parseError
+			count: 1
+			path: helpers_datenuebernahme.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and false will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 4
+			path: helpers_search.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 9
+			path: image_manager.php
+
+		-
+			message: '#^Cannot unset offset ''page'' on array\{\}\|array\{search\?\: mixed, ort\?\: mixed, price_min\?\: mixed, price_max\?\: mixed, date_from\?\: mixed, date_to\?\: mixed, has_image\?\: 1, has_docs\?\: 1, \.\.\.\}\.$#'
+			identifier: unset.offset
+			count: 1
+			path: index.php
+
+		-
+			message: '#^Offset ''per_page'' on non\-empty\-array\<mixed\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: index.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between mixed and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: index.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 23
+			path: index.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: insurance.php
+
+		-
+			message: '#^Variable \$objektDetails in empty\(\) always exists and is not falsy\.$#'
+			identifier: empty.variable
+			count: 1
+			path: insurance.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: login.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: login.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: login_2fa.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 6
+			path: login_2fa.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: logout.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 6
+			path: manage_documents.php
+
+		-
+			message: '#^Parameter \#2 \$callback of function array_filter expects \(callable\(string\)\: bool\)\|null, ''strlen'' given\.$#'
+			identifier: argument.type
+			count: 1
+			path: musik_helpers.php
+
+		-
+			message: '#^Function vsResetBasisAdresse\(\) never returns string so it can be removed from the return type\.$#'
+			identifier: return.unusedType
+			count: 1
+			path: password_reset_helpers.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: public.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between int\<1, max\>\|non\-empty\-string and null will always evaluate to true\.$#'
+			identifier: notIdentical.alwaysTrue
+			count: 1
+			path: qr_generator.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 5
+			path: qr_generator.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 4
+			path: quick_add.php
+
+		-
+			message: '#^Variable \$newId might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: quick_add.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: reset_password.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: reset_password.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 24
+			path: schadenfall.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 6
+			path: schadenfall_belege.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 3
+			path: schadenfall_dokument.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 1
+			path: set_language.php
+
+		-
+			message: '#^Variable \$db might not be defined\.$#'
+			identifier: variable.undefined
+			count: 15
+			path: settings.php
+
+		-
+			message: '#^Variable \$file in isset\(\) always exists and is not nullable\.$#'
+			identifier: isset.variable
+			count: 1
+			path: settings.php
+
+		-
+			message: '#^Variable \$pdo might not be defined\.$#'
+			identifier: variable.undefined
+			count: 2
+			path: settings.php
+
+		-
+			message: '#^Strict comparison using \=\=\= between string and false will always evaluate to false\.$#'
+			identifier: identical.alwaysFalse
+			count: 1
+			path: sync_agent.php

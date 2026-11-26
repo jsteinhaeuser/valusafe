@@ -123,6 +123,65 @@ function vsUpdStand(string $arbeit, bool $erzwingen = false, bool $nurLesen = fa
     return $neu;
 }
 
+/**
+ * Meldung aus update_helpers.php oder update_kern.php in der Sprache der
+ * Oberflaeche (4.9.5). Die Meldungen selbst bleiben deutsch: update_kern.php
+ * ist mit Valu-Basic bytegleich, und stand.json speichert den Text so, wie er
+ * bei der Abfrage entstand. Uebersetzt wird erst bei der Anzeige; was hier
+ * nicht steht, kommt unveraendert zurueck.
+ */
+const VS_UPD_MELDUNGEN = [
+    '/^palindrom\.de antwortet mit Status (\d+)\.$/'                        => 'upd_e_status',
+    '/^palindrom\.de nicht erreichbar\.$/'                                   => 'upd_e_unreachable',
+    '/^Antwort groesser als angekuendigt\.$/'                                 => 'upd_e_too_large',
+    '/^Antwort der Versionsabfrage unlesbar\.$/'                              => 'upd_e_answer_unreadable',
+    '/^Antwort ohne gueltige Version\.$/'                                     => 'upd_e_answer_no_version',
+    '/^Antwort mit ungueltiger Paketangabe\.$/'                               => 'upd_e_answer_bad_package',
+    '/^Fuer diese Version liegt noch kein Update-Paket bereit\.$/'            => 'upd_e_no_package',
+    '/^Das Paket kam unvollstaendig oder veraendert an\.$/'                   => 'upd_e_package_corrupt',
+    '/^Nur HTTPS-Adressen\.$/'                                                => 'upd_e_https_only',
+    '/^Zieldatei fuer den Download laesst sich nicht anlegen\.$/'             => 'upd_e_target_create',
+    '/^Download laesst sich nicht speichern\.$/'                              => 'upd_e_save',
+    '/^Download abgebrochen\.$/'                                              => 'upd_e_aborted',
+    '/^Dieser Server darf keine Verbindungen nach aussen aufbauen/'           => 'upd_e_no_outbound',
+    '/^Wartungsschalter laesst sich nicht setzen/'                            => 'upd_e_maintenance',
+    '/^Arbeitsordner backups\/update laesst sich nicht anlegen\.$/'          => 'upd_e_workdir',
+    '/^Signatur ungueltig/'                                                   => 'upd_e_signature',
+    '/^Datei ist kein lesbares ZIP\.$/'                                       => 'upd_e_not_zip',
+    '/^Kein Update-Paket \(manifest\.json oder manifest\.sig fehlt\)\.$/'   => 'upd_e_no_manifest',
+    '/^Paket hat Version (\S+), installiert ist (\S+) - nichts zu tun\.$/'  => 'upd_e_same_version',
+    '/^Dieses Update setzt mindestens Version (\S+) voraus, installiert ist (\S+)\.$/' => 'upd_e_min_version',
+    '/^PHP ohne sodium/'                                                      => 'upd_e_no_sodium',
+    '/^PHP ohne zip/'                                                         => 'upd_e_no_zip',
+    '/^Selbsttest nach dem Update fehlgeschlagen\.$/'                         => 'upd_e_selftest',
+    '/^Migration (.+) fehlgeschlagen\.$/'                                     => 'upd_e_migration',
+];
+
+function vsUpdMeldung(string $text): string
+{
+    if (!function_exists('t')) return $text;
+    // "Update zurueckgerollt: <Grund>" - den Grund ebenfalls uebersetzen
+    if (str_starts_with($text, 'Update zurueckgerollt: ')) {
+        // Schluessel ueber eine Variable: die Texte stehen nur in backend/lang
+        // (die Update-Seite ist Backend), check_lang.py soll sie nicht in
+        // wert/lang suchen.
+        $k = 'upd_e_rolled_back';
+        $u = t($k);
+        $rest = vsUpdMeldung(substr($text, strlen('Update zurueckgerollt: ')));
+        return ($u === $k ? 'Update zurueckgerollt:' : $u) . ' ' . $rest;
+    }
+    foreach (VS_UPD_MELDUNGEN as $muster => $schluessel) {
+        if (preg_match($muster, $text, $m)) {
+            $u = t($schluessel);
+            if ($u === $schluessel) return $text;
+            // Platzhalter selbst einsetzen: nicht jedes t() kennt Parameter
+            $werte = array_slice($m, 1);
+            return $werte ? (string)@vsprintf($u, $werte) : $u;
+        }
+    }
+    return $text;
+}
+
 /** Gibt es laut $stand eine neuere Version als $installiert? */
 function vsUpdNeuer(?array $stand, string $installiert): bool
 {
@@ -188,6 +247,16 @@ function vsUpdHttpHolen(string $url, int $max, ?string $datei, int $zeit): strin
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_SSL_VERIFYHOST => 2,
                 CURLOPT_WRITEFUNCTION  => function ($ch, string $stueck) use ($schreiben, &$fehler): int {
+                    // Statuscode VOR der Groesse (4.9.5): bis 4.9.4 zaehlte eine
+                    // grosse Fehler- oder Sperrseite zuerst gegen die Grenze und
+                    // meldete sich als "Antwort groesser als angekuendigt" - der
+                    // eigentliche Status (403, 503 ...) blieb verborgen. Gesehen
+                    // 25.11.2026 auf einer Instanz, nur dort, nicht auf anderen.
+                    $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+                    if ($code !== 200) {
+                        $fehler = new VsUpdFehler("palindrom.de antwortet mit Status $code.");
+                        return 0;   // bricht den Abruf ab
+                    }
                     try {
                         $schreiben($stueck);
                         return strlen($stueck);

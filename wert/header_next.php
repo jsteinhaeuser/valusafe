@@ -232,12 +232,12 @@ $_searchVal = htmlspecialchars($currentFilters['search'] ?? $_GET['search'] ?? '
 
             <!-- Export-Dropdown -->
             <div style="position:relative; display:inline-block;">
-                <button id="vs-export-btn" onclick="vsToggleExport(event)" aria-haspopup="true"
+                <button type="button" id="vs-export-btn" onclick="vsToggleExport(event)" aria-expanded="false" aria-controls="vs-export-menu"
                         style="display:flex;align-items:center;gap:6px;padding:7px 13px;font-size:13px;font-weight:600;
                                background:var(--vs-surface);color:var(--vs-text);border:1px solid var(--vs-border);
                                border-radius:6px;cursor:pointer;transition:border-color .15s;">
-                    <i class="ti ti-package" style="font-size:16px;"></i>
-                    <?php echo tn('nav_export', 'Export'); ?> <i class="ti ti-chevron-down" style="font-size:13px;margin-left:2px;"></i>
+                    <i class="ti ti-package" style="font-size:16px;" aria-hidden="true"></i>
+                    <?php echo tn('nav_export', 'Export'); ?> <i class="ti ti-chevron-down" style="font-size:13px;margin-left:2px;" aria-hidden="true"></i>
                 </button>
             </div>
 

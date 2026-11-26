@@ -106,7 +106,8 @@ $_railActive  = [
             padding: 24px 28px;
             min-width: 0;
         }
-        .vs-page-content h2 {
+        .vs-page-content h2,
+        .vs-page-content h1.vs-seitentitel {   /* Seitentitel als h1 seit 4.9.5, Aussehen wie h2 */
             font-size: 20px;
             font-weight: 600;
             color: var(--vs-text, #0c1f3d);
@@ -114,6 +115,7 @@ $_railActive  = [
             padding-bottom: 12px;
             border-bottom: 2px solid var(--vs-border, #e2e8f0);
         }
+        .vs-page-content h1.vs-seitentitel { margin-top: 0.83em; line-height: var(--vs-leading-tight); }
     </style>
     <?php include __DIR__ . '/components/js_texte.php'; // JS-Texte in Benutzersprache (4.3.34) ?>
 </head>
@@ -191,7 +193,7 @@ $_railActive  = [
 <div class="vs-main">
     <!-- Top Strip -->
     <div class="vs-topstrip">
-        <a href="index.php" class="vs-topstrip-back" style="color:var(--vs-muted,#64748b);text-decoration:none;display:flex;align-items:center;gap:6px;font-size:13px;">
+        <a href="index.php" class="vs-topstrip-back" aria-label="<?php echo htmlspecialchars(tn('btn_back', 'Zurück'), ENT_QUOTES, 'UTF-8'); ?>" style="color:var(--vs-muted,#64748b);text-decoration:none;display:flex;align-items:center;gap:6px;font-size:13px;">
             <i class="ti ti-arrow-left" aria-hidden="true"></i>
         </a>
         <span class="vs-context"><?php echo htmlspecialchars($_pageTitle); ?></span>

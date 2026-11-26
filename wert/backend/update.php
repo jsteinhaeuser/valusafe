@@ -106,7 +106,7 @@ if (isset($_POST['rollback'])) {
             $step = 'done';
             $installiert = vsUpdInstalliert($wurzel);
         } catch (Throwable $e) {
-            $error = esc(t('upd_err_rollback')) . ' ' . esc($e->getMessage());
+            $error = esc(t('upd_err_rollback')) . ' ' . esc(vsUpdMeldung($e->getMessage()));
         }
     }
 }
@@ -151,7 +151,7 @@ if ($sperre === null && (isset($_POST['holen']) || isset($_POST['upload_update']
         if ($name !== null) @unlink($arbeit . $name);
         $error = $e->getCode() === VS_UPD_FEHLER_VOLLPAKET
             ? esc(t('upd_err_full_package'))
-            : esc(t('upd_err_rejected')) . ' ' . esc($e->getMessage());
+            : esc(t('upd_err_rejected')) . ' ' . esc(vsUpdMeldung($e->getMessage()));
     }
 }
 
@@ -206,7 +206,7 @@ if ($sperre === null && isset($_POST['do_update'])) {
             $step = 'done';
             $installiert = vsUpdInstalliert($wurzel);
         } catch (Throwable $e) {
-            $error = esc(t('upd_err_not_applied')) . ' ' . esc($e->getMessage())
+            $error = esc(t('upd_err_not_applied')) . ' ' . esc(vsUpdMeldung($e->getMessage()))
                    . '<br>' . esc(t('upd_err_old_running'));
         } finally {
             if ($wartung) vsUpdWartungAus();
@@ -354,7 +354,7 @@ include 'layout/header_next_page.php';
     <?php if ($stand !== null): ?>
     <p style="font-size:13px;">
         <?php echo esc(sprintf(t('upd_last_check'), date('d.m.Y H:i', $stand['geprueft']))); ?>
-        <?php if (!empty($stand['fehler'])): ?><br><span style="color:var(--vs-danger);"><?php echo esc($stand['fehler']); ?></span><?php endif; ?>
+        <?php if (!empty($stand['fehler'])): ?><br><span style="color:var(--vs-danger);"><?php echo esc(vsUpdMeldung((string)$stand['fehler'])); ?></span><?php endif; ?>
     </p>
     <?php if ($geradeGeprueft && empty($stand['fehler'])): ?>
     <p role="status" style="font-size:13px; font-weight:600; color:var(--vs-success);">

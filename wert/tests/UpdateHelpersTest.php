@@ -172,6 +172,42 @@ class UpdateHelpersTest extends TestCase
         }
     }
 
+    // ── Meldungen uebersetzen (4.9.5) ───────────────────────────────────────
+
+    public function testMeldungsSchluesselInDeUndEn(): void
+    {
+        $de = require __DIR__ . '/../backend/lang/de.php';
+        $en = require __DIR__ . '/../backend/lang/en.php';
+        foreach (array_merge(array_values(VS_UPD_MELDUNGEN), ['upd_e_rolled_back']) as $k) {
+            $this->assertArrayHasKey($k, $de, "de: $k");
+            $this->assertArrayHasKey($k, $en, "en: $k");
+            $this->assertSame(substr_count($de[$k], '%'), substr_count($en[$k], '%'), "Platzhalter: $k");
+        }
+    }
+
+    /** Jede feste Meldung aus update_helpers.php findet ihren Schluessel. */
+    public function testAlleHelferMeldungenWerdenUebersetzt(): void
+    {
+        $alt = $GLOBALS['translations'] ?? null;
+        $GLOBALS['translations'] = require __DIR__ . '/../backend/lang/en.php';
+        try {
+            preg_match_all("/new VsUpdFehler\\('([^'$]+)'\\)/", file_get_contents(__DIR__ . '/../update_helpers.php'), $m);
+            $this->assertGreaterThan(10, count($m[1]));
+            foreach ($m[1] as $text) {
+                $this->assertNotSame($text, vsUpdMeldung($text), "nicht uebersetzt: $text");
+            }
+            // mit Platzhaltern, und der Grund hinter "zurueckgerollt"
+            $this->assertStringContainsString('403', vsUpdMeldung('palindrom.de antwortet mit Status 403.'));
+            $this->assertStringStartsWith('palindrom.de answers', vsUpdMeldung('palindrom.de antwortet mit Status 403.'));
+            $this->assertSame('Update rolled back: The self-test after the update failed.',
+                vsUpdMeldung('Update zurueckgerollt: Selbsttest nach dem Update fehlgeschlagen.'));
+            // Unbekanntes bleibt, wie es ist
+            $this->assertSame('Etwas ganz anderes.', vsUpdMeldung('Etwas ganz anderes.'));
+        } finally {
+            $GLOBALS['translations'] = $alt;
+        }
+    }
+
     // ── palindrom.de ────────────────────────────────────────────────────────
 
     public function testUpdateInfoVonPalindromWirdAngenommen(): void

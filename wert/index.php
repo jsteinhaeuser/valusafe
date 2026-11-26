@@ -390,6 +390,7 @@ include 'header_next.php';
 
 <?php echo showFlashMessage(); ?>
 
+<h1 class="sr-only"><?php echo htmlspecialchars(t('page_overview')); ?></h1>   <?php // WCAG 1.3.1, 4.9.5 ?>
 <?php include 'components/components_search_filters.php'; ?>
 
 <?php

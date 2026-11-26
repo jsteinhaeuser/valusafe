@@ -50,6 +50,22 @@
     display: block;
 }
 
+/* Vorschau als Button (4.9.5): sieht aus wie vorher das Bild, per Tastatur erreichbar */
+.image-preview-btn {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+}
+.image-preview-btn:focus-visible {
+    outline: 3px solid var(--vs-accent, #185fa5);
+    outline-offset: -3px;
+}
+
 /* Primary Badge */
 .primary-badge {
     position: absolute;

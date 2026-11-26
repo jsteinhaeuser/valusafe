@@ -19,12 +19,12 @@ $hasFilters = hasActiveFilters($currentFilters);
 <div class="search-filters-card">
     <!-- Header mit Toggle -->
     <div class="search-filters-header">
-        <h3 class="search-filters-title">
+        <h2 class="search-filters-title">
             🔍 <?php echo t('search_advanced'); ?>
             <?php if ($hasFilters): ?>
                 <span class="filter-badge"><?php echo count(array_filter($currentFilters)); ?> aktiv</span>
             <?php endif; ?>
-        </h3>
+        </h2>
         <button type="button" class="toggle-filters-btn collapsed" id="toggleFilters" aria-label="<?php echo t('filter_toggle'); ?>">
             <span class="toggle-icon">▼</span>
         </button>
@@ -268,10 +268,11 @@ $hasFilters = hasActiveFilters($currentFilters);
     background: linear-gradient(135deg, #5568d3 0%, #6a4091 100%);
 }
 
-.search-filters-title {
+.search-filters-title {   /* h2 seit 4.9.5 (vorher h3), Aussehen unveraendert */
     margin: 0;
     font-size: 18px;
     font-weight: 600;
+    line-height: 1.5;
     display: flex;
     align-items: center;
     gap: 10px;

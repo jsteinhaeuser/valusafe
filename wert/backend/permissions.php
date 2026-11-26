@@ -9,6 +9,7 @@ require_once '../helpers.php';
 requireAdmin();
 
 define('PAGE_TITLE', t('perm_page_title'));
+$pageTitle = PAGE_TITLE;   // layout/header_next_page.php liest $pageTitle (4.9.5)
 $currentPage = basename(__FILE__);
 include 'layout/header_next_page.php';
 
