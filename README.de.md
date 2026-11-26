@@ -1,6 +1,6 @@
 # ValuSafe
 
-[![Tests](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml/badge.svg)](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml)
+[![Tests](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml/badge.svg)](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/17134/badge)](https://www.bestpractices.dev/projects/17134)
 
 Selbst gehostete Inventarverwaltung für Wertsachen. Sie erfassen, was Sie besitzen — mit Foto, Kaufpreis und Standort — und ValuSafe macht daraus Übersichten, Auswertungen und die Unterlagen, nach denen eine Versicherung nach einem Einbruch, einem Brand oder einem Wasserschaden fragt.
 

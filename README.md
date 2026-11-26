@@ -1,6 +1,6 @@
 # ValuSafe
 
-[![Tests](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml/badge.svg)](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml)
+[![Tests](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml/badge.svg)](https://github.com/jsteinhaeuser/valusafe/actions/workflows/tests.yml) [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/17134/badge)](https://www.bestpractices.dev/projects/17134)
 
 Self-hosted inventory management for valuables. You record what you own — with photos, purchase price and location — and ValuSafe turns it into overviews, charts and the kind of documentation an insurer asks for after a burglary, a fire or a flood.
 
